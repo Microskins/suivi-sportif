@@ -1,0 +1,27 @@
+{
+  "name": "suivi-sportif",
+  "version": "1.0.0",
+  "description": "Application de suivi d'activités sportives avec Fastify et React",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "setup": "node setup-dirs.js",
+    "dev": "npm run dev -w server & npm run dev -w client",
+    "build": "npm run build -w server && npm run build -w client",
+    "start": "npm run start -w server",
+    "test": "npm run test -w server && npm run test -w client",
+    "lint": "npm run lint -w server && npm run lint -w client"
+  },
+  "keywords": [
+    "sports",
+    "tracking",
+    "fastify",
+    "react"
+  ],
+  "author": "",
+  "license": "MIT"
+}
