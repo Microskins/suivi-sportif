@@ -26,6 +26,7 @@ lerna-debug.log*
 .env.*.local
 
 # IDEs
+.*
 .agents/
 .vscode/
 .idea/
