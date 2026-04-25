@@ -26,6 +26,7 @@ lerna-debug.log*
 .env.*.local
 
 # IDEs
+.agants/
 .vscode/
 .idea/
 *.swp

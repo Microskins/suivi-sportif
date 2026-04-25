@@ -1,8 +1,0 @@
-# Phase 0.2 - Docker Configuration
-
-node_modules
-dist
-.env.local
-.DS_Store
-.git
-*.log
