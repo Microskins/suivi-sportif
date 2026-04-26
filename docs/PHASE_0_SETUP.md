@@ -53,23 +53,29 @@ JWT_SECRET=your-super-secret-key-at-least-32-characters-long
 
 ---
 
-## ✅ Étape 3 : Démarrer PostgreSQL avec Docker Compose
+## ✅ Étape 3 : Configurer la connexion PostgreSQL
+
+Le projet utilise une base de données PostgreSQL distante. Configurez `.env` :
 
 ```bash
-# Démarrer PostgreSQL + Redis + pgAdmin
-docker-compose up -d
-
-# Vérifier que tout est up
-docker-compose ps
-
-# Logs PostgreSQL
-docker-compose logs postgres
+# Vérifier que .env est configuré
+cat .env
 ```
 
-**Accès :**
-- PostgreSQL : `localhost:5432`
-- pgAdmin : http://localhost:5050 (admin@example.com / admin)
-- Redis : `localhost:6379`
+Les variables importantes :
+```env
+DB_HOST=192.168.1.6       # Adresse du serveur PostgreSQL
+DB_PORT=5432              # Port PostgreSQL
+DB_USER=suivi             # Utilisateur
+DB_PASSWORD=xxx           # Mot de passe
+DB_NAME=suivi_sportif     # Nom de la base
+DATABASE_URL=postgresql://suivi:xxx@192.168.1.6:5432/suivi_sportif
+```
+
+**Créer la base de données si elle n'existe pas :**
+```sql
+CREATE DATABASE suivi_sportif;
+```
 
 ---
 
@@ -174,9 +180,7 @@ Vous avez maintenant :
 
 | Fichier | Rôle |
 |---------|------|
-| `docker-compose.yml` | PostgreSQL + Redis + pgAdmin |
-| `.env.example` | Variables d'env template |
-| `.env` | Variables locales (à créer) |
+| `.env` | Variables d'environnement (DB distante) |
 | `server/src/config.ts` | Validation Zod des env |
 | `server/src/utils/logger.ts` | Logging pino |
 | `server/src/server.ts` | Bootstrap Fastify |
@@ -188,16 +192,20 @@ Vous avez maintenant :
 
 ## ⚠️ Troubleshooting
 
-**Docker ne démarre pas ?**
+**Connexion DB échoue ?**
+Vérifiez `.env` :
 ```bash
-docker-compose down
-docker-compose up -d
+cat .env
 ```
 
-**Port 5432 déjà utilisé ?**
-Changez dans `.env` :
-```
-DB_PORT=5433
+**Port 3001 déjà utilisé ?**
+```bash
+# Trouver le processus
+netstat -ano | findstr :3001  # Windows
+lsof -i :3001  # macOS/Linux
+
+# Ou changer le port dans .env
+API_PORT=3002
 ```
 
 **TypeScript erreurs ?**
@@ -206,12 +214,6 @@ npm run typecheck
 npm install
 npm run build
 ```
-
-**Server refuse de démarrer ?**
-```bash
-# Vérifier que le port 3001 est libre
-netstat -ano | findstr :3001  # Windows
-lsof -i :3001  # macOS/Linux
 ```
 
 ---

@@ -17,12 +17,10 @@
 - **Fastify 4.28** - Web server ultra-performant
 - **TypeScript 5.3** - Type safety
 - **PostgreSQL 16** - Base de données relationnelle
-- **Redis 7** - Cache et sessions
 - **Pino 8.20** - Structured logging
 - **Zod 3.23** - Schema validation
 
 ### DevOps
-- **Docker & Docker Compose** - Containerization
 - **Node.js LTS** - Runtime
 - **npm workspaces** - Monorepo management
 
@@ -30,7 +28,7 @@
 
 ### Prérequis
 - **Node.js 18+** ([Télécharger](https://nodejs.org/))
-- **Docker & Docker Compose** ([Télécharger](https://www.docker.com/products/docker-desktop))
+- **PostgreSQL 16+** (local ou distant)
 - **Git** ([Télécharger](https://git-scm.com/))
 
 ### Installation
@@ -43,21 +41,11 @@ cd suivi-sportif
 
 **2. Configurer l'environnement**
 ```bash
-cp config/.env.example .env
-# Optionnel : modifiez .env si besoin
+cp .env.example .env
+# Modifier les infos de connexion DB dans .env
 ```
 
-**3. Démarrer les services Docker**
-```bash
-docker-compose -f config/docker-compose.yml up -d
-```
-
-Cela démarre :
-- 🐘 **PostgreSQL 16** sur `localhost:5432`
-- 🔴 **Redis 7** sur `localhost:6379`
-- 🖥️ **pgAdmin** sur `http://localhost:5050`
-
-**4. Installer les dépendances npm**
+**3. Installer les dépendances npm**
 ```bash
 npm install
 ```
@@ -90,13 +78,13 @@ suivi-sportif/
 └── 📋 package.json              # Workspace root
 ```
 
-## 🔌 Services Docker
+## 🔌 Services
 
-| Service | Port | Accès |
-|---------|------|-------|
-| PostgreSQL | 5432 | localhost:5432 |
-| Redis | 6379 | localhost:6379 |
-| pgAdmin | 5050 | http://localhost:5050 |
+| Service | Port | Info |
+|---------|------|------|
+| PostgreSQL | 5432 | Configuré dans .env |
+| API | 3001 | localhost:3001 |
+| Frontend | 5173 | localhost:5173 |
 
 ## 🔨 Commandes
 
@@ -126,7 +114,6 @@ npm run start -w server        # Lancer server en production
 | Frontend | http://localhost:5173 |
 | API | http://localhost:3001 |
 | API Health | http://localhost:3001/health |
-| pgAdmin | http://localhost:5050 |
 
 ## 🔐 Variables d'Environnement
 
