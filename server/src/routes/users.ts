@@ -30,6 +30,34 @@ export async function usersRoutes(fastify: FastifyInstance) {
     }
   });
 
+  // POST /api/users/register - Register new user (public)
+  fastify.post('/register', async (request, reply) => {
+    try {
+      const data = request.body as object;
+      const parsed = createUserSchema.parse(data);
+      
+      // Check if email already exists
+      const existing = await users.getUserByEmail(parsed.email);
+      if (existing) {
+        return reply.code(400).send({ error: 'Email already exists' });
+      }
+      
+      // Create the user
+      const user = await users.createUser(parsed);
+      
+      // Generate JWT token
+      const token = generateToken(fastify, user);
+      
+      return reply.code(201).send({ user, token });
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return reply.code(400).send({ error: 'Validation failed', details: error.errors });
+      }
+      fastify.log.error(error);
+      reply.code(500).send({ error: 'Internal Server Error' });
+    }
+  });
+
   // All routes below require authentication
   fastify.addHook('preHandler', async (request, reply) => {
     try {
