@@ -1,0 +1,93 @@
+// filepath: server/prisma/schema.prisma
+// PostgreSQL Schema for Suivi Sportif
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============== User Model ==============
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  workouts Workout[]
+
+  @@map("users")
+}
+
+// ============== Exercise Model ==============
+model Exercise {
+  id          String   @id @default(uuid())
+  name        String
+  description String?  @db.Text
+  muscleGroup String   @map("muscle_group")
+  equipment   String   @default("none")
+  difficulty  String   @default("beginner")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  workoutExercises WorkoutExercise[]
+
+  @@map("exercises")
+}
+
+// ============== Workout Model ==============
+model Workout {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  date      DateTime
+  duration  Int      // en minutes
+  notes     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutExercises WorkoutExercise[]
+
+  @@index([userId, date])
+  @@map("workouts")
+}
+
+// ============== WorkoutExercise Model (junction) ==============
+model WorkoutExercise {
+  id         String  @id @default(uuid())
+  workoutId  String  @map("workout_id")
+  exerciseId String  @map("exercise_id")
+  order      Int     @default(0)
+
+  workout  Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  sets WorkoutSet[]
+
+  @@unique([workoutId, exerciseId])
+  @@map("workout_exercises")
+}
+
+// ============== WorkoutSet Model ==============
+model WorkoutSet {
+  id              String           @id @default(uuid())
+  workoutExerciseId String         @map("workout_exercise_id")
+  setNumber       Int              @map("set_number")
+  reps            Int
+  weight          Decimal          @db.Decimal(10, 2)
+  rest            Int              @default(60) // en secondes
+  createdAt       DateTime         @default(now()) @map("created_at")
+
+  workoutExercise WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+
+  @@map("workout_sets")
+}
+
+// Note: Prisma uses Decimal for precise numeric values
+// In the application, convert to number for calculations

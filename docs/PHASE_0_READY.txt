@@ -9,12 +9,8 @@
 📊 FICHIERS CRÉÉS POUR PHASE 0
 ═══════════════════════════════════════════════════════════════════════════════
 
-🐘 DOCKER COMPOSE (Phase 0.2)
-  ✅ docker-compose.yml          PostgreSQL 16 + Redis + pgAdmin
-  ✅ .dockerignore                Fichiers à ignorer
-
 ⚙️  CONFIGURATION (Phase 0.3)
-  ✅ .env.example                 Template pour variables d'env
+  ✅ .env                         Connexion DB PostgreSQL distante
   ✅ server/src/config.ts        Validation Zod (À créer après setup)
 
 📝 LOGGING (Phase 0.4)
@@ -36,15 +32,16 @@
 🎯 ÉTAPES D'EXÉCUTION - À FAIRE MAINTENANT
 ═══════════════════════════════════════════════════════════════════════════════
 
-1️⃣  CRÉER LA STRUCTURE
-    $ node setup-dirs.js
+1️⃣  CLONER LE PROJET
+    $ git clone git@github.com:Microskins/suivi-sportif.git
+    $ cd suivi-sportif
 
 2️⃣  CONFIGURER .env
-    $ cp .env.example .env
-    (modifier si besoin)
+    $ nano .env
+    (vérifier les infos de connexion DB)
 
-3️⃣  DÉMARRER LES SERVICES
-    $ docker-compose up -d
+3️⃣  CRÉER LA BASE DE DONNÉES
+    (si elle n'existe pas sur le serveur PostgreSQL)
 
 4️⃣  INSTALLER LES DÉPENDANCES
     $ npm install
@@ -113,7 +110,7 @@ suivi-sportif/
 │   └── package.json
 │
 ├── migrations/                  ← SQL migrations
-├── docker-compose.yml           ← Services locaux
+├── .env                       ← Variables d'environnement
 ├── .env.example
 ├── .env                         ← À créer
 ├── package.json                 ← Root workspace
@@ -169,7 +166,7 @@ Shared:
   ✅ Common utilities
 
 DevOps:
-  ✅ Docker Compose
+  ✅ PostgreSQL distant
   ✅ GitHub Actions (Phase 5)
   ✅ systemd (Phase 5)
   ✅ nginx (Phase 5)
@@ -185,7 +182,7 @@ Dépendances installées:
   • Fastify (serveur ultrarapide)
   • React (UI framework)
   • PostgreSQL 16 (base de données)
-  • Docker Compose (services locaux)
+  • PostgreSQL distant (VM)
   • Pino (logging)
   • Zod (validation)
   • JWT (authentification)
@@ -206,11 +203,11 @@ Configuration validée:
 ═══════════════════════════════════════════════════════════════════════════════
 
 # One-liner pour tout mettre en place
-node setup-dirs.js && cp .env.example .env && docker-compose up -d && npm install && npm run dev
+git clone git@github.com:Microskins/suivi-sportif.git && cd suivi-sportif && npm install && npm run dev
 
 # Ou étape par étape (plus safe)
 node setup-dirs.js          # 1. Crée structure
-docker-compose up -d         # 2. Lance services DB
+npm install                   # 2. Installe dépendances
 npm install                  # 3. Installe dépendances
 npm run typecheck            # 4. Vérifie TypeScript
 npm run dev -w server &      # 5. Démarre serveur
