@@ -58,8 +58,14 @@ export async function usersRoutes(fastify: FastifyInstance) {
     }
   });
 
-  // All routes below require authentication
+  // All routes below require authentication (except /login and /register)
   fastify.addHook('preHandler', async (request, reply) => {
+    // Skip auth for public routes
+    const url = request.url;
+    if (url.includes('/login') || url.includes('/register')) {
+      return;
+    }
+    
     try {
       await request.jwtVerify();
     } catch (err) {
