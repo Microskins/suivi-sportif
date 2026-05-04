@@ -297,6 +297,20 @@ describe("API", () => {
     expect(mocks.exercises.getExerciseById).toHaveBeenCalledWith(EXERCISE_ID);
   });
 
+  it("returns 404 when getting a missing exercise by id", async () => {
+    mocks.exercises.getExerciseById.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/exercises/${EXERCISE_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("EXERCISE_NOT_FOUND");
+  });
+
   it("rejects invalid exercise ids before calling the database", async () => {
     const response = await app.inject({
       method: "GET",
@@ -422,6 +436,20 @@ describe("API", () => {
     expect(body.code).toBe("EXERCISE_NOT_FOUND");
   });
 
+  it("rejects invalid exercise ids on update before calling the database", async () => {
+    const response = await app.inject({
+      method: "PUT",
+      url: "/api/exercises/not-a-uuid",
+      headers: authHeaders(),
+      payload: { name: "Invalid id" },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.exercises.updateExercise).not.toHaveBeenCalled();
+  });
+
   it("deletes an exercise by id", async () => {
     mocks.exercises.deleteExercise.mockResolvedValue(true);
 
@@ -433,6 +461,19 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(204);
     expect(mocks.exercises.deleteExercise).toHaveBeenCalledWith(EXERCISE_ID);
+  });
+
+  it("rejects invalid exercise ids on delete before calling the database", async () => {
+    const response = await app.inject({
+      method: "DELETE",
+      url: "/api/exercises/not-a-uuid",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.exercises.deleteExercise).not.toHaveBeenCalled();
   });
 
   it("lists workouts for the authenticated user only", async () => {
@@ -467,6 +508,20 @@ describe("API", () => {
       WORKOUT_ID,
       USER_ID,
     );
+  });
+
+  it("returns 404 when getting a missing workout by id", async () => {
+    mocks.workouts.getWorkoutById.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/workouts/${WORKOUT_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("WORKOUT_NOT_FOUND");
   });
 
   it("rejects invalid workout ids before calling the database", async () => {
@@ -620,6 +675,20 @@ describe("API", () => {
     );
   });
 
+  it("rejects invalid workout ids on update before calling the database", async () => {
+    const response = await app.inject({
+      method: "PUT",
+      url: "/api/workouts/not-a-uuid",
+      headers: authHeaders(),
+      payload: { name: "Invalid id" },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.workouts.updateWorkout).not.toHaveBeenCalled();
+  });
+
   it("deletes a workout for the authenticated user only", async () => {
     mocks.workouts.deleteWorkout.mockResolvedValue(true);
 
@@ -653,5 +722,18 @@ describe("API", () => {
       WORKOUT_ID,
       USER_ID,
     );
+  });
+
+  it("rejects invalid workout ids on delete before calling the database", async () => {
+    const response = await app.inject({
+      method: "DELETE",
+      url: "/api/workouts/not-a-uuid",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.workouts.deleteWorkout).not.toHaveBeenCalled();
   });
 });
