@@ -16,6 +16,22 @@ export function buildApp(options: FastifyServerOptions = { logger: true }) {
     secret: process.env.JWT_SECRET || "default-secret-change-me",
   });
   fastify.register(authPlugin);
+  fastify.setErrorHandler((error, request, reply) => {
+    if ("validation" in error) {
+      return reply.code(400).send({
+        error: "Validation failed",
+        code: "VALIDATION_ERROR",
+        details: (error as { validation?: unknown }).validation,
+      });
+    }
+
+    request.log.error(error);
+    return reply.code(500).send({
+      error: "Internal Server Error",
+      code: "INTERNAL_SERVER_ERROR",
+    });
+  });
+
   fastify.register(swagger, {
     openapi: {
       info: {
@@ -71,7 +87,6 @@ export function buildApp(options: FastifyServerOptions = { logger: true }) {
   fastify.register(workoutsRoutes, { prefix: "/api/workouts" });
   fastify.register(swaggerUi, {
     routePrefix: "/docs",
-    exposeRoute: true,
     uiConfig: {
       docExpansion: "list",
       deepLinking: true,
