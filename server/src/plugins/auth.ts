@@ -2,8 +2,6 @@
 // Authentication plugin with JWT
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import fjwt from "@fastify/jwt";
-import { getUserByEmail, verifyCredentials } from "../db/queries/users.js";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -23,19 +21,16 @@ declare module "@fastify/jwt" {
 }
 
 export async function authPlugin(fastify: FastifyInstance) {
-  // Register JWT plugin
-  await fastify.register(fjwt, {
-    secret: process.env.JWT_SECRET || "default-secret-change-me",
-  });
-
-  // Decorate request with authenticate function
+  // Helper réutilisable pour les routes protégées.
   fastify.decorate(
     "authenticate",
     async function (request: FastifyRequest, reply: FastifyReply) {
       try {
         await request.jwtVerify();
       } catch (err) {
-        reply.code(401).send({ error: "Unauthorized" });
+        return reply
+          .code(401)
+          .send({ error: "Unauthorized", code: "UNAUTHORIZED" });
       }
     },
   );

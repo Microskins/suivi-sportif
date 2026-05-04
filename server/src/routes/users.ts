@@ -18,12 +18,10 @@ export async function usersRoutes(fastify: FastifyInstance) {
       const user = await users.verifyCredentials(parsed.email, parsed.password);
 
       if (!user) {
-        return reply
-          .code(401)
-          .send({
-            error: "Identifiants invalides",
-            code: "INVALID_CREDENTIALS",
-          });
+        return reply.code(401).send({
+          error: "Identifiants invalides",
+          code: "INVALID_CREDENTIALS",
+        });
       }
 
       const token = generateToken(fastify, user);
@@ -31,21 +29,17 @@ export async function usersRoutes(fastify: FastifyInstance) {
       return reply.code(200).send({ data: { user, token } });
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return reply
-          .code(400)
-          .send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
+        return reply.code(400).send({
+          error: "Validation failed",
+          code: "VALIDATION_ERROR",
+          details: error.errors,
+        });
       }
       fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 
@@ -68,26 +62,27 @@ export async function usersRoutes(fastify: FastifyInstance) {
       return reply.code(201).send({ data: { user, token } });
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return reply
-          .code(400)
-          .send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
+        return reply.code(400).send({
+          error: "Validation failed",
+          code: "VALIDATION_ERROR",
+          details: error.errors,
+        });
       }
       fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 
   // All routes below require authentication
   fastify.addHook("preHandler", async (request, reply) => {
+    const currentPath = request.url.split("?")[0];
+    if (currentPath.endsWith("/login") || currentPath.endsWith("/register")) {
+      return;
+    }
+
     try {
       await request.jwtVerify();
     } catch (err) {
@@ -101,20 +96,16 @@ export async function usersRoutes(fastify: FastifyInstance) {
   fastify.get("/", async (request, reply) => {
     try {
       const result = await users.getUsers();
-      return reply
-        .code(200)
-        .send({
-          data: result,
-          meta: { total: result.length, page: 1, limit: result.length },
-        });
+      return reply.code(200).send({
+        data: result,
+        meta: { total: result.length, page: 1, limit: result.length },
+      });
     } catch (error) {
       fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 
@@ -133,12 +124,10 @@ export async function usersRoutes(fastify: FastifyInstance) {
       return reply.code(200).send({ data: user });
     } catch (error) {
       fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 
@@ -151,33 +140,27 @@ export async function usersRoutes(fastify: FastifyInstance) {
       // Check if email already exists
       const existing = await users.getUserByEmail(parsed.email);
       if (existing) {
-        return reply
-          .code(400)
-          .send({
-            error: "Email already exists",
-            code: "EMAIL_ALREADY_EXISTS",
-          });
+        return reply.code(400).send({
+          error: "Email already exists",
+          code: "EMAIL_ALREADY_EXISTS",
+        });
       }
 
       const user = await users.createUser(parsed);
       return reply.code(201).send({ data: user });
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return reply
-          .code(400)
-          .send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
+        return reply.code(400).send({
+          error: "Validation failed",
+          code: "VALIDATION_ERROR",
+          details: error.errors,
+        });
       }
       fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 
@@ -199,21 +182,17 @@ export async function usersRoutes(fastify: FastifyInstance) {
       return reply.code(200).send({ data: user });
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return reply
-          .code(400)
-          .send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
+        return reply.code(400).send({
+          error: "Validation failed",
+          code: "VALIDATION_ERROR",
+          details: error.errors,
+        });
       }
       fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 
@@ -232,12 +211,10 @@ export async function usersRoutes(fastify: FastifyInstance) {
       return reply.code(204).send();
     } catch (error) {
       fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 }
