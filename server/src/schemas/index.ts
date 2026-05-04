@@ -94,6 +94,23 @@ export const createWorkoutSchema = z.object({
 
 export const updateWorkoutSchema = createWorkoutSchema.partial();
 
+export const workoutSetResponseSchema = z.object({
+  id: z.string().uuid(),
+  setNumber: z.number().int(),
+  reps: z.number().int(),
+  weight: z.number(),
+  rest: z.number().int(),
+  createdAt: z.string().datetime(),
+});
+
+export const workoutExerciseResponseSchema = z.object({
+  id: z.string().uuid(),
+  exerciseId: z.string().uuid(),
+  order: z.number().int(),
+  exercise: exerciseResponseSchema.optional(),
+  sets: z.array(workoutSetResponseSchema),
+});
+
 export const workoutResponseSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid(),
@@ -103,6 +120,7 @@ export const workoutResponseSchema = z.object({
   notes: z.string().nullable(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
+  exercises: z.array(workoutExerciseResponseSchema).optional(),
 });
 
 export const workoutListSchema = z.array(workoutResponseSchema);
