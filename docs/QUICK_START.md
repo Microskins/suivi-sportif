@@ -27,6 +27,12 @@ npm run db:push -w server
 
 `db:push` est utile en développement. Pour des changements de schéma versionnés, utiliser ensuite `npm run db:migrate -w server`.
 
+Optionnel: charger un catalogue d'exercices de base.
+
+```bash
+npm run db:seed -w server
+```
+
 ## 4. Lancer en développement
 
 Terminal 1:

@@ -9,6 +9,77 @@ type ApiEnvelope<T> = {
   code?: string;
 };
 
+export type User = {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Exercise = {
+  id: string;
+  name: string;
+  description: string | null;
+  muscleGroup: string;
+  equipment: string;
+  difficulty: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ExerciseInput = {
+  name: string;
+  description?: string | null;
+  muscleGroup: string;
+  equipment?: string;
+  difficulty?: string;
+};
+
+export type WorkoutSetInput = {
+  reps: number;
+  weight: number;
+  rest: number;
+};
+
+export type WorkoutExerciseInput = {
+  exerciseId: string;
+  sets: WorkoutSetInput[];
+};
+
+export type WorkoutInput = {
+  name: string;
+  date: string;
+  duration: number;
+  notes?: string | null;
+  exercises?: WorkoutExerciseInput[];
+};
+
+export type Workout = {
+  id: string;
+  userId: string;
+  name: string;
+  date: string;
+  duration: number;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  exercises?: Array<{
+    id: string;
+    exerciseId: string;
+    order: number;
+    exercise?: Exercise;
+    sets: Array<{
+      id: string;
+      setNumber: number;
+      reps: number;
+      weight: number;
+      rest: number;
+      createdAt: string;
+    }>;
+  }>;
+};
+
 class ApiClient {
   private token: string | null = null;
 
@@ -69,7 +140,7 @@ class ApiClient {
 
   // Auth
   async login(email: string, password: string) {
-    const result = await this.request<{ user: any; token: string }>(
+    const result = await this.request<{ user: User; token: string }>(
       "/api/users/login",
       {
         method: "POST",
@@ -81,7 +152,7 @@ class ApiClient {
   }
 
   async register(email: string, password: string, name: string) {
-    const result = await this.request<{ user: any; token: string }>(
+    const result = await this.request<{ user: User; token: string }>(
       "/api/users/register",
       {
         method: "POST",
@@ -97,32 +168,41 @@ class ApiClient {
   }
 
   // Users
-  async getUsers() {
-    return this.request<any[]>("/api/users");
+  async getMe() {
+    return this.request<User>("/api/users/me");
   }
 
-  async getUser(id: string) {
-    return this.request<any>(`/api/users/${id}`);
+  async updateMe(
+    data: Partial<Pick<User, "email" | "name">> & { password?: string },
+  ) {
+    return this.request<User>("/api/users/me", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
   }
 
   // Exercises
   async getExercises() {
-    return this.request<any[]>("/api/exercises");
+    return this.request<Exercise[]>("/api/exercises");
   }
 
   async getExercise(id: string) {
-    return this.request<any>(`/api/exercises/${id}`);
+    return this.request<Exercise>(`/api/exercises/${id}`);
   }
 
-  async createExercise(data: any) {
-    return this.request<any>("/api/exercises", {
+  async getExercisesByMuscleGroup(group: string) {
+    return this.request<Exercise[]>(`/api/exercises/muscle/${group}`);
+  }
+
+  async createExercise(data: ExerciseInput) {
+    return this.request<Exercise>("/api/exercises", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  async updateExercise(id: string, data: any) {
-    return this.request<any>(`/api/exercises/${id}`, {
+  async updateExercise(id: string, data: Partial<ExerciseInput>) {
+    return this.request<Exercise>(`/api/exercises/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -136,22 +216,28 @@ class ApiClient {
 
   // Workouts
   async getWorkouts() {
-    return this.request<any[]>("/api/workouts");
+    return this.request<Workout[]>("/api/workouts");
   }
 
   async getWorkout(id: string) {
-    return this.request<any>(`/api/workouts/${id}`);
+    return this.request<Workout>(`/api/workouts/${id}`);
   }
 
-  async createWorkout(data: any) {
-    return this.request<any>("/api/workouts", {
+  async getWorkoutsByDateRange(start: string, end: string) {
+    return this.request<Workout[]>(
+      `/api/workouts/range/${encodeURIComponent(start)}/${encodeURIComponent(end)}`,
+    );
+  }
+
+  async createWorkout(data: WorkoutInput) {
+    return this.request<Workout>("/api/workouts", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  async updateWorkout(id: string, data: any) {
-    return this.request<any>(`/api/workouts/${id}`, {
+  async updateWorkout(id: string, data: Partial<WorkoutInput>) {
+    return this.request<Workout>(`/api/workouts/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });

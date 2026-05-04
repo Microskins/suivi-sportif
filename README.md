@@ -17,6 +17,7 @@ Le navigateur ne parle jamais directement à PostgreSQL. React appelle l'API, et
 ## Stack
 
 ### Backend
+
 - Fastify 4
 - TypeScript
 - Prisma 5
@@ -27,6 +28,7 @@ Le navigateur ne parle jamais directement à PostgreSQL. React appelle l'API, et
 - Vitest
 
 ### Frontend
+
 - React 18
 - Vite 5
 - TypeScript
@@ -36,6 +38,7 @@ Le navigateur ne parle jamais directement à PostgreSQL. React appelle l'API, et
 ## Etat actuel
 
 ### Disponible
+
 - Health check: `GET /health`
 - Auth publique: `POST /api/users/register`, `POST /api/users/login`
 - Routes protégées par JWT:
@@ -48,6 +51,7 @@ Le navigateur ne parle jamais directement à PostgreSQL. React appelle l'API, et
 - Tests API avec `fastify.inject()`.
 
 ### Encore à faire
+
 - Interface React réelle: login/register, exercices, séances.
 - Tests API plus complets: erreurs, update/delete, ownership multi-utilisateurs.
 - Documentation OpenAPI/Swagger exploitable.
@@ -57,6 +61,7 @@ Le navigateur ne parle jamais directement à PostgreSQL. React appelle l'API, et
 ## Installation
 
 Prérequis:
+
 - Node.js 18+
 - npm
 - PostgreSQL
@@ -87,6 +92,12 @@ Appliquez le schéma en développement:
 npm run db:push -w server
 ```
 
+Optionnel: ajouter les exercices de base pour le développement:
+
+```bash
+npm run db:seed -w server
+```
+
 ## Développement
 
 Backend:
@@ -102,6 +113,7 @@ npm run dev -w client
 ```
 
 URLs:
+
 - API: http://localhost:3001
 - Health: http://localhost:3001/health
 - Client: http://localhost:5173
@@ -132,8 +144,10 @@ npm run build
 ## Documentation
 
 Commencez ici:
+
 - [Index documentation](./docs/INDEX.md)
 - [Démarrage rapide](./docs/QUICK_START.md)
+- [API](./docs/API.md)
 - [Architecture](./docs/ARCHITECTURE.md)
 - [Déploiement cible](./docs/DEPLOYMENT_TARGET.md)
 - [Structure du projet](./docs/PROJECT_STRUCTURE.md)

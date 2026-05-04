@@ -93,7 +93,7 @@ export const createWorkoutSchema = z.object({
   name: z.string().min(1, "Nom requis").max(200),
   date: z.string().datetime(),
   duration: z.number().int().min(0), // en minutes
-  notes: z.string().max(2000).optional(),
+  notes: z.string().max(2000).nullable().optional(),
   exercises: z
     .array(
       z.object({

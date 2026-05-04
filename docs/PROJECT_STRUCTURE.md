@@ -27,7 +27,8 @@ suivi-sportif/
 │   ├── package.json
 │   ├── tsconfig.json
 │   ├── prisma/
-│   │   └── schema.prisma
+│   │   ├── schema.prisma
+│   │   └── seed.ts
 │   └── src/
 │       ├── app.ts
 │       ├── server.ts
@@ -55,9 +56,11 @@ suivi-sportif/
 
 - `README.md`: vue d'ensemble et commandes principales.
 - `docs/INDEX.md`: index de documentation et état des docs.
+- `docs/API.md`: endpoints API stables et formats de réponse.
 - `server/src/app.ts`: construction de l'app Fastify.
 - `server/src/server.ts`: démarrage réseau.
 - `server/prisma/schema.prisma`: schéma PostgreSQL/Prisma.
+- `server/prisma/seed.ts`: catalogue d'exercices de développement.
 - `server/src/routes/api.test.ts`: premiers tests API.
 - `client/src/api/client.ts`: client HTTP du frontend.
 
