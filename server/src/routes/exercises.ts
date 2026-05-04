@@ -8,6 +8,39 @@ import {
   updateExerciseSchema,
 } from "../schemas/index.js";
 
+const errorResponseSchema = {
+  type: "object",
+  properties: {
+    error: { type: "string" },
+    code: { type: "string" },
+  },
+  required: ["error", "code"],
+};
+
+const exerciseSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string", format: "uuid" },
+    name: { type: "string" },
+    description: { type: ["string", "null"] },
+    muscleGroup: { type: "string" },
+    equipment: { type: "string" },
+    difficulty: { type: "string" },
+    createdAt: { type: "string", format: "date-time" },
+    updatedAt: { type: "string", format: "date-time" },
+  },
+  required: [
+    "id",
+    "name",
+    "description",
+    "muscleGroup",
+    "equipment",
+    "difficulty",
+    "createdAt",
+    "updatedAt",
+  ],
+};
+
 export async function exercisesRoutes(fastify: FastifyInstance) {
   fastify.addHook("preHandler", async (request, reply) => {
     try {
@@ -20,7 +53,36 @@ export async function exercisesRoutes(fastify: FastifyInstance) {
   });
 
   // GET /api/exercises - List all exercises
-  fastify.get("/", async (request, reply) => {
+  fastify.get(
+    "/",
+    {
+      schema: {
+        tags: ["exercises"],
+        summary: "List exercises",
+        security: [{ bearerAuth: [] }],
+        response: {
+          200: {
+            type: "object",
+            properties: {
+              data: { type: "array", items: exerciseSchema },
+              meta: {
+                type: "object",
+                properties: {
+                  total: { type: "number" },
+                  page: { type: "number" },
+                  limit: { type: "number" },
+                },
+                required: ["total", "page", "limit"],
+              },
+            },
+            required: ["data", "meta"],
+          },
+          401: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const result = await exercises.getExercises();
       return reply.code(200).send({
@@ -34,10 +96,36 @@ export async function exercisesRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 
   // GET /api/exercises/:id - Get exercise by ID
-  fastify.get("/:id", async (request, reply) => {
+  fastify.get(
+    "/:id",
+    {
+      schema: {
+        tags: ["exercises"],
+        summary: "Get exercise by id",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: { id: { type: "string", format: "uuid" } },
+          required: ["id"],
+        },
+        response: {
+          200: {
+            type: "object",
+            properties: { data: exerciseSchema },
+            required: ["data"],
+          },
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const { id } = idParamSchema.parse(request.params);
       const exercise = await exercises.getExerciseById(id);
@@ -63,10 +151,46 @@ export async function exercisesRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 
   // GET /api/exercises/muscle/:group - Get exercises by muscle group
-  fastify.get("/muscle/:group", async (request, reply) => {
+  fastify.get(
+    "/muscle/:group",
+    {
+      schema: {
+        tags: ["exercises"],
+        summary: "List exercises by muscle group",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: { group: { type: "string" } },
+          required: ["group"],
+        },
+        response: {
+          200: {
+            type: "object",
+            properties: {
+              data: { type: "array", items: exerciseSchema },
+              meta: {
+                type: "object",
+                properties: {
+                  total: { type: "number" },
+                  page: { type: "number" },
+                  limit: { type: "number" },
+                },
+                required: ["total", "page", "limit"],
+              },
+            },
+            required: ["data", "meta"],
+          },
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const { group } = muscleGroupParamSchema.parse(request.params);
       const result = await exercises.getExercisesByMuscleGroup(group);
@@ -88,10 +212,41 @@ export async function exercisesRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 
   // POST /api/exercises - Create new exercise
-  fastify.post("/", async (request, reply) => {
+  fastify.post(
+    "/",
+    {
+      schema: {
+        tags: ["exercises"],
+        summary: "Create exercise",
+        security: [{ bearerAuth: [] }],
+        body: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            description: { type: ["string", "null"] },
+            muscleGroup: { type: "string" },
+            equipment: { type: "string" },
+            difficulty: { type: "string" },
+          },
+          required: ["name", "muscleGroup"],
+        },
+        response: {
+          201: {
+            type: "object",
+            properties: { data: exerciseSchema },
+            required: ["data"],
+          },
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const data = request.body as object;
       const parsed = createExerciseSchema.parse(data);
@@ -112,10 +267,46 @@ export async function exercisesRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 
   // PUT /api/exercises/:id - Update exercise
-  fastify.put("/:id", async (request, reply) => {
+  fastify.put(
+    "/:id",
+    {
+      schema: {
+        tags: ["exercises"],
+        summary: "Update exercise",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: { id: { type: "string", format: "uuid" } },
+          required: ["id"],
+        },
+        body: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            description: { type: ["string", "null"] },
+            muscleGroup: { type: "string" },
+            equipment: { type: "string" },
+            difficulty: { type: "string" },
+          },
+        },
+        response: {
+          200: {
+            type: "object",
+            properties: { data: exerciseSchema },
+            required: ["data"],
+          },
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const { id } = idParamSchema.parse(request.params);
       const data = request.body as object;
@@ -144,10 +335,32 @@ export async function exercisesRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 
   // DELETE /api/exercises/:id - Delete exercise
-  fastify.delete("/:id", async (request, reply) => {
+  fastify.delete(
+    "/:id",
+    {
+      schema: {
+        tags: ["exercises"],
+        summary: "Delete exercise",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: { id: { type: "string", format: "uuid" } },
+          required: ["id"],
+        },
+        response: {
+          204: { type: "null" },
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const { id } = idParamSchema.parse(request.params);
       const deleted = await exercises.deleteExercise(id);
@@ -173,5 +386,6 @@ export async function exercisesRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 }

@@ -8,8 +8,64 @@ import {
 } from "../schemas/index.js";
 import { generateToken } from "../plugins/auth.js";
 
+const errorResponseSchema = {
+  type: "object",
+  properties: {
+    error: { type: "string" },
+    code: { type: "string" },
+  },
+  required: ["error", "code"],
+};
+
+const userSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string", format: "uuid" },
+    email: { type: "string", format: "email" },
+    name: { type: "string" },
+    createdAt: { type: "string", format: "date-time" },
+    updatedAt: { type: "string", format: "date-time" },
+  },
+  required: ["id", "email", "name", "createdAt", "updatedAt"],
+};
+
 export async function usersRoutes(fastify: FastifyInstance) {
-  fastify.post("/login", async (request, reply) => {
+  fastify.post(
+    "/login",
+    {
+      schema: {
+        tags: ["users"],
+        summary: "Login",
+        body: {
+          type: "object",
+          properties: {
+            email: { type: "string", format: "email" },
+            password: { type: "string" },
+          },
+          required: ["email", "password"],
+        },
+        response: {
+          200: {
+            type: "object",
+            properties: {
+              data: {
+                type: "object",
+                properties: {
+                  user: userSchema,
+                  token: { type: "string" },
+                },
+                required: ["user", "token"],
+              },
+            },
+            required: ["data"],
+          },
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const parsed = loginUserSchema.parse(request.body as object);
       const user = await users.verifyCredentials(parsed.email, parsed.password);
@@ -37,9 +93,45 @@ export async function usersRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 
-  fastify.post("/register", async (request, reply) => {
+  fastify.post(
+    "/register",
+    {
+      schema: {
+        tags: ["users"],
+        summary: "Register",
+        body: {
+          type: "object",
+          properties: {
+            email: { type: "string", format: "email" },
+            password: { type: "string", minLength: 8 },
+            name: { type: "string" },
+          },
+          required: ["email", "password", "name"],
+        },
+        response: {
+          201: {
+            type: "object",
+            properties: {
+              data: {
+                type: "object",
+                properties: {
+                  user: userSchema,
+                  token: { type: "string" },
+                },
+                required: ["user", "token"],
+              },
+            },
+            required: ["data"],
+          },
+          400: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const parsed = createUserSchema.parse(request.body as object);
 
@@ -67,7 +159,8 @@ export async function usersRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 
   fastify.addHook("preHandler", async (request, reply) => {
     const currentPath = request.url.split("?")[0];
@@ -84,7 +177,26 @@ export async function usersRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.get("/me", async (request, reply) => {
+  fastify.get(
+    "/me",
+    {
+      schema: {
+        tags: ["users"],
+        summary: "Get current user",
+        security: [{ bearerAuth: [] }],
+        response: {
+          200: {
+            type: "object",
+            properties: { data: userSchema },
+            required: ["data"],
+          },
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const user = await users.getUserById(request.user.id);
 
@@ -102,9 +214,38 @@ export async function usersRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 
-  fastify.put("/me", async (request, reply) => {
+  fastify.put(
+    "/me",
+    {
+      schema: {
+        tags: ["users"],
+        summary: "Update current user",
+        security: [{ bearerAuth: [] }],
+        body: {
+          type: "object",
+          properties: {
+            email: { type: "string", format: "email" },
+            password: { type: "string", minLength: 8 },
+            name: { type: "string" },
+          },
+        },
+        response: {
+          200: {
+            type: "object",
+            properties: { data: userSchema },
+            required: ["data"],
+          },
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const parsed = updateUserSchema.parse(request.body as object);
       const user = await users.updateUser(request.user.id, parsed);
@@ -130,7 +271,8 @@ export async function usersRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 
   fastify.get("/", async (request, reply) => {
     return reply.code(403).send({

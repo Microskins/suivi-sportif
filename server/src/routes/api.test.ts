@@ -101,6 +101,23 @@ describe("API", () => {
     expect(body.data.timestamp).toEqual(expect.any(String));
   });
 
+  it("serves swagger UI", async () => {
+    const response = await app.inject({ method: "GET", url: "/docs" });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["content-type"]).toContain("text/html");
+  });
+
+  it("exposes openapi json", async () => {
+    const response = await app.inject({ method: "GET", url: "/docs/json" });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.openapi).toEqual(expect.any(String));
+    expect(body.paths["/health"]).toBeDefined();
+    expect(body.paths["/api/users/login"]).toBeDefined();
+  });
+
   it("registers a public user and returns a token", async () => {
     mocks.users.getUserByEmail.mockResolvedValue(null);
     mocks.users.createUser.mockResolvedValue(user);
