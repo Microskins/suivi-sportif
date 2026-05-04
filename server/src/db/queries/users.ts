@@ -1,8 +1,15 @@
 // filepath: server/src/db/queries/users.ts
 // User database queries - NEVER write SQL directly in routes
 
-import prisma from '../index.js';
-import type { CreateUserInput, UpdateUserInput, UserResponse } from '../../schemas/index.js';
+import prisma from "../index.js";
+import type {
+  CreateUserInput,
+  UpdateUserInput,
+  UserResponse,
+} from "../../schemas/index.js";
+import bcrypt from "bcrypt";
+
+const PASSWORD_SALT_ROUNDS = 10;
 
 export async function getUsers(): Promise<UserResponse[]> {
   const users = await prisma.user.findMany({
@@ -14,7 +21,7 @@ export async function getUsers(): Promise<UserResponse[]> {
       updatedAt: true,
     },
   });
-  return users.map(u => ({
+  return users.map((u) => ({
     ...u,
     createdAt: u.createdAt.toISOString(),
     updatedAt: u.updatedAt.toISOString(),
@@ -40,7 +47,9 @@ export async function getUserById(id: string): Promise<UserResponse | null> {
   };
 }
 
-export async function getUserByEmail(email: string): Promise<(UserResponse & { password: string }) | null> {
+export async function getUserByEmail(
+  email: string,
+): Promise<(UserResponse & { password: string }) | null> {
   const user = await prisma.user.findUnique({
     where: { email },
   });
@@ -56,10 +65,12 @@ export async function getUserByEmail(email: string): Promise<(UserResponse & { p
 }
 
 export async function createUser(data: CreateUserInput): Promise<UserResponse> {
+  const hashedPassword = await bcrypt.hash(data.password, PASSWORD_SALT_ROUNDS);
+
   const user = await prisma.user.create({
     data: {
       email: data.email,
-      password: data.password, // In production, hash this!
+      password: hashedPassword,
       name: data.name,
     },
   });
@@ -72,16 +83,23 @@ export async function createUser(data: CreateUserInput): Promise<UserResponse> {
   };
 }
 
-export async function updateUser(id: string, data: UpdateUserInput): Promise<UserResponse | null> {
+export async function updateUser(
+  id: string,
+  data: UpdateUserInput,
+): Promise<UserResponse | null> {
   const existing = await prisma.user.findUnique({ where: { id } });
   if (!existing) return null;
-  
+
+  const hashedPassword = data.password
+    ? await bcrypt.hash(data.password, PASSWORD_SALT_ROUNDS)
+    : undefined;
+
   const user = await prisma.user.update({
     where: { id },
     data: {
       ...(data.email && { email: data.email }),
       ...(data.name && { name: data.name }),
-      ...(data.password && { password: data.password }),
+      ...(hashedPassword && { password: hashedPassword }),
     },
   });
   return {
@@ -102,12 +120,18 @@ export async function deleteUser(id: string): Promise<boolean> {
   }
 }
 
-export async function verifyCredentials(email: string, password: string): Promise<UserResponse | null> {
+export async function verifyCredentials(
+  email: string,
+  password: string,
+): Promise<UserResponse | null> {
   const user = await prisma.user.findUnique({
     where: { email },
   });
-  if (!user || user.password !== password) return null;
-  
+  if (!user) return null;
+
+  const passwordMatches = await bcrypt.compare(password, user.password);
+  if (!passwordMatches) return null;
+
   return {
     id: user.id,
     email: user.email,

@@ -1,15 +1,19 @@
 // filepath: server/src/db/queries/workouts.ts
 // Workout database queries - NEVER write SQL directly in routes
 
-import prisma from '../index.js';
-import type { CreateWorkoutInput, UpdateWorkoutInput, WorkoutResponse } from '../../schemas/index.js';
+import prisma from "../index.js";
+import type {
+  CreateWorkoutInput,
+  UpdateWorkoutInput,
+  WorkoutResponse,
+} from "../../schemas/index.js";
 
 export async function getWorkouts(userId: string): Promise<WorkoutResponse[]> {
   const workouts = await prisma.workout.findMany({
     where: { userId },
-    orderBy: { date: 'desc' },
+    orderBy: { date: "desc" },
   });
-  return workouts.map(w => ({
+  return workouts.map((w) => ({
     id: w.id,
     userId: w.userId,
     name: w.name,
@@ -21,11 +25,14 @@ export async function getWorkouts(userId: string): Promise<WorkoutResponse[]> {
   }));
 }
 
-export async function getWorkoutById(id: string): Promise<WorkoutResponse | null> {
+export async function getWorkoutById(
+  id: string,
+  userId: string,
+): Promise<WorkoutResponse | null> {
   const workout = await prisma.workout.findUnique({
     where: { id },
   });
-  if (!workout) return null;
+  if (!workout || workout.userId !== userId) return null;
   return {
     id: workout.id,
     userId: workout.userId,
@@ -38,7 +45,11 @@ export async function getWorkoutById(id: string): Promise<WorkoutResponse | null
   };
 }
 
-export async function getWorkoutsByDateRange(userId: string, start: string, end: string): Promise<WorkoutResponse[]> {
+export async function getWorkoutsByDateRange(
+  userId: string,
+  start: string,
+  end: string,
+): Promise<WorkoutResponse[]> {
   const workouts = await prisma.workout.findMany({
     where: {
       userId,
@@ -47,9 +58,9 @@ export async function getWorkoutsByDateRange(userId: string, start: string, end:
         lte: new Date(end),
       },
     },
-    orderBy: { date: 'desc' },
+    orderBy: { date: "desc" },
   });
-  return workouts.map(w => ({
+  return workouts.map((w) => ({
     id: w.id,
     userId: w.userId,
     name: w.name,
@@ -61,7 +72,10 @@ export async function getWorkoutsByDateRange(userId: string, start: string, end:
   }));
 }
 
-export async function createWorkout(userId: string, data: CreateWorkoutInput): Promise<WorkoutResponse> {
+export async function createWorkout(
+  userId: string,
+  data: CreateWorkoutInput,
+): Promise<WorkoutResponse> {
   const workout = await prisma.workout.create({
     data: {
       userId,
@@ -83,10 +97,14 @@ export async function createWorkout(userId: string, data: CreateWorkoutInput): P
   };
 }
 
-export async function updateWorkout(id: string, data: UpdateWorkoutInput): Promise<WorkoutResponse | null> {
+export async function updateWorkout(
+  id: string,
+  userId: string,
+  data: UpdateWorkoutInput,
+): Promise<WorkoutResponse | null> {
   const existing = await prisma.workout.findUnique({ where: { id } });
-  if (!existing) return null;
-  
+  if (!existing || existing.userId !== userId) return null;
+
   const workout = await prisma.workout.update({
     where: { id },
     data: {
@@ -108,8 +126,14 @@ export async function updateWorkout(id: string, data: UpdateWorkoutInput): Promi
   };
 }
 
-export async function deleteWorkout(id: string): Promise<boolean> {
+export async function deleteWorkout(
+  id: string,
+  userId: string,
+): Promise<boolean> {
   try {
+    const existing = await prisma.workout.findUnique({ where: { id } });
+    if (!existing || existing.userId !== userId) return false;
+
     await prisma.workout.delete({ where: { id } });
     return true;
   } catch {
