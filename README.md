@@ -4,6 +4,16 @@ Application web de suivi sportif avec API Fastify, base PostgreSQL via Prisma et
 
 Le projet est en cours de construction. La priorité actuelle est l'API: authentification, exercices, séances, persistance des séries et couverture de tests.
 
+## Objectif d'architecture
+
+La cible de production est une architecture séparée:
+
+- serveur web frontend: build React/Vite servi en statique, par exemple via Nginx;
+- serveur API: Fastify/TypeScript organisé en MVC;
+- serveur base de données: PostgreSQL dédié, accessible uniquement par l'API.
+
+Le navigateur ne parle jamais directement à PostgreSQL. React appelle l'API, et l'API est la seule couche autorisée à lire ou modifier la base.
+
 ## Stack
 
 ### Backend
@@ -125,6 +135,7 @@ Commencez ici:
 - [Index documentation](./docs/INDEX.md)
 - [Démarrage rapide](./docs/QUICK_START.md)
 - [Architecture](./docs/ARCHITECTURE.md)
+- [Déploiement cible](./docs/DEPLOYMENT_TARGET.md)
 - [Structure du projet](./docs/PROJECT_STRUCTURE.md)
 
 Les documents de phase/setup plus anciens sont conservés comme historique, mais peuvent ne plus refléter l'état réel du code.

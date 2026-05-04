@@ -7,7 +7,35 @@ Le projet est un monorepo npm avec deux workspaces:
 - `server`: API Fastify en TypeScript.
 - `client`: application React/Vite en TypeScript.
 
-La source de vérité métier est actuellement côté API.
+La source de vérité métier est côté API. Le frontend ne contient pas de logique d'accès aux données directe: il appelle l'API.
+
+## Architecture cible
+
+En production, les responsabilités sont séparées:
+
+```text
+Navigateur
+   │
+   ▼
+Serveur frontend
+React/Vite build statique, Nginx ou équivalent
+   │
+   ▼
+Serveur API
+Fastify + TypeScript + JWT + Prisma
+   │
+   ▼
+Serveur PostgreSQL
+Base dédiée, non exposée au navigateur
+```
+
+Objectif:
+
+- React est déployé sur un serveur web séparé.
+- Fastify est déployé sur un serveur API séparé.
+- PostgreSQL est déployé sur un serveur base de données séparé.
+- Seule l'API possède `DATABASE_URL`.
+- Le frontend configure seulement l'URL publique de l'API.
 
 ## Backend
 
@@ -16,7 +44,7 @@ La source de vérité métier est actuellement côté API.
 - `server/src/app.ts`: construit l'instance Fastify. Ce fichier est importé par les tests.
 - `server/src/server.ts`: démarre l'API sur le port `3001`.
 
-### Organisation
+### Organisation actuelle
 
 ```text
 server/src/
@@ -39,7 +67,18 @@ server/src/
     └── index.ts
 ```
 
-### Règles
+### Règles MVC
+
+Le backend suit une organisation MVC adaptée à Fastify:
+
+- routes: réception HTTP, validation des entrées, codes de réponse;
+- controllers/services: logique métier quand elle devient plus riche;
+- queries/models: accès Prisma et persistance;
+- schemas: validation Zod et types d'entrées/sorties.
+
+Aujourd'hui, la logique métier est encore légère: elle est donc principalement portée par les routes et `db/queries`. Dès qu'un flux grossit, on ajoute une couche `controllers/` ou `services/` pour éviter d'alourdir les routes.
+
+Règles actuelles:
 
 - Les routes reçoivent les requêtes HTTP, valident les entrées et choisissent les codes HTTP.
 - Les fichiers `db/queries/*` parlent à Prisma.
@@ -110,7 +149,9 @@ Les prochains écrans attendus:
 
 ## Déploiement
 
-La config PM2 côté serveur est:
+Voir aussi [Déploiement cible](./DEPLOYMENT_TARGET.md).
+
+La config PM2 côté API est:
 
 ```text
 server/ecosystem.config.cjs

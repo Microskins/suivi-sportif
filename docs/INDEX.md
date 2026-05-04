@@ -6,6 +6,7 @@ Cette page est la source d'orientation pour la documentation du projet.
 
 - [Quick Start](./QUICK_START.md): commandes pour installer, lancer et vérifier le projet.
 - [Architecture](./ARCHITECTURE.md): organisation backend/frontend et conventions principales.
+- [Déploiement cible](./DEPLOYMENT_TARGET.md): séparation frontend, API et PostgreSQL.
 - [Project Structure](./PROJECT_STRUCTURE.md): structure actuelle des dossiers et fichiers importants.
 
 ## Etat du projet
@@ -14,6 +15,7 @@ Le projet est actuellement centré sur l'API:
 
 - Backend Fastify/TypeScript.
 - Prisma/PostgreSQL.
+- Cible production en serveurs séparés: React statique, API Fastify, PostgreSQL dédié.
 - Auth JWT avec mots de passe hashés.
 - Routes users, exercises, workouts.
 - Workouts persistés avec exercices et séries.
