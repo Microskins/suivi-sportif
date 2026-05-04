@@ -196,4 +196,108 @@ describe("API", () => {
     expect(body.data).toEqual(workout);
     expect(mocks.workouts.createWorkout).toHaveBeenCalledWith(USER_ID, payload);
   });
+
+  it("rejects invalid workout creation before calling the database", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/workouts",
+      headers: authHeaders(),
+      payload: {
+        name: "",
+        date: "not-a-date",
+        duration: -1,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.workouts.createWorkout).not.toHaveBeenCalled();
+  });
+
+  it("updates a workout for the authenticated user only", async () => {
+    const updatedWorkout = {
+      ...workout,
+      name: "Séance jambes lourde",
+      duration: 75,
+    };
+    const payload = {
+      name: updatedWorkout.name,
+      duration: updatedWorkout.duration,
+    };
+    mocks.workouts.updateWorkout.mockResolvedValue(updatedWorkout);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/workouts/${WORKOUT_ID}`,
+      headers: authHeaders(),
+      payload,
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(updatedWorkout);
+    expect(mocks.workouts.updateWorkout).toHaveBeenCalledWith(
+      WORKOUT_ID,
+      USER_ID,
+      payload,
+    );
+  });
+
+  it("returns 404 when updating a workout outside the authenticated user scope", async () => {
+    mocks.workouts.updateWorkout.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/workouts/${WORKOUT_ID}`,
+      headers: authHeaders(),
+      payload: {
+        name: "Séance inaccessible",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("WORKOUT_NOT_FOUND");
+    expect(mocks.workouts.updateWorkout).toHaveBeenCalledWith(
+      WORKOUT_ID,
+      USER_ID,
+      { name: "Séance inaccessible" },
+    );
+  });
+
+  it("deletes a workout for the authenticated user only", async () => {
+    mocks.workouts.deleteWorkout.mockResolvedValue(true);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/workouts/${WORKOUT_ID}`,
+      headers: authHeaders(),
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.body).toBe("");
+    expect(mocks.workouts.deleteWorkout).toHaveBeenCalledWith(
+      WORKOUT_ID,
+      USER_ID,
+    );
+  });
+
+  it("returns 404 when deleting a workout outside the authenticated user scope", async () => {
+    mocks.workouts.deleteWorkout.mockResolvedValue(false);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/workouts/${WORKOUT_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("WORKOUT_NOT_FOUND");
+    expect(mocks.workouts.deleteWorkout).toHaveBeenCalledWith(
+      WORKOUT_ID,
+      USER_ID,
+    );
+  });
 });
