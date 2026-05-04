@@ -141,6 +141,19 @@ Build complet:
 npm run build
 ```
 
+## Docker deployment
+
+The project now ships with production Docker assets:
+
+- `docker-compose.yml`
+- `server/Dockerfile`
+- `client/Dockerfile`
+- `deploy/nginx/suivi-sportif.fr.conf`
+
+Full runbook:
+
+- [Docker deployment](./docs/DOCKER_DEPLOYMENT.md)
+
 ## Documentation
 
 Commencez ici:

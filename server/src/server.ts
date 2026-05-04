@@ -9,12 +9,14 @@ dotenv.config({
 const { buildApp } = await import("./app.js");
 
 const fastify = buildApp();
+const port = Number(process.env.API_PORT ?? process.env.PORT ?? 3001);
+const host = process.env.API_HOST ?? "0.0.0.0";
 
 const start = async () => {
   try {
-    await fastify.listen({ port: 3001, host: "0.0.0.0" });
+    await fastify.listen({ port, host });
 
-    fastify.log.info("Server is running on http://localhost:3001");
+    fastify.log.info(`Server is running on http://localhost:${port}`);
     fastify.log.info("Routes:");
     fastify.log.info("  GET    /health");
     fastify.log.info("  POST   /api/users/login      (public)");

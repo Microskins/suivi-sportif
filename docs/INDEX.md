@@ -1,31 +1,31 @@
 # Documentation
 
-Cette page est la source d'orientation pour la documentation du projet.
+This page is the entry point for project documentation.
 
-## Documents actifs
+## Active documents
 
-- [Quick Start](./QUICK_START.md): commandes pour installer, lancer et vérifier le projet.
-- [Architecture](./ARCHITECTURE.md): organisation backend/frontend et conventions principales.
-- [API](./API.md): endpoints stables, formats de réponse et erreurs.
-- [Déploiement cible](./DEPLOYMENT_TARGET.md): séparation frontend, API et PostgreSQL.
-- [Project Structure](./PROJECT_STRUCTURE.md): structure actuelle des dossiers et fichiers importants.
+- [Quick Start](./QUICK_START.md): install, run, and verification commands.
+- [Architecture](./ARCHITECTURE.md): backend/frontend organization and core conventions.
+- [API](./API.md): stable endpoints, response formats, and errors.
+- [Deployment target](./DEPLOYMENT_TARGET.md): frontend/API/PostgreSQL separation.
+- [Docker deployment](./DOCKER_DEPLOYMENT.md): PM2 -> Docker Compose + Nginx runbook.
+- [Project Structure](./PROJECT_STRUCTURE.md): current folders and key files.
 
-## Etat du projet
+## Project status
 
-Le projet est actuellement centré sur l'API:
+Current priority is API stability and frontend integration:
 
-- Backend Fastify/TypeScript.
-- Prisma/PostgreSQL.
-- Cible production en serveurs séparés: React statique, API Fastify, PostgreSQL dédié.
-- Auth JWT avec mots de passe hashés.
-- Routes users, exercises, workouts.
-- Workouts persistés avec exercices et séries.
-- Premiers tests API Vitest avec `fastify.inject()`.
-- Frontend React encore minimal.
+- Fastify/TypeScript backend.
+- Prisma/PostgreSQL persistence.
+- JWT auth with hashed passwords.
+- Users, exercises, workouts routes.
+- Workouts persisted with exercises and sets.
+- API tests with `fastify.inject()`.
+- React frontend now includes auth and a first dashboard.
 
-## Documents historiques
+## Historical docs
 
-Les fichiers suivants viennent d'une phase de setup plus ancienne. Ils peuvent contenir des références obsolètes à SQLite, `index.js`, `setup-dirs.js`, `migrations/` ou une structure React en `.jsx`.
+The files below come from an older setup phase and may contain outdated references:
 
 - `00_START_HERE.txt`
 - `GETTING_STARTED.txt`
@@ -34,13 +34,13 @@ Les fichiers suivants viennent d'une phase de setup plus ancienne. Ils peuvent c
 - `README_SETUP.md`
 - `SUMMARY.md`
 
-Ne pas les utiliser comme source de vérité sans les relire et les mettre à jour.
+Do not use them as source of truth without review.
 
-## Règle de maintenance
+## Maintenance rule
 
-Quand le code change:
+When code changes:
 
-1. Mettre à jour le README si l'installation, les scripts ou l'état produit changent.
-2. Mettre à jour `ARCHITECTURE.md` si l'organisation technique change.
-3. Mettre à jour `QUICK_START.md` si une commande change.
-4. Ajouter ou corriger les tests API avant de documenter une route comme stable.
+1. Update `README.md` if setup, scripts, or runtime behavior changed.
+2. Update `ARCHITECTURE.md` if technical structure changed.
+3. Update `QUICK_START.md` if commands changed.
+4. Add or update API tests before documenting a route as stable.
