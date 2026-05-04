@@ -1,15 +1,15 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============== User Schemas ==============
 export const createUserSchema = z.object({
-  email: z.string().email('Email invalide'),
-  password: z.string().min(8, 'Mot de passe minimum 8 caractères'),
-  name: z.string().min(1, 'Nom requis').max(100),
+  email: z.string().email("Email invalide"),
+  password: z.string().min(8, "Mot de passe minimum 8 caractères"),
+  name: z.string().min(1, "Nom requis").max(100),
 });
 
 export const loginUserSchema = z.object({
-  email: z.string().email('Email invalide'),
-  password: z.string().min(1, 'Mot de passe requis'),
+  email: z.string().email("Email invalide"),
+  password: z.string().min(1, "Mot de passe requis"),
 });
 
 export const updateUserSchema = createUserSchema.partial().extend({
@@ -28,11 +28,31 @@ export const userListSchema = z.array(userResponseSchema);
 
 // ============== Exercise Schemas ==============
 export const createExerciseSchema = z.object({
-  name: z.string().min(1, 'Nom requis').max(200),
+  name: z.string().min(1, "Nom requis").max(200),
   description: z.string().max(1000).optional(),
-  muscleGroup: z.enum(['chest', 'back', 'shoulders', 'arms', 'legs', 'core', 'cardio']),
-  equipment: z.enum(['none', 'barbell', 'dumbbell', 'machine', 'cable', 'kettlebell', 'resistance_band']).default('none'),
-  difficulty: z.enum(['beginner', 'intermediate', 'advanced']).default('beginner'),
+  muscleGroup: z.enum([
+    "chest",
+    "back",
+    "shoulders",
+    "arms",
+    "legs",
+    "core",
+    "cardio",
+  ]),
+  equipment: z
+    .enum([
+      "none",
+      "barbell",
+      "dumbbell",
+      "machine",
+      "cable",
+      "kettlebell",
+      "resistance_band",
+    ])
+    .default("none"),
+  difficulty: z
+    .enum(["beginner", "intermediate", "advanced"])
+    .default("beginner"),
 });
 
 export const updateExerciseSchema = createExerciseSchema.partial();
@@ -52,18 +72,24 @@ export const exerciseListSchema = z.array(exerciseResponseSchema);
 
 // ============== Workout Schemas ==============
 export const createWorkoutSchema = z.object({
-  name: z.string().min(1, 'Nom requis').max(200),
+  name: z.string().min(1, "Nom requis").max(200),
   date: z.string().datetime(),
   duration: z.number().int().min(0), // en minutes
   notes: z.string().max(2000).optional(),
-  exercises: z.array(z.object({
-    exerciseId: z.string().uuid(),
-    sets: z.array(z.object({
-      reps: z.number().int().min(0),
-      weight: z.number().min(0),
-      rest: z.number().int().min(0),
-    })),
-  })).optional(),
+  exercises: z
+    .array(
+      z.object({
+        exerciseId: z.string().uuid(),
+        sets: z.array(
+          z.object({
+            reps: z.number().int().min(0),
+            weight: z.number().min(0),
+            rest: z.number().int().min(0),
+          }),
+        ),
+      }),
+    )
+    .optional(),
 });
 
 export const updateWorkoutSchema = createWorkoutSchema.partial();

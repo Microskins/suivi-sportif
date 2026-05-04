@@ -1,21 +1,27 @@
 // filepath: server/src/db/queries/exercises.ts
 // Exercise database queries - NEVER write SQL directly in routes
 
-import prisma from '../index.js';
-import type { CreateExerciseInput, UpdateExerciseInput, ExerciseResponse } from '../../schemas/index.js';
+import prisma from "../index.js";
+import type {
+  CreateExerciseInput,
+  UpdateExerciseInput,
+  ExerciseResponse,
+} from "../../schemas/index.js";
 
 export async function getExercises(): Promise<ExerciseResponse[]> {
   const exercises = await prisma.exercise.findMany({
-    orderBy: { name: 'asc' },
+    orderBy: { name: "asc" },
   });
-  return exercises.map(e => ({
+  return exercises.map((e) => ({
     ...e,
     createdAt: e.createdAt.toISOString(),
     updatedAt: e.updatedAt.toISOString(),
   }));
 }
 
-export async function getExerciseById(id: string): Promise<ExerciseResponse | null> {
+export async function getExerciseById(
+  id: string,
+): Promise<ExerciseResponse | null> {
   const exercise = await prisma.exercise.findUnique({
     where: { id },
   });
@@ -27,19 +33,23 @@ export async function getExerciseById(id: string): Promise<ExerciseResponse | nu
   };
 }
 
-export async function getExercisesByMuscleGroup(muscleGroup: string): Promise<ExerciseResponse[]> {
+export async function getExercisesByMuscleGroup(
+  muscleGroup: string,
+): Promise<ExerciseResponse[]> {
   const exercises = await prisma.exercise.findMany({
     where: { muscleGroup },
-    orderBy: { name: 'asc' },
+    orderBy: { name: "asc" },
   });
-  return exercises.map(e => ({
+  return exercises.map((e) => ({
     ...e,
     createdAt: e.createdAt.toISOString(),
     updatedAt: e.updatedAt.toISOString(),
   }));
 }
 
-export async function createExercise(data: CreateExerciseInput): Promise<ExerciseResponse> {
+export async function createExercise(
+  data: CreateExerciseInput,
+): Promise<ExerciseResponse> {
   const exercise = await prisma.exercise.create({
     data: {
       name: data.name,
@@ -56,10 +66,13 @@ export async function createExercise(data: CreateExerciseInput): Promise<Exercis
   };
 }
 
-export async function updateExercise(id: string, data: UpdateExerciseInput): Promise<ExerciseResponse | null> {
+export async function updateExercise(
+  id: string,
+  data: UpdateExerciseInput,
+): Promise<ExerciseResponse | null> {
   const existing = await prisma.exercise.findUnique({ where: { id } });
   if (!existing) return null;
-  
+
   const exercise = await prisma.exercise.update({
     where: { id },
     data: {
