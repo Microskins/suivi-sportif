@@ -46,6 +46,17 @@ const user = {
   updatedAt: "2026-05-04T10:00:00.000Z",
 };
 
+const exercise = {
+  id: EXERCISE_ID,
+  name: "Squat",
+  description: null,
+  muscleGroup: "legs",
+  equipment: "barbell",
+  difficulty: "intermediate",
+  createdAt: "2026-05-04T10:00:00.000Z",
+  updatedAt: "2026-05-04T10:00:00.000Z",
+};
+
 const workout = {
   id: WORKOUT_ID,
   userId: USER_ID,
@@ -134,6 +145,116 @@ describe("API", () => {
     expect(mocks.users.createUser).not.toHaveBeenCalled();
   });
 
+  it("returns the authenticated user profile", async () => {
+    mocks.users.getUserById.mockResolvedValue(user);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/users/me",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(user);
+    expect(mocks.users.getUserById).toHaveBeenCalledWith(USER_ID);
+  });
+
+  it("rejects /me without a token", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/users/me",
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expect(body.code).toBe("UNAUTHORIZED");
+    expect(mocks.users.getUserById).not.toHaveBeenCalled();
+  });
+
+  it("returns 404 when the authenticated user no longer exists", async () => {
+    mocks.users.getUserById.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/users/me",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("USER_NOT_FOUND");
+  });
+
+  it("updates only the authenticated user profile", async () => {
+    const updatedUser = {
+      ...user,
+      name: "Updated User",
+    };
+    mocks.users.updateUser.mockResolvedValue(updatedUser);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: "/api/users/me",
+      headers: authHeaders(),
+      payload: {
+        name: updatedUser.name,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(updatedUser);
+    expect(mocks.users.updateUser).toHaveBeenCalledWith(USER_ID, {
+      name: updatedUser.name,
+    });
+  });
+
+  it("rejects invalid authenticated user updates before calling the database", async () => {
+    const response = await app.inject({
+      method: "PUT",
+      url: "/api/users/me",
+      headers: authHeaders(),
+      payload: {
+        email: "not-an-email",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.users.updateUser).not.toHaveBeenCalled();
+  });
+
+  it("forbids listing users without an admin role", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/users",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(403);
+    expect(body.code).toBe("FORBIDDEN");
+    expect(mocks.users.getUsers).not.toHaveBeenCalled();
+  });
+
+  it("forbids updating arbitrary users without an admin role", async () => {
+    const response = await app.inject({
+      method: "PUT",
+      url: "/api/users/99999999-9999-4999-8999-999999999999",
+      headers: authHeaders(),
+      payload: {
+        name: "Forbidden",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(403);
+    expect(body.code).toBe("FORBIDDEN");
+    expect(mocks.users.updateUser).not.toHaveBeenCalled();
+  });
+
   it("rejects protected exercise routes without a token", async () => {
     const response = await app.inject({
       method: "GET",
@@ -144,6 +265,174 @@ describe("API", () => {
     expect(response.statusCode).toBe(401);
     expect(body.code).toBe("UNAUTHORIZED");
     expect(mocks.exercises.getExercises).not.toHaveBeenCalled();
+  });
+
+  it("lists exercises for authenticated users", async () => {
+    mocks.exercises.getExercises.mockResolvedValue([exercise]);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/exercises",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([exercise]);
+    expect(body.meta).toEqual({ total: 1, page: 1, limit: 1 });
+  });
+
+  it("gets an exercise by id", async () => {
+    mocks.exercises.getExerciseById.mockResolvedValue(exercise);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/exercises/${EXERCISE_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(exercise);
+    expect(mocks.exercises.getExerciseById).toHaveBeenCalledWith(EXERCISE_ID);
+  });
+
+  it("rejects invalid exercise ids before calling the database", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/exercises/not-a-uuid",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.exercises.getExerciseById).not.toHaveBeenCalled();
+  });
+
+  it("lists exercises by a valid muscle group", async () => {
+    mocks.exercises.getExercisesByMuscleGroup.mockResolvedValue([exercise]);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/exercises/muscle/legs",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([exercise]);
+    expect(mocks.exercises.getExercisesByMuscleGroup).toHaveBeenCalledWith(
+      "legs",
+    );
+  });
+
+  it("rejects invalid muscle groups before calling the database", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/exercises/muscle/invalid-group",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.exercises.getExercisesByMuscleGroup).not.toHaveBeenCalled();
+  });
+
+  it("creates an exercise from a valid payload", async () => {
+    mocks.exercises.createExercise.mockResolvedValue(exercise);
+
+    const payload = {
+      name: exercise.name,
+      description: exercise.description,
+      muscleGroup: exercise.muscleGroup,
+      equipment: exercise.equipment,
+      difficulty: exercise.difficulty,
+    };
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/exercises",
+      headers: authHeaders(),
+      payload,
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(201);
+    expect(body.data).toEqual(exercise);
+    expect(mocks.exercises.createExercise).toHaveBeenCalledWith(payload);
+  });
+
+  it("rejects invalid exercise creation before calling the database", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/exercises",
+      headers: authHeaders(),
+      payload: {
+        name: "",
+        muscleGroup: "invalid-group",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.exercises.createExercise).not.toHaveBeenCalled();
+  });
+
+  it("updates an exercise from a valid payload", async () => {
+    const updatedExercise = {
+      ...exercise,
+      name: "Front squat",
+    };
+    mocks.exercises.updateExercise.mockResolvedValue(updatedExercise);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/exercises/${EXERCISE_ID}`,
+      headers: authHeaders(),
+      payload: {
+        name: updatedExercise.name,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(updatedExercise);
+    expect(mocks.exercises.updateExercise).toHaveBeenCalledWith(EXERCISE_ID, {
+      name: updatedExercise.name,
+    });
+  });
+
+  it("returns 404 when updating a missing exercise", async () => {
+    mocks.exercises.updateExercise.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/exercises/${EXERCISE_ID}`,
+      headers: authHeaders(),
+      payload: {
+        name: "Missing",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("EXERCISE_NOT_FOUND");
+  });
+
+  it("deletes an exercise by id", async () => {
+    mocks.exercises.deleteExercise.mockResolvedValue(true);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/exercises/${EXERCISE_ID}`,
+      headers: authHeaders(),
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(mocks.exercises.deleteExercise).toHaveBeenCalledWith(EXERCISE_ID);
   });
 
   it("lists workouts for the authenticated user only", async () => {
@@ -160,6 +449,71 @@ describe("API", () => {
     expect(body.data).toEqual([workout]);
     expect(body.meta).toEqual({ total: 1, page: 1, limit: 1 });
     expect(mocks.workouts.getWorkouts).toHaveBeenCalledWith(USER_ID);
+  });
+
+  it("gets a workout by id for the authenticated user only", async () => {
+    mocks.workouts.getWorkoutById.mockResolvedValue(workout);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/workouts/${WORKOUT_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(workout);
+    expect(mocks.workouts.getWorkoutById).toHaveBeenCalledWith(
+      WORKOUT_ID,
+      USER_ID,
+    );
+  });
+
+  it("rejects invalid workout ids before calling the database", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/workouts/not-a-uuid",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.workouts.getWorkoutById).not.toHaveBeenCalled();
+  });
+
+  it("lists workouts by a valid date range for the authenticated user", async () => {
+    mocks.workouts.getWorkoutsByDateRange.mockResolvedValue([workout]);
+
+    const start = "2026-05-01T00:00:00.000Z";
+    const end = "2026-05-31T23:59:59.000Z";
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/workouts/range/${start}/${end}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([workout]);
+    expect(mocks.workouts.getWorkoutsByDateRange).toHaveBeenCalledWith(
+      USER_ID,
+      start,
+      end,
+    );
+  });
+
+  it("rejects invalid workout date ranges before calling the database", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/workouts/range/2026-05-31T23:59:59.000Z/2026-05-01T00:00:00.000Z",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.workouts.getWorkoutsByDateRange).not.toHaveBeenCalled();
   });
 
   it("creates a workout with exercise sets for the authenticated user", async () => {

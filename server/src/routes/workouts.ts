@@ -1,7 +1,12 @@
 // filepath: server/src/routes/workouts.ts
 import { FastifyInstance } from "fastify";
 import * as workouts from "../db/queries/workouts.js";
-import { createWorkoutSchema, updateWorkoutSchema } from "../schemas/index.js";
+import {
+  createWorkoutSchema,
+  dateRangeParamSchema,
+  idParamSchema,
+  updateWorkoutSchema,
+} from "../schemas/index.js";
 
 export async function workoutsRoutes(fastify: FastifyInstance) {
   fastify.addHook("preHandler", async (request, reply) => {
@@ -19,50 +24,49 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
     try {
       const userId = request.user.id;
       const result = await workouts.getWorkouts(userId);
-      return reply
-        .code(200)
-        .send({
-          data: result,
-          meta: { total: result.length, page: 1, limit: result.length },
-        });
+      return reply.code(200).send({
+        data: result,
+        meta: { total: result.length, page: 1, limit: result.length },
+      });
     } catch (error) {
       fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 
   // GET /api/workouts/range/:start/:end - Get workouts by date range
   fastify.get("/range/:start/:end", async (request, reply) => {
     try {
-      const { start, end } = request.params as { start: string; end: string };
+      const { start, end } = dateRangeParamSchema.parse(request.params);
       const userId = request.user.id;
       const result = await workouts.getWorkoutsByDateRange(userId, start, end);
-      return reply
-        .code(200)
-        .send({
-          data: result,
-          meta: { total: result.length, page: 1, limit: result.length },
+      return reply.code(200).send({
+        data: result,
+        meta: { total: result.length, page: 1, limit: result.length },
+      });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return reply.code(400).send({
+          error: "Validation failed",
+          code: "VALIDATION_ERROR",
+          details: error.errors,
         });
-    } catch (error) {
+      }
       fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 
   // GET /api/workouts/:id - Get workout by ID
   fastify.get("/:id", async (request, reply) => {
     try {
-      const { id } = request.params as { id: string };
+      const { id } = idParamSchema.parse(request.params);
       const userId = request.user.id;
       const workout = await workouts.getWorkoutById(id, userId);
 
@@ -73,14 +77,19 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       }
 
       return reply.code(200).send({ data: workout });
-    } catch (error) {
-      fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return reply.code(400).send({
+          error: "Validation failed",
+          code: "VALIDATION_ERROR",
+          details: error.errors,
         });
+      }
+      fastify.log.error(error);
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 
@@ -95,28 +104,24 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       return reply.code(201).send({ data: workout });
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return reply
-          .code(400)
-          .send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
+        return reply.code(400).send({
+          error: "Validation failed",
+          code: "VALIDATION_ERROR",
+          details: error.errors,
+        });
       }
       fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 
   // PUT /api/workouts/:id - Update workout
   fastify.put("/:id", async (request, reply) => {
     try {
-      const { id } = request.params as { id: string };
+      const { id } = idParamSchema.parse(request.params);
       const data = request.body as object;
       const parsed = updateWorkoutSchema.parse(data);
       const userId = request.user.id;
@@ -132,28 +137,24 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       return reply.code(200).send({ data: workout });
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return reply
-          .code(400)
-          .send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
+        return reply.code(400).send({
+          error: "Validation failed",
+          code: "VALIDATION_ERROR",
+          details: error.errors,
+        });
       }
       fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 
   // DELETE /api/workouts/:id - Delete workout
   fastify.delete("/:id", async (request, reply) => {
     try {
-      const { id } = request.params as { id: string };
+      const { id } = idParamSchema.parse(request.params);
       const userId = request.user.id;
       const deleted = await workouts.deleteWorkout(id, userId);
 
@@ -164,14 +165,19 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       }
 
       return reply.code(204).send();
-    } catch (error) {
-      fastify.log.error(error);
-      return reply
-        .code(500)
-        .send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return reply.code(400).send({
+          error: "Validation failed",
+          code: "VALIDATION_ERROR",
+          details: error.errors,
         });
+      }
+      fastify.log.error(error);
+      return reply.code(500).send({
+        error: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   });
 }

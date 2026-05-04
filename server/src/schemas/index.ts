@@ -1,5 +1,19 @@
 import { z } from "zod";
 
+export const idParamSchema = z.object({
+  id: z.string().uuid("ID invalide"),
+});
+
+export const dateRangeParamSchema = z
+  .object({
+    start: z.string().datetime("Date de début invalide"),
+    end: z.string().datetime("Date de fin invalide"),
+  })
+  .refine((params) => new Date(params.start) <= new Date(params.end), {
+    message: "La date de fin doit être après la date de début",
+    path: ["end"],
+  });
+
 // ============== User Schemas ==============
 export const createUserSchema = z.object({
   email: z.string().email("Email invalide"),
@@ -29,7 +43,7 @@ export const userListSchema = z.array(userResponseSchema);
 // ============== Exercise Schemas ==============
 export const createExerciseSchema = z.object({
   name: z.string().min(1, "Nom requis").max(200),
-  description: z.string().max(1000).optional(),
+  description: z.string().max(1000).nullable().optional(),
   muscleGroup: z.enum([
     "chest",
     "back",
@@ -56,6 +70,10 @@ export const createExerciseSchema = z.object({
 });
 
 export const updateExerciseSchema = createExerciseSchema.partial();
+
+export const muscleGroupParamSchema = z.object({
+  group: createExerciseSchema.shape.muscleGroup,
+});
 
 export const exerciseResponseSchema = z.object({
   id: z.string().uuid(),
