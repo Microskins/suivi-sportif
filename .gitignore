@@ -27,7 +27,10 @@ lerna-debug.log*
 
 # IDEs
 .*
-.agents/
+!.agents/
+.agents/*
+!.agents/skills/
+!.agents/skills/**
 .vscode/
 .idea/
 *.swp
