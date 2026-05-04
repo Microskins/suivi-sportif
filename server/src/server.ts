@@ -1,4 +1,12 @@
-import { buildApp } from "./app.js";
+import path from "node:path";
+import dotenv from "dotenv";
+
+dotenv.config({
+  path: [path.resolve(process.cwd(), "../.env"), path.resolve(process.cwd(), ".env")],
+  override: false,
+});
+
+const { buildApp } = await import("./app.js");
 
 const fastify = buildApp();
 
