@@ -1,82 +1,68 @@
-# Suivi Sportif - Project Structure
+# Structure du projet
 
-```
+```text
 suivi-sportif/
-├── server/                      # Fastify backend
-│   ├── src/
-│   │   ├── index.js            # Main server entry point
-│   │   ├── routes/             # API routes (to be created)
-│   │   ├── controllers/        # Route handlers (to be created)
-│   │   ├── models/             # Data models (to be created)
-│   │   └── middleware/         # Custom middleware (to be created)
-│   ├── package.json
-│   ├── .eslintrc.json
-│   └── node_modules/
-│
-├── client/                      # React frontend
-│   ├── src/
-│   │   ├── main.jsx            # React entry point
-│   │   ├── App.jsx             # Main app component
-│   │   ├── App.css             # App styles
-│   │   ├── index.css           # Global styles
-│   │   ├── components/         # Reusable components (to be created)
-│   │   ├── pages/              # Page components (to be created)
-│   │   └── hooks/              # Custom hooks (to be created)
+├── .agents/
+│   └── skills/                 # Skills projet pour Codex
+├── client/
 │   ├── index.html
-│   ├── vite.config.js
 │   ├── package.json
-│   ├── .eslintrc.json
-│   └── node_modules/
-│
-├── migrations/                  # Database migrations
-│   ├── 001_initial_schema.sql  # Initial schema
-│   ├── migrate.js              # Migration runner
-│   └── (add new migrations as needed)
-│
-├── package.json                 # Monorepo workspace config
-├── .gitignore
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   ├── vite.config.ts
+│   └── src/
+│       ├── App.tsx
+│       ├── main.tsx
+│       ├── vite-env.d.ts
+│       └── api/
+│           └── client.ts
+├── config/
+├── docs/
+│   ├── INDEX.md
+│   ├── QUICK_START.md
+│   ├── ARCHITECTURE.md
+│   └── PROJECT_STRUCTURE.md
+├── server/
+│   ├── ecosystem.config.cjs
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── prisma/
+│   │   └── schema.prisma
+│   └── src/
+│       ├── app.ts
+│       ├── server.ts
+│       ├── db/
+│       │   ├── index.ts
+│       │   └── queries/
+│       │       ├── exercises.ts
+│       │       ├── users.ts
+│       │       └── workouts.ts
+│       ├── plugins/
+│       │   └── auth.ts
+│       ├── routes/
+│       │   ├── api.test.ts
+│       │   ├── exercises.ts
+│       │   ├── users.ts
+│       │   └── workouts.ts
+│       └── schemas/
+│           └── index.ts
+├── package.json
+├── package-lock.json
 └── README.md
 ```
 
-## Getting Started
+## Fichiers importants
 
-### Install Dependencies
-```bash
-npm install
-```
+- `README.md`: vue d'ensemble et commandes principales.
+- `docs/INDEX.md`: index de documentation et état des docs.
+- `server/src/app.ts`: construction de l'app Fastify.
+- `server/src/server.ts`: démarrage réseau.
+- `server/prisma/schema.prisma`: schéma PostgreSQL/Prisma.
+- `server/src/routes/api.test.ts`: premiers tests API.
+- `client/src/api/client.ts`: client HTTP du frontend.
 
-### Development
-```bash
-# Run both server and client
-npm run dev
+## Documents historiques
 
-# Or run individually
-cd server && npm run dev
-cd client && npm run dev
-```
+Certains fichiers dans `docs/` viennent d'une ancienne phase de setup. Ils ne doivent pas être utilisés comme référence tant qu'ils ne sont pas réécrits.
 
-### Build
-```bash
-npm run build
-```
-
-### Run Migrations
-```bash
-npm run migrate -w server
-```
-
-## Tech Stack
-
-- **Backend**: Fastify, Node.js
-- **Frontend**: React, Vite
-- **Package Manager**: npm workspaces
-- **Code Quality**: ESLint
-- **Database**: SQLite (migrations included)
-
-## Next Steps
-
-1. Install dependencies: `npm install`
-2. Set up database: `npm run migrate -w server`
-3. Start development: `npm run dev`
-4. Access client at http://localhost:5173
-5. API running at http://localhost:3001
+Voir `docs/INDEX.md` pour la liste.

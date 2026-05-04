@@ -1,156 +1,130 @@
-# 🚀 Suivi Sportif - Application de Suivi de Santé et Fitness
+# Suivi Sportif
 
-> Application web complète pour suivre vos activités sportives, votre santé et vos performances. Multi-profils, graphiques en temps réel, assistant IA intégré.
+Application web de suivi sportif avec API Fastify, base PostgreSQL via Prisma et client React/Vite.
 
-## 📊 Stack Technologique
+Le projet est en cours de construction. La priorité actuelle est l'API: authentification, exercices, séances, persistance des séries et couverture de tests.
 
-### Frontend
-- **React 18.2** - UI Framework
-- **Vite 5.0** - Build tool ultra-rapide
-- **TypeScript 5.3** - Type safety
-- **Zustand 4.4** - State management
-- **Tailwind CSS 3.4** - Styling
-- **Axios 1.6** - HTTP client
-- **Recharts 2.10** - Data visualization
+## Stack
 
 ### Backend
-- **Fastify 4.28** - Web server ultra-performant
-- **TypeScript 5.3** - Type safety
-- **PostgreSQL 16** - Base de données relationnelle
-- **Pino 8.20** - Structured logging
-- **Zod 3.23** - Schema validation
+- Fastify 4
+- TypeScript
+- Prisma 5
+- PostgreSQL
+- Zod
+- JWT
+- bcrypt
+- Vitest
 
-### DevOps
-- **Node.js LTS** - Runtime
-- **npm workspaces** - Monorepo management
+### Frontend
+- React 18
+- Vite 5
+- TypeScript
+- Zustand
+- Recharts
 
-## 🚀 Démarrage Rapide
+## Etat actuel
 
-### Prérequis
-- **Node.js 18+** ([Télécharger](https://nodejs.org/))
-- **PostgreSQL 16+** (local ou distant)
-- **Git** ([Télécharger](https://git-scm.com/))
+### Disponible
+- Health check: `GET /health`
+- Auth publique: `POST /api/users/register`, `POST /api/users/login`
+- Routes protégées par JWT:
+  - `GET /api/users`
+  - `GET /api/exercises`
+  - `POST /api/exercises`
+  - `GET /api/workouts`
+  - `POST /api/workouts`
+- Création de séances avec exercices et séries.
+- Tests API avec `fastify.inject()`.
 
-### Installation
+### Encore à faire
+- Interface React réelle: login/register, exercices, séances.
+- Tests API plus complets: erreurs, update/delete, ownership multi-utilisateurs.
+- Documentation OpenAPI/Swagger exploitable.
+- Seed de données de développement.
+- Nettoyage progressif des anciennes docs de setup.
 
-**1. Cloner le projet**
+## Installation
+
+Prérequis:
+- Node.js 18+
+- npm
+- PostgreSQL
+
 ```bash
 git clone git@github.com:Microskins/suivi-sportif.git
 cd suivi-sportif
-```
-
-**2. Configurer l'environnement**
-```bash
-cp .env.example .env
-# Modifier les infos de connexion DB dans .env
-```
-
-**3. Installer les dépendances npm**
-```bash
 npm install
 ```
 
-**5. Lancer le développement**
-
-Terminal 1 - Backend :
-```bash
-npm run dev -w server
-# http://localhost:3001
-```
-
-Terminal 2 - Frontend :
-```bash
-npm run dev -w client
-# http://localhost:5173
-```
-
-## 📁 Structure du Projet
-
-```
-suivi-sportif/
-├── 📖 docs/                    # Documentation
-├── ⚙️  setup/                   # Scripts d'initialisation
-├── 🔧 config/                   # Configuration
-├── 📦 server/                   # Backend Fastify
-├── 💻 client/                   # Frontend React
-├── 🤝 shared/                   # Code partagé
-├── 🗃️  migrations/               # SQL migrations
-└── 📋 package.json              # Workspace root
-```
-
-## 🔌 Services
-
-| Service | Port | Info |
-|---------|------|------|
-| PostgreSQL | 5432 | Configuré dans .env |
-| API | 3001 | localhost:3001 |
-| Frontend | 5173 | localhost:5173 |
-
-## 🔨 Commandes
-
-```bash
-# Développement
-npm run dev -w server          # Backend
-npm run dev -w client          # Frontend
-
-# Build
-npm run build                   # Construire tous les projets
-npm run build -w server        # Construire server seulement
-npm run build -w client        # Construire client seulement
-
-# Tests & Qualité
-npm run typecheck              # TypeScript check
-npm run lint                   # Linter
-npm run format                 # Prettier
-
-# Production
-npm run start -w server        # Lancer server en production
-```
-
-## 🌍 Accès aux Services
-
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost:5173 |
-| API | http://localhost:3001 |
-| API Health | http://localhost:3001/health |
-
-## 🔐 Variables d'Environnement
-
-Créez `.env` à la racine (voir `config/.env.example`) :
+Créez un fichier `.env` à la racine:
 
 ```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=dev-password
-DB_NAME=suivi_sportif_v2
-REDIS_HOST=localhost
-REDIS_PORT=6379
-SERVER_PORT=3001
-NODE_ENV=development
-JWT_SECRET=your-secret-key-change-in-production
-PGADMIN_EMAIL=admin@example.com
-PGADMIN_PASSWORD=admin
-PGADMIN_PORT=5050
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/suivi_sportif_v2"
+JWT_SECRET="change-me"
+NODE_ENV="development"
 ```
 
-## 📚 Documentation
+Générez le client Prisma:
 
+```bash
+npm run db:generate -w server
+```
+
+Appliquez le schéma en développement:
+
+```bash
+npm run db:push -w server
+```
+
+## Développement
+
+Backend:
+
+```bash
+npm run dev -w server
+```
+
+Client:
+
+```bash
+npm run dev -w client
+```
+
+URLs:
+- API: http://localhost:3001
+- Health: http://localhost:3001/health
+- Client: http://localhost:5173
+
+## Vérification
+
+Serveur:
+
+```bash
+npm run typecheck -w server
+npm run test -w server -- --run
+npm run build -w server
+```
+
+Client:
+
+```bash
+npm run typecheck -w client
+npm run build -w client
+```
+
+Build complet:
+
+```bash
+npm run build
+```
+
+## Documentation
+
+Commencez ici:
+- [Index documentation](./docs/INDEX.md)
+- [Démarrage rapide](./docs/QUICK_START.md)
 - [Architecture](./docs/ARCHITECTURE.md)
-- [Setup Phase 0](./docs/PHASE_0_SETUP.md)
-- [Project Structure](./docs/PROJECT_STRUCTURE.md)
-- [Quick Start](./docs/QUICK_START.md)
+- [Structure du projet](./docs/PROJECT_STRUCTURE.md)
 
-## 📝 Phases du Projet
-
-- ✅ **Phase 0** : Setup & Configuration
-- ⏳ **Phase 1** : Core API
-- ⏳ **Phase 2** : Frontend
-- ⏳ **Phase 3** : Features Avancées
-- ⏳ **Phase 4** : Tests & Optimisation
-- ⏳ **Phase 5** : Deployment
-
-## 📄 Licence
-
-MIT - voir [LICENSE](LICENSE)
+Les documents de phase/setup plus anciens sont conservés comme historique, mais peuvent ne plus refléter l'état réel du code.
