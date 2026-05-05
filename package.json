@@ -6,7 +6,8 @@
   "type": "module",
   "workspaces": [
     "server",
-    "client"
+    "client",
+    "mcp"
   ],
   "scripts": {
     "setup": "node setup-dirs.js",
@@ -14,7 +15,11 @@
     "build": "npm run build -w server && npm run build -w client",
     "start": "npm run start -w server",
     "test": "npm run test -w server && npm run test -w client",
-    "lint": "npm run lint -w server && npm run lint -w client"
+    "lint": "npm run lint -w server && npm run lint -w client",
+    "mcp:dev": "npm run dev -w mcp",
+    "mcp:build": "npm run build -w mcp",
+    "mcp:start": "npm run start -w mcp",
+    "mcp:typecheck": "npm run typecheck -w mcp"
   },
   "keywords": [
     "sports",

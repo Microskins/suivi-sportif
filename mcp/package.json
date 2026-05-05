@@ -1,0 +1,27 @@
+{
+  "name": "suivi-sportif-mcp",
+  "version": "1.0.0",
+  "description": "Serveur MCP local pour debugger Suivi Sportif",
+  "private": true,
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "TMPDIR=/tmp vitest --run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.5",
+    "@prisma/client": "^5.22.0",
+    "dotenv": "^16.4.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
+  }
+}

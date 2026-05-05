@@ -170,6 +170,7 @@ Commencez ici:
 - [Démarrage rapide](./docs/QUICK_START.md)
 - [API](./docs/API.md)
 - [Architecture](./docs/ARCHITECTURE.md)
+- [Serveur MCP de debug](./docs/MCP_DEBUG.md)
 - [Déploiement cible](./docs/DEPLOYMENT_TARGET.md)
 - [Structure du projet](./docs/PROJECT_STRUCTURE.md)
 

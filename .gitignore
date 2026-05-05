@@ -54,3 +54,4 @@ coverage/
 
 # Build outputs
 *.tsbuildinfo
+mcp/dist/
