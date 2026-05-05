@@ -176,11 +176,6 @@ const httpServer = http.createServer(async (request, response) => {
     return;
   }
 
-  if (!isAuthorized(request)) {
-    sendJson(response, 401, { error: "Unauthorized" });
-    return;
-  }
-
   const url = new URL(request.url ?? "/", `http://${request.headers.host}`);
 
   if (request.method === "GET" && url.pathname === "/health") {
@@ -190,6 +185,11 @@ const httpServer = http.createServer(async (request, response) => {
         timestamp: new Date().toISOString(),
       },
     });
+    return;
+  }
+
+  if (!isAuthorized(request)) {
+    sendJson(response, 401, { error: "Unauthorized" });
     return;
   }
 
@@ -260,4 +260,3 @@ process.on("SIGTERM", () => {
   closeSessions();
   httpServer.close(() => process.exit(0));
 });
-

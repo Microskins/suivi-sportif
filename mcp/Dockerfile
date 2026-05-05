@@ -3,16 +3,17 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
+COPY mcp/package*.json ./mcp/
 COPY server/package*.json ./server/
 COPY client/package*.json ./client/
-COPY mcp/package*.json ./mcp/
+COPY server/prisma ./server/prisma
 
 RUN npm ci || npm install
-
-COPY server ./server
-
 RUN npm run db:generate -w server
-RUN npm run build -w server
+
+COPY mcp ./mcp
+
+RUN npm run build -w mcp
 RUN npm prune --omit=dev
 
 FROM node:20-alpine AS runtime
@@ -20,16 +21,17 @@ FROM node:20-alpine AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3001
-ENV API_PORT=3001
-ENV API_HOST=0.0.0.0
+ENV MCP_HOST=0.0.0.0
+ENV MCP_PORT=3033
+ENV MCP_API_BASE_URL=http://api:3001
+ENV MCP_ENABLE_MUTATIONS=false
 
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/server ./server
+COPY --from=build /app/mcp ./mcp
+COPY --from=build /app/server/package*.json ./server/
 COPY --from=build /app/client/package*.json ./client/
-COPY --from=build /app/mcp/package*.json ./mcp/
 
-EXPOSE 3001
+EXPOSE 3033
 
-CMD ["npm", "run", "start", "-w", "server"]
+CMD ["npm", "run", "start", "-w", "mcp"]

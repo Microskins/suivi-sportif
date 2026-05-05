@@ -9,6 +9,7 @@ This runbook migrates production from PM2 to Docker Compose while keeping the sa
   - `DATABASE_URL`
   - `JWT_SECRET`
   - `API_PUBLIC_BASE_URL` (recommended: `https://suivi-sportif.fr`)
+  - `MCP_AUTH_TOKEN`
 - Nginx installed on host machine.
 
 ## 2. Build and start containers
@@ -26,14 +27,17 @@ Container ports are bound locally:
 
 - API: `127.0.0.1:3001`
 - Frontend: `127.0.0.1:5173`
+- MCP: `127.0.0.1:3033`
 
 ## 3. Verify runtime
 
 ```bash
 curl -i http://127.0.0.1:3001/health
 curl -I http://127.0.0.1:5173
+curl -i http://127.0.0.1:3033/health
 docker compose logs api --tail 100
 docker compose logs client --tail 100
+docker compose logs mcp --tail 100
 ```
 
 Optional schema sync and seed:
