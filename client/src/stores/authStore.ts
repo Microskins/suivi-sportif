@@ -1,6 +1,16 @@
 import { create } from "zustand";
 import { api, type User } from "../api/client";
 
+const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
+
+const bypassUser: User = {
+  id: "00000000-0000-4000-8000-000000000000",
+  email: "bypass@local.dev",
+  name: "Mode Bypass",
+  createdAt: new Date(0).toISOString(),
+  updatedAt: new Date(0).toISOString(),
+};
+
 type AuthState = {
   user: User | null;
   isAuthenticated: boolean;
@@ -23,12 +33,22 @@ function getErrorMessage(error: unknown): string {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  isAuthenticated: false,
-  isInitializing: true,
+  user: isAuthBypassEnabled ? bypassUser : null,
+  isAuthenticated: isAuthBypassEnabled,
+  isInitializing: !isAuthBypassEnabled,
   isLoading: false,
   error: null,
   async initializeAuth() {
+    if (isAuthBypassEnabled) {
+      set({
+        user: bypassUser,
+        isAuthenticated: true,
+        isInitializing: false,
+        error: null,
+      });
+      return;
+    }
+
     const token = api.getToken();
     if (!token) {
       set({ isInitializing: false, isAuthenticated: false, user: null });
@@ -51,6 +71,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
   async login(email, password) {
+    if (isAuthBypassEnabled) {
+      set({
+        user: bypassUser,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      });
+      return;
+    }
+
     set({ isLoading: true, error: null });
 
     try {
@@ -71,6 +101,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
   async register(name, email, password) {
+    if (isAuthBypassEnabled) {
+      set({
+        user: bypassUser,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      });
+      return;
+    }
+
     set({ isLoading: true, error: null });
 
     try {

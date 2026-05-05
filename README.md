@@ -80,6 +80,14 @@ JWT_SECRET="change-me"
 NODE_ENV="development"
 ```
 
+Pour bypasser l'auth côté React en local (sans login/register ni appel API), ajoutez dans `client/.env`:
+
+```env
+VITE_BYPASS_AUTH="true"
+```
+
+Ce mode charge aussi des seances et exercices mockes pour tester l'interface sans acces a la BDD.
+
 Générez le client Prisma:
 
 ```bash

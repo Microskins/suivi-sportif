@@ -5,6 +5,7 @@ import { useWorkoutsStore } from "./stores/workoutsStore";
 
 type AuthMode = "login" | "register";
 type DashboardTab = "workouts" | "exercises";
+const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
 
 export default function App() {
   const {
@@ -97,6 +98,11 @@ export default function App() {
                 </p>
                 <h1 className="mt-2 text-2xl font-bold">{user.name}</h1>
                 <p className="mt-1 text-sm text-slate-600">{user.email}</p>
+                {isAuthBypassEnabled && (
+                  <p className="mt-2 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-xs text-amber-700">
+                    Mode bypass actif (sans login/register ni API distante)
+                  </p>
+                )}
               </div>
               <button
                 type="button"

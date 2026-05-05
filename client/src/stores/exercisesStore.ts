@@ -1,5 +1,8 @@
 import { create } from "zustand";
 import { api, type Exercise } from "../api/client";
+import { bypassExercises } from "./bypassMockData";
+
+const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
 
 type ExercisesState = {
   exercises: Exercise[];
@@ -17,10 +20,15 @@ function getErrorMessage(error: unknown): string {
 }
 
 export const useExercisesStore = create<ExercisesState>((set) => ({
-  exercises: [],
+  exercises: isAuthBypassEnabled ? bypassExercises : [],
   isLoading: false,
   error: null,
   async fetchExercises() {
+    if (isAuthBypassEnabled) {
+      set({ exercises: bypassExercises, isLoading: false, error: null });
+      return;
+    }
+
     set({ isLoading: true, error: null });
 
     try {
