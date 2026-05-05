@@ -86,3 +86,73 @@ docker compose down
 git checkout <known-good-commit>
 docker compose up -d
 ```
+
+## 7. Incident note: public domain points to API only
+
+Observed from outside on May 5, 2026:
+
+```bash
+curl https://suivi-sportif.fr
+```
+
+returned the Fastify 404 JSON response:
+
+```json
+{"message":"Route GET:/ not found","error":"Not Found","statusCode":404}
+```
+
+while:
+
+```bash
+curl https://suivi-sportif.fr/health
+```
+
+returned the API health payload.
+
+This means the domain is reachable, but public routing currently sends `/` and
+`/mcp` to the API instead of routing:
+
+- `/` to the frontend container on `127.0.0.1:5173`;
+- `/api/` and `/health` to the API container on `127.0.0.1:3001`;
+- `/mcp` to the MCP container on `127.0.0.1:3033`.
+
+When server access is restored, run:
+
+```bash
+cd /var/www/suivi-sportif
+git pull
+docker compose build
+docker compose up -d
+docker compose ps
+```
+
+Then reinstall and reload the Nginx site config from this repository:
+
+```bash
+sudo cp deploy/nginx/suivi-sportif.fr.conf /etc/nginx/sites-available/suivi-sportif.fr
+sudo ln -sf /etc/nginx/sites-available/suivi-sportif.fr /etc/nginx/sites-enabled/suivi-sportif.fr
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Expected local checks on the server:
+
+```bash
+curl -I http://127.0.0.1:5173
+curl -i http://127.0.0.1:3001/health
+curl -i http://127.0.0.1:3033/health
+```
+
+Expected public checks:
+
+```bash
+curl -I https://suivi-sportif.fr
+curl -i https://suivi-sportif.fr/health
+curl -i https://suivi-sportif.fr/mcp
+```
+
+Expected public result:
+
+- `/` returns the frontend HTML or a `200` frontend response;
+- `/health` returns the API health JSON;
+- `/mcp` without token returns `401 Unauthorized`, not Fastify `404`.
