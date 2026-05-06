@@ -38,3 +38,5 @@
   transaction quand les exercices ne sont pas remplaces.
 - Serveur: `npm run typecheck -w client` a revele une incompatibilite bypass
   workout update; correction appliquee en reconstruisant la shape `Workout`.
+- Serveur: `npm run build -w server` a revele un narrowing TypeScript perdu sur
+  `data.exercises`; correction appliquee via constante locale.

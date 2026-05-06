@@ -193,6 +193,8 @@ export async function updateWorkout(
     return formatWorkout(workout);
   }
 
+  const exercises = data.exercises;
+
   const workout = await prisma.$transaction(async (tx: any) => {
     await tx.workoutExercise.deleteMany({ where: { workoutId: id } });
 
@@ -204,7 +206,7 @@ export async function updateWorkout(
         ...(data.duration !== undefined && { duration: data.duration }),
         ...(data.notes !== undefined && { notes: data.notes }),
         workoutExercises: {
-          create: data.exercises.map((exercise, exerciseIndex) => ({
+          create: exercises.map((exercise, exerciseIndex) => ({
             exerciseId: exercise.exerciseId,
             order: exerciseIndex,
             sets: {
