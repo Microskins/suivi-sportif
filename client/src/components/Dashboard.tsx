@@ -12,13 +12,14 @@ import type {
   Workout,
   WorkoutInput,
 } from "../api/client";
+import { DashboardOverview } from "./DashboardOverview";
 import { useExercisesStore } from "../stores/exercisesStore";
 import { useFoodsStore } from "../stores/foodsStore";
 import { useMealsStore } from "../stores/mealsStore";
 import { useNutritionGoalsStore } from "../stores/nutritionGoalsStore";
 import { useWorkoutsStore } from "../stores/workoutsStore";
 
-type Resource = "workouts" | "exercises" | "foods" | "meals" | "goals";
+type Resource = "dashboard" | "workouts" | "exercises" | "foods" | "meals" | "goals";
 type ModalState =
   | { type: "exercise"; item?: Exercise }
   | { type: "workout"; item?: Workout }
@@ -647,7 +648,7 @@ export function Dashboard({
   onLogout: () => void;
   isAuthBypassEnabled: boolean;
 }) {
-  const [resource, setResource] = useState<Resource>("workouts");
+  const [resource, setResource] = useState<Resource>("dashboard");
   const [modal, setModal] = useState<ModalState>(null);
   const exercisesStore = useExercisesStore();
   const workoutsStore = useWorkoutsStore();
@@ -671,7 +672,9 @@ export function Dashboard({
     goalsStore.isLoading;
 
   const activeError =
-    resource === "workouts"
+    resource === "dashboard"
+      ? null
+      : resource === "workouts"
       ? workoutsStore.error
       : resource === "exercises"
         ? exercisesStore.error
@@ -702,6 +705,18 @@ export function Dashboard({
 
         <div className="mt-6 grid gap-3 md:grid-cols-[220px_1fr]">
           <nav className="rounded border border-slate-300 bg-white p-2 shadow-sm">
+            <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Accueil
+            </p>
+            <button
+              type="button"
+              onClick={() => setResource("dashboard")}
+              className={`mb-1 block w-full rounded px-3 py-2 text-left text-sm font-medium ${
+                resource === "dashboard" ? "bg-slate-950 text-white" : "text-slate-700 hover:bg-slate-100"
+              }`}
+            >
+              Synthese
+            </button>
             <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
               Sport
             </p>
@@ -742,9 +757,24 @@ export function Dashboard({
           </nav>
 
           <div className="rounded border border-slate-300 bg-white p-5 shadow-sm">
-            <ResourceHeader resource={resource} onCreate={() => openCreate(resource, setModal)} isLoading={isLoading} />
-            <div className="mt-4 space-y-4">
+            {resource !== "dashboard" && (
+              <ResourceHeader resource={resource} onCreate={() => openCreate(resource, setModal)} isLoading={isLoading} />
+            )}
+            <div className={resource === "dashboard" ? "space-y-4" : "mt-4 space-y-4"}>
               <ErrorBox message={activeError} />
+              {resource === "dashboard" && (
+                <DashboardOverview
+                  workouts={workoutsStore.workouts}
+                  meals={mealsStore.meals}
+                  nutritionGoals={goalsStore.nutritionGoals}
+                  isLoading={isLoading}
+                  onQuickAction={(action) => {
+                    if (action === "workout") setModal({ type: "workout" });
+                    if (action === "meal") setModal({ type: "meal" });
+                    if (action === "goal") setModal({ type: "goal" });
+                  }}
+                />
+              )}
               {resource === "workouts" && (
                 <WorkoutsList
                   workouts={workoutsStore.workouts}
@@ -832,6 +862,7 @@ export function Dashboard({
 
 function ResourceHeader({ resource, onCreate, isLoading }: { resource: Resource; onCreate: () => void; isLoading: boolean }) {
   const titles: Record<Resource, string> = {
+    dashboard: "Synthese",
     workouts: "Seances",
     exercises: "Exercices",
     foods: "Aliments",

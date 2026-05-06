@@ -10,6 +10,7 @@ Index chronologique des chantiers planifies et executes.
 4. [Tests API OpenAPI robustesse](./004-tests-api-openapi-robustesse.md)
 5. [Skill gestion chantiers](./005-skill-gestion-chantiers.md)
 6. [Frontend CRUD ecrans](./006-frontend-crud-ecrans.md)
+7. [Dashboard suivi frontend](./007-dashboard-suivi-frontend.md)
 
 ## Convention
 
