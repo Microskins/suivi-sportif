@@ -49,13 +49,49 @@ Apply production migrations:
 docker compose run --rm api npx prisma migrate deploy --schema server/prisma/schema.prisma
 ```
 
-Optional seed is currently a development-only step because the production image
-does not ship the `tsx` dev dependency:
+Seed the initial production account and base catalog. Do not commit the account
+password. Either pass a password explicitly for this one command, or let the
+script generate one and store the generated value securely:
 
 ```bash
-# Do not run in production until the seed script is compiled or made runtime-safe.
-# docker compose exec api npm run db:seed -w server
+docker compose exec -T api npm run db:seed:prod -w server
+
+# Or with an explicit one-time password.
+docker compose exec -T \
+  -e SEED_ACCOUNT_PASSWORD='<strong-password>' \
+  api npm run db:seed:prod -w server
 ```
+
+Default seeded account:
+
+```text
+Email: admin@suivi-sportif.fr
+Name: Admin Test
+```
+
+This account is a normal user in the current schema. A real admin role requires
+a future Prisma migration.
+
+Verify the seeded account and base data:
+
+```bash
+TOKEN="$(curl -sS -X POST https://suivi-sportif.fr/api/users/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"admin@suivi-sportif.fr","password":"<password>"}' \
+  | node -e 'let body=""; process.stdin.on("data", c => body += c); process.stdin.on("end", () => console.log(JSON.parse(body).data.token));')"
+
+curl -sS https://suivi-sportif.fr/api/users/me \
+  -H "Authorization: Bearer $TOKEN"
+
+curl -sS https://suivi-sportif.fr/api/exercises \
+  -H "Authorization: Bearer $TOKEN"
+
+curl -sS https://suivi-sportif.fr/api/foods \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Next product order after this seed is: API helpers, frontend creation
+interface, then MCP-assisted data creation.
 
 ## 4. Nginx cutover
 
@@ -104,7 +140,64 @@ git checkout <known-good-commit>
 docker compose up -d
 ```
 
-## 7. Home-hosted production notes: Freebox + Cloudflare + Certbot
+## 7. PostgreSQL backups
+
+Backups run from the app host and read `DATABASE_URL` from the running API
+container. The database remains private; no PostgreSQL port needs to be opened
+publicly.
+
+Install the backup scripts on the production host:
+
+```bash
+cd /var/www/suivi-sportif
+sudo install -m 0750 scripts/postgres-backup.sh /usr/local/bin/suivi-sportif-postgres-backup
+sudo install -m 0750 scripts/postgres-restore-test.sh /usr/local/bin/suivi-sportif-postgres-restore-test
+sudo mkdir -p /var/backups/suivi-sportif/postgres
+sudo chmod 700 /var/backups/suivi-sportif/postgres
+```
+
+Run a manual backup:
+
+```bash
+sudo PROJECT_DIR=/var/www/suivi-sportif /usr/local/bin/suivi-sportif-postgres-backup
+```
+
+Expected result:
+
+```text
+Backup OK: /var/backups/suivi-sportif/postgres/suivi_sportif_<timestamp>.dump
+```
+
+Test restoring the latest backup into an isolated temporary PostgreSQL
+container:
+
+```bash
+sudo /usr/local/bin/suivi-sportif-postgres-restore-test
+```
+
+Expected result:
+
+```text
+Restore test OK: /var/backups/suivi-sportif/postgres/suivi_sportif_<timestamp>.dump
+```
+
+Schedule a daily backup at 03:20 with 14-day local retention:
+
+```bash
+sudo tee /etc/cron.d/suivi-sportif-postgres-backup >/dev/null <<'EOF'
+20 3 * * * root PROJECT_DIR=/var/www/suivi-sportif BACKUP_DIR=/var/backups/suivi-sportif/postgres RETENTION_DAYS=14 /usr/local/bin/suivi-sportif-postgres-backup >> /var/log/suivi-sportif-postgres-backup.log 2>&1
+EOF
+sudo chmod 644 /etc/cron.d/suivi-sportif-postgres-backup
+```
+
+Operational checks:
+
+```bash
+sudo ls -lh /var/backups/suivi-sportif/postgres
+sudo tail -50 /var/log/suivi-sportif-postgres-backup.log
+```
+
+## 8. Home-hosted production notes: Freebox + Cloudflare + Certbot
 
 The May 6, 2026 production install was hosted behind a Freebox with Cloudflare
 DNS. These are the required network conditions for HTTPS to work.
@@ -167,7 +260,7 @@ sudo ufw reload
 
 Certbot will time out until port `80` is reachable from the public internet.
 
-## 8. PostgreSQL remote access and Prisma migrations
+## 9. PostgreSQL remote access and Prisma migrations
 
 The API host must be allowed in PostgreSQL `pg_hba.conf`. On the DB host, find
 the active file:
@@ -227,7 +320,7 @@ Expected migrations on a fresh database:
 20260506074000_add_nutrition_tracking
 ```
 
-## 9. Incident note: public domain points to API only
+## 10. Incident note: public domain points to API only
 
 Observed from outside on May 5, 2026:
 
