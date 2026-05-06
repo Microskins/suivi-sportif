@@ -7,6 +7,7 @@ COPY server/package*.json ./server/
 COPY client/package*.json ./client/
 COPY mcp/package*.json ./mcp/
 
+RUN npm install -g npm@11.13.0
 RUN npm ci || npm install
 
 COPY client ./client

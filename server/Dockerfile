@@ -7,6 +7,7 @@ COPY server/package*.json ./server/
 COPY client/package*.json ./client/
 COPY mcp/package*.json ./mcp/
 
+RUN npm install -g npm@11.13.0
 RUN npm ci || npm install
 RUN apk add --no-cache openssl
 
@@ -21,6 +22,7 @@ FROM node:20-alpine AS runtime
 WORKDIR /app
 
 RUN apk add --no-cache openssl
+RUN npm install -g npm@11.13.0
 
 ENV NODE_ENV=production
 ENV PORT=3001
