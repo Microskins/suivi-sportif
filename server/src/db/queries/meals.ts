@@ -46,7 +46,7 @@ const mealInclude = {
   items: {
     orderBy: { createdAt: "asc" as const },
   },
-};
+} as const;
 
 function roundMacro(value: number): number {
   return Math.round(value * 100) / 100;
@@ -111,10 +111,7 @@ function formatMeal(meal: MealWithItems): MealResponse {
   };
 }
 
-function createItemSnapshots(
-  items: CreateMealInput["items"],
-  foods: Food[],
-) {
+function createItemSnapshots(items: CreateMealInput["items"], foods: Food[]) {
   return items.map((item) => {
     const food = foods.find((candidate) => candidate.id === item.foodId);
     if (!food) {
@@ -125,10 +122,10 @@ function createItemSnapshots(
       foodId: food.id,
       foodName: food.brand ? `${food.name} (${food.brand})` : food.name,
       quantityGrams: item.quantityGrams,
-      caloriesKcalPer100g: food.caloriesKcal,
-      proteinGramsPer100g: food.proteinGrams,
-      carbsGramsPer100g: food.carbsGrams,
-      fatGramsPer100g: food.fatGrams,
+      caloriesKcalPer100g: Number(food.caloriesKcal),
+      proteinGramsPer100g: Number(food.proteinGrams),
+      carbsGramsPer100g: Number(food.carbsGrams),
+      fatGramsPer100g: Number(food.fatGrams),
     };
   });
 }
@@ -226,9 +223,7 @@ export async function updateMeal(
   const existing = await prisma.meal.findFirst({ where: { id, userId } });
   if (!existing) return null;
 
-  let itemSnapshots:
-    | ReturnType<typeof createItemSnapshots>
-    | undefined;
+  let itemSnapshots: ReturnType<typeof createItemSnapshots> | undefined;
 
   if (data.items) {
     const foods = await getAccessibleFoods(
@@ -260,10 +255,7 @@ export async function updateMeal(
   return formatMeal(meal);
 }
 
-export async function deleteMeal(
-  id: string,
-  userId: string,
-): Promise<boolean> {
+export async function deleteMeal(id: string, userId: string): Promise<boolean> {
   const existing = await prisma.meal.findFirst({ where: { id, userId } });
   if (!existing) return false;
 
