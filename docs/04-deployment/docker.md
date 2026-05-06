@@ -90,8 +90,8 @@ curl -sS https://suivi-sportif.fr/api/foods \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-Next product order after this seed is: API helpers, frontend creation
-interface, then MCP-assisted data creation.
+After this seed, use `docs/03-api/data-entry.md` for quick production data entry
+while the frontend creation interface is still being completed.
 
 ## 4. Nginx cutover
 

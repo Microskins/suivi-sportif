@@ -6,20 +6,55 @@ Base locale:
 http://localhost:3001
 ```
 
-Les réponses suivent:
+En production, l'API est exposee derriere le domaine public:
 
-- succès liste: `{ data: [...], meta: { total, page, limit } }`
-- succès détail/création/modification: `{ data: ... }`
-- suppression: `204`
-- erreur: `{ error, code }`
+```text
+https://suivi-sportif.fr
+```
+
+## Formats standard
+
+Liste:
+
+```json
+{
+  "data": [],
+  "meta": {
+    "total": 0,
+    "page": 1,
+    "limit": 20
+  }
+}
+```
+
+Detail, creation ou modification:
+
+```json
+{
+  "data": {}
+}
+```
+
+Suppression:
+
+```text
+204 No Content
+```
+
+Erreur:
+
+```json
+{
+  "error": "Message lisible",
+  "code": "ERROR_CODE"
+}
+```
 
 ## Auth
 
 ### `POST /api/users/register`
 
 Public.
-
-Body:
 
 ```json
 {
@@ -29,12 +64,16 @@ Body:
 }
 ```
 
-Réponse `201`:
+Reponse `201`:
 
 ```json
 {
   "data": {
-    "user": {},
+    "user": {
+      "id": "uuid",
+      "email": "test@example.com",
+      "name": "Test User"
+    },
     "token": "jwt"
   }
 }
@@ -44,8 +83,6 @@ Réponse `201`:
 
 Public.
 
-Body:
-
 ```json
 {
   "email": "test@example.com",
@@ -53,31 +90,19 @@ Body:
 }
 ```
 
-Réponse `200`: même format que register.
+Reponse `200`: meme format que `register`.
 
 ### `GET /api/users/me`
 
-Protégé par `Authorization: Bearer <TOKEN>`.
+Protege par:
 
-Réponse `200`:
-
-```json
-{
-  "data": {
-    "id": "uuid",
-    "email": "test@example.com",
-    "name": "Test User",
-    "createdAt": "2026-05-04T10:00:00.000Z",
-    "updatedAt": "2026-05-04T10:00:00.000Z"
-  }
-}
+```text
+Authorization: Bearer <TOKEN>
 ```
 
 ### `PUT /api/users/me`
 
-Protégé.
-
-Body partiel:
+Protege. Body partiel:
 
 ```json
 {
@@ -87,7 +112,7 @@ Body partiel:
 
 ## Exercises
 
-Toutes les routes sont protégées.
+Toutes les routes sont protegees.
 
 - `GET /api/exercises`
 - `GET /api/exercises/:id`
@@ -96,13 +121,13 @@ Toutes les routes sont protégées.
 - `PUT /api/exercises/:id`
 - `DELETE /api/exercises/:id`
 
-Muscle groups autorisés:
+Groupes musculaires autorises:
 
 ```text
 chest, back, shoulders, arms, legs, core, cardio
 ```
 
-Créer un exercice:
+Creation:
 
 ```json
 {
@@ -116,7 +141,7 @@ Créer un exercice:
 
 ## Workouts
 
-Toutes les routes sont protégées et utilisent l'utilisateur du JWT.
+Toutes les routes sont protegees et utilisent l'utilisateur du JWT.
 
 - `GET /api/workouts`
 - `GET /api/workouts/:id`
@@ -125,11 +150,11 @@ Toutes les routes sont protégées et utilisent l'utilisateur du JWT.
 - `PUT /api/workouts/:id`
 - `DELETE /api/workouts/:id`
 
-Créer une séance:
+Creation:
 
 ```json
 {
-  "name": "Séance jambes",
+  "name": "Seance jambes",
   "date": "2026-05-04T10:00:00.000Z",
   "duration": 60,
   "notes": "Travail lourd",
@@ -148,11 +173,11 @@ Créer une séance:
 }
 ```
 
-Pour `range`, les dates doivent être des datetime ISO encodées dans l'URL.
+Pour `range`, les dates sont des datetime ISO encodees dans l'URL.
 
 ## Nutrition
 
-Toutes les routes sont protégées et utilisent l'utilisateur du JWT.
+Toutes les routes sont protegees et utilisent l'utilisateur du JWT.
 
 ### Foods
 
@@ -162,10 +187,10 @@ Toutes les routes sont protégées et utilisent l'utilisateur du JWT.
 - `PUT /api/foods/:id`
 - `DELETE /api/foods/:id`
 
-Les aliments globaux ont `userId: null`. Les aliments créés par l'API sont
-personnels à l'utilisateur authentifié.
+Les aliments globaux ont `userId: null`. Les aliments crees par l'API sont
+personnels a l'utilisateur authentifie.
 
-Créer un aliment:
+Creation:
 
 ```json
 {
@@ -181,7 +206,7 @@ Créer un aliment:
 }
 ```
 
-Les valeurs nutritionnelles sont stockées pour 100g.
+Les valeurs nutritionnelles sont stockees pour 100 g.
 
 ### Meals
 
@@ -192,11 +217,11 @@ Les valeurs nutritionnelles sont stockées pour 100g.
 - `PUT /api/meals/:id`
 - `DELETE /api/meals/:id`
 
-Créer un repas:
+Creation:
 
 ```json
 {
-  "name": "Déjeuner",
+  "name": "Dejeuner",
   "date": "2026-05-04T12:00:00.000Z",
   "mealType": "lunch",
   "notes": null,
@@ -210,8 +235,9 @@ Créer un repas:
 ```
 
 `mealType` accepte `breakfast`, `lunch`, `dinner`, `snack`, `other`.
-La réponse contient les totaux calories/macros calculés depuis des snapshots
-par item, pour éviter qu'un ancien repas change si un aliment est modifié.
+
+Les reponses contiennent des totaux calories/macros calcules depuis des
+snapshots par item. Un ancien repas ne change donc pas si un aliment est modifie.
 
 ### Nutrition Goals
 
@@ -222,7 +248,7 @@ par item, pour éviter qu'un ancien repas change si un aliment est modifié.
 - `PUT /api/nutrition-goals/:id`
 - `DELETE /api/nutrition-goals/:id`
 
-Créer un objectif:
+Creation:
 
 ```json
 {
@@ -237,12 +263,12 @@ Créer un objectif:
 }
 ```
 
-Créer ou modifier un objectif avec `isActive: true` désactive les autres
+Creer ou modifier un objectif avec `isActive: true` desactive les autres
 objectifs actifs de l'utilisateur.
 
-## Erreurs fréquentes
+## Erreurs frequentes
 
 - `400 VALIDATION_ERROR`: body, params ou dates invalides.
 - `401 UNAUTHORIZED`: token manquant ou invalide.
-- `403 FORBIDDEN`: route volontairement indisponible sans rôle admin.
+- `403 FORBIDDEN`: route volontairement indisponible sans role admin.
 - `404 *_NOT_FOUND`: ressource absente ou hors scope utilisateur.

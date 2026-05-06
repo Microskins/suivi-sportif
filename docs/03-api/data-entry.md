@@ -1,6 +1,7 @@
 # API data entry
 
-Ces helpers permettent de creer rapidement des donnees via l'API production.
+Ces helpers PowerShell permettent de creer rapidement des donnees via l'API
+production sans retaper les headers JWT.
 
 Base par defaut:
 
@@ -19,8 +20,7 @@ est ignore par Git.
 
 ## Lancer les scripts sous Windows
 
-Si l'execution directe de `.ps1` est bloquee par Windows, charge le script via
-un scriptblock depuis la racine du repo:
+Si l'execution directe de `.ps1` est bloquee:
 
 ```powershell
 $script = Get-Content .\scripts\api\login.ps1 -Raw
@@ -35,13 +35,13 @@ Quand l'execution directe est autorisee:
 
 ## Login admin
 
-Prompt interactif pour le mot de passe:
+Prompt interactif:
 
 ```powershell
 .\scripts\api\login.ps1
 ```
 
-Ou avec un mot de passe fourni pour une verification ponctuelle:
+Verification ponctuelle avec mot de passe fourni:
 
 ```powershell
 .\scripts\api\login.ps1 -Password "<password>"
@@ -123,8 +123,8 @@ Les valeurs sont pour 100 g.
   -DailyFatGrams 70
 ```
 
-## Nettoyage manuel si besoin
+## Nettoyage manuel
 
 Les scripts de creation affichent l'objet cree, dont son `id`. Pour supprimer
-une donnee de test, utilise l'endpoint `DELETE` correspondant avec le token du
-fichier local.
+une donnee de test, utiliser l'endpoint `DELETE` correspondant avec le token
+local.

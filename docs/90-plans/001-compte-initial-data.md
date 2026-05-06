@@ -22,7 +22,7 @@ Creer un point de depart utilisable en production:
 - [x] Definir le comportement du seed production.
 - [x] Ajouter `server/prisma/prod-seed.mjs`.
 - [x] Ajouter le script npm `db:seed:prod`.
-- [x] Documenter la procedure dans `docs/DOCKER_DEPLOYMENT.md`.
+- [x] Documenter la procedure dans `docs/04-deployment/docker.md`.
 - [x] Deployer le seed sur le serveur de production.
 - [x] Lancer le seed production.
 - [x] Verifier le login du compte initial.

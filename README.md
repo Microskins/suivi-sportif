@@ -1,66 +1,42 @@
 # Suivi Sportif
 
-Application web de suivi sportif avec API Fastify, base PostgreSQL via Prisma et client React/Vite.
+Application web de suivi sportif avec API Fastify, base PostgreSQL via Prisma,
+client React/Vite et serveur MCP de debug.
 
-Le projet est en cours de construction. La priorité actuelle est l'API: authentification, exercices, séances, persistance des séries et couverture de tests.
-
-## Objectif d'architecture
-
-La cible de production est une architecture séparée:
-
-- serveur web frontend: build React/Vite servi en statique, par exemple via Nginx;
-- serveur API: Fastify/TypeScript organisé en MVC;
-- serveur base de données: PostgreSQL dédié, accessible uniquement par l'API.
-
-Le navigateur ne parle jamais directement à PostgreSQL. React appelle l'API, et l'API est la seule couche autorisée à lire ou modifier la base.
+Le projet est en construction active. La source de verite metier reste l'API:
+authentification, exercices, seances, nutrition, persistance PostgreSQL et tests.
 
 ## Stack
 
-### Backend
-
-- Fastify 4
-- TypeScript
-- Prisma 5
-- PostgreSQL
-- Zod
-- JWT
-- bcrypt
-- Vitest
-
-### Frontend
-
-- React 18
-- Vite 5
-- TypeScript
-- Zustand
-- Recharts
+- Backend: Fastify 4, TypeScript, Prisma 5, PostgreSQL, Zod, JWT, bcrypt, Vitest.
+- Frontend: React 18, Vite 5, TypeScript, Zustand, Recharts.
+- Debug/outillage: workspace `mcp/`, Docker Compose, Nginx.
 
 ## Etat actuel
 
-### Disponible
+Disponible:
 
 - Health check: `GET /health`
 - Auth publique: `POST /api/users/register`, `POST /api/users/login`
-- Routes protégées par JWT:
-  - `GET /api/users`
-  - `GET /api/exercises`
-  - `POST /api/exercises`
-  - `GET /api/workouts`
-  - `POST /api/workouts`
-- Création de séances avec exercices et séries.
-- Tests API avec `fastify.inject()`.
+- Compte courant: `GET /api/users/me`, `PUT /api/users/me`
+- Exercices: CRUD + filtre par groupe musculaire
+- Seances: CRUD + recherche par plage de dates
+- Nutrition: aliments, repas, objectifs nutritionnels
+- Frontend React avec auth, dashboard et stores Zustand
+- Tests API avec `fastify.inject()`
+- Assets Docker de production et runbook Nginx
+- Serveur MCP de debug
 
-### Encore à faire
+A faire:
 
-- Interface React réelle: login/register, exercices, séances.
-- Tests API plus complets: erreurs, update/delete, ownership multi-utilisateurs.
-- Documentation OpenAPI/Swagger exploitable.
-- Seed de données de développement.
-- Nettoyage progressif des anciennes docs de setup.
+- Completer les ecrans frontend de creation/edition.
+- Elargir les tests API: erreurs, ownership multi-utilisateurs, update/delete.
+- Ajouter une documentation OpenAPI/Swagger exploitable.
+- Stabiliser les migrations Prisma au fil des prochaines features.
 
-## Installation
+## Installation locale
 
-Prérequis:
+Prerequis:
 
 - Node.js 18+
 - npm
@@ -72,7 +48,7 @@ cd suivi-sportif
 npm install
 ```
 
-Créez un fichier `.env` à la racine:
+Creer un fichier `.env` a la racine:
 
 ```env
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/suivi_sportif_v2"
@@ -80,33 +56,23 @@ JWT_SECRET="change-me"
 NODE_ENV="development"
 ```
 
-Pour bypasser l'auth côté React en local (sans login/register ni appel API), ajoutez dans `client/.env`:
+Preparer Prisma:
+
+```bash
+npm run db:generate -w server
+npm run db:push -w server
+npm run db:seed -w server
+```
+
+Mode frontend local sans auth/API:
 
 ```env
 VITE_BYPASS_AUTH="true"
 ```
 
-Ce mode charge aussi des seances et exercices mockes pour tester l'interface sans acces a la BDD.
+Cette variable se place dans `client/.env` et charge des donnees mockees.
 
-Générez le client Prisma:
-
-```bash
-npm run db:generate -w server
-```
-
-Appliquez le schéma en développement:
-
-```bash
-npm run db:push -w server
-```
-
-Optionnel: ajouter les exercices de base pour le développement:
-
-```bash
-npm run db:seed -w server
-```
-
-## Développement
+## Developpement
 
 Backend:
 
@@ -120,15 +86,20 @@ Client:
 npm run dev -w client
 ```
 
-URLs:
+MCP:
+
+```bash
+npm run mcp:dev
+```
+
+URLs locales:
 
 - API: http://localhost:3001
 - Health: http://localhost:3001/health
 - Client: http://localhost:5173
+- MCP: http://127.0.0.1:3033/mcp
 
-## Vérification
-
-Serveur:
+## Verification
 
 ```bash
 npm run typecheck -w server
@@ -136,11 +107,14 @@ npm run test -w server -- --run
 npm run build -w server
 ```
 
-Client:
-
 ```bash
 npm run typecheck -w client
 npm run build -w client
+```
+
+```bash
+npm run mcp:typecheck
+npm run test -w mcp
 ```
 
 Build complet:
@@ -149,29 +123,19 @@ Build complet:
 npm run build
 ```
 
-## Docker deployment
-
-The project now ships with production Docker assets:
-
-- `docker-compose.yml`
-- `server/Dockerfile`
-- `client/Dockerfile`
-- `deploy/nginx/suivi-sportif.fr.conf`
-
-Full runbook:
-
-- [Docker deployment](./docs/DOCKER_DEPLOYMENT.md)
-
 ## Documentation
 
-Commencez ici:
+Commencer par [docs/INDEX.md](./docs/INDEX.md).
 
-- [Index documentation](./docs/INDEX.md)
-- [Démarrage rapide](./docs/QUICK_START.md)
-- [API](./docs/API.md)
-- [Architecture](./docs/ARCHITECTURE.md)
-- [Serveur MCP de debug](./docs/MCP_DEBUG.md)
-- [Déploiement cible](./docs/DEPLOYMENT_TARGET.md)
-- [Structure du projet](./docs/PROJECT_STRUCTURE.md)
+Docs principales:
 
-Les documents de phase/setup plus anciens sont conservés comme historique, mais peuvent ne plus refléter l'état réel du code.
+- [Demarrage rapide](./docs/01-getting-started/quick-start.md)
+- [Architecture](./docs/02-architecture/overview.md)
+- [API](./docs/03-api/reference.md)
+- [Structure du projet](./docs/02-architecture/project-structure.md)
+- [Deploiement Docker](./docs/04-deployment/docker.md)
+- [Serveur MCP](./docs/05-mcp/debug-server.md)
+- [Plans](./docs/90-plans/README.md)
+
+Les anciennes docs de setup sont conservees comme historique uniquement. Elles
+ne sont plus la source de verite.

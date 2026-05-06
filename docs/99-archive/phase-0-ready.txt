@@ -1,0 +1,10 @@
+Document historique.
+
+La phase 0 est terminee et ne represente plus l'etat courant du code.
+
+Pour l'etat actuel:
+
+- README.md
+- docs/INDEX.md
+- docs/02-architecture/overview.md
+- docs/90-plans/README.md

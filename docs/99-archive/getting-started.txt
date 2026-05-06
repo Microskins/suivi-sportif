@@ -1,0 +1,9 @@
+Document historique.
+
+Ce fichier appartenait a l'ancienne phase de setup initiale. Il est conserve
+uniquement pour garder une trace du demarrage du projet.
+
+Pour les commandes a jour, utiliser:
+
+- docs/01-getting-started/quick-start.md
+- docs/02-architecture/project-structure.md

@@ -1,47 +1,89 @@
 # Documentation
 
-This page is the entry point for project documentation.
+Cette page est la porte d'entree des docs du projet.
 
-## Active documents
+## Hierarchie
 
-- [Quick Start](./QUICK_START.md): install, run, and verification commands.
-- [Architecture](./ARCHITECTURE.md): backend/frontend organization and core conventions.
-- [API](./API.md): stable endpoints, response formats, and errors.
-- [Deployment target](./DEPLOYMENT_TARGET.md): frontend/API/PostgreSQL separation.
-- [Docker deployment](./DOCKER_DEPLOYMENT.md): PM2 -> Docker Compose + Nginx runbook.
-- [Project Structure](./PROJECT_STRUCTURE.md): current folders and key files.
-- [Plans](./PLANS.md): chronological plan docs and todo convention.
+```text
+docs/
+|-- INDEX.md
+|-- 01-getting-started/
+|   `-- quick-start.md
+|-- 02-architecture/
+|   |-- overview.md
+|   `-- project-structure.md
+|-- 03-api/
+|   |-- reference.md
+|   `-- data-entry.md
+|-- 04-deployment/
+|   |-- target.md
+|   `-- docker.md
+|-- 05-mcp/
+|   `-- debug-server.md
+|-- 90-plans/
+|   |-- README.md
+|   |-- 001-compte-initial-data.md
+|   `-- 002-api-helpers.md
+`-- 99-archive/
+    |-- 00-start-here.txt
+    |-- getting-started.txt
+    |-- phase-0-ready.txt
+    |-- phase-0-setup.md
+    |-- readme-setup.md
+    `-- summary.md
+```
 
-## Project status
+## Lire selon le besoin
 
-Current priority is API stability and frontend integration:
+| Besoin | Document |
+| --- | --- |
+| Installer et lancer le projet | [quick-start.md](./01-getting-started/quick-start.md) |
+| Comprendre l'organisation technique | [overview.md](./02-architecture/overview.md) |
+| Connaitre les dossiers importants | [project-structure.md](./02-architecture/project-structure.md) |
+| Consulter les endpoints et formats | [reference.md](./03-api/reference.md) |
+| Creer des donnees via scripts API | [data-entry.md](./03-api/data-entry.md) |
+| Comprendre la cible de deploiement | [target.md](./04-deployment/target.md) |
+| Deployer en Docker/Nginx | [docker.md](./04-deployment/docker.md) |
+| Utiliser le MCP de debug | [debug-server.md](./05-mcp/debug-server.md) |
+| Suivre les chantiers | [90-plans/README.md](./90-plans/README.md) |
 
-- Fastify/TypeScript backend.
-- Prisma/PostgreSQL persistence.
-- JWT auth with hashed passwords.
-- Users, exercises, workouts routes.
-- Workouts persisted with exercises and sets.
-- API tests with `fastify.inject()`.
-- React frontend now includes auth and a first dashboard.
+## Source de verite
 
-## Historical docs
+Les documents actifs sont:
 
-The files below come from an older setup phase and may contain outdated references:
+- `README.md`
+- `docs/INDEX.md`
+- `docs/01-getting-started/quick-start.md`
+- `docs/02-architecture/overview.md`
+- `docs/02-architecture/project-structure.md`
+- `docs/03-api/reference.md`
+- `docs/03-api/data-entry.md`
+- `docs/04-deployment/target.md`
+- `docs/04-deployment/docker.md`
+- `docs/05-mcp/debug-server.md`
+- `docs/90-plans/README.md`
+- `docs/90-plans/*.md`
 
-- `00_START_HERE.txt`
-- `GETTING_STARTED.txt`
-- `PHASE_0_READY.txt`
-- `PHASE_0_SETUP.md`
-- `README_SETUP.md`
-- `SUMMARY.md`
+Les fichiers de l'ancienne phase 0 restent presents dans `docs/99-archive/`,
+mais ils ne doivent plus etre utilises pour installer, developper ou deployer le
+projet.
 
-Do not use them as source of truth without review.
+## Etat du projet
 
-## Maintenance rule
+- Monorepo npm: `server`, `client`, `mcp`.
+- Backend Fastify/TypeScript avec Prisma/PostgreSQL.
+- Auth JWT avec mots de passe hashes.
+- Routes utilisateurs, exercices, seances, aliments, repas et objectifs nutrition.
+- Frontend React/Vite avec Zustand et mode bypass local.
+- Tests serveur via Vitest et `fastify.inject()`.
+- Deploiement Docker Compose derriere Nginx.
 
-When code changes:
+## Regle de maintenance
 
-1. Update `README.md` if setup, scripts, or runtime behavior changed.
-2. Update `ARCHITECTURE.md` if technical structure changed.
-3. Update `QUICK_START.md` if commands changed.
-4. Add or update API tests before documenting a route as stable.
+Quand le code change:
+
+1. Mettre a jour `README.md` si les commandes, scripts ou comportements visibles changent.
+2. Mettre a jour `01-getting-started/quick-start.md` si l'installation ou le lancement change.
+3. Mettre a jour `03-api/reference.md` si un endpoint, un schema ou un code d'erreur change.
+4. Mettre a jour `02-architecture/overview.md` si une couche, un dossier ou une convention change.
+5. Ajouter ou completer un plan dans `90-plans/` pour les chantiers suivis.

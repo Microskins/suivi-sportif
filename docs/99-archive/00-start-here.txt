@@ -1,0 +1,11 @@
+Document historique.
+
+Ce fichier appartenait a l'ancienne phase de setup initiale. Il contenait des
+instructions Fastify + React + SQLite qui ne correspondent plus au projet actuel.
+
+Pour travailler sur le projet aujourd'hui, utiliser:
+
+- README.md
+- docs/INDEX.md
+- docs/01-getting-started/quick-start.md
+- docs/02-architecture/overview.md

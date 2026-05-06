@@ -1,7 +1,7 @@
 # Serveur MCP de debug
 
 Le workspace `mcp/` expose un serveur MCP local pour aider un agent a debugger
-l'application Suivi Sportif sans lancer de commandes arbitraires.
+l'application sans lancer de commandes arbitraires.
 
 ## Demarrage
 
@@ -33,22 +33,22 @@ MCP_ENABLE_MUTATIONS=false
 MCP_AUTH_TOKEN=
 ```
 
-Si `MCP_AUTH_TOKEN` est defini, le client doit envoyer soit:
+Si `MCP_AUTH_TOKEN` est defini, le client doit envoyer:
 
 ```text
 Authorization: Bearer <token>
 ```
 
-soit:
+ou:
 
 ```text
 x-mcp-auth-token: <token>
 ```
 
-## Exposition distante Docker
+## Production Docker
 
-En production, le service MCP tourne dans Docker Compose et reste publie
-uniquement sur l'interface locale du serveur:
+En production, le service MCP tourne dans Docker Compose et reste publie sur
+l'interface locale du serveur:
 
 ```text
 127.0.0.1:3033 -> suivi-sportif-mcp:3033
@@ -60,7 +60,7 @@ Nginx expose ensuite le transport MCP sur le meme domaine que l'application:
 https://suivi-sportif.fr/mcp
 ```
 
-Variables recommandees dans le `.env` du serveur:
+Variables recommandees:
 
 ```env
 MCP_HOST=0.0.0.0
@@ -71,10 +71,9 @@ MCP_AUTH_TOKEN="long-secret-token"
 MCP_ENABLE_MUTATIONS=false
 ```
 
-`MCP_AUTH_TOKEN` est obligatoire quand `NODE_ENV=production`. Sans token,
-le container MCP refuse de demarrer.
+`MCP_AUTH_TOKEN` est obligatoire quand `NODE_ENV=production`.
 
-Commandes de deploiement:
+Commandes:
 
 ```bash
 docker compose build mcp
@@ -91,7 +90,7 @@ curl -i https://suivi-sportif.fr/mcp
 
 La reponse doit etre `401 Unauthorized`.
 
-Exemple de configuration client MCP distant:
+## Configuration client distante
 
 ```json
 {
@@ -108,26 +107,16 @@ Exemple de configuration client MCP distant:
 
 ## Outils exposes
 
-- `diagnose_project`: typecheck serveur/client, tests serveur avec `TMPDIR=/tmp`,
-  health API et disponibilite Docker.
-- `run_check`: `typecheck`, `test`, `build`, `lint` sur `server`, `client` ou
-  `all`.
+- `diagnose_project`: typecheck serveur/client, tests serveur, health API, Docker.
+- `run_check`: `typecheck`, `test`, `build`, `lint` sur `server`, `client` ou `all`.
 - `check_api_health`: verifie `GET /health` et le format `{ data }`.
-- `docker_status`, `docker_logs`: inspectent Docker Compose si Docker existe dans
-  le shell.
+- `docker_status`, `docker_logs`: inspectent Docker Compose.
 - `db_summary`: compteurs Prisma et derniers elements rediges.
 - `maintenance_prisma`, `docker_restart_service`: bloques par defaut.
-- `list_foods`, `create_food`, `update_food`, `delete_food`: CRUD aliments
-  via l'API, avec calories et macros pour 100g.
-- `list_meals`, `create_meal`, `update_meal`, `delete_meal`: CRUD repas via
-  l'API, avec aliments et quantites en grammes.
-- `list_nutrition_goals`, `get_active_nutrition_goal`,
-  `create_nutrition_goal`, `update_nutrition_goal`,
-  `delete_nutrition_goal`: objectifs calories/macros via l'API.
+- CRUD aliments, repas et objectifs nutritionnels via l'API.
 
 Les outils metier appellent l'API Fastify et exigent un `jwtToken` utilisateur
-dans l'input. Ils ne lisent pas Prisma directement et ne contournent donc pas
-les permissions API.
+dans l'input. Ils ne lisent pas Prisma directement.
 
 Les outils mutables exigent:
 
@@ -138,31 +127,16 @@ MCP_ENABLE_MUTATIONS=true
 et un input:
 
 ```json
-{ "confirm": "CONFIRM" }
+{
+  "confirm": "CONFIRM"
+}
 ```
 
 ## Prompts agents
 
 - `debug-incident`: workflow de debug.
 - `project-context`: architecture actuelle Fastify/React/Prisma.
-- `nutrition-future-scope`: historique du scope nutrition; depuis la v1 backend,
-  l'app stocke les aliments, repas et objectifs nutritionnels, mais pas encore
-  de recommandations nutritionnelles automatiques.
-
-## Schema nutrition
-
-Apres deploiement du code backend, appliquer le schema Prisma sur la base:
-
-```bash
-npm run db:push -w server
-npm run db:generate -w server
-```
-
-Pour une migration versionnee durable, utiliser plutot:
-
-```bash
-npm run db:migrate -w server
-```
+- `nutrition-future-scope`: historique du scope nutrition.
 
 ## Tests
 
@@ -171,5 +145,5 @@ npm run mcp:typecheck
 npm run test -w mcp
 ```
 
-Le script de test MCP force `TMPDIR=/tmp` pour eviter le probleme WSL/Windows ou
+Le script de test MCP force `TMPDIR=/tmp` pour eviter un probleme WSL/Windows ou
 Vitest tente de creer un dossier temporaire dans `AppData/Local/Temp`.
