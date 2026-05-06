@@ -45,3 +45,41 @@ export async function checkApiHealth(
   }
 }
 
+export type ApiRequestOptions = {
+  body?: Record<string, unknown>;
+  jwtToken: string;
+  method?: "DELETE" | "GET" | "POST" | "PUT";
+  path: string;
+};
+
+export async function apiRequest(options: ApiRequestOptions) {
+  const apiUrl = new URL(options.path, config.apiBaseUrl);
+
+  const response = await fetch(apiUrl, {
+    body: options.body ? JSON.stringify(options.body) : undefined,
+    headers: {
+      authorization: `Bearer ${options.jwtToken}`,
+      ...(options.body ? { "content-type": "application/json" } : {}),
+    },
+    method: options.method ?? "GET",
+    signal: AbortSignal.timeout(10000),
+  });
+
+  if (response.status === 204) {
+    return {
+      body: null,
+      ok: true,
+      status: response.status,
+      url: apiUrl.toString(),
+    };
+  }
+
+  const body = await response.json().catch(() => null);
+
+  return {
+    body: redactObject(body),
+    ok: response.ok,
+    status: response.status,
+    url: apiUrl.toString(),
+  };
+}

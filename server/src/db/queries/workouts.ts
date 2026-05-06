@@ -1,12 +1,6 @@
 // filepath: server/src/db/queries/workouts.ts
 // Workout database queries - NEVER write SQL directly in routes
 
-import type {
-  Exercise,
-  Workout,
-  WorkoutExercise,
-  WorkoutSet,
-} from "@prisma/client";
 import prisma from "../index.js";
 import type {
   CreateWorkoutInput,
@@ -21,6 +15,43 @@ type WorkoutWithDetails = Workout & {
       sets: WorkoutSet[];
     }
   >;
+};
+
+type Exercise = {
+  description: string | null;
+  difficulty: string;
+  equipment: string;
+  createdAt: Date;
+  id: string;
+  muscleGroup: string;
+  name: string;
+  updatedAt: Date;
+};
+
+type Workout = {
+  createdAt: Date;
+  date: Date;
+  duration: number;
+  id: string;
+  name: string;
+  notes: string | null;
+  updatedAt: Date;
+  userId: string;
+};
+
+type WorkoutExercise = {
+  exerciseId: string;
+  id: string;
+  order: number;
+};
+
+type WorkoutSet = {
+  createdAt: Date;
+  id: string;
+  reps: number;
+  rest: number;
+  setNumber: number;
+  weight: unknown;
 };
 
 const workoutDetailsInclude = {

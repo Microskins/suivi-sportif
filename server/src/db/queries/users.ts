@@ -11,6 +11,11 @@ import bcrypt from "bcrypt";
 
 const PASSWORD_SALT_ROUNDS = 10;
 
+type UserRecord = Omit<UserResponse, "createdAt" | "updatedAt"> & {
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export async function getUsers(): Promise<UserResponse[]> {
   const users = await prisma.user.findMany({
     select: {
@@ -21,7 +26,7 @@ export async function getUsers(): Promise<UserResponse[]> {
       updatedAt: true,
     },
   });
-  return users.map((u) => ({
+  return (users as UserRecord[]).map((u) => ({
     ...u,
     createdAt: u.createdAt.toISOString(),
     updatedAt: u.updatedAt.toISOString(),

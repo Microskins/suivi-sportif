@@ -19,7 +19,10 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  workouts Workout[]
+  foods          Food[]
+  meals          Meal[]
+  nutritionGoals NutritionGoal[]
+  workouts       Workout[]
 
   @@map("users")
 }
@@ -46,12 +49,12 @@ model Workout {
   userId    String   @map("user_id")
   name      String
   date      DateTime
-  duration  Int      // en minutes
+  duration  Int // en minutes
   notes     String?  @db.Text
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   workoutExercises WorkoutExercise[]
 
   @@index([userId, date])
@@ -60,10 +63,10 @@ model Workout {
 
 // ============== WorkoutExercise Model (junction) ==============
 model WorkoutExercise {
-  id         String  @id @default(uuid())
-  workoutId  String  @map("workout_id")
-  exerciseId String  @map("exercise_id")
-  order      Int     @default(0)
+  id         String @id @default(uuid())
+  workoutId  String @map("workout_id")
+  exerciseId String @map("exercise_id")
+  order      Int    @default(0)
 
   workout  Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
@@ -76,17 +79,103 @@ model WorkoutExercise {
 
 // ============== WorkoutSet Model ==============
 model WorkoutSet {
-  id              String           @id @default(uuid())
-  workoutExerciseId String         @map("workout_exercise_id")
-  setNumber       Int              @map("set_number")
-  reps            Int
-  weight          Decimal          @db.Decimal(10, 2)
-  rest            Int              @default(60) // en secondes
-  createdAt       DateTime         @default(now()) @map("created_at")
+  id                String   @id @default(uuid())
+  workoutExerciseId String   @map("workout_exercise_id")
+  setNumber         Int      @map("set_number")
+  reps              Int
+  weight            Decimal  @db.Decimal(10, 2)
+  rest              Int      @default(60) // en secondes
+  createdAt         DateTime @default(now()) @map("created_at")
 
   workoutExercise WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
 
   @@map("workout_sets")
+}
+
+// ============== Food Model ==============
+model Food {
+  id           String   @id @default(uuid())
+  userId       String?  @map("user_id")
+  name         String
+  brand        String?
+  barcode      String?
+  caloriesKcal Decimal  @map("calories_kcal") @db.Decimal(10, 2)
+  proteinGrams Decimal  @map("protein_grams") @db.Decimal(10, 2)
+  carbsGrams   Decimal  @map("carbs_grams") @db.Decimal(10, 2)
+  fatGrams     Decimal  @map("fat_grams") @db.Decimal(10, 2)
+  fiberGrams   Decimal? @map("fiber_grams") @db.Decimal(10, 2)
+  servingUnit  String   @default("g") @map("serving_unit")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealItems MealItem[]
+
+  @@index([userId, name])
+  @@index([barcode])
+  @@map("foods")
+}
+
+// ============== Meal Model ==============
+model Meal {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  date      DateTime
+  mealType  String   @default("other") @map("meal_type")
+  notes     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items MealItem[]
+
+  @@index([userId, date])
+  @@index([userId, mealType])
+  @@map("meals")
+}
+
+// ============== MealItem Model ==============
+model MealItem {
+  id                  String   @id @default(uuid())
+  mealId              String   @map("meal_id")
+  foodId              String?  @map("food_id")
+  foodName            String   @map("food_name")
+  quantityGrams       Decimal  @map("quantity_grams") @db.Decimal(10, 2)
+  caloriesKcalPer100g Decimal  @map("calories_kcal_per_100g") @db.Decimal(10, 2)
+  proteinGramsPer100g Decimal  @map("protein_grams_per_100g") @db.Decimal(10, 2)
+  carbsGramsPer100g   Decimal  @map("carbs_grams_per_100g") @db.Decimal(10, 2)
+  fatGramsPer100g     Decimal  @map("fat_grams_per_100g") @db.Decimal(10, 2)
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  meal Meal  @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  food Food? @relation(fields: [foodId], references: [id], onDelete: SetNull)
+
+  @@index([mealId])
+  @@index([foodId])
+  @@map("meal_items")
+}
+
+// ============== NutritionGoal Model ==============
+model NutritionGoal {
+  id                String    @id @default(uuid())
+  userId            String    @map("user_id")
+  name              String
+  startDate         DateTime  @map("start_date")
+  endDate           DateTime? @map("end_date")
+  dailyCaloriesKcal Int       @map("daily_calories_kcal")
+  dailyProteinGrams Decimal?  @map("daily_protein_grams") @db.Decimal(10, 2)
+  dailyCarbsGrams   Decimal?  @map("daily_carbs_grams") @db.Decimal(10, 2)
+  dailyFatGrams     Decimal?  @map("daily_fat_grams") @db.Decimal(10, 2)
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@index([userId, startDate])
+  @@map("nutrition_goals")
 }
 
 // Note: Prisma uses Decimal for precise numeric values

@@ -117,6 +117,17 @@ Exemple de configuration client MCP distant:
   le shell.
 - `db_summary`: compteurs Prisma et derniers elements rediges.
 - `maintenance_prisma`, `docker_restart_service`: bloques par defaut.
+- `list_foods`, `create_food`, `update_food`, `delete_food`: CRUD aliments
+  via l'API, avec calories et macros pour 100g.
+- `list_meals`, `create_meal`, `update_meal`, `delete_meal`: CRUD repas via
+  l'API, avec aliments et quantites en grammes.
+- `list_nutrition_goals`, `get_active_nutrition_goal`,
+  `create_nutrition_goal`, `update_nutrition_goal`,
+  `delete_nutrition_goal`: objectifs calories/macros via l'API.
+
+Les outils metier appellent l'API Fastify et exigent un `jwtToken` utilisateur
+dans l'input. Ils ne lisent pas Prisma directement et ne contournent donc pas
+les permissions API.
 
 Les outils mutables exigent:
 
@@ -134,8 +145,24 @@ et un input:
 
 - `debug-incident`: workflow de debug.
 - `project-context`: architecture actuelle Fastify/React/Prisma.
-- `nutrition-future-scope`: rappelle que l'app ne stocke pas encore repas,
-  calories ou objectifs nutritionnels.
+- `nutrition-future-scope`: historique du scope nutrition; depuis la v1 backend,
+  l'app stocke les aliments, repas et objectifs nutritionnels, mais pas encore
+  de recommandations nutritionnelles automatiques.
+
+## Schema nutrition
+
+Apres deploiement du code backend, appliquer le schema Prisma sur la base:
+
+```bash
+npm run db:push -w server
+npm run db:generate -w server
+```
+
+Pour une migration versionnee durable, utiliser plutot:
+
+```bash
+npm run db:migrate -w server
+```
 
 ## Tests
 

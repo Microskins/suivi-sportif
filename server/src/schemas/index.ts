@@ -143,6 +143,148 @@ export const workoutResponseSchema = z.object({
 
 export const workoutListSchema = z.array(workoutResponseSchema);
 
+// ============== Nutrition Schemas ==============
+const macroValueSchema = z.number().min(0).max(100000);
+
+export const mealTypeSchema = z.enum([
+  "breakfast",
+  "lunch",
+  "dinner",
+  "snack",
+  "other",
+]);
+
+export const createFoodSchema = z.object({
+  name: z.string().min(1, "Nom requis").max(200),
+  brand: z.string().min(1).max(200).nullable().optional(),
+  barcode: z.string().min(1).max(100).nullable().optional(),
+  caloriesKcal: macroValueSchema,
+  proteinGrams: macroValueSchema,
+  carbsGrams: macroValueSchema,
+  fatGrams: macroValueSchema,
+  fiberGrams: macroValueSchema.nullable().optional(),
+  servingUnit: z.string().min(1).max(20).default("g"),
+});
+
+export const updateFoodSchema = createFoodSchema.partial();
+
+export const foodResponseSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string().uuid().nullable(),
+  name: z.string(),
+  brand: z.string().nullable(),
+  barcode: z.string().nullable(),
+  caloriesKcal: z.number(),
+  proteinGrams: z.number(),
+  carbsGrams: z.number(),
+  fatGrams: z.number(),
+  fiberGrams: z.number().nullable(),
+  servingUnit: z.string(),
+  isGlobal: z.boolean(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export const createMealItemSchema = z.object({
+  foodId: z.string().uuid(),
+  quantityGrams: z.number().min(0.01).max(100000),
+});
+
+export const createMealSchema = z.object({
+  name: z.string().min(1, "Nom requis").max(200),
+  date: z.string().datetime(),
+  mealType: mealTypeSchema.default("other"),
+  notes: z.string().max(2000).nullable().optional(),
+  items: z.array(createMealItemSchema).min(1, "Au moins un aliment requis"),
+});
+
+export const updateMealSchema = createMealSchema.partial().extend({
+  items: z.array(createMealItemSchema).min(1).optional(),
+});
+
+export const mealItemResponseSchema = z.object({
+  id: z.string().uuid(),
+  foodId: z.string().uuid().nullable(),
+  foodName: z.string(),
+  quantityGrams: z.number(),
+  caloriesKcalPer100g: z.number(),
+  proteinGramsPer100g: z.number(),
+  carbsGramsPer100g: z.number(),
+  fatGramsPer100g: z.number(),
+  totals: z.object({
+    caloriesKcal: z.number(),
+    proteinGrams: z.number(),
+    carbsGrams: z.number(),
+    fatGrams: z.number(),
+  }),
+  createdAt: z.string().datetime(),
+});
+
+export const mealResponseSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string().uuid(),
+  name: z.string(),
+  date: z.string().datetime(),
+  mealType: mealTypeSchema,
+  notes: z.string().nullable(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  items: z.array(mealItemResponseSchema),
+  totals: z.object({
+    caloriesKcal: z.number(),
+    proteinGrams: z.number(),
+    carbsGrams: z.number(),
+    fatGrams: z.number(),
+  }),
+});
+
+const nutritionGoalBaseSchema = z.object({
+  name: z.string().min(1, "Nom requis").max(200),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime().nullable().optional(),
+  dailyCaloriesKcal: z.number().int().min(0).max(100000),
+  dailyProteinGrams: macroValueSchema.nullable().optional(),
+  dailyCarbsGrams: macroValueSchema.nullable().optional(),
+  dailyFatGrams: macroValueSchema.nullable().optional(),
+  isActive: z.boolean().default(true),
+});
+
+export const createNutritionGoalSchema = nutritionGoalBaseSchema.refine(
+  (goal) => !goal.endDate || new Date(goal.startDate) <= new Date(goal.endDate),
+  {
+    message: "La date de fin doit être après la date de début",
+    path: ["endDate"],
+  },
+);
+
+export const updateNutritionGoalSchema = nutritionGoalBaseSchema
+  .partial()
+  .refine(
+    (goal) =>
+      !goal.startDate ||
+      !goal.endDate ||
+      new Date(goal.startDate) <= new Date(goal.endDate),
+    {
+      message: "La date de fin doit être après la date de début",
+      path: ["endDate"],
+    },
+  );
+
+export const nutritionGoalResponseSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string().uuid(),
+  name: z.string(),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime().nullable(),
+  dailyCaloriesKcal: z.number().int(),
+  dailyProteinGrams: z.number().nullable(),
+  dailyCarbsGrams: z.number().nullable(),
+  dailyFatGrams: z.number().nullable(),
+  isActive: z.boolean(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
 // ============== Type Exports ==============
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type LoginUserInput = z.infer<typeof loginUserSchema>;
@@ -156,3 +298,19 @@ export type ExerciseResponse = z.infer<typeof exerciseResponseSchema>;
 export type CreateWorkoutInput = z.infer<typeof createWorkoutSchema>;
 export type UpdateWorkoutInput = z.infer<typeof updateWorkoutSchema>;
 export type WorkoutResponse = z.infer<typeof workoutResponseSchema>;
+
+export type CreateFoodInput = z.infer<typeof createFoodSchema>;
+export type UpdateFoodInput = z.infer<typeof updateFoodSchema>;
+export type FoodResponse = z.infer<typeof foodResponseSchema>;
+export type CreateMealInput = z.infer<typeof createMealSchema>;
+export type UpdateMealInput = z.infer<typeof updateMealSchema>;
+export type MealResponse = z.infer<typeof mealResponseSchema>;
+export type CreateNutritionGoalInput = z.infer<
+  typeof createNutritionGoalSchema
+>;
+export type UpdateNutritionGoalInput = z.infer<
+  typeof updateNutritionGoalSchema
+>;
+export type NutritionGoalResponse = z.infer<
+  typeof nutritionGoalResponseSchema
+>;

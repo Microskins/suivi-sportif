@@ -11,7 +11,7 @@ RUN npm ci || npm install
 
 COPY server ./server
 
-RUN npm run db:generate -w server
+RUN DATABASE_URL=postgresql://user:password@localhost:5432/suivi_sportif npm run db:generate -w server
 RUN npm run build -w server
 RUN npm prune --omit=dev
 
