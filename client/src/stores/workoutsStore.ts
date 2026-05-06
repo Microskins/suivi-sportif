@@ -22,6 +22,22 @@ function getErrorMessage(error: unknown): string {
   return "Impossible de charger les seances";
 }
 
+function buildBypassWorkoutExercises(data: WorkoutInput, now: string) {
+  return data.exercises?.map((exercise, exerciseIndex) => ({
+    id: `bypass-workout-exercise-${Date.now()}-${exerciseIndex}`,
+    exerciseId: exercise.exerciseId,
+    order: exerciseIndex,
+    sets: exercise.sets.map((set, setIndex) => ({
+      id: `bypass-set-${Date.now()}-${exerciseIndex}-${setIndex}`,
+      setNumber: setIndex + 1,
+      reps: set.reps,
+      weight: set.weight,
+      rest: set.rest,
+      createdAt: now,
+    })),
+  }));
+}
+
 export const useWorkoutsStore = create<WorkoutsState>((set) => ({
   workouts: isAuthBypassEnabled ? bypassWorkouts : [],
   isLoading: false,
@@ -75,7 +91,17 @@ export const useWorkoutsStore = create<WorkoutsState>((set) => ({
       set((state) => ({
         workouts: state.workouts.map((workout) =>
           workout.id === id
-            ? { ...workout, ...data, updatedAt: new Date().toISOString() }
+            ? {
+                ...workout,
+                name: data.name ?? workout.name,
+                date: data.date ?? workout.date,
+                duration: data.duration ?? workout.duration,
+                notes: data.notes === undefined ? workout.notes : data.notes,
+                exercises: data.exercises
+                  ? buildBypassWorkoutExercises(data as WorkoutInput, new Date().toISOString())
+                  : workout.exercises,
+                updatedAt: new Date().toISOString(),
+              }
             : workout,
         ),
         error: null,

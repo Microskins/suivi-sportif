@@ -33,3 +33,8 @@
 - `rg -n '[ \t]+$' ...`: OK, aucun whitespace final dans les nouveaux fichiers.
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\smoke-prod.ps1 -BaseUrl 'https://suivi-sportif.fr'`:
   OK, health/frontend/auth/creations sport+nutrition/nettoyage verts.
+- Serveur: `npm run test -w server -- --run` a revele un mock Prisma sans
+  `$transaction` sur l'update simple seance; correction appliquee en evitant la
+  transaction quand les exercices ne sont pas remplaces.
+- Serveur: `npm run typecheck -w client` a revele une incompatibilite bypass
+  workout update; correction appliquee en reconstruisant la shape `Workout`.

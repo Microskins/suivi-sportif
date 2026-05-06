@@ -178,10 +178,23 @@ export async function updateWorkout(
   const existing = await prisma.workout.findUnique({ where: { id } });
   if (!existing || existing.userId !== userId) return null;
 
+  if (!data.exercises) {
+    const workout = await prisma.workout.update({
+      where: { id },
+      data: {
+        ...(data.name && { name: data.name }),
+        ...(data.date && { date: new Date(data.date) }),
+        ...(data.duration !== undefined && { duration: data.duration }),
+        ...(data.notes !== undefined && { notes: data.notes }),
+      },
+      include: workoutDetailsInclude,
+    });
+
+    return formatWorkout(workout);
+  }
+
   const workout = await prisma.$transaction(async (tx: any) => {
-    if (data.exercises) {
-      await tx.workoutExercise.deleteMany({ where: { workoutId: id } });
-    }
+    await tx.workoutExercise.deleteMany({ where: { workoutId: id } });
 
     return tx.workout.update({
       where: { id },
@@ -190,22 +203,20 @@ export async function updateWorkout(
         ...(data.date && { date: new Date(data.date) }),
         ...(data.duration !== undefined && { duration: data.duration }),
         ...(data.notes !== undefined && { notes: data.notes }),
-        ...(data.exercises && {
-          workoutExercises: {
-            create: data.exercises.map((exercise, exerciseIndex) => ({
-              exerciseId: exercise.exerciseId,
-              order: exerciseIndex,
-              sets: {
-                create: exercise.sets.map((set, setIndex) => ({
-                  setNumber: setIndex + 1,
-                  reps: set.reps,
-                  weight: set.weight,
-                  rest: set.rest,
-                })),
-              },
-            })),
-          },
-        }),
+        workoutExercises: {
+          create: data.exercises.map((exercise, exerciseIndex) => ({
+            exerciseId: exercise.exerciseId,
+            order: exerciseIndex,
+            sets: {
+              create: exercise.sets.map((set, setIndex) => ({
+                setNumber: setIndex + 1,
+                reps: set.reps,
+                weight: set.weight,
+                rest: set.rest,
+              })),
+            },
+          })),
+        },
       },
       include: workoutDetailsInclude,
     });
