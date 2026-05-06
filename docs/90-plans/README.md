@@ -11,6 +11,7 @@ Index chronologique des chantiers planifies et executes.
 5. [Skill gestion chantiers](./005-skill-gestion-chantiers.md)
 6. [Frontend CRUD ecrans](./006-frontend-crud-ecrans.md)
 7. [Dashboard suivi frontend](./007-dashboard-suivi-frontend.md)
+8. [Automatisation deploiement](./008-automatisation-deploiement.md)
 
 ## Convention
 

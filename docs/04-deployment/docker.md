@@ -124,12 +124,49 @@ pm2 save
 
 ## 6. Operations
 
-Update deployment:
+### Automated deployment
+
+Production deployments are automated by GitHub Actions on every push to `main`.
+The workflow:
+
+1. installs dependencies with dev tooling;
+2. runs server typecheck, server tests, server build, client typecheck and
+   client build;
+3. connects to the production host over SSH;
+4. runs `scripts/deploy-production.sh`.
+
+Required GitHub secrets:
+
+```text
+PROD_SSH_HOST=<public SSH host or LAN host reachable from the runner>
+PROD_SSH_USER=<deploy user>
+PROD_SSH_KEY=<private deploy key>
+PROD_SSH_PORT=22
+```
+
+Optional GitHub variable:
+
+```text
+PROD_PROJECT_DIR=/var/www/suivi-sportif
+```
+
+Important: `192.168.1.64` is a private LAN address. A GitHub-hosted runner
+cannot reach it directly. For that address, either expose a secure SSH endpoint
+through the router/VPN, or run the deploy job from a self-hosted runner inside
+the LAN.
+
+The deploy user must be able to:
+
+- read and write `/var/www/suivi-sportif`;
+- run `git` in that repository;
+- run `docker compose`;
+- read the production `.env` already present on the host.
+
+Manual deployment uses the same script:
 
 ```bash
-git pull
-docker compose build
-docker compose up -d
+cd /var/www/suivi-sportif
+bash scripts/deploy-production.sh
 ```
 
 Rollback:
@@ -137,6 +174,7 @@ Rollback:
 ```bash
 docker compose down
 git checkout <known-good-commit>
+docker compose build
 docker compose up -d
 ```
 

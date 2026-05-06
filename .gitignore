@@ -27,6 +27,9 @@ scripts/api/.token.json
 
 # IDEs
 .*
+!.github/
+!.github/workflows/
+!.github/workflows/**
 !.agents/
 .agents/*
 !.agents/skills/
