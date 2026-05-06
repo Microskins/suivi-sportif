@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { api, type Workout } from "../api/client";
+import { api, type Workout, type WorkoutInput } from "../api/client";
 import { bypassWorkouts } from "./bypassMockData";
 
 const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
@@ -9,6 +9,9 @@ type WorkoutsState = {
   isLoading: boolean;
   error: string | null;
   fetchWorkouts: () => Promise<void>;
+  createWorkout: (data: WorkoutInput) => Promise<void>;
+  updateWorkout: (id: string, data: Partial<WorkoutInput>) => Promise<void>;
+  deleteWorkout: (id: string) => Promise<void>;
 };
 
 function getErrorMessage(error: unknown): string {
@@ -36,6 +39,83 @@ export const useWorkoutsStore = create<WorkoutsState>((set) => ({
       set({ workouts, isLoading: false });
     } catch (error) {
       set({ isLoading: false, error: getErrorMessage(error) });
+    }
+  },
+  async createWorkout(data) {
+    if (isAuthBypassEnabled) {
+      const workout: Workout = {
+        id: `bypass-workout-${Date.now()}`,
+        userId: "00000000-0000-4000-8000-000000000000",
+        name: data.name,
+        date: data.date,
+        duration: data.duration,
+        notes: data.notes ?? null,
+        exercises: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      set((state) => ({ workouts: [workout, ...state.workouts], error: null }));
+      return;
+    }
+
+    set({ isLoading: true, error: null });
+    try {
+      const workout = await api.createWorkout(data);
+      set((state) => ({
+        workouts: [workout, ...state.workouts],
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({ isLoading: false, error: getErrorMessage(error) });
+      throw error;
+    }
+  },
+  async updateWorkout(id, data) {
+    if (isAuthBypassEnabled) {
+      set((state) => ({
+        workouts: state.workouts.map((workout) =>
+          workout.id === id
+            ? { ...workout, ...data, updatedAt: new Date().toISOString() }
+            : workout,
+        ),
+        error: null,
+      }));
+      return;
+    }
+
+    set({ isLoading: true, error: null });
+    try {
+      const updated = await api.updateWorkout(id, data);
+      set((state) => ({
+        workouts: state.workouts.map((workout) =>
+          workout.id === id ? updated : workout,
+        ),
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({ isLoading: false, error: getErrorMessage(error) });
+      throw error;
+    }
+  },
+  async deleteWorkout(id) {
+    if (isAuthBypassEnabled) {
+      set((state) => ({
+        workouts: state.workouts.filter((workout) => workout.id !== id),
+        error: null,
+      }));
+      return;
+    }
+
+    set({ isLoading: true, error: null });
+    try {
+      await api.deleteWorkout(id);
+      set((state) => ({
+        workouts: state.workouts.filter((workout) => workout.id !== id),
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({ isLoading: false, error: getErrorMessage(error) });
+      throw error;
     }
   },
 }));

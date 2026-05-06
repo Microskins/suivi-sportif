@@ -80,6 +80,110 @@ export type Workout = {
   }>;
 };
 
+export type Food = {
+  id: string;
+  userId: string | null;
+  name: string;
+  brand: string | null;
+  barcode: string | null;
+  caloriesKcal: number;
+  proteinGrams: number;
+  carbsGrams: number;
+  fatGrams: number;
+  fiberGrams: number | null;
+  servingUnit: string;
+  isGlobal: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FoodInput = {
+  name: string;
+  brand?: string | null;
+  barcode?: string | null;
+  caloriesKcal: number;
+  proteinGrams: number;
+  carbsGrams: number;
+  fatGrams: number;
+  fiberGrams?: number | null;
+  servingUnit?: string;
+};
+
+export type MealType = "breakfast" | "lunch" | "dinner" | "snack" | "other";
+
+export type MealItemInput = {
+  foodId: string;
+  quantityGrams: number;
+};
+
+export type MealInput = {
+  name: string;
+  date: string;
+  mealType?: MealType;
+  notes?: string | null;
+  items: MealItemInput[];
+};
+
+export type Meal = {
+  id: string;
+  userId: string;
+  name: string;
+  date: string;
+  mealType: MealType;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  items: Array<{
+    id: string;
+    foodId: string | null;
+    foodName: string;
+    quantityGrams: number;
+    caloriesKcalPer100g: number;
+    proteinGramsPer100g: number;
+    carbsGramsPer100g: number;
+    fatGramsPer100g: number;
+    totals: {
+      caloriesKcal: number;
+      proteinGrams: number;
+      carbsGrams: number;
+      fatGrams: number;
+    };
+    createdAt: string;
+  }>;
+  totals: {
+    caloriesKcal: number;
+    proteinGrams: number;
+    carbsGrams: number;
+    fatGrams: number;
+  };
+};
+
+export type NutritionGoal = {
+  id: string;
+  userId: string;
+  name: string;
+  startDate: string;
+  endDate: string | null;
+  dailyCaloriesKcal: number;
+  dailyProteinGrams: number | null;
+  dailyCarbsGrams: number | null;
+  dailyFatGrams: number | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type NutritionGoalInput = {
+  name: string;
+  startDate: string;
+  endDate?: string | null;
+  dailyCaloriesKcal: number;
+  dailyProteinGrams?: number | null;
+  dailyCarbsGrams?: number | null;
+  dailyFatGrams?: number | null;
+  isActive?: boolean;
+};
+
 class ApiClient {
   private token: string | null = null;
 
@@ -245,6 +349,103 @@ class ApiClient {
 
   async deleteWorkout(id: string) {
     return this.request<void>(`/api/workouts/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  // Foods
+  async getFoods() {
+    return this.request<Food[]>("/api/foods");
+  }
+
+  async getFood(id: string) {
+    return this.request<Food>(`/api/foods/${id}`);
+  }
+
+  async createFood(data: FoodInput) {
+    return this.request<Food>("/api/foods", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateFood(id: string, data: Partial<FoodInput>) {
+    return this.request<Food>(`/api/foods/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteFood(id: string) {
+    return this.request<void>(`/api/foods/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  // Meals
+  async getMeals() {
+    return this.request<Meal[]>("/api/meals");
+  }
+
+  async getMeal(id: string) {
+    return this.request<Meal>(`/api/meals/${id}`);
+  }
+
+  async getMealsByDateRange(start: string, end: string) {
+    return this.request<Meal[]>(
+      `/api/meals/range/${encodeURIComponent(start)}/${encodeURIComponent(end)}`,
+    );
+  }
+
+  async createMeal(data: MealInput) {
+    return this.request<Meal>("/api/meals", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateMeal(id: string, data: Partial<MealInput>) {
+    return this.request<Meal>(`/api/meals/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteMeal(id: string) {
+    return this.request<void>(`/api/meals/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  // Nutrition goals
+  async getNutritionGoals() {
+    return this.request<NutritionGoal[]>("/api/nutrition-goals");
+  }
+
+  async getActiveNutritionGoal() {
+    return this.request<NutritionGoal>("/api/nutrition-goals/active");
+  }
+
+  async getNutritionGoal(id: string) {
+    return this.request<NutritionGoal>(`/api/nutrition-goals/${id}`);
+  }
+
+  async createNutritionGoal(data: NutritionGoalInput) {
+    return this.request<NutritionGoal>("/api/nutrition-goals", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateNutritionGoal(id: string, data: Partial<NutritionGoalInput>) {
+    return this.request<NutritionGoal>(`/api/nutrition-goals/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteNutritionGoal(id: string) {
+    return this.request<void>(`/api/nutrition-goals/${id}`, {
       method: "DELETE",
     });
   }

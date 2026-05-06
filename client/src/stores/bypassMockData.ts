@@ -1,4 +1,4 @@
-import type { Exercise, Workout } from "../api/client";
+import type { Exercise, Food, Meal, NutritionGoal, Workout } from "../api/client";
 
 const createdAt = "2026-01-01T08:00:00.000Z";
 const updatedAt = "2026-01-01T08:00:00.000Z";
@@ -167,5 +167,128 @@ export const bypassWorkouts: Workout[] = [
         ],
       },
     ],
+  },
+];
+
+export const bypassFoods: Food[] = [
+  {
+    id: "11111111-1111-4111-8111-111111111111",
+    userId: bypassUserId,
+    name: "Riz basmati",
+    brand: null,
+    barcode: null,
+    caloriesKcal: 350,
+    proteinGrams: 7,
+    carbsGrams: 78,
+    fatGrams: 1,
+    fiberGrams: 2,
+    servingUnit: "g",
+    isGlobal: false,
+    createdAt,
+    updatedAt,
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222222",
+    userId: bypassUserId,
+    name: "Poulet grille",
+    brand: null,
+    barcode: null,
+    caloriesKcal: 165,
+    proteinGrams: 31,
+    carbsGrams: 0,
+    fatGrams: 4,
+    fiberGrams: null,
+    servingUnit: "g",
+    isGlobal: false,
+    createdAt,
+    updatedAt,
+  },
+  {
+    id: "33333333-3333-4333-8333-333333333333",
+    userId: null,
+    name: "Banane",
+    brand: null,
+    barcode: null,
+    caloriesKcal: 89,
+    proteinGrams: 1,
+    carbsGrams: 23,
+    fatGrams: 0,
+    fiberGrams: 3,
+    servingUnit: "g",
+    isGlobal: true,
+    createdAt,
+    updatedAt,
+  },
+];
+
+export const bypassMeals: Meal[] = [
+  {
+    id: "44444444-4444-4444-8444-444444444444",
+    userId: bypassUserId,
+    name: "Dejeuner entrainement",
+    date: "2026-05-04T12:15:00.000Z",
+    mealType: "lunch",
+    notes: "Repas simple avant la seance.",
+    createdAt,
+    updatedAt,
+    items: [
+      {
+        id: "55555555-5555-4555-8555-555555555555",
+        foodId: bypassFoods[0].id,
+        foodName: bypassFoods[0].name,
+        quantityGrams: 150,
+        caloriesKcalPer100g: bypassFoods[0].caloriesKcal,
+        proteinGramsPer100g: bypassFoods[0].proteinGrams,
+        carbsGramsPer100g: bypassFoods[0].carbsGrams,
+        fatGramsPer100g: bypassFoods[0].fatGrams,
+        totals: {
+          caloriesKcal: 525,
+          proteinGrams: 10.5,
+          carbsGrams: 117,
+          fatGrams: 1.5,
+        },
+        createdAt,
+      },
+      {
+        id: "66666666-6666-4666-8666-666666666666",
+        foodId: bypassFoods[1].id,
+        foodName: bypassFoods[1].name,
+        quantityGrams: 120,
+        caloriesKcalPer100g: bypassFoods[1].caloriesKcal,
+        proteinGramsPer100g: bypassFoods[1].proteinGrams,
+        carbsGramsPer100g: bypassFoods[1].carbsGrams,
+        fatGramsPer100g: bypassFoods[1].fatGrams,
+        totals: {
+          caloriesKcal: 198,
+          proteinGrams: 37.2,
+          carbsGrams: 0,
+          fatGrams: 4.8,
+        },
+        createdAt,
+      },
+    ],
+    totals: {
+      caloriesKcal: 723,
+      proteinGrams: 47.7,
+      carbsGrams: 117,
+      fatGrams: 6.3,
+    },
+  },
+];
+
+export const bypassNutritionGoals: NutritionGoal[] = [
+  {
+    id: "77777777-7777-4777-8777-777777777777",
+    userId: bypassUserId,
+    name: "Maintien",
+    startDate: "2026-05-01T00:00:00.000Z",
+    endDate: null,
+    dailyCaloriesKcal: 2400,
+    dailyProteinGrams: 160,
+    dailyCarbsGrams: 260,
+    dailyFatGrams: 70,
+    isActive: true,
+    createdAt,
+    updatedAt,
   },
 ];

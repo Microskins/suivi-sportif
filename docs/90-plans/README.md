@@ -9,6 +9,7 @@ Index chronologique des chantiers planifies et executes.
 3. [API tests ownership update delete](./003-api-tests-ownership-update-delete.md)
 4. [Tests API OpenAPI robustesse](./004-tests-api-openapi-robustesse.md)
 5. [Skill gestion chantiers](./005-skill-gestion-chantiers.md)
+6. [Frontend CRUD ecrans](./006-frontend-crud-ecrans.md)
 
 ## Convention
 
