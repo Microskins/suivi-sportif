@@ -6,6 +6,7 @@ Index chronologique des chantiers planifies et executes.
 
 1. [Compte initial et donnees de base](./001-compte-initial-data.md)
 2. [API helpers](./002-api-helpers.md)
+3. [API tests ownership update delete](./003-api-tests-ownership-update-delete.md)
 
 ## Convention
 

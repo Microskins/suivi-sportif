@@ -183,7 +183,7 @@ export async function updateWorkout(
     data: {
       ...(data.name && { name: data.name }),
       ...(data.date && { date: new Date(data.date) }),
-      ...(data.duration && { duration: data.duration }),
+      ...(data.duration !== undefined && { duration: data.duration }),
       ...(data.notes !== undefined && { notes: data.notes }),
     },
     include: workoutDetailsInclude,

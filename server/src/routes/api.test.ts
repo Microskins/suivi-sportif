@@ -327,6 +327,26 @@ describe("API", () => {
     });
   });
 
+  it("returns 404 when updating the authenticated user after deletion", async () => {
+    mocks.users.updateUser.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: "/api/users/me",
+      headers: authHeaders(),
+      payload: {
+        name: "Missing User",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("USER_NOT_FOUND");
+    expect(mocks.users.updateUser).toHaveBeenCalledWith(USER_ID, {
+      name: "Missing User",
+    });
+  });
+
   it("rejects invalid authenticated user updates before calling the database", async () => {
     const response = await app.inject({
       method: "PUT",
@@ -580,6 +600,20 @@ describe("API", () => {
     expect(mocks.exercises.deleteExercise).toHaveBeenCalledWith(EXERCISE_ID);
   });
 
+  it("returns 404 when deleting a missing exercise", async () => {
+    mocks.exercises.deleteExercise.mockResolvedValue(false);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/exercises/${EXERCISE_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("EXERCISE_NOT_FOUND");
+  });
+
   it("rejects invalid exercise ids on delete before calling the database", async () => {
     const response = await app.inject({
       method: "DELETE",
@@ -591,6 +625,18 @@ describe("API", () => {
     expect(response.statusCode).toBe(400);
     expect(body.code).toBe("VALIDATION_ERROR");
     expect(mocks.exercises.deleteExercise).not.toHaveBeenCalled();
+  });
+
+  it("rejects workout routes without a token", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/workouts",
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expect(body.code).toBe("UNAUTHORIZED");
+    expect(mocks.workouts.getWorkouts).not.toHaveBeenCalled();
   });
 
   it("lists workouts for the authenticated user only", async () => {
@@ -908,6 +954,238 @@ describe("API", () => {
     });
   });
 
+  it("gets a food by id for the authenticated user scope", async () => {
+    mocks.foods.getFoodById.mockResolvedValue(food);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/foods/${FOOD_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(food);
+    expect(mocks.foods.getFoodById).toHaveBeenCalledWith(FOOD_ID, USER_ID);
+  });
+
+  it("returns 404 when getting a food outside the authenticated user scope", async () => {
+    mocks.foods.getFoodById.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/foods/${FOOD_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("FOOD_NOT_FOUND");
+    expect(mocks.foods.getFoodById).toHaveBeenCalledWith(FOOD_ID, USER_ID);
+  });
+
+  it("rejects invalid food ids before calling the database", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/foods/not-a-uuid",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.foods.getFoodById).not.toHaveBeenCalled();
+  });
+
+  it("rejects invalid food creation before calling the database", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/foods",
+      headers: authHeaders(),
+      payload: {
+        name: "",
+        caloriesKcal: -1,
+        proteinGrams: 1,
+        carbsGrams: 1,
+        fatGrams: 1,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.foods.createFood).not.toHaveBeenCalled();
+  });
+
+  it("updates a food for the authenticated user scope", async () => {
+    const updatedFood = { ...food, name: "Riz complet" };
+    mocks.foods.updateFood.mockResolvedValue(updatedFood);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/foods/${FOOD_ID}`,
+      headers: authHeaders(),
+      payload: {
+        name: updatedFood.name,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(updatedFood);
+    expect(mocks.foods.updateFood).toHaveBeenCalledWith(FOOD_ID, USER_ID, {
+      name: updatedFood.name,
+    });
+  });
+
+  it("returns 404 when updating a food outside the authenticated user scope", async () => {
+    mocks.foods.updateFood.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/foods/${FOOD_ID}`,
+      headers: authHeaders(),
+      payload: {
+        name: "Inaccessible",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("FOOD_NOT_FOUND");
+    expect(mocks.foods.updateFood).toHaveBeenCalledWith(FOOD_ID, USER_ID, {
+      name: "Inaccessible",
+    });
+  });
+
+  it("rejects invalid food updates before calling the database", async () => {
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/foods/${FOOD_ID}`,
+      headers: authHeaders(),
+      payload: {
+        caloriesKcal: -1,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.foods.updateFood).not.toHaveBeenCalled();
+  });
+
+  it("deletes a food for the authenticated user scope", async () => {
+    mocks.foods.deleteFood.mockResolvedValue(true);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/foods/${FOOD_ID}`,
+      headers: authHeaders(),
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.body).toBe("");
+    expect(mocks.foods.deleteFood).toHaveBeenCalledWith(FOOD_ID, USER_ID);
+  });
+
+  it("returns 404 when deleting a food outside the authenticated user scope", async () => {
+    mocks.foods.deleteFood.mockResolvedValue(false);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/foods/${FOOD_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("FOOD_NOT_FOUND");
+    expect(mocks.foods.deleteFood).toHaveBeenCalledWith(FOOD_ID, USER_ID);
+  });
+
+  it("rejects invalid food ids on delete before calling the database", async () => {
+    const response = await app.inject({
+      method: "DELETE",
+      url: "/api/foods/not-a-uuid",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.foods.deleteFood).not.toHaveBeenCalled();
+  });
+
+  it("rejects listing meals without a token", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/meals",
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expect(body.code).toBe("UNAUTHORIZED");
+    expect(mocks.meals.getMeals).not.toHaveBeenCalled();
+  });
+
+  it("lists meals for the authenticated user only", async () => {
+    mocks.meals.getMeals.mockResolvedValue([meal]);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/meals",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([meal]);
+    expect(body.meta.total).toBe(1);
+    expect(mocks.meals.getMeals).toHaveBeenCalledWith(USER_ID);
+  });
+
+  it("gets a meal by id for the authenticated user only", async () => {
+    mocks.meals.getMealById.mockResolvedValue(meal);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/meals/${MEAL_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(meal);
+    expect(mocks.meals.getMealById).toHaveBeenCalledWith(MEAL_ID, USER_ID);
+  });
+
+  it("returns 404 when getting a meal outside the authenticated user scope", async () => {
+    mocks.meals.getMealById.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/meals/${MEAL_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("MEAL_NOT_FOUND");
+  });
+
+  it("rejects invalid meal ids before calling the database", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/meals/not-a-uuid",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.meals.getMealById).not.toHaveBeenCalled();
+  });
+
   it("creates a meal with food items for the authenticated user", async () => {
     const payload = {
       name: meal.name,
@@ -949,6 +1227,24 @@ describe("API", () => {
     expect(body.code).toBe("FOOD_NOT_FOUND");
   });
 
+  it("rejects invalid meal creation before calling the database", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/meals",
+      headers: authHeaders(),
+      payload: {
+        name: "",
+        date: "not-a-date",
+        items: [],
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.meals.createMeal).not.toHaveBeenCalled();
+  });
+
   it("lists meals by date range for the authenticated user", async () => {
     mocks.meals.getMealsByDateRange.mockResolvedValue([meal]);
 
@@ -967,6 +1263,151 @@ describe("API", () => {
       USER_ID,
       start,
       end,
+    );
+  });
+
+  it("rejects invalid meal date ranges before calling the database", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/meals/range/2026-05-31T23:59:59.000Z/2026-05-01T00:00:00.000Z",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.meals.getMealsByDateRange).not.toHaveBeenCalled();
+  });
+
+  it("updates a meal for the authenticated user only", async () => {
+    const updatedMeal = {
+      ...meal,
+      name: "Diner",
+    };
+    mocks.meals.updateMeal.mockResolvedValue(updatedMeal);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/meals/${MEAL_ID}`,
+      headers: authHeaders(),
+      payload: {
+        name: updatedMeal.name,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(updatedMeal);
+    expect(mocks.meals.updateMeal).toHaveBeenCalledWith(MEAL_ID, USER_ID, {
+      name: updatedMeal.name,
+    });
+  });
+
+  it("returns 404 when updating a meal outside the authenticated user scope", async () => {
+    mocks.meals.updateMeal.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/meals/${MEAL_ID}`,
+      headers: authHeaders(),
+      payload: {
+        name: "Inaccessible",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("MEAL_NOT_FOUND");
+    expect(mocks.meals.updateMeal).toHaveBeenCalledWith(MEAL_ID, USER_ID, {
+      name: "Inaccessible",
+    });
+  });
+
+  it("rejects invalid meal updates before calling the database", async () => {
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/meals/${MEAL_ID}`,
+      headers: authHeaders(),
+      payload: {
+        mealType: "not-a-meal-type",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.meals.updateMeal).not.toHaveBeenCalled();
+  });
+
+  it("deletes a meal for the authenticated user only", async () => {
+    mocks.meals.deleteMeal.mockResolvedValue(true);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/meals/${MEAL_ID}`,
+      headers: authHeaders(),
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.body).toBe("");
+    expect(mocks.meals.deleteMeal).toHaveBeenCalledWith(MEAL_ID, USER_ID);
+  });
+
+  it("returns 404 when deleting a meal outside the authenticated user scope", async () => {
+    mocks.meals.deleteMeal.mockResolvedValue(false);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/meals/${MEAL_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("MEAL_NOT_FOUND");
+    expect(mocks.meals.deleteMeal).toHaveBeenCalledWith(MEAL_ID, USER_ID);
+  });
+
+  it("rejects invalid meal ids on delete before calling the database", async () => {
+    const response = await app.inject({
+      method: "DELETE",
+      url: "/api/meals/not-a-uuid",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.meals.deleteMeal).not.toHaveBeenCalled();
+  });
+
+  it("rejects listing nutrition goals without a token", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/nutrition-goals",
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expect(body.code).toBe("UNAUTHORIZED");
+    expect(mocks.nutritionGoals.getNutritionGoals).not.toHaveBeenCalled();
+  });
+
+  it("lists nutrition goals for the authenticated user only", async () => {
+    mocks.nutritionGoals.getNutritionGoals.mockResolvedValue([nutritionGoal]);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/nutrition-goals",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([nutritionGoal]);
+    expect(body.meta.total).toBe(1);
+    expect(mocks.nutritionGoals.getNutritionGoals).toHaveBeenCalledWith(
+      USER_ID,
     );
   });
 
@@ -997,6 +1438,25 @@ describe("API", () => {
     );
   });
 
+  it("rejects invalid nutrition goal creation before calling the database", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/nutrition-goals",
+      headers: authHeaders(),
+      payload: {
+        name: "",
+        startDate: "2026-05-04T00:00:00.000Z",
+        endDate: "2026-05-03T00:00:00.000Z",
+        dailyCaloriesKcal: -1,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.nutritionGoals.createNutritionGoal).not.toHaveBeenCalled();
+  });
+
   it("returns the active nutrition goal for the authenticated user", async () => {
     mocks.nutritionGoals.getActiveNutritionGoal.mockResolvedValue(
       nutritionGoal,
@@ -1014,5 +1474,176 @@ describe("API", () => {
     expect(mocks.nutritionGoals.getActiveNutritionGoal).toHaveBeenCalledWith(
       USER_ID,
     );
+  });
+
+  it("returns 404 when no active nutrition goal exists for the authenticated user", async () => {
+    mocks.nutritionGoals.getActiveNutritionGoal.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/nutrition-goals/active",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("NUTRITION_GOAL_NOT_FOUND");
+  });
+
+  it("gets a nutrition goal by id for the authenticated user only", async () => {
+    mocks.nutritionGoals.getNutritionGoalById.mockResolvedValue(nutritionGoal);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/nutrition-goals/${NUTRITION_GOAL_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(nutritionGoal);
+    expect(mocks.nutritionGoals.getNutritionGoalById).toHaveBeenCalledWith(
+      NUTRITION_GOAL_ID,
+      USER_ID,
+    );
+  });
+
+  it("returns 404 when getting a nutrition goal outside the authenticated user scope", async () => {
+    mocks.nutritionGoals.getNutritionGoalById.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/nutrition-goals/${NUTRITION_GOAL_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("NUTRITION_GOAL_NOT_FOUND");
+  });
+
+  it("rejects invalid nutrition goal ids before calling the database", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/nutrition-goals/not-a-uuid",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.nutritionGoals.getNutritionGoalById).not.toHaveBeenCalled();
+  });
+
+  it("updates a nutrition goal for the authenticated user only", async () => {
+    const updatedGoal = {
+      ...nutritionGoal,
+      name: "Prise de masse",
+    };
+    mocks.nutritionGoals.updateNutritionGoal.mockResolvedValue(updatedGoal);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/nutrition-goals/${NUTRITION_GOAL_ID}`,
+      headers: authHeaders(),
+      payload: {
+        name: updatedGoal.name,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(updatedGoal);
+    expect(mocks.nutritionGoals.updateNutritionGoal).toHaveBeenCalledWith(
+      NUTRITION_GOAL_ID,
+      USER_ID,
+      { name: updatedGoal.name },
+    );
+  });
+
+  it("returns 404 when updating a nutrition goal outside the authenticated user scope", async () => {
+    mocks.nutritionGoals.updateNutritionGoal.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/nutrition-goals/${NUTRITION_GOAL_ID}`,
+      headers: authHeaders(),
+      payload: {
+        name: "Inaccessible",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("NUTRITION_GOAL_NOT_FOUND");
+    expect(mocks.nutritionGoals.updateNutritionGoal).toHaveBeenCalledWith(
+      NUTRITION_GOAL_ID,
+      USER_ID,
+      { name: "Inaccessible" },
+    );
+  });
+
+  it("rejects invalid nutrition goal updates before calling the database", async () => {
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/nutrition-goals/${NUTRITION_GOAL_ID}`,
+      headers: authHeaders(),
+      payload: {
+        dailyCaloriesKcal: -1,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.nutritionGoals.updateNutritionGoal).not.toHaveBeenCalled();
+  });
+
+  it("deletes a nutrition goal for the authenticated user only", async () => {
+    mocks.nutritionGoals.deleteNutritionGoal.mockResolvedValue(true);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/nutrition-goals/${NUTRITION_GOAL_ID}`,
+      headers: authHeaders(),
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.body).toBe("");
+    expect(mocks.nutritionGoals.deleteNutritionGoal).toHaveBeenCalledWith(
+      NUTRITION_GOAL_ID,
+      USER_ID,
+    );
+  });
+
+  it("returns 404 when deleting a nutrition goal outside the authenticated user scope", async () => {
+    mocks.nutritionGoals.deleteNutritionGoal.mockResolvedValue(false);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/nutrition-goals/${NUTRITION_GOAL_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("NUTRITION_GOAL_NOT_FOUND");
+    expect(mocks.nutritionGoals.deleteNutritionGoal).toHaveBeenCalledWith(
+      NUTRITION_GOAL_ID,
+      USER_ID,
+    );
+  });
+
+  it("rejects invalid nutrition goal ids on delete before calling the database", async () => {
+    const response = await app.inject({
+      method: "DELETE",
+      url: "/api/nutrition-goals/not-a-uuid",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.nutritionGoals.deleteNutritionGoal).not.toHaveBeenCalled();
   });
 });

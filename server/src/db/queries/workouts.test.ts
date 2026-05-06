@@ -209,6 +209,26 @@ describe("workout queries", () => {
     expect(mocks.prisma.workout.update).not.toHaveBeenCalled();
   });
 
+  it("updates a workout owned by the user, including a zero duration", async () => {
+    mocks.prisma.workout.findUnique.mockResolvedValue(workoutRecord);
+    mocks.prisma.workout.update.mockResolvedValue({
+      ...workoutRecord,
+      duration: 0,
+    });
+
+    const result = await updateWorkout(WORKOUT_ID, USER_ID, {
+      duration: 0,
+    });
+
+    expect(mocks.prisma.workout.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: WORKOUT_ID },
+        data: { duration: 0 },
+      }),
+    );
+    expect(result?.duration).toBe(0);
+  });
+
   it("does not delete a workout owned by another user", async () => {
     mocks.prisma.workout.findUnique.mockResolvedValue({
       ...workoutRecord,
@@ -219,5 +239,16 @@ describe("workout queries", () => {
 
     expect(result).toBe(false);
     expect(mocks.prisma.workout.delete).not.toHaveBeenCalled();
+  });
+
+  it("deletes a workout owned by the user", async () => {
+    mocks.prisma.workout.findUnique.mockResolvedValue(workoutRecord);
+
+    const result = await deleteWorkout(WORKOUT_ID, USER_ID);
+
+    expect(result).toBe(true);
+    expect(mocks.prisma.workout.delete).toHaveBeenCalledWith({
+      where: { id: WORKOUT_ID },
+    });
   });
 });
