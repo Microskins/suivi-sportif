@@ -61,18 +61,18 @@ export function registerProjectPrompts(server: McpServer) {
   server.registerPrompt(
     "nutrition-future-scope",
     {
-      description: "Cadre agent pour les futures questions nutrition/calories.",
-      title: "Nutrition future",
+      description: "Cadre agent pour les questions nutrition/calories.",
+      title: "Nutrition",
     },
     () => ({
       messages: [
         {
           content: {
             text: [
-              "L'application ne stocke pas encore les repas, calories, objectifs nutritionnels ou depenses energetiques.",
-              "Un agent ne doit donc pas pretendre lire des donnees nutrition internes.",
-              "Pour repondre a une question comme 'quoi manger ce soir pour ne pas etre en surplus kcal', demander les donnees necessaires ou utiliser uniquement des entrees fournies par l'utilisateur.",
-              "Ne cree pas de modele Prisma/API/UI nutrition sans demande explicite.",
+              "L'application stocke maintenant des aliments, repas et objectifs nutritionnels via l'API Fastify.",
+              "Utilise les outils MCP list/create/update/delete foods, meals et nutrition goals avec un jwtToken utilisateur.",
+              "Ne pretends pas calculer des recommandations medicales ou nutritionnelles automatiques: l'app stocke des donnees et objectifs, elle ne remplace pas un professionnel.",
+              "Les depenses energetiques et conseils nutrition avances ne sont pas encore modelises.",
             ].join("\n"),
             type: "text",
           },
@@ -82,4 +82,3 @@ export function registerProjectPrompts(server: McpServer) {
     }),
   );
 }
-

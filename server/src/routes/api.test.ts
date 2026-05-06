@@ -28,15 +28,44 @@ const mocks = vi.hoisted(() => ({
     updateWorkout: vi.fn(),
     deleteWorkout: vi.fn(),
   },
+  foods: {
+    getFoods: vi.fn(),
+    getFoodById: vi.fn(),
+    createFood: vi.fn(),
+    updateFood: vi.fn(),
+    deleteFood: vi.fn(),
+  },
+  meals: {
+    getMeals: vi.fn(),
+    getMealById: vi.fn(),
+    getMealsByDateRange: vi.fn(),
+    createMeal: vi.fn(),
+    updateMeal: vi.fn(),
+    deleteMeal: vi.fn(),
+  },
+  nutritionGoals: {
+    getNutritionGoals: vi.fn(),
+    getActiveNutritionGoal: vi.fn(),
+    getNutritionGoalById: vi.fn(),
+    createNutritionGoal: vi.fn(),
+    updateNutritionGoal: vi.fn(),
+    deleteNutritionGoal: vi.fn(),
+  },
 }));
 
 vi.mock("../db/queries/users.js", () => mocks.users);
 vi.mock("../db/queries/exercises.js", () => mocks.exercises);
 vi.mock("../db/queries/workouts.js", () => mocks.workouts);
+vi.mock("../db/queries/foods.js", () => mocks.foods);
+vi.mock("../db/queries/meals.js", () => mocks.meals);
+vi.mock("../db/queries/nutrition-goals.js", () => mocks.nutritionGoals);
 
 const USER_ID = "11111111-1111-4111-8111-111111111111";
 const EXERCISE_ID = "22222222-2222-4222-8222-222222222222";
 const WORKOUT_ID = "33333333-3333-4333-8333-333333333333";
+const FOOD_ID = "44444444-4444-4444-8444-444444444444";
+const MEAL_ID = "55555555-5555-4555-8555-555555555555";
+const NUTRITION_GOAL_ID = "66666666-6666-4666-8666-666666666666";
 
 const user = {
   id: USER_ID,
@@ -69,6 +98,74 @@ const workout = {
   exercises: [],
 };
 
+const food = {
+  id: FOOD_ID,
+  userId: USER_ID,
+  name: "Riz basmati",
+  brand: null,
+  barcode: null,
+  caloriesKcal: 350,
+  proteinGrams: 7,
+  carbsGrams: 78,
+  fatGrams: 1,
+  fiberGrams: null,
+  servingUnit: "g",
+  isGlobal: false,
+  createdAt: "2026-05-04T10:00:00.000Z",
+  updatedAt: "2026-05-04T10:00:00.000Z",
+};
+
+const meal = {
+  id: MEAL_ID,
+  userId: USER_ID,
+  name: "Déjeuner",
+  date: "2026-05-04T12:00:00.000Z",
+  mealType: "lunch",
+  notes: null,
+  createdAt: "2026-05-04T12:00:00.000Z",
+  updatedAt: "2026-05-04T12:00:00.000Z",
+  items: [
+    {
+      id: "77777777-7777-4777-8777-777777777777",
+      foodId: FOOD_ID,
+      foodName: food.name,
+      quantityGrams: 150,
+      caloriesKcalPer100g: 350,
+      proteinGramsPer100g: 7,
+      carbsGramsPer100g: 78,
+      fatGramsPer100g: 1,
+      totals: {
+        caloriesKcal: 525,
+        proteinGrams: 10.5,
+        carbsGrams: 117,
+        fatGrams: 1.5,
+      },
+      createdAt: "2026-05-04T12:00:00.000Z",
+    },
+  ],
+  totals: {
+    caloriesKcal: 525,
+    proteinGrams: 10.5,
+    carbsGrams: 117,
+    fatGrams: 1.5,
+  },
+};
+
+const nutritionGoal = {
+  id: NUTRITION_GOAL_ID,
+  userId: USER_ID,
+  name: "Maintien",
+  startDate: "2026-05-04T00:00:00.000Z",
+  endDate: null,
+  dailyCaloriesKcal: 2400,
+  dailyProteinGrams: 160,
+  dailyCarbsGrams: 260,
+  dailyFatGrams: 70,
+  isActive: true,
+  createdAt: "2026-05-04T10:00:00.000Z",
+  updatedAt: "2026-05-04T10:00:00.000Z",
+};
+
 describe("API", () => {
   let app: FastifyInstance;
 
@@ -76,7 +173,7 @@ describe("API", () => {
     vi.clearAllMocks();
     app = buildApp({ logger: false });
     await app.ready();
-  });
+  }, 30000);
 
   afterEach(async () => {
     await app.close();
@@ -755,5 +852,167 @@ describe("API", () => {
     expect(response.statusCode).toBe(400);
     expect(body.code).toBe("VALIDATION_ERROR");
     expect(mocks.workouts.deleteWorkout).not.toHaveBeenCalled();
+  });
+
+  it("rejects listing foods without a token", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/foods",
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expect(body.code).toBe("UNAUTHORIZED");
+    expect(mocks.foods.getFoods).not.toHaveBeenCalled();
+  });
+
+  it("lists foods available to the authenticated user", async () => {
+    mocks.foods.getFoods.mockResolvedValue([food]);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/foods",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([food]);
+    expect(body.meta.total).toBe(1);
+    expect(mocks.foods.getFoods).toHaveBeenCalledWith(USER_ID);
+  });
+
+  it("creates a custom food for the authenticated user", async () => {
+    const payload = {
+      name: food.name,
+      caloriesKcal: food.caloriesKcal,
+      proteinGrams: food.proteinGrams,
+      carbsGrams: food.carbsGrams,
+      fatGrams: food.fatGrams,
+    };
+    mocks.foods.createFood.mockResolvedValue(food);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/foods",
+      headers: authHeaders(),
+      payload,
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(201);
+    expect(body.data).toEqual(food);
+    expect(mocks.foods.createFood).toHaveBeenCalledWith(USER_ID, {
+      ...payload,
+      servingUnit: "g",
+    });
+  });
+
+  it("creates a meal with food items for the authenticated user", async () => {
+    const payload = {
+      name: meal.name,
+      date: meal.date,
+      mealType: meal.mealType,
+      items: [{ foodId: FOOD_ID, quantityGrams: 150 }],
+    };
+    mocks.meals.createMeal.mockResolvedValue(meal);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/meals",
+      headers: authHeaders(),
+      payload,
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(201);
+    expect(body.data.totals.caloriesKcal).toBe(525);
+    expect(mocks.meals.createMeal).toHaveBeenCalledWith(USER_ID, payload);
+  });
+
+  it("returns a clear error when creating a meal with inaccessible food", async () => {
+    mocks.meals.createMeal.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/meals",
+      headers: authHeaders(),
+      payload: {
+        name: meal.name,
+        date: meal.date,
+        items: [{ foodId: FOOD_ID, quantityGrams: 150 }],
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("FOOD_NOT_FOUND");
+  });
+
+  it("lists meals by date range for the authenticated user", async () => {
+    mocks.meals.getMealsByDateRange.mockResolvedValue([meal]);
+
+    const start = "2026-05-01T00:00:00.000Z";
+    const end = "2026-05-31T23:59:59.000Z";
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/meals/range/${start}/${end}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([meal]);
+    expect(mocks.meals.getMealsByDateRange).toHaveBeenCalledWith(
+      USER_ID,
+      start,
+      end,
+    );
+  });
+
+  it("creates an active nutrition goal for the authenticated user", async () => {
+    const payload = {
+      name: nutritionGoal.name,
+      startDate: nutritionGoal.startDate,
+      dailyCaloriesKcal: nutritionGoal.dailyCaloriesKcal,
+      dailyProteinGrams: nutritionGoal.dailyProteinGrams,
+      dailyCarbsGrams: nutritionGoal.dailyCarbsGrams,
+      dailyFatGrams: nutritionGoal.dailyFatGrams,
+    };
+    mocks.nutritionGoals.createNutritionGoal.mockResolvedValue(nutritionGoal);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/nutrition-goals",
+      headers: authHeaders(),
+      payload,
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(201);
+    expect(body.data).toEqual(nutritionGoal);
+    expect(mocks.nutritionGoals.createNutritionGoal).toHaveBeenCalledWith(
+      USER_ID,
+      { ...payload, isActive: true },
+    );
+  });
+
+  it("returns the active nutrition goal for the authenticated user", async () => {
+    mocks.nutritionGoals.getActiveNutritionGoal.mockResolvedValue(
+      nutritionGoal,
+    );
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/nutrition-goals/active",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(nutritionGoal);
+    expect(mocks.nutritionGoals.getActiveNutritionGoal).toHaveBeenCalledWith(
+      USER_ID,
+    );
   });
 });

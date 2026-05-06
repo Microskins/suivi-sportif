@@ -150,6 +150,96 @@ Créer une séance:
 
 Pour `range`, les dates doivent être des datetime ISO encodées dans l'URL.
 
+## Nutrition
+
+Toutes les routes sont protégées et utilisent l'utilisateur du JWT.
+
+### Foods
+
+- `GET /api/foods`
+- `GET /api/foods/:id`
+- `POST /api/foods`
+- `PUT /api/foods/:id`
+- `DELETE /api/foods/:id`
+
+Les aliments globaux ont `userId: null`. Les aliments créés par l'API sont
+personnels à l'utilisateur authentifié.
+
+Créer un aliment:
+
+```json
+{
+  "name": "Riz basmati",
+  "brand": null,
+  "barcode": null,
+  "caloriesKcal": 350,
+  "proteinGrams": 7,
+  "carbsGrams": 78,
+  "fatGrams": 1,
+  "fiberGrams": null,
+  "servingUnit": "g"
+}
+```
+
+Les valeurs nutritionnelles sont stockées pour 100g.
+
+### Meals
+
+- `GET /api/meals`
+- `GET /api/meals/:id`
+- `GET /api/meals/range/:start/:end`
+- `POST /api/meals`
+- `PUT /api/meals/:id`
+- `DELETE /api/meals/:id`
+
+Créer un repas:
+
+```json
+{
+  "name": "Déjeuner",
+  "date": "2026-05-04T12:00:00.000Z",
+  "mealType": "lunch",
+  "notes": null,
+  "items": [
+    {
+      "foodId": "uuid",
+      "quantityGrams": 150
+    }
+  ]
+}
+```
+
+`mealType` accepte `breakfast`, `lunch`, `dinner`, `snack`, `other`.
+La réponse contient les totaux calories/macros calculés depuis des snapshots
+par item, pour éviter qu'un ancien repas change si un aliment est modifié.
+
+### Nutrition Goals
+
+- `GET /api/nutrition-goals`
+- `GET /api/nutrition-goals/active`
+- `GET /api/nutrition-goals/:id`
+- `POST /api/nutrition-goals`
+- `PUT /api/nutrition-goals/:id`
+- `DELETE /api/nutrition-goals/:id`
+
+Créer un objectif:
+
+```json
+{
+  "name": "Maintien",
+  "startDate": "2026-05-04T00:00:00.000Z",
+  "endDate": null,
+  "dailyCaloriesKcal": 2400,
+  "dailyProteinGrams": 160,
+  "dailyCarbsGrams": 260,
+  "dailyFatGrams": 70,
+  "isActive": true
+}
+```
+
+Créer ou modifier un objectif avec `isActive: true` désactive les autres
+objectifs actifs de l'utilisateur.
+
 ## Erreurs fréquentes
 
 - `400 VALIDATION_ERROR`: body, params ou dates invalides.

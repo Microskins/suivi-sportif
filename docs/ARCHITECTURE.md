@@ -2,10 +2,11 @@
 
 ## Vue d'ensemble
 
-Le projet est un monorepo npm avec deux workspaces:
+Le projet est un monorepo npm avec trois workspaces:
 
 - `server`: API Fastify en TypeScript.
 - `client`: application React/Vite en TypeScript.
+- `mcp`: serveur MCP de debug et d'automatisation locale/distante.
 
 La source de vérité métier est côté API. Le frontend ne contient pas de logique d'accès aux données directe: il appelle l'API.
 
@@ -54,6 +55,9 @@ server/src/
 │   ├── index.ts
 │   └── queries/
 │       ├── exercises.ts
+│       ├── foods.ts
+│       ├── meals.ts
+│       ├── nutrition-goals.ts
 │       ├── users.ts
 │       └── workouts.ts
 ├── plugins/
@@ -61,6 +65,9 @@ server/src/
 ├── routes/
 │   ├── api.test.ts
 │   ├── exercises.ts
+│   ├── foods.ts
+│   ├── meals.ts
+│   ├── nutrition-goals.ts
 │   ├── users.ts
 │   └── workouts.ts
 └── schemas/
@@ -98,8 +105,12 @@ Règles actuelles:
   - `GET /api/users`
   - `GET/POST/PUT/DELETE /api/exercises`
   - `GET/POST/PUT/DELETE /api/workouts`
+  - `GET/POST/PUT/DELETE /api/foods`
+  - `GET/POST/PUT/DELETE /api/meals`
+  - `GET/POST/PUT/DELETE /api/nutrition-goals`
 
-Les mots de passe sont hashés avec `bcrypt`. Les workouts utilisent `request.user.id`, issu du token JWT.
+Les mots de passe sont hashés avec `bcrypt`. Les ressources utilisateur
+utilisent `request.user.id`, issu du token JWT.
 
 ### Données
 
@@ -112,8 +123,15 @@ Modèles principaux:
 - `Workout`
 - `WorkoutExercise`
 - `WorkoutSet`
+- `Food`
+- `Meal`
+- `MealItem`
+- `NutritionGoal`
 
 Les séances peuvent contenir plusieurs exercices, et chaque exercice peut contenir plusieurs séries.
+Les repas contiennent des items avec snapshots des macros/kcal pour conserver
+l'historique même si un aliment est modifié ensuite. Les objectifs nutritionnels
+actifs désactivent les autres objectifs actifs du même utilisateur.
 
 ### Tests
 

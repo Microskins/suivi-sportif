@@ -8,11 +8,16 @@ import type {
   ExerciseResponse,
 } from "../../schemas/index.js";
 
+type ExerciseRecord = Omit<ExerciseResponse, "createdAt" | "updatedAt"> & {
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export async function getExercises(): Promise<ExerciseResponse[]> {
   const exercises = await prisma.exercise.findMany({
     orderBy: { name: "asc" },
   });
-  return exercises.map((e) => ({
+  return (exercises as ExerciseRecord[]).map((e) => ({
     ...e,
     createdAt: e.createdAt.toISOString(),
     updatedAt: e.updatedAt.toISOString(),
@@ -40,7 +45,7 @@ export async function getExercisesByMuscleGroup(
     where: { muscleGroup },
     orderBy: { name: "asc" },
   });
-  return exercises.map((e) => ({
+  return (exercises as ExerciseRecord[]).map((e) => ({
     ...e,
     createdAt: e.createdAt.toISOString(),
     updatedAt: e.updatedAt.toISOString(),
