@@ -18,7 +18,7 @@ retaper les headers JWT et sans manipuler le token a la main.
 
 ## Todo
 
-- [x] Creer `docs/PLAN_API_HELPERS.md`.
+- [x] Creer `docs/PLAN_002_API_HELPERS.md`.
 - [x] Ajouter la regle de stockage local du token.
 - [x] Creer `scripts/api/login.ps1`.
 - [x] Creer les scripts de lecture catalogue.

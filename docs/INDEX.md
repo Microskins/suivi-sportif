@@ -10,6 +10,7 @@ This page is the entry point for project documentation.
 - [Deployment target](./DEPLOYMENT_TARGET.md): frontend/API/PostgreSQL separation.
 - [Docker deployment](./DOCKER_DEPLOYMENT.md): PM2 -> Docker Compose + Nginx runbook.
 - [Project Structure](./PROJECT_STRUCTURE.md): current folders and key files.
+- [Plans](./PLANS.md): chronological plan docs and todo convention.
 
 ## Project status
 
