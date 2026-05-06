@@ -23,7 +23,7 @@
 - [x] Remplacer l'ecran principal par le dashboard CRUD.
 - [x] Ajouter la configuration Tailwind minimale.
 - [x] Corriger la persistance des exercices/series lors de l'edition seance.
-- [ ] Lancer les verifications frontend.
+- [x] Lancer les verifications frontend.
 
 ## Notes de verification
 
@@ -40,3 +40,9 @@
   workout update; correction appliquee en reconstruisant la shape `Workout`.
 - Serveur: `npm run build -w server` a revele un narrowing TypeScript perdu sur
   `data.exercises`; correction appliquee via constante locale.
+- Serveur apres pull `4269f61`:
+  - `npm run test -w server -- --run`: OK, 5 fichiers et 125 tests passes.
+  - `npm run typecheck -w client`: OK.
+  - `npm run build -w client`: OK.
+  - `npm run build -w server`: OK.
+  - `docker compose ps`: api/client/mcp up, api et mcp healthy.
