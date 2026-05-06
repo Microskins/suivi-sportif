@@ -2,14 +2,13 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-RUN apk add --no-cache openssl
-
 COPY package*.json ./
 COPY server/package*.json ./server/
 COPY client/package*.json ./client/
 COPY mcp/package*.json ./mcp/
 
 RUN npm ci || npm install
+RUN apk add --no-cache openssl
 
 COPY server ./server
 
