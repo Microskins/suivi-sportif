@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
@@ -24,6 +23,7 @@ lerna-debug.log*
 .env
 .env.local
 .env.*.local
+scripts/api/.token.json
 
 # IDEs
 .*
