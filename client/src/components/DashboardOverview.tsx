@@ -137,25 +137,34 @@ function StatCard({
   label,
   value,
   detail,
+  tone,
 }: {
   label: string;
   value: string;
   detail: string;
+  tone: "sport" | "nutrition" | "goal" | "neutral";
 }) {
+  const accents = {
+    sport: "border-l-emerald-500 bg-emerald-50/70",
+    nutrition: "border-l-amber-500 bg-amber-50/70",
+    goal: "border-l-rose-500 bg-rose-50/70",
+    neutral: "border-l-neutral-900 bg-white",
+  };
+
   return (
-    <div className="rounded border border-slate-200 bg-slate-50 p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+    <div className={`rounded border border-neutral-200 border-l-4 p-4 shadow-sm ${accents[tone]}`}>
+      <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
         {label}
       </p>
-      <p className="mt-2 text-2xl font-bold text-slate-950">{value}</p>
-      <p className="mt-1 text-sm text-slate-600">{detail}</p>
+      <p className="mt-2 text-3xl font-bold text-neutral-950">{value}</p>
+      <p className="mt-1 text-sm text-neutral-600">{detail}</p>
     </div>
   );
 }
 
 function EmptyChart({ label }: { label: string }) {
   return (
-    <div className="flex h-72 items-center justify-center rounded border border-dashed border-slate-300 bg-white text-center text-sm text-slate-500">
+    <div className="flex h-72 items-center justify-center rounded border border-dashed border-neutral-300 bg-neutral-50 text-center text-sm text-neutral-500">
       {label}
     </div>
   );
@@ -197,31 +206,36 @@ export function DashboardOverview({
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-slate-950">Vue d'ensemble</h2>
-          <p className="mt-1 text-sm text-slate-600">
-            Suivi sport et nutrition sur la periode choisie.
-          </p>
-          {isLoading && (
-            <p className="mt-1 text-sm text-slate-500">Chargement...</p>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {periods.map((item) => (
-            <button
-              key={item.key}
-              type="button"
-              onClick={() => setPeriod(item.key)}
-              className={`rounded border px-3 py-2 text-sm font-medium ${
-                period === item.key
-                  ? "border-slate-950 bg-slate-950 text-white"
-                  : "border-slate-300 text-slate-700 hover:bg-slate-100"
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
+      <div className="rounded border border-neutral-200 bg-white/90 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
+              Synthese
+            </p>
+            <h2 className="mt-1 text-3xl font-bold text-neutral-950">Vue d'ensemble</h2>
+            <p className="mt-1 text-sm text-neutral-600">
+              Suivi sport et nutrition sur la periode choisie.
+            </p>
+            {isLoading && (
+              <p className="mt-1 text-sm text-neutral-500">Chargement...</p>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {periods.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => setPeriod(item.key)}
+                className={`rounded border px-3 py-2 text-sm font-medium ${
+                  period === item.key
+                    ? "border-emerald-700 bg-emerald-700 text-white shadow-sm"
+                    : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -230,35 +244,39 @@ export function DashboardOverview({
           label="Seances"
           value={formatNumber(totals.workouts)}
           detail={`${formatNumber(totals.duration)} min, ${formatNumber(totals.sets)} series`}
+          tone="sport"
         />
         <StatCard
           label="Calories moy."
           value={`${formatNumber(averageCalories)} kcal`}
           detail={goal ? `${calorieProgress}% de ${goal.dailyCaloriesKcal} kcal` : "Aucun objectif actif"}
+          tone="nutrition"
         />
         <StatCard
           label="Proteines moy."
           value={`${formatNumber(averageProtein)} g`}
           detail={goal?.dailyProteinGrams ? `Objectif ${goal.dailyProteinGrams} g/j` : "Objectif non renseigne"}
+          tone="goal"
         />
         <StatCard
           label="Objectif actif"
           value={goal?.name ?? "Aucun"}
           detail={goal ? `${goal.dailyCaloriesKcal} kcal par jour` : "Cree un objectif nutrition"}
+          tone="neutral"
         />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <section className="rounded border border-slate-200 bg-white p-4">
+        <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="font-semibold text-slate-950">Charge sportive</h3>
-              <p className="text-sm text-slate-500">Duree et nombre de seances par jour.</p>
+              <h3 className="font-semibold text-neutral-950">Charge sportive</h3>
+              <p className="text-sm text-neutral-500">Duree et nombre de seances par jour.</p>
             </div>
             <button
               type="button"
               onClick={() => onQuickAction("workout")}
-              className="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+              className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-100"
             >
               Ajouter
             </button>
@@ -267,13 +285,13 @@ export function DashboardOverview({
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={summaries}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
                   <XAxis dataKey="label" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="duration" name="Minutes" fill="#0f172a" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="workouts" name="Seances" fill="#14b8a6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="duration" name="Minutes" fill="#047857" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="workouts" name="Seances" fill="#f59e0b" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -282,16 +300,16 @@ export function DashboardOverview({
           )}
         </section>
 
-        <section className="rounded border border-slate-200 bg-white p-4">
+        <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="font-semibold text-slate-950">Nutrition</h3>
-              <p className="text-sm text-slate-500">Calories et macros journalieres.</p>
+              <h3 className="font-semibold text-neutral-950">Nutrition</h3>
+              <p className="text-sm text-neutral-500">Calories et macros journalieres.</p>
             </div>
             <button
               type="button"
               onClick={() => onQuickAction("meal")}
-              className="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+              className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-800 hover:bg-amber-100"
             >
               Ajouter
             </button>
@@ -300,13 +318,13 @@ export function DashboardOverview({
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={summaries}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
                   <XAxis dataKey="label" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="calories" name="Kcal" stroke="#0f172a" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="protein" name="Proteines" stroke="#14b8a6" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="calories" name="Kcal" stroke="#111827" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="protein" name="Proteines" stroke="#047857" strokeWidth={2} dot={false} />
                   <Line type="monotone" dataKey="carbs" name="Glucides" stroke="#f59e0b" strokeWidth={2} dot={false} />
                   <Line type="monotone" dataKey="fat" name="Lipides" stroke="#ef4444" strokeWidth={2} dot={false} />
                 </LineChart>
@@ -319,10 +337,10 @@ export function DashboardOverview({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
-        <section className="rounded border border-slate-200 bg-slate-50 p-4">
-          <h3 className="font-semibold text-slate-950">Objectif nutrition</h3>
+        <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
+          <h3 className="font-semibold text-neutral-950">Objectif nutrition</h3>
           {goal ? (
-            <div className="mt-3 space-y-2 text-sm text-slate-700">
+            <div className="mt-3 space-y-2 text-sm text-neutral-700">
               <p>
                 {goal.name} vise {goal.dailyCaloriesKcal} kcal par jour.
               </p>
@@ -331,38 +349,38 @@ export function DashboardOverview({
                 value={calorieProgress}
                 max={100}
               />
-              <p className="text-slate-500">
+              <p className="text-neutral-500">
                 Moyenne actuelle: {formatNumber(averageCalories)} kcal sur les jours saisis.
               </p>
             </div>
           ) : (
-            <p className="mt-3 text-sm text-slate-600">
+            <p className="mt-3 text-sm text-neutral-600">
               Aucun objectif actif pour comparer les calories et macros.
             </p>
           )}
         </section>
 
-        <section className="rounded border border-slate-200 bg-white p-4">
-          <h3 className="font-semibold text-slate-950">Actions rapides</h3>
+        <section className="rounded border border-neutral-200 bg-neutral-950 p-4 text-white shadow-sm">
+          <h3 className="font-semibold">Actions rapides</h3>
           <div className="mt-3 grid gap-2">
             <button
               type="button"
               onClick={() => onQuickAction("workout")}
-              className="rounded bg-slate-950 px-3 py-2 text-sm font-semibold text-white"
+              className="rounded bg-emerald-500 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-400"
             >
               Creer une seance
             </button>
             <button
               type="button"
               onClick={() => onQuickAction("meal")}
-              className="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+              className="rounded border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/10"
             >
               Creer un repas
             </button>
             <button
               type="button"
               onClick={() => onQuickAction("goal")}
-              className="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+              className="rounded border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/10"
             >
               Creer un objectif
             </button>

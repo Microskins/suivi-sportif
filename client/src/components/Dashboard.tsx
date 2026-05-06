@@ -174,11 +174,11 @@ function Field({
 }
 
 const inputClass =
-  "block w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none focus:border-slate-700";
+  "block w-full rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-950 outline-none focus:border-emerald-700";
 const buttonClass =
-  "rounded bg-slate-950 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60";
+  "rounded bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60";
 const secondaryButtonClass =
-  "rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100";
+  "rounded border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50";
 const dangerButtonClass =
   "rounded border border-red-200 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50";
 
@@ -684,15 +684,20 @@ export function Dashboard({
             ? mealsStore.error
             : goalsStore.error;
 
+  const contentClass =
+    resource === "dashboard"
+      ? "min-w-0"
+      : "rounded border border-neutral-200 bg-white p-5 shadow-sm";
+
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-950">
-      <section className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-10">
-        <div className="rounded border border-slate-300 bg-white p-5 shadow-sm">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#f7f8f5_0%,#edf4ef_48%,#f6f7f4_100%)] text-neutral-950">
+      <section className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
+        <div className="rounded border border-neutral-200 bg-white/90 p-5 shadow-sm backdrop-blur">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Suivi Sportif</p>
-              <h1 className="mt-1 text-2xl font-bold">{userName}</h1>
-              <p className="mt-1 text-sm text-slate-600">{userEmail}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Suivi Sportif</p>
+              <h1 className="mt-1 text-3xl font-bold text-neutral-950">{userName}</h1>
+              <p className="mt-1 text-sm text-neutral-600">{userEmail}</p>
               {isAuthBypassEnabled && (
                 <p className="mt-2 inline-flex rounded border border-amber-200 bg-amber-50 px-2 py-1 text-xs text-amber-700">
                   Mode bypass actif
@@ -703,21 +708,21 @@ export function Dashboard({
           </div>
         </div>
 
-        <div className="mt-6 grid gap-3 md:grid-cols-[220px_1fr]">
-          <nav className="rounded border border-slate-300 bg-white p-2 shadow-sm">
-            <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="mt-5 grid gap-5 md:grid-cols-[230px_1fr]">
+          <nav className="h-fit rounded border border-neutral-200 bg-white/90 p-2 shadow-sm backdrop-blur">
+            <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
               Accueil
             </p>
             <button
               type="button"
               onClick={() => setResource("dashboard")}
               className={`mb-1 block w-full rounded px-3 py-2 text-left text-sm font-medium ${
-                resource === "dashboard" ? "bg-slate-950 text-white" : "text-slate-700 hover:bg-slate-100"
+                resource === "dashboard" ? "bg-emerald-700 text-white shadow-sm" : "text-neutral-700 hover:bg-neutral-100"
               }`}
             >
               Synthese
             </button>
-            <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <p className="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
               Sport
             </p>
             {[
@@ -729,13 +734,13 @@ export function Dashboard({
                 type="button"
                 onClick={() => setResource(key as Resource)}
                 className={`mb-1 block w-full rounded px-3 py-2 text-left text-sm font-medium ${
-                  resource === key ? "bg-slate-950 text-white" : "text-slate-700 hover:bg-slate-100"
+                  resource === key ? "bg-neutral-950 text-white shadow-sm" : "text-neutral-700 hover:bg-neutral-100"
                 }`}
               >
                 {label}
               </button>
             ))}
-            <p className="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <p className="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
               Nutrition
             </p>
             {[
@@ -748,7 +753,7 @@ export function Dashboard({
                 type="button"
                 onClick={() => setResource(key as Resource)}
                 className={`mb-1 block w-full rounded px-3 py-2 text-left text-sm font-medium ${
-                  resource === key ? "bg-slate-950 text-white" : "text-slate-700 hover:bg-slate-100"
+                  resource === key ? "bg-amber-600 text-white shadow-sm" : "text-neutral-700 hover:bg-neutral-100"
                 }`}
               >
                 {label}
@@ -756,7 +761,7 @@ export function Dashboard({
             ))}
           </nav>
 
-          <div className="rounded border border-slate-300 bg-white p-5 shadow-sm">
+          <div className={contentClass}>
             {resource !== "dashboard" && (
               <ResourceHeader resource={resource} onCreate={() => openCreate(resource, setModal)} isLoading={isLoading} />
             )}
