@@ -8,6 +8,7 @@ COPY server/package*.json ./server/
 COPY client/package*.json ./client/
 COPY server/prisma ./server/prisma
 
+RUN npm install -g npm@11.13.0
 RUN npm ci || npm install
 RUN npm run db:generate -w server
 
@@ -19,6 +20,8 @@ RUN npm prune --omit=dev
 FROM node:20-alpine AS runtime
 
 WORKDIR /app
+
+RUN npm install -g npm@11.13.0
 
 ENV NODE_ENV=production
 ENV MCP_HOST=0.0.0.0
