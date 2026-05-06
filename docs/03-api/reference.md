@@ -6,6 +6,18 @@ Base locale:
 http://localhost:3001
 ```
 
+Documentation interactive locale:
+
+```text
+http://localhost:3001/docs/
+```
+
+Specification OpenAPI JSON:
+
+```text
+http://localhost:3001/docs/json
+```
+
 En production, l'API est exposee derriere le domaine public:
 
 ```text

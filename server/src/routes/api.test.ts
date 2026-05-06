@@ -189,6 +189,24 @@ describe("API", () => {
     return { authorization: `Bearer ${token}` };
   }
 
+  function invalidAuthHeaders() {
+    return { authorization: "Bearer not-a-valid-token" };
+  }
+
+  function expectErrorShape(body: any, code: string) {
+    expect(body.error).toEqual(expect.any(String));
+    expect(body.code).toBe(code);
+  }
+
+  function expectValidationError(body: any) {
+    expectErrorShape(body, "VALIDATION_ERROR");
+    expect(body.details).toEqual(expect.any(Array));
+  }
+
+  function openApiPath(paths: Record<string, any>, path: string) {
+    return paths[path] ?? paths[`${path}/`];
+  }
+
   it("returns a structured health response", async () => {
     const response = await app.inject({ method: "GET", url: "/health" });
     const body = response.json();
@@ -211,11 +229,57 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(200);
     expect(body.openapi).toEqual(expect.any(String));
-    const pathKeys = Object.keys(body.paths ?? {});
-    expect(pathKeys.length).toBeGreaterThan(0);
-    expect(pathKeys.some((key) => key.startsWith("/api/users/login"))).toBe(
-      true,
+    expect(body.components.securitySchemes.bearerAuth).toEqual({
+      type: "http",
+      scheme: "bearer",
+      bearerFormat: "JWT",
+    });
+
+    const paths = body.paths ?? {};
+    for (const path of [
+      "/api/users/login",
+      "/api/users/register",
+      "/api/users/me",
+      "/api/exercises",
+      "/api/exercises/{id}",
+      "/api/workouts",
+      "/api/workouts/{id}",
+      "/api/foods",
+      "/api/foods/{id}",
+      "/api/meals",
+      "/api/meals/{id}",
+      "/api/nutrition-goals",
+      "/api/nutrition-goals/{id}",
+      "/api/nutrition-goals/active",
+    ]) {
+      expect(openApiPath(paths, path), path).toBeDefined();
+    }
+
+    expect(openApiPath(paths, "/api/meals").get.tags).toContain("meals");
+    expect(openApiPath(paths, "/api/nutrition-goals").get.tags).toContain(
+      "nutrition-goals",
     );
+    expect(openApiPath(paths, "/api/meals").get.security).toEqual([
+      { bearerAuth: [] },
+    ]);
+    expect(openApiPath(paths, "/api/nutrition-goals").post.security).toEqual([
+      { bearerAuth: [] },
+    ]);
+    expect(openApiPath(paths, "/api/meals").post.responses).toHaveProperty(
+      "201",
+    );
+    expect(
+      openApiPath(paths, "/api/meals/{id}").delete.responses,
+    ).toHaveProperty("204");
+    expect(
+      openApiPath(paths, "/api/nutrition-goals/{id}").put.responses,
+    ).toHaveProperty("400");
+    expect(
+      openApiPath(paths, "/api/nutrition-goals/{id}").put.responses,
+    ).toHaveProperty("404");
+    expect(
+      openApiPath(paths, "/api/nutrition-goals/{id}").put.responses,
+    ).toHaveProperty("500");
   });
 
   it("registers a public user and returns a token", async () => {
@@ -1645,5 +1709,89 @@ describe("API", () => {
     expect(response.statusCode).toBe(400);
     expect(body.code).toBe("VALIDATION_ERROR");
     expect(mocks.nutritionGoals.deleteNutritionGoal).not.toHaveBeenCalled();
+  });
+
+  it("rejects invalid bearer tokens before calling protected queries", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/meals",
+      headers: invalidAuthHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expectErrorShape(body, "UNAUTHORIZED");
+    expect(mocks.meals.getMeals).not.toHaveBeenCalled();
+  });
+
+  it("returns validation details and skips queries for invalid payloads", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/nutrition-goals",
+      headers: authHeaders(),
+      payload: {
+        name: "",
+        startDate: "2026-05-04T00:00:00.000Z",
+        endDate: "2026-05-03T00:00:00.000Z",
+        dailyCaloriesKcal: -1,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expectValidationError(body);
+    expect(mocks.nutritionGoals.createNutritionGoal).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    {
+      name: "users",
+      method: "GET" as const,
+      url: "/api/users/me",
+      mock: mocks.users.getUserById,
+    },
+    {
+      name: "exercises",
+      method: "GET" as const,
+      url: "/api/exercises",
+      mock: mocks.exercises.getExercises,
+    },
+    {
+      name: "workouts",
+      method: "GET" as const,
+      url: "/api/workouts",
+      mock: mocks.workouts.getWorkouts,
+    },
+    {
+      name: "foods",
+      method: "GET" as const,
+      url: "/api/foods",
+      mock: mocks.foods.getFoods,
+    },
+    {
+      name: "meals",
+      method: "GET" as const,
+      url: "/api/meals",
+      mock: mocks.meals.getMeals,
+    },
+    {
+      name: "nutrition goals",
+      method: "GET" as const,
+      url: "/api/nutrition-goals",
+      mock: mocks.nutritionGoals.getNutritionGoals,
+    },
+  ])("returns a standard 500 response for $name query failures", async (testCase) => {
+    testCase.mock.mockRejectedValueOnce(new Error("database unavailable"));
+
+    const response = await app.inject({
+      method: testCase.method,
+      url: testCase.url,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(500);
+    expectErrorShape(body, "INTERNAL_SERVER_ERROR");
+    expect(testCase.mock).toHaveBeenCalledTimes(1);
   });
 });

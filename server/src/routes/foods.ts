@@ -15,6 +15,99 @@ const errorResponseSchema = {
   required: ["error", "code"],
 };
 
+const validationErrorResponseSchema = {
+  type: "object",
+  properties: {
+    error: { type: "string" },
+    code: { type: "string" },
+    details: { type: "array" },
+  },
+  required: ["error", "code", "details"],
+};
+
+const metaSchema = {
+  type: "object",
+  properties: {
+    total: { type: "number" },
+    page: { type: "number" },
+    limit: { type: "number" },
+  },
+  required: ["total", "page", "limit"],
+};
+
+const foodBodySchema = {
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    brand: { type: ["string", "null"] },
+    barcode: { type: ["string", "null"] },
+    caloriesKcal: { type: "number" },
+    proteinGrams: { type: "number" },
+    carbsGrams: { type: "number" },
+    fatGrams: { type: "number" },
+    fiberGrams: { type: ["number", "null"] },
+    servingUnit: { type: "string" },
+  },
+  required: [
+    "name",
+    "caloriesKcal",
+    "proteinGrams",
+    "carbsGrams",
+    "fatGrams",
+  ],
+};
+
+const foodSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string", format: "uuid" },
+    userId: { type: ["string", "null"], format: "uuid" },
+    name: { type: "string" },
+    brand: { type: ["string", "null"] },
+    barcode: { type: ["string", "null"] },
+    caloriesKcal: { type: "number" },
+    proteinGrams: { type: "number" },
+    carbsGrams: { type: "number" },
+    fatGrams: { type: "number" },
+    fiberGrams: { type: ["number", "null"] },
+    servingUnit: { type: "string" },
+    isGlobal: { type: "boolean" },
+    createdAt: { type: "string", format: "date-time" },
+    updatedAt: { type: "string", format: "date-time" },
+  },
+  required: [
+    "id",
+    "userId",
+    "name",
+    "brand",
+    "barcode",
+    "caloriesKcal",
+    "proteinGrams",
+    "carbsGrams",
+    "fatGrams",
+    "fiberGrams",
+    "servingUnit",
+    "isGlobal",
+    "createdAt",
+    "updatedAt",
+  ],
+};
+
+const foodListResponseSchema = {
+  type: "object",
+  properties: {
+    data: { type: "array", items: foodSchema },
+    meta: metaSchema,
+  },
+  required: ["data", "meta"],
+};
+
+const foodResponseSchema = {
+  type: "object",
+  properties: { data: foodSchema },
+  required: ["data"],
+};
+
 export async function foodsRoutes(fastify: FastifyInstance) {
   fastify.addHook("preHandler", async (request, reply) => {
     try {
@@ -33,6 +126,11 @@ export async function foodsRoutes(fastify: FastifyInstance) {
         tags: ["foods"],
         summary: "List available foods",
         security: [{ bearerAuth: [] }],
+        response: {
+          200: foodListResponseSchema,
+          401: errorResponseSchema,
+          500: errorResponseSchema,
+        },
       },
     },
     async (request, reply) => {
@@ -52,7 +150,28 @@ export async function foodsRoutes(fastify: FastifyInstance) {
     },
   );
 
-  fastify.get("/:id", async (request, reply) => {
+  fastify.get(
+    "/:id",
+    {
+      schema: {
+        tags: ["foods"],
+        summary: "Get food by id",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: { id: { type: "string", format: "uuid" } },
+          required: ["id"],
+        },
+        response: {
+          200: foodResponseSchema,
+          400: validationErrorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const { id } = idParamSchema.parse(request.params);
       const food = await foods.getFoodById(id, request.user.id);
@@ -77,7 +196,8 @@ export async function foodsRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 
   fastify.post(
     "/",
@@ -86,7 +206,13 @@ export async function foodsRoutes(fastify: FastifyInstance) {
         tags: ["foods"],
         summary: "Create a custom food",
         security: [{ bearerAuth: [] }],
-        response: { 400: errorResponseSchema, 401: errorResponseSchema },
+        body: foodBodySchema,
+        response: {
+          201: foodResponseSchema,
+          400: validationErrorResponseSchema,
+          401: errorResponseSchema,
+          500: errorResponseSchema,
+        },
       },
     },
     async (request, reply) => {
@@ -111,7 +237,32 @@ export async function foodsRoutes(fastify: FastifyInstance) {
     },
   );
 
-  fastify.put("/:id", async (request, reply) => {
+  fastify.put(
+    "/:id",
+    {
+      schema: {
+        tags: ["foods"],
+        summary: "Update food",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: { id: { type: "string", format: "uuid" } },
+          required: ["id"],
+        },
+        body: {
+          ...foodBodySchema,
+          required: [],
+        },
+        response: {
+          200: foodResponseSchema,
+          400: validationErrorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const { id } = idParamSchema.parse(request.params);
       const parsed = updateFoodSchema.parse(request.body);
@@ -137,9 +288,31 @@ export async function foodsRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 
-  fastify.delete("/:id", async (request, reply) => {
+  fastify.delete(
+    "/:id",
+    {
+      schema: {
+        tags: ["foods"],
+        summary: "Delete food",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: { id: { type: "string", format: "uuid" } },
+          required: ["id"],
+        },
+        response: {
+          204: { type: "null" },
+          400: validationErrorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
     try {
       const { id } = idParamSchema.parse(request.params);
       const deleted = await foods.deleteFood(id, request.user.id);
@@ -164,5 +337,6 @@ export async function foodsRoutes(fastify: FastifyInstance) {
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-  });
+    },
+  );
 }
