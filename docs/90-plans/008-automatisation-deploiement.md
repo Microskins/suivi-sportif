@@ -9,9 +9,12 @@
 
 - Le workflow cible `main`.
 - Les validations tournent avant le deploiement.
-- Le deploiement se fait par SSH et appelle un script versionne.
+- Le deploiement se fait par runner GitHub Actions self-hosted sur le LAN et
+  appelle un script versionne localement sur le serveur de production.
 - Le script refuse de deployer si le working tree serveur est sale.
 - Les images Docker restent construites sur le serveur de production.
+- Le runner production utilise les labels `self-hosted`, `linux`, `x64` et
+  `production`.
 
 ## Todo
 
@@ -22,7 +25,9 @@
 - [x] Documenter les secrets, prerequis et rollback.
 - [x] Verifier la syntaxe du script.
 - [x] Verrouiller les fins de ligne LF pour les scripts de deploiement.
-- [ ] Configurer les secrets GitHub et l'acces SSH production.
+- [x] Remplacer le deploiement SSH public par un runner self-hosted LAN.
+- [x] Documenter l'installation du runner `production`.
+- [ ] Installer et enregistrer le runner sur le serveur production.
 
 ## Notes de verification
 
@@ -35,8 +40,11 @@
 - `git diff --check -- . ':!.agents/skills/*'`: OK. Les fichiers
   `.agents/skills/*` restent hors verification car proteges en ecriture dans
   l'environnement local.
-- Secrets GitHub non configures a ce stade: `PROD_SSH_HOST`,
-  `PROD_SSH_USER`, `PROD_SSH_KEY`, `PROD_SSH_PORT` restent a creer.
-- Acces SSH production non finalise pour GitHub Actions: `192.168.1.64` est une
-  IP LAN, donc il faudra un endpoint SSH joignable publiquement ou un runner
-  self-hosted dans le reseau.
+- Decision du 2026-05-07: pas d'exposition SSH publique pour `192.168.1.64`.
+  Le job `deploy` tourne sur un runner self-hosted LAN avec le label
+  `production`.
+- Les secrets GitHub `PROD_SSH_HOST`, `PROD_SSH_USER`, `PROD_SSH_KEY` et
+  `PROD_SSH_PORT` ne sont plus requis. La seule variable optionnelle conservee
+  est `PROD_PROJECT_DIR=/var/www/suivi-sportif`.
+- Installation effective du runner non faite depuis ce workspace: elle doit
+  etre realisee sur le serveur production via l'interface GitHub Actions.

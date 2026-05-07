@@ -132,17 +132,8 @@ The workflow:
 1. installs dependencies with dev tooling;
 2. runs server typecheck, server tests, server build, client typecheck and
    client build;
-3. connects to the production host over SSH;
-4. runs `scripts/deploy-production.sh`.
-
-Required GitHub secrets:
-
-```text
-PROD_SSH_HOST=<public SSH host or LAN host reachable from the runner>
-PROD_SSH_USER=<deploy user>
-PROD_SSH_KEY=<private deploy key>
-PROD_SSH_PORT=22
-```
+3. runs the deploy job on the production self-hosted runner;
+4. runs `scripts/deploy-production.sh` locally on the production host.
 
 Optional GitHub variable:
 
@@ -150,15 +141,55 @@ Optional GitHub variable:
 PROD_PROJECT_DIR=/var/www/suivi-sportif
 ```
 
-Important: `192.168.1.64` is a private LAN address. A GitHub-hosted runner
-cannot reach it directly. For that address, either expose a secure SSH endpoint
-through the router/VPN, or run the deploy job from a self-hosted runner inside
-the LAN.
+No production SSH secrets are required in GitHub Actions. The production host is
+not exposed over SSH; it only needs outbound access to GitHub for the runner and
+for `git fetch` / `git pull`.
+
+Install the runner on the production host as a repo-scoped runner for
+`Microskins/suivi-sportif`. Use the GitHub UI to get the current runner token:
+
+```text
+Repository -> Settings -> Actions -> Runners -> New self-hosted runner
+```
+
+Create a dedicated Linux user and grant Docker access:
+
+```bash
+sudo adduser deploy
+sudo usermod -aG docker deploy
+```
+
+Install the runner under the deploy account:
+
+```bash
+sudo -iu deploy
+mkdir -p ~/actions-runner
+cd ~/actions-runner
+# Follow GitHub's download command for Linux x64.
+# Configure with labels: self-hosted,linux,x64,production
+./config.sh --url https://github.com/Microskins/suivi-sportif --token <runner-token> --labels production
+exit
+```
+
+Register it as a service:
+
+```bash
+cd /home/deploy/actions-runner
+sudo ./svc.sh install deploy
+sudo ./svc.sh start
+sudo ./svc.sh status
+```
+
+Ensure the production checkout belongs to `deploy`:
+
+```bash
+sudo chown -R deploy:deploy /var/www/suivi-sportif
+```
 
 The deploy user must be able to:
 
 - read and write `/var/www/suivi-sportif`;
-- run `git` in that repository;
+- run `git` in that repository, including `git fetch` and `git pull --ff-only`;
 - run `docker compose`;
 - read the production `.env` already present on the host.
 

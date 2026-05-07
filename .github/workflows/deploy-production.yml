@@ -44,37 +44,15 @@ jobs:
 
   deploy:
     name: Deploy
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, production]
     needs: verify
     environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare SSH key
+      - name: Deploy locally
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          printf '%s\n' "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/prod_deploy_key
-          chmod 600 ~/.ssh/prod_deploy_key
-
-      - name: Trust production host
-        shell: bash
-        run: |
-          set -euo pipefail
-          ssh-keyscan -p "${{ secrets.PROD_SSH_PORT || 22 }}" "${{ secrets.PROD_SSH_HOST }}" >> ~/.ssh/known_hosts
-
-      - name: Deploy over SSH
-        shell: bash
-        run: |
-          set -euo pipefail
-          ssh \
-            -i ~/.ssh/prod_deploy_key \
-            -p "${{ secrets.PROD_SSH_PORT || 22 }}" \
-            -o IdentitiesOnly=yes \
-            -o StrictHostKeyChecking=yes \
-            "${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }}" \
-            "PROJECT_DIR='${{ vars.PROD_PROJECT_DIR || '/var/www/suivi-sportif' }}' BRANCH_NAME=main bash -s" \
-            < scripts/deploy-production.sh
+          PROJECT_DIR="${{ vars.PROD_PROJECT_DIR || '/var/www/suivi-sportif' }}" BRANCH_NAME=main bash scripts/deploy-production.sh
