@@ -44,7 +44,7 @@ jobs:
 
   deploy:
     name: Deploy
-    runs-on: [self-hosted, linux, x64, production]
+    runs-on: [self-hosted, linux, ARM64, production]
     needs: verify
     environment: production
     steps:
