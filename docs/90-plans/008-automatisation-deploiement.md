@@ -21,12 +21,20 @@
 - [x] Ajouter le workflow GitHub Actions.
 - [x] Documenter les secrets, prerequis et rollback.
 - [x] Verifier la syntaxe du script.
+- [x] Verrouiller les fins de ligne LF pour les scripts de deploiement.
 - [ ] Configurer les secrets GitHub et l'acces SSH production.
 
 ## Notes de verification
 
-- `bash -n scripts/deploy-production.sh`: OK.
-- `git diff --check`: OK, aucun whitespace error; avertissements CRLF attendus.
+- Apres pull du 2026-05-07, `bash -n scripts/deploy-production.sh` a detecte
+  des fins de ligne CRLF incompatibles avec Bash Linux. Ajout de
+  `.gitattributes`, exception `.gitignore` associee, puis normalisation LF.
+- `bash -n scripts/deploy-production.sh`: OK apres normalisation LF.
+- `bash -n scripts/postgres-backup.sh`: OK.
+- `bash -n scripts/postgres-restore-test.sh`: OK.
+- `git diff --check -- . ':!.agents/skills/*'`: OK. Les fichiers
+  `.agents/skills/*` restent hors verification car proteges en ecriture dans
+  l'environnement local.
 - Secrets GitHub non configures a ce stade: `PROD_SSH_HOST`,
   `PROD_SSH_USER`, `PROD_SSH_KEY`, `PROD_SSH_PORT` restent a creer.
 - Acces SSH production non finalise pour GitHub Actions: `192.168.1.64` est une

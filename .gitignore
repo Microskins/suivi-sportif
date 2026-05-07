@@ -27,6 +27,7 @@ scripts/api/.token.json
 
 # IDEs
 .*
+!.gitattributes
 !.github/
 .github/*
 !.github/workflows/
