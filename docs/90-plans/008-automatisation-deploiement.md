@@ -27,6 +27,8 @@
 - [x] Verrouiller les fins de ligne LF pour les scripts de deploiement.
 - [x] Remplacer le deploiement SSH public par un runner self-hosted LAN.
 - [x] Documenter l'installation du runner `production`.
+- [x] Documenter la procedure complete utilisateur `deploy`, service runner et
+  verification.
 - [ ] Installer et enregistrer le runner sur le serveur production.
 
 ## Notes de verification
@@ -48,3 +50,6 @@
   est `PROD_PROJECT_DIR=/var/www/suivi-sportif`.
 - Installation effective du runner non faite depuis ce workspace: elle doit
   etre realisee sur le serveur production via l'interface GitHub Actions.
+- Procedure runner detaillee dans `docs/04-deployment/docker.md`: utilisateur
+  `deploy`, verrouillage du mot de passe apres installation, labels attendus et
+  verifications sans `sudo`.

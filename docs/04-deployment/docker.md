@@ -152,6 +152,9 @@ Install the runner on the production host as a repo-scoped runner for
 Repository -> Settings -> Actions -> Runners -> New self-hosted runner
 ```
 
+Choose Linux x64 in the GitHub UI and keep the page open; the token is short
+lived.
+
 Create a dedicated Linux user and grant Docker access:
 
 ```bash
@@ -159,17 +162,47 @@ sudo adduser deploy
 sudo usermod -aG docker deploy
 ```
 
-Install the runner under the deploy account:
+If `adduser` asks for a password, use a strong temporary password and store it
+securely while installing the runner. The deploy account is intended for the
+runner service, not for daily password-based login. After the service is
+installed and verified, lock password login:
+
+```bash
+sudo passwd -l deploy
+```
+
+Ensure the production checkout belongs to `deploy` before the first automated
+run:
+
+```bash
+sudo chown -R deploy:deploy /var/www/suivi-sportif
+```
+
+Install the runner under the deploy account. Use the exact download command
+shown by GitHub for Linux x64, then configure it with the production label:
 
 ```bash
 sudo -iu deploy
 mkdir -p ~/actions-runner
 cd ~/actions-runner
-# Follow GitHub's download command for Linux x64.
-# Configure with labels: self-hosted,linux,x64,production
+
+# Copy the current Linux x64 download and extraction commands from GitHub.
+# Example shape only; use GitHub's current version and checksum:
+# curl -o actions-runner-linux-x64-<version>.tar.gz -L https://github.com/actions/runner/releases/download/<version>/actions-runner-linux-x64-<version>.tar.gz
+# tar xzf ./actions-runner-linux-x64-<version>.tar.gz
+
 ./config.sh --url https://github.com/Microskins/suivi-sportif --token <runner-token> --labels production
 exit
 ```
+
+When prompted:
+
+- runner name: `prod-192-168-1-64`;
+- runner group: keep the default;
+- work folder: keep `_work`.
+
+GitHub automatically adds the `self-hosted`, `linux` and `x64` labels. The
+manual label required by this workflow is `production`.
 
 Register it as a service:
 
@@ -180,10 +213,30 @@ sudo ./svc.sh start
 sudo ./svc.sh status
 ```
 
-Ensure the production checkout belongs to `deploy`:
+Verify the runner user can deploy without `sudo`:
 
 ```bash
-sudo chown -R deploy:deploy /var/www/suivi-sportif
+sudo -iu deploy
+cd /var/www/suivi-sportif
+git status
+git fetch origin main
+docker compose ps
+exit
+```
+
+The runner should appear online in:
+
+```text
+Repository -> Settings -> Actions -> Runners
+```
+
+Expected labels:
+
+```text
+self-hosted
+linux
+x64
+production
 ```
 
 The deploy user must be able to:
