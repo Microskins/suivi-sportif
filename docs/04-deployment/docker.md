@@ -185,7 +185,7 @@ sudo chown -R deploy:deploy /var/www/suivi-sportif
 ```
 
 Installer le runner avec le compte `deploy`. Utiliser exactement la commande de
-telechargement affichee par GitHub pour Linux x64, puis configurer le label de
+telechargement affichee par GitHub pour Linux ARM64, puis configurer le label de
 production:
 
 ```bash
