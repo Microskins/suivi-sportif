@@ -1,20 +1,21 @@
-# Docker Deployment
+# Deploiement Docker
 
-This runbook migrates production from PM2 to Docker Compose while keeping the same Nginx entrypoint.
+Ce runbook decrit le passage production de PM2 vers Docker Compose en gardant
+le meme point d'entree Nginx.
 
-## 1. Preconditions
+## 1. Prerequis
 
-- Docker engine and Docker Compose plugin installed on the host.
-- A valid `.env` at repo root with at least:
+- Docker Engine et le plugin Docker Compose installes sur l'hote.
+- Un fichier `.env` valide a la racine du depot avec au minimum:
   - `DATABASE_URL`
   - `JWT_SECRET`
-  - `API_PUBLIC_BASE_URL` (recommended: `https://suivi-sportif.fr`)
+  - `API_PUBLIC_BASE_URL` (recommande: `https://suivi-sportif.fr`)
   - `MCP_AUTH_TOKEN`
-- Nginx installed on host machine.
+- Nginx installe sur la machine hote.
 
-## 2. Build and start containers
+## 2. Construire et demarrer les conteneurs
 
-Run on the API/frontend host:
+Sur l'hote API/frontend:
 
 ```bash
 cd /var/www/suivi-sportif
@@ -23,16 +24,17 @@ docker compose up -d
 docker compose ps
 ```
 
-Use `docker compose build --no-cache` only when the dependency cache must be
-discarded. A cold `npm ci` can take several minutes on a small remote host.
+Utiliser `docker compose build --no-cache` seulement quand le cache de
+dependances doit etre ignore. Un `npm ci` a froid peut prendre plusieurs
+minutes sur un petit serveur distant.
 
-Container ports are bound locally:
+Les ports des conteneurs sont exposes localement:
 
 - API: `127.0.0.1:3001`
 - Frontend: `127.0.0.1:5173`
 - MCP: `127.0.0.1:3033`
 
-## 3. Verify runtime
+## 3. Verifier l'execution
 
 ```bash
 curl -i http://127.0.0.1:3001/health
@@ -43,36 +45,37 @@ docker compose logs client --tail 100
 docker compose logs mcp --tail 100
 ```
 
-Apply production migrations:
+Appliquer les migrations de production:
 
 ```bash
 docker compose run --rm api npx prisma migrate deploy --schema server/prisma/schema.prisma
 ```
 
-Seed the initial production account and base catalog. Do not commit the account
-password. Either pass a password explicitly for this one command, or let the
-script generate one and store the generated value securely:
+Creer le compte initial de production et le catalogue de base. Ne jamais
+commiter le mot de passe du compte. Passer un mot de passe explicitement pour
+cette commande, ou laisser le script en generer un et stocker la valeur dans un
+endroit sur:
 
 ```bash
 docker compose exec -T api npm run db:seed:prod -w server
 
-# Or with an explicit one-time password.
+# Ou avec un mot de passe explicite a usage unique.
 docker compose exec -T \
-  -e SEED_ACCOUNT_PASSWORD='<strong-password>' \
+  -e SEED_ACCOUNT_PASSWORD='<mot-de-passe-fort>' \
   api npm run db:seed:prod -w server
 ```
 
-Default seeded account:
+Compte cree par defaut:
 
 ```text
 Email: admin@suivi-sportif.fr
 Name: Admin Test
 ```
 
-This account is a normal user in the current schema. A real admin role requires
-a future Prisma migration.
+Ce compte est un utilisateur normal dans le schema actuel. Un vrai role admin
+necessitera une future migration Prisma.
 
-Verify the seeded account and base data:
+Verifier le compte cree et les donnees de base:
 
 ```bash
 TOKEN="$(curl -sS -X POST https://suivi-sportif.fr/api/users/login \
@@ -90,12 +93,13 @@ curl -sS https://suivi-sportif.fr/api/foods \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-After this seed, use `docs/03-api/data-entry.md` for quick production data entry
-while the frontend creation interface is still being completed.
+Apres ce seed, utiliser `docs/03-api/data-entry.md` pour saisir rapidement des
+donnees de production tant que l'interface frontend de creation n'est pas
+terminee.
 
-## 4. Nginx cutover
+## 4. Bascule Nginx
 
-Use `deploy/nginx/suivi-sportif.fr.conf` as the site config.
+Utiliser `deploy/nginx/suivi-sportif.fr.conf` comme configuration de site.
 
 ```bash
 sudo cp deploy/nginx/suivi-sportif.fr.conf /etc/nginx/sites-available/suivi-sportif.fr
@@ -104,16 +108,16 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-If the certificate files referenced by the Nginx config do not exist yet,
-generate them first with Certbot:
+Si les fichiers de certificat references par la configuration Nginx n'existent
+pas encore, les generer d'abord avec Certbot:
 
 ```bash
 sudo certbot certonly --nginx -d suivi-sportif.fr
 ```
 
-## 5. Decommission PM2
+## 5. Arreter PM2
 
-Only after Docker + Nginx checks are green:
+Seulement apres validation de Docker et Nginx:
 
 ```bash
 pm2 list
@@ -124,70 +128,74 @@ pm2 save
 
 ## 6. Operations
 
-### Automated deployment
+### Deploiement automatise
 
-Production deployments are automated by GitHub Actions on every push to `main`.
-The workflow:
+Les deploiements production sont automatises par GitHub Actions a chaque push
+sur `main`. Le workflow:
 
-1. installs dependencies with dev tooling;
-2. runs server typecheck, server tests, server build, client typecheck and
-   client build;
-3. runs the deploy job on the production self-hosted runner;
-4. runs `scripts/deploy-production.sh` locally on the production host.
+1. installe les dependances avec l'outillage de developpement;
+2. lance le typecheck serveur, les tests serveur, le build serveur, le
+   typecheck client et le build client;
+3. lance le job de deploiement sur le runner self-hosted de production;
+4. execute `scripts/deploy-production.sh` localement sur l'hote production.
 
-Optional GitHub variable:
+Variable GitHub optionnelle:
 
 ```text
 PROD_PROJECT_DIR=/var/www/suivi-sportif
 ```
 
-No production SSH secrets are required in GitHub Actions. The production host is
-not exposed over SSH; it only needs outbound access to GitHub for the runner and
-for `git fetch` / `git pull`.
+Aucun secret SSH de production n'est requis dans GitHub Actions. L'hote de
+production n'est pas expose en SSH; il lui faut seulement un acces sortant vers
+GitHub pour le runner et pour `git fetch` / `git pull`.
 
-Install the runner on the production host as a repo-scoped runner for
-`Microskins/suivi-sportif`. Use the GitHub UI to get the current runner token:
+Installer le runner sur l'hote de production comme runner limite au depot
+`Microskins/suivi-sportif`. Recuperer le token courant depuis l'interface
+GitHub:
 
 ```text
 Repository -> Settings -> Actions -> Runners -> New self-hosted runner
 ```
 
-Choose Linux x64 in the GitHub UI and keep the page open; the token is short
-lived.
+Choisir Linux x64 dans l'interface GitHub et garder la page ouverte; le token
+expire rapidement.
 
-Create a dedicated Linux user and grant Docker access:
+Creer un utilisateur Linux dedie et lui donner acces a Docker:
 
 ```bash
 sudo adduser deploy
 sudo usermod -aG docker deploy
 ```
 
-If `adduser` asks for a password, use a strong temporary password and store it
-securely while installing the runner. The deploy account is intended for the
-runner service, not for daily password-based login. After the service is
-installed and verified, lock password login:
+Si `adduser` demande un mot de passe, utiliser un mot de passe temporaire fort
+et le stocker de facon sure pendant l'installation du runner. Le compte
+`deploy` est destine au service runner, pas a une connexion quotidienne par mot
+de passe. Une fois le service installe et verifie, verrouiller la connexion par
+mot de passe:
 
 ```bash
 sudo passwd -l deploy
 ```
 
-Ensure the production checkout belongs to `deploy` before the first automated
-run:
+S'assurer que le checkout de production appartient a `deploy` avant le premier
+deploiement automatise:
 
 ```bash
 sudo chown -R deploy:deploy /var/www/suivi-sportif
 ```
 
-Install the runner under the deploy account. Use the exact download command
-shown by GitHub for Linux x64, then configure it with the production label:
+Installer le runner avec le compte `deploy`. Utiliser exactement la commande de
+telechargement affichee par GitHub pour Linux x64, puis configurer le label de
+production:
 
 ```bash
 sudo -iu deploy
 mkdir -p ~/actions-runner
 cd ~/actions-runner
 
-# Copy the current Linux x64 download and extraction commands from GitHub.
-# Example shape only; use GitHub's current version and checksum:
+# Copier les commandes courantes de telechargement et d'extraction Linux x64
+# affichees par GitHub.
+# Exemple de forme seulement; utiliser la version et le checksum courants:
 # curl -o actions-runner-linux-x64-<version>.tar.gz -L https://github.com/actions/runner/releases/download/<version>/actions-runner-linux-x64-<version>.tar.gz
 # tar xzf ./actions-runner-linux-x64-<version>.tar.gz
 
@@ -195,16 +203,16 @@ cd ~/actions-runner
 exit
 ```
 
-When prompted:
+Quand le script pose des questions:
 
-- runner name: `prod-192-168-1-64`;
-- runner group: keep the default;
-- work folder: keep `_work`.
+- nom du runner: `prod-192-168-1-64`;
+- groupe du runner: garder la valeur par defaut;
+- dossier de travail: garder `_work`.
 
-GitHub automatically adds the `self-hosted`, `linux` and `x64` labels. The
-manual label required by this workflow is `production`.
+GitHub ajoute automatiquement les labels `self-hosted`, `linux` et `x64`. Le
+label manuel requis par le workflow est `production`.
 
-Register it as a service:
+Enregistrer le runner comme service:
 
 ```bash
 cd /home/deploy/actions-runner
@@ -213,7 +221,7 @@ sudo ./svc.sh start
 sudo ./svc.sh status
 ```
 
-Verify the runner user can deploy without `sudo`:
+Verifier que l'utilisateur du runner peut deployer sans `sudo`:
 
 ```bash
 sudo -iu deploy
@@ -224,13 +232,13 @@ docker compose ps
 exit
 ```
 
-The runner should appear online in:
+Le runner doit apparaitre en ligne dans:
 
 ```text
 Repository -> Settings -> Actions -> Runners
 ```
 
-Expected labels:
+Labels attendus:
 
 ```text
 self-hosted
@@ -239,14 +247,14 @@ x64
 production
 ```
 
-The deploy user must be able to:
+L'utilisateur `deploy` doit pouvoir:
 
-- read and write `/var/www/suivi-sportif`;
-- run `git` in that repository, including `git fetch` and `git pull --ff-only`;
-- run `docker compose`;
-- read the production `.env` already present on the host.
+- lire et ecrire `/var/www/suivi-sportif`;
+- lancer `git` dans ce depot, dont `git fetch` et `git pull --ff-only`;
+- lancer `docker compose`;
+- lire le `.env` de production deja present sur l'hote.
 
-Manual deployment uses the same script:
+Le deploiement manuel utilise le meme script:
 
 ```bash
 cd /var/www/suivi-sportif
@@ -262,13 +270,13 @@ docker compose build
 docker compose up -d
 ```
 
-## 7. PostgreSQL backups
+## 7. Sauvegardes PostgreSQL
 
-Backups run from the app host and read `DATABASE_URL` from the running API
-container. The database remains private; no PostgreSQL port needs to be opened
-publicly.
+Les sauvegardes sont lancees depuis l'hote applicatif et lisent `DATABASE_URL`
+depuis le conteneur API en cours d'execution. La base reste privee; aucun port
+PostgreSQL ne doit etre ouvert publiquement.
 
-Install the backup scripts on the production host:
+Installer les scripts de sauvegarde sur l'hote production:
 
 ```bash
 cd /var/www/suivi-sportif
@@ -278,32 +286,32 @@ sudo mkdir -p /var/backups/suivi-sportif/postgres
 sudo chmod 700 /var/backups/suivi-sportif/postgres
 ```
 
-Run a manual backup:
+Lancer une sauvegarde manuelle:
 
 ```bash
 sudo PROJECT_DIR=/var/www/suivi-sportif /usr/local/bin/suivi-sportif-postgres-backup
 ```
 
-Expected result:
+Resultat attendu:
 
 ```text
 Backup OK: /var/backups/suivi-sportif/postgres/suivi_sportif_<timestamp>.dump
 ```
 
-Test restoring the latest backup into an isolated temporary PostgreSQL
-container:
+Tester la restauration de la derniere sauvegarde dans un conteneur PostgreSQL
+temporaire et isole:
 
 ```bash
 sudo /usr/local/bin/suivi-sportif-postgres-restore-test
 ```
 
-Expected result:
+Resultat attendu:
 
 ```text
 Restore test OK: /var/backups/suivi-sportif/postgres/suivi_sportif_<timestamp>.dump
 ```
 
-Schedule a daily backup at 03:20 with 14-day local retention:
+Planifier une sauvegarde quotidienne a 03:20 avec 14 jours de retention locale:
 
 ```bash
 sudo tee /etc/cron.d/suivi-sportif-postgres-backup >/dev/null <<'EOF'
@@ -312,35 +320,37 @@ EOF
 sudo chmod 644 /etc/cron.d/suivi-sportif-postgres-backup
 ```
 
-Operational checks:
+Controles operationnels:
 
 ```bash
 sudo ls -lh /var/backups/suivi-sportif/postgres
 sudo tail -50 /var/log/suivi-sportif-postgres-backup.log
 ```
 
-## 8. Home-hosted production notes: Freebox + Cloudflare + Certbot
+## 8. Notes production maison: Freebox + Cloudflare + Certbot
 
-The May 6, 2026 production install was hosted behind a Freebox with Cloudflare
-DNS. These are the required network conditions for HTTPS to work.
+L'installation production du 6 mai 2026 etait hebergee derriere une Freebox
+avec DNS Cloudflare. Les conditions reseau suivantes sont necessaires pour que
+HTTPS fonctionne.
 
-### Freebox IPv4
+### IPv4 Freebox
 
-If Freebox only allows port forwards above `49152`, the connection is using a
-shared IPv4 range. Request an IPv4 Full Stack from the Free subscriber area,
-then restart the Freebox.
+Si Freebox autorise uniquement des redirections de ports au-dessus de `49152`,
+la connexion utilise une plage IPv4 partagee. Demander une IPv4 Full Stack dans
+l'espace abonne Free, puis redemarrer la Freebox.
 
-After the restart, verify the public IPv4 on the app host:
+Apres redemarrage, verifier l'IPv4 publique sur l'hote applicatif:
 
 ```bash
 curl -4 ifconfig.me
 ```
 
-Use that public IPv4 in Cloudflare.
+Utiliser cette IPv4 publique dans Cloudflare.
 
-### Cloudflare DNS
+### DNS Cloudflare
 
-During Certbot issuance, the root record must point directly to the app host:
+Pendant l'emission Certbot, l'enregistrement racine doit pointer directement
+vers l'hote applicatif:
 
 ```text
 Type: A
@@ -350,29 +360,29 @@ Proxy status: DNS only
 TTL: Auto
 ```
 
-Do not leave proxied Cloudflare records active while using the HTTP challenge.
-`dig` must return the Freebox public IPv4, not Cloudflare IPs such as
-`104.x.x.x`, `172.x.x.x`, or `2606:4700:...`.
+Ne pas laisser d'enregistrements Cloudflare proxifies actifs pendant le
+challenge HTTP. `dig` doit retourner l'IPv4 publique Freebox, pas des IP
+Cloudflare comme `104.x.x.x`, `172.x.x.x` ou `2606:4700:...`.
 
 ```bash
 dig +short suivi-sportif.fr
 dig +short AAAA suivi-sportif.fr
 ```
 
-If the app host has no real IPv6 route, remove or disable `AAAA` records for the
-domain during certificate issuance.
+Si l'hote applicatif n'a pas de vraie route IPv6, supprimer ou desactiver les
+enregistrements `AAAA` du domaine pendant l'emission du certificat.
 
-### Freebox port forwarding
+### Redirection de ports Freebox
 
-Forward public web ports to the app host LAN address. In the production install,
-the app host was `192.168.1.64`:
+Rediriger les ports web publics vers l'adresse LAN de l'hote applicatif. Lors
+de l'installation production, l'hote applicatif etait `192.168.1.64`:
 
 ```text
 TCP 80  -> 192.168.1.64:80
 TCP 443 -> 192.168.1.64:443
 ```
 
-If UFW is active on the app host:
+Si UFW est actif sur l'hote applicatif:
 
 ```bash
 sudo ufw allow 80/tcp
@@ -380,38 +390,39 @@ sudo ufw allow 443/tcp
 sudo ufw reload
 ```
 
-Certbot will time out until port `80` is reachable from the public internet.
+Certbot expirera tant que le port `80` n'est pas joignable depuis Internet.
 
-## 9. PostgreSQL remote access and Prisma migrations
+## 9. Acces distant PostgreSQL et migrations Prisma
 
-The API host must be allowed in PostgreSQL `pg_hba.conf`. On the DB host, find
-the active file:
+L'hote API doit etre autorise dans le fichier PostgreSQL `pg_hba.conf`. Sur
+l'hote DB, trouver le fichier actif:
 
 ```bash
 sudo -u postgres psql -c "SHOW hba_file;"
 ```
 
-Add an entry for the app host IP:
+Ajouter une entree pour l'IP de l'hote applicatif:
 
 ```conf
 host    suivi_sportif_v2    suivi_sportif    192.168.1.64/32    scram-sha-256
 ```
 
-Reload PostgreSQL:
+Recharger PostgreSQL:
 
 ```bash
 sudo systemctl reload postgresql
 ```
 
-Verify from the app host:
+Verifier depuis l'hote applicatif:
 
 ```bash
 psql "postgresql://suivi_sportif:<PASSWORD>@192.168.1.6:5432/suivi_sportif_v2" -c "select current_user, current_database(), current_schema();"
 psql "postgresql://suivi_sportif:<PASSWORD>@192.168.1.6:5432/suivi_sportif_v2" -c "create table test_permissions_from_app(id int); drop table test_permissions_from_app;"
 ```
 
-If the production database is a new empty install and an earlier failed Prisma
-migration was recorded, reset the empty schema and Prisma migration history:
+Si la base de production est une nouvelle installation vide et qu'une migration
+Prisma echouee a deja ete enregistree, reinitialiser le schema vide et
+l'historique Prisma:
 
 ```bash
 sudo -u postgres psql -d suivi_sportif_v2
@@ -428,50 +439,50 @@ GRANT USAGE, CREATE ON SCHEMA public TO suivi_sportif;
 GRANT ALL PRIVILEGES ON SCHEMA public TO suivi_sportif;
 ```
 
-Then apply migrations from the app host:
+Puis appliquer les migrations depuis l'hote applicatif:
 
 ```bash
 cd /var/www/suivi-sportif
 docker compose run --rm api npx prisma migrate deploy --schema server/prisma/schema.prisma
 ```
 
-Expected migrations on a fresh database:
+Migrations attendues sur une base neuve:
 
 ```text
 20260506000000_init_core_schema
 20260506074000_add_nutrition_tracking
 ```
 
-## 10. Incident note: public domain points to API only
+## 10. Note d'incident: le domaine public pointe seulement vers l'API
 
-Observed from outside on May 5, 2026:
+Observation depuis l'exterieur le 5 mai 2026:
 
 ```bash
 curl https://suivi-sportif.fr
 ```
 
-returned the Fastify 404 JSON response:
+retournait la reponse JSON 404 de Fastify:
 
 ```json
 {"message":"Route GET:/ not found","error":"Not Found","statusCode":404}
 ```
 
-while:
+alors que:
 
 ```bash
 curl https://suivi-sportif.fr/health
 ```
 
-returned the API health payload.
+retournait le payload de sante de l'API.
 
-This means the domain is reachable, but public routing currently sends `/` and
-`/mcp` to the API instead of routing:
+Cela signifie que le domaine est joignable, mais que le routage public envoie
+actuellement `/` et `/mcp` vers l'API au lieu de router:
 
-- `/` to the frontend container on `127.0.0.1:5173`;
-- `/api/` and `/health` to the API container on `127.0.0.1:3001`;
-- `/mcp` to the MCP container on `127.0.0.1:3033`.
+- `/` vers le conteneur frontend sur `127.0.0.1:5173`;
+- `/api/` et `/health` vers le conteneur API sur `127.0.0.1:3001`;
+- `/mcp` vers le conteneur MCP sur `127.0.0.1:3033`.
 
-When server access is restored, run:
+Quand l'acces serveur est retabli, lancer:
 
 ```bash
 cd /var/www/suivi-sportif
@@ -481,7 +492,7 @@ docker compose up -d
 docker compose ps
 ```
 
-Then reinstall and reload the Nginx site config from this repository:
+Puis reinstaller et recharger la configuration Nginx depuis ce depot:
 
 ```bash
 sudo cp deploy/nginx/suivi-sportif.fr.conf /etc/nginx/sites-available/suivi-sportif.fr
@@ -490,7 +501,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-Expected local checks on the server:
+Controles locaux attendus sur le serveur:
 
 ```bash
 curl -I http://127.0.0.1:5173
@@ -498,7 +509,7 @@ curl -i http://127.0.0.1:3001/health
 curl -i http://127.0.0.1:3033/health
 ```
 
-Expected public checks:
+Controles publics attendus:
 
 ```bash
 curl -I https://suivi-sportif.fr
@@ -506,8 +517,8 @@ curl -i https://suivi-sportif.fr/health
 curl -i https://suivi-sportif.fr/mcp
 ```
 
-Expected public result:
+Resultat public attendu:
 
-- `/` returns the frontend HTML or a `200` frontend response;
-- `/health` returns the API health JSON;
-- `/mcp` without token returns `401 Unauthorized`, not Fastify `404`.
+- `/` retourne le HTML frontend ou une reponse frontend `200`;
+- `/health` retourne le JSON de sante de l'API;
+- `/mcp` sans token retourne `401 Unauthorized`, pas une `404` Fastify.
