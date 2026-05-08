@@ -10,7 +10,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============== Enums ==============
+
+enum ExerciseDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ExerciseType {
+  STRENGTH
+  CARDIO
+  MOBILITY
+}
+
+enum MuscleRole {
+  PRIMARY
+  SECONDARY
+}
+
+enum ExerciseMediaType {
+  IMAGE
+  VIDEO
+  GIF
+}
+
 // ============== User Model ==============
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -28,22 +54,150 @@ model User {
 }
 
 // ============== Exercise Model ==============
+
 model Exercise {
-  id          String   @id @default(uuid())
-  name        String
-  description String?  @db.Text
-  muscleGroup String   @map("muscle_group")
-  equipment   String   @default("none")
-  difficulty  String   @default("beginner")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id           String              @id @default(uuid())
+  name         String
+  description  String?             @db.Text
+  difficulty   ExerciseDifficulty  @default(BEGINNER)
+  exerciseType ExerciseType        @default(STRENGTH) @map("exercise_type")
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @updatedAt @map("updated_at")
 
   workoutExercises WorkoutExercise[]
 
+  categories   ExerciseCategoryOnExercise[]
+  muscles      ExerciseMuscle[]
+  equipment    ExerciseEquipment[]
+  instructions ExerciseInstruction[]
+  media        ExerciseMedia[]
+
+  @@index([name])
+  @@index([difficulty])
+  @@index([exerciseType])
   @@map("exercises")
 }
 
+// ============== Exercise Category Model ==============
+
+model ExerciseCategory {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  exercises ExerciseCategoryOnExercise[]
+
+  @@map("exercise_categories")
+}
+
+// ============== Exercise <-> Category Junction ==============
+
+model ExerciseCategoryOnExercise {
+  exerciseId String @map("exercise_id")
+  categoryId String @map("category_id")
+
+  exercise Exercise         @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  category ExerciseCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([exerciseId, categoryId])
+  @@index([categoryId])
+  @@map("exercise_category_on_exercise")
+}
+
+// ============== Muscle Model ==============
+
+model Muscle {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  exercises ExerciseMuscle[]
+
+  @@map("muscles")
+}
+
+// ============== Exercise <-> Muscle Junction ==============
+
+model ExerciseMuscle {
+  exerciseId String     @map("exercise_id")
+  muscleId   String     @map("muscle_id")
+  role       MuscleRole @default(PRIMARY)
+
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  muscle   Muscle   @relation(fields: [muscleId], references: [id], onDelete: Cascade)
+
+  @@id([exerciseId, muscleId])
+  @@index([muscleId])
+  @@index([role])
+  @@map("exercise_muscles")
+}
+
+// ============== Equipment Model ==============
+
+model Equipment {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  exercises ExerciseEquipment[]
+
+  @@map("equipment")
+}
+
+// ============== Exercise <-> Equipment Junction ==============
+
+model ExerciseEquipment {
+  exerciseId  String @map("exercise_id")
+  equipmentId String @map("equipment_id")
+
+  exercise  Exercise  @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@id([exerciseId, equipmentId])
+  @@index([equipmentId])
+  @@map("exercise_equipment")
+}
+
+// ============== Exercise Instruction Model ==============
+
+model ExerciseInstruction {
+  id          String   @id @default(uuid())
+  exerciseId  String   @map("exercise_id")
+  stepOrder   Int      @map("step_order")
+  instruction String   @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([exerciseId, stepOrder])
+  @@index([exerciseId])
+  @@map("exercise_instructions")
+}
+
+// ============== Exercise Media Model ==============
+
+model ExerciseMedia {
+  id         String            @id @default(uuid())
+  exerciseId String            @map("exercise_id")
+  mediaType  ExerciseMediaType @map("media_type")
+  url        String            @db.Text
+  isMain     Boolean           @default(false) @map("is_main")
+  createdAt  DateTime          @default(now()) @map("created_at")
+  updatedAt  DateTime          @updatedAt @map("updated_at")
+
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([exerciseId])
+  @@index([mediaType])
+  @@map("exercise_media")
+}
+
 // ============== Workout Model ==============
+
 model Workout {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
@@ -62,6 +216,7 @@ model Workout {
 }
 
 // ============== WorkoutExercise Model (junction) ==============
+
 model WorkoutExercise {
   id         String @id @default(uuid())
   workoutId  String @map("workout_id")
@@ -74,10 +229,12 @@ model WorkoutExercise {
   sets WorkoutSet[]
 
   @@unique([workoutId, exerciseId])
+  @@index([exerciseId])
   @@map("workout_exercises")
 }
 
 // ============== WorkoutSet Model ==============
+
 model WorkoutSet {
   id                String   @id @default(uuid())
   workoutExerciseId String   @map("workout_exercise_id")
@@ -89,10 +246,12 @@ model WorkoutSet {
 
   workoutExercise WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
 
+  @@index([workoutExerciseId])
   @@map("workout_sets")
 }
 
 // ============== Food Model ==============
+
 model Food {
   id           String   @id @default(uuid())
   userId       String?  @map("user_id")
@@ -117,6 +276,7 @@ model Food {
 }
 
 // ============== Meal Model ==============
+
 model Meal {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
@@ -136,6 +296,7 @@ model Meal {
 }
 
 // ============== MealItem Model ==============
+
 model MealItem {
   id                  String   @id @default(uuid())
   mealId              String   @map("meal_id")
@@ -157,6 +318,7 @@ model MealItem {
 }
 
 // ============== NutritionGoal Model ==============
+
 model NutritionGoal {
   id                String    @id @default(uuid())
   userId            String    @map("user_id")
