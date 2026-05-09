@@ -541,7 +541,9 @@ describe("API", () => {
     );
   });
 
-  it("rejects invalid muscle groups before calling the database", async () => {
+  it("accepts any muscle group string (no longer validated by enum)", async () => {
+    mocks.exercises.getExercisesByMuscleGroup.mockResolvedValue([]);
+    
     const response = await app.inject({
       method: "GET",
       url: "/api/exercises/muscle/invalid-group",
@@ -549,9 +551,11 @@ describe("API", () => {
     });
     const body = response.json();
 
-    expect(response.statusCode).toBe(400);
-    expect(body.code).toBe("VALIDATION_ERROR");
-    expect(mocks.exercises.getExercisesByMuscleGroup).not.toHaveBeenCalled();
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([]);
+    expect(mocks.exercises.getExercisesByMuscleGroup).toHaveBeenCalledWith(
+      "invalid-group",
+    );
   });
 
   it("creates an exercise from a valid payload", async () => {
