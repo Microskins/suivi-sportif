@@ -79,9 +79,8 @@ const exercise = {
   id: EXERCISE_ID,
   name: "Squat",
   description: null,
-  muscleGroup: "legs",
-  equipment: "barbell",
-  difficulty: "intermediate",
+  difficulty: "INTERMEDIATE",
+  exerciseType: "STRENGTH",
   createdAt: "2026-05-04T10:00:00.000Z",
   updatedAt: "2026-05-04T10:00:00.000Z",
 };
@@ -561,9 +560,8 @@ describe("API", () => {
     const payload = {
       name: exercise.name,
       description: exercise.description,
-      muscleGroup: exercise.muscleGroup,
-      equipment: exercise.equipment,
       difficulty: exercise.difficulty,
+      exerciseType: exercise.exerciseType,
     };
 
     const response = await app.inject({
@@ -586,7 +584,6 @@ describe("API", () => {
       headers: authHeaders(),
       payload: {
         name: "",
-        muscleGroup: "invalid-group",
       },
     });
     const body = response.json();

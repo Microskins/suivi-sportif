@@ -11,21 +11,20 @@ import type {
 type WorkoutWithDetails = Workout & {
   workoutExercises?: Array<
     WorkoutExercise & {
-      exercise: Exercise;
+      // NOTE: le modèle Exercise a évolué (tables de jonction equipment/muscles/etc.).
+      // Ici on ne sérialise que les champs scalaires réellement retournés par l'API.
+      exercise: {
+        id: string;
+        name: string;
+        description: string | null;
+        difficulty: string;
+        exerciseType: string;
+        createdAt: Date;
+        updatedAt: Date;
+      };
       sets: WorkoutSet[];
     }
   >;
-};
-
-type Exercise = {
-  description: string | null;
-  difficulty: string;
-  equipment: string;
-  createdAt: Date;
-  id: string;
-  muscleGroup: string;
-  name: string;
-  updatedAt: Date;
 };
 
 type Workout = {
@@ -80,11 +79,17 @@ function formatWorkout(workout: WorkoutWithDetails): WorkoutResponse {
       id: workoutExercise.id,
       exerciseId: workoutExercise.exerciseId,
       order: workoutExercise.order,
-      exercise: {
-        ...workoutExercise.exercise,
-        createdAt: workoutExercise.exercise.createdAt.toISOString(),
-        updatedAt: workoutExercise.exercise.updatedAt.toISOString(),
-      },
+      exercise: workoutExercise.exercise
+        ? {
+            id: workoutExercise.exercise.id,
+            name: workoutExercise.exercise.name,
+            description: workoutExercise.exercise.description,
+            difficulty: String(workoutExercise.exercise.difficulty),
+            exerciseType: String(workoutExercise.exercise.exerciseType),
+            createdAt: workoutExercise.exercise.createdAt.toISOString(),
+            updatedAt: workoutExercise.exercise.updatedAt.toISOString(),
+          }
+        : undefined,
       sets: workoutExercise.sets.map((set) => ({
         id: set.id,
         setNumber: set.setNumber,

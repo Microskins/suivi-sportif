@@ -23,9 +23,8 @@ const exerciseSchema = {
     id: { type: "string", format: "uuid" },
     name: { type: "string" },
     description: { type: ["string", "null"] },
-    muscleGroup: { type: "string" },
-    equipment: { type: "string" },
     difficulty: { type: "string" },
+    exerciseType: { type: "string" },
     createdAt: { type: "string", format: "date-time" },
     updatedAt: { type: "string", format: "date-time" },
   },
@@ -33,9 +32,8 @@ const exerciseSchema = {
     "id",
     "name",
     "description",
-    "muscleGroup",
-    "equipment",
     "difficulty",
+    "exerciseType",
     "createdAt",
     "updatedAt",
   ],
@@ -228,11 +226,10 @@ export async function exercisesRoutes(fastify: FastifyInstance) {
           properties: {
             name: { type: "string" },
             description: { type: ["string", "null"] },
-            muscleGroup: { type: "string" },
-            equipment: { type: "string" },
             difficulty: { type: "string" },
+            exerciseType: { type: "string" },
           },
-          required: ["name", "muscleGroup"],
+          required: ["name"],
         },
         response: {
           201: {
@@ -288,9 +285,8 @@ export async function exercisesRoutes(fastify: FastifyInstance) {
           properties: {
             name: { type: "string" },
             description: { type: ["string", "null"] },
-            muscleGroup: { type: "string" },
-            equipment: { type: "string" },
             difficulty: { type: "string" },
+            exerciseType: { type: "string" },
           },
         },
         response: {
