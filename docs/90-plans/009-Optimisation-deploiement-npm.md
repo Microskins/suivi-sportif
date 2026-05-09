@@ -2,7 +2,7 @@
 
 ## Objectif
 
-Réduire fortement le temps de déploiement GitHub Actions en évitant la réinstallation complète de npm à chaque build Docker.
+Réduire fortement le temps de déploiement GitHub Actions en évitant la réinstallation complète de npm à chaque build Docker, et en **cachant les téléchargements npm** entre builds.
 
 ---
 
@@ -89,6 +89,27 @@ Le test final se fera automatiquement lors du prochain push via GitHub Actions.
 - [`mcp/Dockerfile`](../../mcp/Dockerfile)
 
 ---
+
+## Cache npm BuildKit (gain principal)
+
+La majeure partie du temps de déploiement venait de `npm ci` dans les builds Docker (téléchargement de centaines de packages).
+
+Pour éviter de retélécharger à chaque run, on active le cache npm via BuildKit :
+
+- Utilisation de `RUN --mount=type=cache,target=/root/.npm npm ci` dans :
+  - [`server/Dockerfile`](../../server/Dockerfile)
+  - [`client/Dockerfile`](../../client/Dockerfile)
+  - [`mcp/Dockerfile`](../../mcp/Dockerfile)
+
+Pré-requis : BuildKit + buildx actifs sur le runner.
+
+## Buildx
+
+Le runner affichait :
+
+> Docker Compose is configured to build using Bake, but buildx isn't installed
+
+On ajoute donc `docker/setup-buildx-action@v3` et on force BuildKit pour le job deploy dans [`deploy-production.yml`](../../.github/workflows/deploy-production.yml).
 
 ## Notes
 

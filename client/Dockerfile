@@ -7,7 +7,7 @@ COPY server/package*.json ./server/
 COPY client/package*.json ./client/
 COPY mcp/package*.json ./mcp/
 
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 COPY client ./client
 

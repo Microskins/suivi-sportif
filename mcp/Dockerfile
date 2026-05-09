@@ -8,7 +8,7 @@ COPY server/package*.json ./server/
 COPY client/package*.json ./client/
 COPY server/prisma ./server/prisma
 
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 RUN npm run db:generate -w server
 
 COPY mcp ./mcp

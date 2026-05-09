@@ -8,7 +8,7 @@ COPY client/package*.json ./client/
 COPY mcp/package*.json ./mcp/
 
 RUN apk add --no-cache openssl
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 COPY server ./server
 
