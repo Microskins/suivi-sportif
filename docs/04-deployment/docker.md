@@ -157,7 +157,7 @@ GitHub:
 Repository -> Settings -> Actions -> Runners -> New self-hosted runner
 ```
 
-Choisir Linux x64 dans l'interface GitHub et garder la page ouverte; le token
+Choisir Linux ARM64 dans l'interface GitHub et garder la page ouverte; le token
 expire rapidement.
 
 Creer un utilisateur Linux dedie et lui donner acces a Docker:
@@ -193,11 +193,11 @@ sudo -iu deploy
 mkdir -p ~/actions-runner
 cd ~/actions-runner
 
-# Copier les commandes courantes de telechargement et d'extraction Linux x64
+# Copier les commandes courantes de telechargement et d'extraction Linux ARM64
 # affichees par GitHub.
 # Exemple de forme seulement; utiliser la version et le checksum courants:
-# curl -o actions-runner-linux-x64-<version>.tar.gz -L https://github.com/actions/runner/releases/download/<version>/actions-runner-linux-x64-<version>.tar.gz
-# tar xzf ./actions-runner-linux-x64-<version>.tar.gz
+# curl -o actions-runner-linux-arm64-<version>.tar.gz -L https://github.com/actions/runner/releases/download/<version>/actions-runner-linux-arm64-<version>.tar.gz
+# tar xzf ./actions-runner-linux-arm64-<version>.tar.gz
 
 ./config.sh --url https://github.com/Microskins/suivi-sportif --token <runner-token> --labels production
 exit
@@ -209,7 +209,7 @@ Quand le script pose des questions:
 - groupe du runner: garder la valeur par defaut;
 - dossier de travail: garder `_work`.
 
-GitHub ajoute automatiquement les labels `self-hosted`, `linux` et `x64`. Le
+GitHub ajoute automatiquement les labels `self-hosted`, `linux` et `ARM64`. Le
 label manuel requis par le workflow est `production`.
 
 Enregistrer le runner comme service:
@@ -243,7 +243,7 @@ Labels attendus:
 ```text
 self-hosted
 linux
-x64
+ARM64
 production
 ```
 

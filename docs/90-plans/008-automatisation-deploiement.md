@@ -53,3 +53,7 @@
 - Procedure runner detaillee dans `docs/04-deployment/docker.md`: utilisateur
   `deploy`, verrouillage du mot de passe apres installation, labels attendus et
   verifications sans `sudo`.
+- Runner installe et operationnel le 2026-05-09: service
+  `actions.runner.Microskins-suivi-sportif.prod-192-168-1-64.service` actif
+  depuis le 2026-05-07, deploiements automatises fonctionnels.
+- Architecture du serveur de production: ARM64 (aarch64), pas x64.
