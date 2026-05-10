@@ -44,44 +44,24 @@ export const userListSchema = z.array(userResponseSchema);
 export const createExerciseSchema = z.object({
   name: z.string().min(1, "Nom requis").max(200),
   description: z.string().max(1000).nullable().optional(),
-  muscleGroup: z.enum([
-    "chest",
-    "back",
-    "shoulders",
-    "arms",
-    "legs",
-    "core",
-    "cardio",
-  ]),
-  equipment: z
-    .enum([
-      "none",
-      "barbell",
-      "dumbbell",
-      "machine",
-      "cable",
-      "kettlebell",
-      "resistance_band",
-    ])
-    .default("none"),
-  difficulty: z
-    .enum(["beginner", "intermediate", "advanced"])
-    .default("beginner"),
+  difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).default("BEGINNER"),
+  exerciseType: z.enum(["STRENGTH", "CARDIO", "MOBILITY"]).default("STRENGTH"),
 });
 
 export const updateExerciseSchema = createExerciseSchema.partial();
 
+// NOTE: muscleGroup n'est plus une colonne de Exercise (relation via muscles)
+// on garde ce schema pour le endpoint /by-muscle-group/:group.
 export const muscleGroupParamSchema = z.object({
-  group: createExerciseSchema.shape.muscleGroup,
+  group: z.string().min(1).max(100),
 });
 
 export const exerciseResponseSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   description: z.string().nullable(),
-  muscleGroup: z.string(),
-  equipment: z.string(),
   difficulty: z.string(),
+  exerciseType: z.string(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });

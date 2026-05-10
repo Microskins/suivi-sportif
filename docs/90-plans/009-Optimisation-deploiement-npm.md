@@ -2,161 +2,117 @@
 
 ## Objectif
 
-Réduire fortement le temps de déploiement GitHub Actions en évitant la réinstallation complète de npm à chaque déploiement.
+Réduire fortement le temps de déploiement GitHub Actions en évitant la réinstallation complète de npm à chaque build Docker, et en **cachant les téléchargements npm** entre builds.
 
 ---
 
-# Problème actuel
+## Statut
 
-Le script de déploiement exécute :
-
-```bash
-npm install -g npm@11.13.0
-```
-
-à chaque déploiement.
-
-Conséquences :
-
-* temps de déploiement très long ;
-* téléchargements inutiles ;
-* charge CPU importante sur le runner ARM64 ;
-* risque de timeout ou de blocage réseau.
+✅ **TERMINÉ** — 2026-05-09
 
 ---
 
-# Solution recommandée
+## Problème identifié
 
-Installer npm une seule fois sur le serveur de production puis supprimer la mise à jour globale automatique du script de deploy.
+Les 3 Dockerfiles (`server/`, `client/`, `mcp/`) exécutaient systématiquement :
+
+```bash
+RUN npm install -g npm@11.13.0
+```
+
+dans **chaque stage** (build + runtime), soit **6 installations inutiles** à chaque déploiement.
+
+De plus, la commande `npm ci || npm install` utilisait un fallback inutile alors que `package-lock.json` est présent.
+
+**Conséquences :**
+* Temps de build Docker très long
+* Téléchargements inutiles
+* Charge CPU importante sur runner ARM64
+* Risque de timeout réseau
 
 ---
 
-# Étape 1 — Installer npm une seule fois
+## Solution appliquée
 
-Sur le serveur de production :
+### 1. Suppression des installations npm globales
 
-```bash
-node -v
-npm -v
-sudo npm install -g npm@11.13.0
-npm -v
-```
+Supprimé `npm install -g npm@11.13.0` dans tous les Dockerfiles :
+- ✅ [`server/Dockerfile`](../../server/Dockerfile) : stages build + runtime
+- ✅ [`client/Dockerfile`](../../client/Dockerfile) : stage build
+- ✅ [`mcp/Dockerfile`](../../mcp/Dockerfile) : stages build + runtime
 
-Vérifier que la version affichée est :
+**Justification :** Node 20 Alpine embarque déjà npm 10.x, largement suffisant. La version npm 11.13.0 n'apporte pas de bénéfice critique pour ce projet.
 
-```text
-11.13.0
-```
+### 2. Utilisation exclusive de npm ci
 
----
+Remplacé `npm ci || npm install` par `npm ci` strict dans les 3 Dockerfiles.
 
-# Étape 2 — Modifier le script de déploiement
+**Avantages :**
+* Installation reproductible (basée sur `package-lock.json`)
+* Plus rapide que `npm install`
+* Optimisé pour CI/CD
+* Échec explicite si `package-lock.json` désynchronisé
 
-Fichier :
+### 3. Optimisation du stage build server
 
-```text
-scripts/deploy-production.sh
-```
-
-Supprimer cette ligne :
-
-```bash
-npm install -g npm@11.13.0
-```
+Déplacé `apk add --no-cache openssl` **avant** `npm ci` pour éviter de polluer le cache npm avec des installations système.
 
 ---
 
-# Étape 3 — Ajouter une vérification intelligente (optionnel)
+## Résultat attendu
 
-À la place, utiliser :
+**Gains estimés :**
+* Temps de build Docker réduit de ~40% (6 installations npm globales évitées)
+* Build plus stable (moins de points de défaillance réseau)
+* Logs plus clairs et plus courts
+* Cache Docker mieux exploité
 
-```bash
-CURRENT_NPM_VERSION="$(npm -v)"
-
-if [ "$CURRENT_NPM_VERSION" != "11.13.0" ]; then
-  echo "Updating npm to 11.13.0..."
-  npm install -g npm@11.13.0
-else
-  echo "npm already up to date: $CURRENT_NPM_VERSION"
-fi
-```
-
-Cela évite les réinstallations inutiles.
+Le test final se fera automatiquement lors du prochain push via GitHub Actions.
 
 ---
 
-# Étape 4 — Utiliser npm ci
+## Actions effectuées
 
-Toujours préférer :
-
-```bash
-npm ci
-```
-
-au lieu de :
-
-```bash
-npm install
-```
-
-Avantages :
-
-* plus rapide ;
-* reproductible ;
-* optimisé CI/CD ;
-* utilise package-lock.json.
+- [x] Analyse des 3 Dockerfiles
+- [x] Suppression de toutes les installations npm globales
+- [x] Remplacement de `npm ci || npm install` par `npm ci` strict
+- [x] Optimisation de l'ordre des instructions (openssl avant npm)
+- [x] Mise à jour de ce plan 009
+- [ ] Validation via CI/CD (prochain push)
 
 ---
 
-# Étape 5 — Conserver le cache npm
+## Fichiers modifiés
 
-Configurer le cache npm :
-
-```bash
-npm config set cache /home/deploy/.npm
-```
-
-Vérification :
-
-```bash
-npm config get cache
-```
+- [`server/Dockerfile`](../../server/Dockerfile)
+- [`client/Dockerfile`](../../client/Dockerfile)
+- [`mcp/Dockerfile`](../../mcp/Dockerfile)
 
 ---
 
-# Étape 6 — Vérification manuelle
+## Cache npm BuildKit (gain principal)
 
-Tester directement sur le serveur :
+La majeure partie du temps de déploiement venait de `npm ci` dans les builds Docker (téléchargement de centaines de packages).
 
-```bash
-cd /var/www/suivi-sportif
+Pour éviter de retélécharger à chaque run, on active le cache npm via BuildKit :
 
-npm -v
-npm ci
-npm run build
-```
+- Utilisation de `RUN --mount=type=cache,target=/root/.npm npm ci` dans :
+  - [`server/Dockerfile`](../../server/Dockerfile)
+  - [`client/Dockerfile`](../../client/Dockerfile)
+  - [`mcp/Dockerfile`](../../mcp/Dockerfile)
 
----
+Pré-requis : BuildKit + buildx actifs sur le runner.
 
-# Étape 7 — Déployer les modifications
+## Buildx
 
-Une fois le script modifié :
+Le runner affichait :
 
-```bash
-git add scripts/deploy-production.sh
-git commit -m "Optimize npm production deployment"
-git push origin main
-```
+> Docker Compose is configured to build using Bake, but buildx isn't installed
 
-Puis relancer GitHub Actions.
+On ajoute donc `docker/setup-buildx-action@v3` et on force BuildKit pour le job deploy dans [`deploy-production.yml`](../../.github/workflows/deploy-production.yml).
 
----
+## Notes
 
-# Résultat attendu
+Le script [`scripts/deploy-production.sh`](../../scripts/deploy-production.sh) n'avait déjà pas d'installation npm globale (déploiement uniquement via Docker Compose).
 
-Temps de déploiement réduit :
-
-* avant : plusieurs minutes ;
-* après : quelques secondes pour l’étape npm globale.
-
-Déploiement plus stable et plus fiable sur runner ARM64.
+Les optimisations se concentrent donc sur les builds Docker, qui représentent la majorité du temps de déploiement.

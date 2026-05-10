@@ -79,9 +79,8 @@ const exercise = {
   id: EXERCISE_ID,
   name: "Squat",
   description: null,
-  muscleGroup: "legs",
-  equipment: "barbell",
-  difficulty: "intermediate",
+  difficulty: "INTERMEDIATE",
+  exerciseType: "STRENGTH",
   createdAt: "2026-05-04T10:00:00.000Z",
   updatedAt: "2026-05-04T10:00:00.000Z",
 };
@@ -542,7 +541,9 @@ describe("API", () => {
     );
   });
 
-  it("rejects invalid muscle groups before calling the database", async () => {
+  it("accepts any muscle group string (no longer validated by enum)", async () => {
+    mocks.exercises.getExercisesByMuscleGroup.mockResolvedValue([]);
+    
     const response = await app.inject({
       method: "GET",
       url: "/api/exercises/muscle/invalid-group",
@@ -550,9 +551,11 @@ describe("API", () => {
     });
     const body = response.json();
 
-    expect(response.statusCode).toBe(400);
-    expect(body.code).toBe("VALIDATION_ERROR");
-    expect(mocks.exercises.getExercisesByMuscleGroup).not.toHaveBeenCalled();
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([]);
+    expect(mocks.exercises.getExercisesByMuscleGroup).toHaveBeenCalledWith(
+      "invalid-group",
+    );
   });
 
   it("creates an exercise from a valid payload", async () => {
@@ -561,9 +564,8 @@ describe("API", () => {
     const payload = {
       name: exercise.name,
       description: exercise.description,
-      muscleGroup: exercise.muscleGroup,
-      equipment: exercise.equipment,
       difficulty: exercise.difficulty,
+      exerciseType: exercise.exerciseType,
     };
 
     const response = await app.inject({
@@ -586,7 +588,6 @@ describe("API", () => {
       headers: authHeaders(),
       payload: {
         name: "",
-        muscleGroup: "invalid-group",
       },
     });
     const body = response.json();

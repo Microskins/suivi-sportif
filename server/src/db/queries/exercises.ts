@@ -13,15 +13,28 @@ type ExerciseRecord = Omit<ExerciseResponse, "createdAt" | "updatedAt"> & {
   updatedAt: Date;
 };
 
-export async function getExercises(): Promise<ExerciseResponse[]> {
-  const exercises = await prisma.exercise.findMany({
-    orderBy: { name: "asc" },
-  });
-  return (exercises as ExerciseRecord[]).map((e) => ({
+function formatExercise(e: ExerciseRecord): ExerciseResponse {
+  return {
     ...e,
     createdAt: e.createdAt.toISOString(),
     updatedAt: e.updatedAt.toISOString(),
-  }));
+  };
+}
+
+export async function getExercises(): Promise<ExerciseResponse[]> {
+  const exercises = await prisma.exercise.findMany({
+    orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      difficulty: true,
+      exerciseType: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  return (exercises as ExerciseRecord[]).map(formatExercise);
 }
 
 export async function getExerciseById(
@@ -29,27 +42,46 @@ export async function getExerciseById(
 ): Promise<ExerciseResponse | null> {
   const exercise = await prisma.exercise.findUnique({
     where: { id },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      difficulty: true,
+      exerciseType: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
   if (!exercise) return null;
-  return {
-    ...exercise,
-    createdAt: exercise.createdAt.toISOString(),
-    updatedAt: exercise.updatedAt.toISOString(),
-  };
+  return formatExercise(exercise as ExerciseRecord);
 }
 
 export async function getExercisesByMuscleGroup(
   muscleGroup: string,
 ): Promise<ExerciseResponse[]> {
+  // NOTE: muscleGroup n'existe plus sur Exercise : désormais c'est une relation via ExerciseMuscle.
   const exercises = await prisma.exercise.findMany({
-    where: { muscleGroup },
+    where: {
+      muscles: {
+        some: {
+          muscle: {
+            name: muscleGroup,
+          },
+        },
+      },
+    },
     orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      difficulty: true,
+      exerciseType: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
-  return (exercises as ExerciseRecord[]).map((e) => ({
-    ...e,
-    createdAt: e.createdAt.toISOString(),
-    updatedAt: e.updatedAt.toISOString(),
-  }));
+  return (exercises as ExerciseRecord[]).map(formatExercise);
 }
 
 export async function createExercise(
@@ -59,16 +91,23 @@ export async function createExercise(
     data: {
       name: data.name,
       description: data.description,
-      muscleGroup: data.muscleGroup,
-      equipment: data.equipment,
       difficulty: data.difficulty,
+      // exerciseType est requis côté Prisma (default), mais on le passe si disponible dans le schema Zod.
+      ...("exerciseType" in data && data.exerciseType
+        ? { exerciseType: data.exerciseType }
+        : {}),
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      difficulty: true,
+      exerciseType: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
-  return {
-    ...exercise,
-    createdAt: exercise.createdAt.toISOString(),
-    updatedAt: exercise.updatedAt.toISOString(),
-  };
+  return formatExercise(exercise as ExerciseRecord);
 }
 
 export async function updateExercise(
@@ -83,16 +122,22 @@ export async function updateExercise(
     data: {
       ...(data.name && { name: data.name }),
       ...(data.description !== undefined && { description: data.description }),
-      ...(data.muscleGroup && { muscleGroup: data.muscleGroup }),
-      ...(data.equipment && { equipment: data.equipment }),
       ...(data.difficulty && { difficulty: data.difficulty }),
+      ...("exerciseType" in data && data.exerciseType
+        ? { exerciseType: data.exerciseType }
+        : {}),
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      difficulty: true,
+      exerciseType: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
-  return {
-    ...exercise,
-    createdAt: exercise.createdAt.toISOString(),
-    updatedAt: exercise.updatedAt.toISOString(),
-  };
+  return formatExercise(exercise as ExerciseRecord);
 }
 
 export async function deleteExercise(id: string): Promise<boolean> {
