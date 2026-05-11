@@ -18,6 +18,7 @@ Index chronologique des chantiers planifies et executes.
 12. [Fix 500 API apres changements Prisma (exercises)](./012-fix-api-500-prisma-exercises.md)
 13. [GitHub Actions: opt-in Node 24 (deprecation Node 20)](./013-github-actions-node24.md)
 14. [Fusion idees seances](./014-fusion-idees-seances.md)
+15. [Modeles de seances par defaut](./015-modeles-seances-defaut.md)
 
 ## Convention
 
