@@ -126,18 +126,27 @@ export async function instantiateWorkoutTemplate(
       duration: template.duration,
       notes: template.description,
       workoutExercises: {
-        create: template.exercises.map((templateExercise) => ({
-          exerciseId: templateExercise.exerciseId,
-          order: templateExercise.order,
-          sets: {
-            create: Array.from({ length: templateExercise.sets }, (_, index) => ({
-              setNumber: index + 1,
-              reps: templateExercise.reps,
-              weight: templateExercise.weight,
-              rest: templateExercise.rest,
-            })),
-          },
-        })),
+        create: template.exercises.map(
+          (
+            templateExercise: WorkoutTemplateWithDetails["exercises"][number],
+          ) => ({
+            order: templateExercise.order,
+            exercise: {
+              connect: { id: templateExercise.exerciseId },
+            },
+            sets: {
+              create: Array.from(
+                { length: templateExercise.sets },
+                (_, index) => ({
+                  setNumber: index + 1,
+                  reps: templateExercise.reps,
+                  weight: Number(templateExercise.weight),
+                  rest: templateExercise.rest,
+                }),
+              ),
+            },
+          }),
+        ),
       },
     },
   });
