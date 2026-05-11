@@ -29,6 +29,36 @@
 
 ---
 
+## 2026-05-11 - Mobile: Capacitor checklist pre-release
+
+## Contexte
+
+- Une app mobile "wrappee" peut marcher en dev mais casser a la publication (signing, deep links, storage, network).
+
+## Proposition
+
+- Ajouter une checklist pre-release mobile:
+  - mode offline (assets embarques) + ecran d'erreur reseau;
+  - token storage (Preferences/secure storage) + expiration;
+  - base URL API selon env + blocage du "localhost" en prod;
+  - verification HTTPS (mixed content) + config CORS;
+  - analytics/logging minimal pour diagnostiquer en prod.
+
+## Impact
+
+- Moins de surprises au moment de la publication.
+- Diagnostic plus rapide quand un device reel a un comportement different.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/089-mobile-capacitor.md
+
+---
+
 ## 2026-05-11 - Docs: controle des doublons d'idees
 
 ## Contexte
