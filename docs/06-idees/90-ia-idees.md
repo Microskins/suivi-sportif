@@ -29,6 +29,35 @@
 
 ---
 
+## 2026-05-11 - Docs: controle des doublons d'idees
+
+## Contexte
+
+- Les idees sont numerotees par fichier.
+- Un doublon de numero peut cacher des propositions non indexees ou dispersees.
+
+## Proposition
+
+- Ajouter une verification simple de documentation qui signale:
+  - deux fichiers avec le meme prefixe numerique dans `docs/06-idees`;
+  - un fichier d'idee absent de l'index;
+  - un lien d'index vers un fichier inexistant.
+
+## Impact
+
+- Moins de perte d'idees.
+- Nettoyage plus rapide avant de transformer une idee en chantier.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/014-fusion-idees-seances.md
+
+---
+
 ## 2) Progression: PRs et objectifs par exercice
 
 ## Contexte
@@ -107,4 +136,3 @@
 ## Liens
 
 - Plan: docs/90-plans/XXX-... (quand ce sera actee)
-

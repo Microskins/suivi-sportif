@@ -1,4 +1,4 @@
-# Calendrier: seances + poids
+# Calendrier: seances et poids
 
 ## Contexte
 

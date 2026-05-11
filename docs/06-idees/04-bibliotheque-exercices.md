@@ -1,3 +1,17 @@
+# Bibliotheque d'exercices par defaut
+
+## Contexte
+
+- Le projet a besoin d'une base d'exercices suffisamment large pour creer des seances rapidement.
+- Cette liste sert de seed fonctionnel: categorie, nom, materiel et niveau.
+
+## Proposition
+
+- Fournir une bibliotheque d'exercices par defaut.
+- Utiliser ces donnees pour alimenter la creation de seances et les modeles preconstruits.
+
+## Donnees proposees
+
 | Catégorie                   | Exercice                                      | Matériel                  | Niveau        |
 | --------------------------- | --------------------------------------------- | ------------------------- | ------------- |
 | Pectoraux                   | Développé couché                              | Barre                     | Intermédiaire |

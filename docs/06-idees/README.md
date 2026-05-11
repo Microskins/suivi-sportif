@@ -5,10 +5,12 @@ pourraient etre integrees au projet.
 
 ## Index
 
-1. [Calendrier: seances + poids](./01-calendrier-seances-poids.md)
-2. [Seances: gestion d'exercices](./02-seances-exercices.md)
-3. [Repas: drag and drop aliments](./03-repas-aliments-drag-drop.md)
-4. [IA Idees](./90-ia-idees.md)
+1. [Calendrier: seances et poids](./01-calendrier-suivi.md)
+2. [Builder de seances](./02-builder-seances.md)
+3. [Builder de repas](./03-builder-repas.md)
+4. [Bibliotheque d'exercices par defaut](./04-bibliotheque-exercices.md)
+5. [Modeles de seances par defaut](./05-modeles-seances.md)
+6. [IA Idees](./90-ia-idees.md)
 
 > [!NOTE]
 > ## IA Idees

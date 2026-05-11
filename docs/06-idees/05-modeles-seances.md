@@ -1,4 +1,17 @@
-Cardio
+# Modeles de seances par defaut
+
+## Contexte
+
+- Creer une seance depuis zero peut etre long.
+- Des modeles de depart permettent de lancer vite une seance cardio, poids du corps ou musculation.
+
+## Proposition
+
+- Fournir des seances preconstruites avec niveau, duree, exercices, series, repetitions et repos.
+- Pouvoir instancier un modele en vraie seance, puis l'adapter.
+
+## Cardio
+
 | Nom de séance        | Niveau        |  Durée | Exercices                                                 |
 | -------------------- | ------------- | -----: | --------------------------------------------------------- |
 | Cardio débutant      | Débutant      | 20 min | Vélo, Rameur, Corde à sauter                              |
@@ -7,7 +20,8 @@ Cardio
 | Cardio endurance     | Débutant      | 35 min | Vélo elliptique, Course tapis, Rameur                     |
 | Sprint fractionné    | Avancé        | 20 min | Sprint, Corde à sauter, Assault bike                      |
 
-Carido avec temps de repos
+## Cardio avec temps de repos
+
 | Séance            | Exercice          | Séries | Répétitions |  Durée |  Repos |
 | ----------------- | ----------------- | -----: | ----------: | -----: | -----: |
 | Cardio débutant   | Vélo              |      - |           - | 10 min | 60 sec |
@@ -20,9 +34,9 @@ Carido avec temps de repos
 | Sprint fractionné | Sprint            |      8 |           - | 20 sec | 90 sec |
 | Sprint fractionné | Corde à sauter    |      4 |           - | 45 sec | 30 sec |
 | Sprint fractionné | Assault bike      |      6 |           - | 30 sec | 60 sec |
-                 |
 
-Poids de corps
+## Poids du corps
+
 | Nom de séance                     | Niveau        |  Durée | Exercices                                                     |
 | --------------------------------- | ------------- | -----: | ------------------------------------------------------------- |
 | Full body poids du corps débutant | Débutant      | 25 min | Pompes inclinées, Squat sauté, Planche, Crunch                |
@@ -31,7 +45,8 @@ Poids de corps
 | Abdos gainage                     | Débutant      | 20 min | Planche, Planche latérale, Dead bug, Reverse crunch           |
 | HIIT poids du corps               | Intermédiaire | 20 min | Burpees, Jump squat, Mountain climbers, Montées de genoux     |
 
-PDC avec temps de repos
+## Poids du corps avec temps de repos
+
 | Séance                            | Exercice          | Séries | Répétitions |  Durée |  Repos |
 | --------------------------------- | ----------------- | -----: | ----------: | -----: | -----: |
 | Full body poids du corps débutant | Pompes inclinées  |      3 |          10 |      - | 60 sec |
@@ -56,7 +71,8 @@ PDC avec temps de repos
 | HIIT poids du corps               | Pompes classiques |      4 |           - | 40 sec | 20 sec |
 
 
-Musculation
+## Musculation
+
 | Nom de séance   | Niveau        |  Durée | Exercices                                                                                    |
 | --------------- | ------------- | -----: | -------------------------------------------------------------------------------------------- |
 | Push            | Intermédiaire | 60 min | Développé couché, Développé incliné haltères, Shoulder press, Extension triceps poulie corde |
@@ -65,7 +81,8 @@ Musculation
 | Full body muscu | Débutant      | 45 min | Chest press, Rowing machine, Presse à cuisses, Curl haltères alterné                         |
 | Bras épaules    | Intermédiaire | 45 min | Élévations latérales, Curl marteau, Barre au front, Face pull                                |
 
-muscu avec temps de repos
+## Musculation avec temps de repos
+
 | Séance          | Exercice                       | Séries | Répétitions | Durée |   Repos |
 | --------------- | ------------------------------ | -----: | ----------: | ----: | ------: |
 | Push            | Développé couché               |      4 |           8 |     - | 120 sec |

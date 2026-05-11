@@ -17,6 +17,7 @@ Index chronologique des chantiers planifies et executes.
 11. [Skill IA idees pendant creation de plan](./011-skill-ia-idees-plan.md)
 12. [Fix 500 API apres changements Prisma (exercises)](./012-fix-api-500-prisma-exercises.md)
 13. [GitHub Actions: opt-in Node 24 (deprecation Node 20)](./013-github-actions-node24.md)
+14. [Fusion idees seances](./014-fusion-idees-seances.md)
 
 ## Convention
 
