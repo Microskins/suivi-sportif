@@ -39,6 +39,9 @@ require_command git
 require_command docker
 require_command curl
 
+PRISMA_SCHEMA_PATH="server/prisma/schema.prisma"
+FAILED_MIGRATION_NAME="20260511170754_exercise_relations_refactor"
+
 log "Enter project"
 cd "$PROJECT_DIR"
 pwd
@@ -60,7 +63,19 @@ log "Build images"
 docker compose build
 
 log "Apply migrations"
-docker compose run --rm api npx prisma migrate deploy --schema server/prisma/schema.prisma
+set +e
+MIGRATE_STATUS_OUTPUT="$(docker compose run --rm api npx prisma migrate status --schema "$PRISMA_SCHEMA_PATH" 2>&1)"
+MIGRATE_STATUS_EXIT_CODE="$?"
+set -e
+
+# Prisma blocks `migrate deploy` if any migration previously failed. In production, we want a
+# deterministic recovery path for known failed migrations so deploys can proceed.
+if [ "$MIGRATE_STATUS_EXIT_CODE" -ne 0 ] && printf '%s' "$MIGRATE_STATUS_OUTPUT" | grep -q "$FAILED_MIGRATION_NAME"; then
+  log "Recover failed prisma migration"
+  docker compose run --rm api npx prisma migrate resolve --rolled-back "$FAILED_MIGRATION_NAME" --schema "$PRISMA_SCHEMA_PATH"
+fi
+
+docker compose run --rm api npx prisma migrate deploy --schema "$PRISMA_SCHEMA_PATH"
 
 log "Restart services"
 docker compose up -d
