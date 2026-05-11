@@ -28,6 +28,10 @@ const mocks = vi.hoisted(() => ({
     updateWorkout: vi.fn(),
     deleteWorkout: vi.fn(),
   },
+  workoutTemplates: {
+    getWorkoutTemplates: vi.fn(),
+    instantiateWorkoutTemplate: vi.fn(),
+  },
   foods: {
     getFoods: vi.fn(),
     getFoodById: vi.fn(),
@@ -56,6 +60,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../db/queries/users.js", () => mocks.users);
 vi.mock("../db/queries/exercises.js", () => mocks.exercises);
 vi.mock("../db/queries/workouts.js", () => mocks.workouts);
+vi.mock("../db/queries/workout-templates.js", () => mocks.workoutTemplates);
 vi.mock("../db/queries/foods.js", () => mocks.foods);
 vi.mock("../db/queries/meals.js", () => mocks.meals);
 vi.mock("../db/queries/nutrition-goals.js", () => mocks.nutritionGoals);
@@ -63,6 +68,7 @@ vi.mock("../db/queries/nutrition-goals.js", () => mocks.nutritionGoals);
 const USER_ID = "11111111-1111-4111-8111-111111111111";
 const EXERCISE_ID = "22222222-2222-4222-8222-222222222222";
 const WORKOUT_ID = "33333333-3333-4333-8333-333333333333";
+const WORKOUT_TEMPLATE_ID = "77777777-7777-4777-8777-777777777777";
 const FOOD_ID = "44444444-4444-4444-8444-444444444444";
 const MEAL_ID = "55555555-5555-4555-8555-555555555555";
 const NUTRITION_GOAL_ID = "66666666-6666-4666-8666-666666666666";
@@ -95,6 +101,31 @@ const workout = {
   createdAt: "2026-05-04T10:00:00.000Z",
   updatedAt: "2026-05-04T10:00:00.000Z",
   exercises: [],
+};
+
+const workoutTemplate = {
+  id: WORKOUT_TEMPLATE_ID,
+  name: "Push",
+  category: "Musculation",
+  level: "Intermediaire",
+  duration: 60,
+  description: "Pectoraux, epaules et triceps.",
+  displayOrder: 1,
+  createdAt: "2026-05-04T10:00:00.000Z",
+  updatedAt: "2026-05-04T10:00:00.000Z",
+  exercises: [
+    {
+      id: "88888888-8888-4888-8888-888888888888",
+      exerciseId: EXERCISE_ID,
+      order: 0,
+      sets: 4,
+      reps: 8,
+      durationSeconds: null,
+      rest: 120,
+      weight: 0,
+      exercise,
+    },
+  ],
 };
 
 const food = {
@@ -243,6 +274,8 @@ describe("API", () => {
       "/api/exercises/{id}",
       "/api/workouts",
       "/api/workouts/{id}",
+      "/api/workout-templates",
+      "/api/workout-templates/{id}/instantiate",
       "/api/foods",
       "/api/foods/{id}",
       "/api/meals",
@@ -264,6 +297,13 @@ describe("API", () => {
     expect(openApiPath(paths, "/api/nutrition-goals").post.security).toEqual([
       { bearerAuth: [] },
     ]);
+    expect(openApiPath(paths, "/api/workout-templates").get.security).toEqual([
+      { bearerAuth: [] },
+    ]);
+    expect(
+      openApiPath(paths, "/api/workout-templates/{id}/instantiate").post
+        .responses,
+    ).toHaveProperty("201");
     expect(openApiPath(paths, "/api/meals").post.responses).toHaveProperty(
       "201",
     );
@@ -850,6 +890,88 @@ describe("API", () => {
     expect(response.statusCode).toBe(400);
     expect(body.code).toBe("VALIDATION_ERROR");
     expect(mocks.workouts.createWorkout).not.toHaveBeenCalled();
+  });
+
+  it("rejects workout template routes without a token", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/workout-templates",
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expect(body.code).toBe("UNAUTHORIZED");
+    expect(mocks.workoutTemplates.getWorkoutTemplates).not.toHaveBeenCalled();
+  });
+
+  it("lists workout templates for authenticated users", async () => {
+    mocks.workoutTemplates.getWorkoutTemplates.mockResolvedValue([
+      workoutTemplate,
+    ]);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/workout-templates",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([workoutTemplate]);
+    expect(body.meta).toEqual({ total: 1, page: 1, limit: 1 });
+    expect(mocks.workoutTemplates.getWorkoutTemplates).toHaveBeenCalledWith();
+  });
+
+  it("instantiates a workout template for the authenticated user", async () => {
+    mocks.workoutTemplates.instantiateWorkoutTemplate.mockResolvedValue(
+      workout,
+    );
+
+    const payload = { date: workout.date };
+    const response = await app.inject({
+      method: "POST",
+      url: `/api/workout-templates/${WORKOUT_TEMPLATE_ID}/instantiate`,
+      headers: authHeaders(),
+      payload,
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(201);
+    expect(body.data).toEqual(workout);
+    expect(
+      mocks.workoutTemplates.instantiateWorkoutTemplate,
+    ).toHaveBeenCalledWith(WORKOUT_TEMPLATE_ID, USER_ID, payload);
+  });
+
+  it("returns 404 when instantiating a missing workout template", async () => {
+    mocks.workoutTemplates.instantiateWorkoutTemplate.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "POST",
+      url: `/api/workout-templates/${WORKOUT_TEMPLATE_ID}/instantiate`,
+      headers: authHeaders(),
+      payload: { date: workout.date },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("WORKOUT_TEMPLATE_NOT_FOUND");
+  });
+
+  it("rejects invalid workout template instantiation before calling the database", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: `/api/workout-templates/${WORKOUT_TEMPLATE_ID}/instantiate`,
+      headers: authHeaders(),
+      payload: { date: "not-a-date" },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(
+      mocks.workoutTemplates.instantiateWorkoutTemplate,
+    ).not.toHaveBeenCalled();
   });
 
   it("updates a workout for the authenticated user only", async () => {
@@ -1762,6 +1884,12 @@ describe("API", () => {
       method: "GET" as const,
       url: "/api/workouts",
       mock: mocks.workouts.getWorkouts,
+    },
+    {
+      name: "workout templates",
+      method: "GET" as const,
+      url: "/api/workout-templates",
+      mock: mocks.workoutTemplates.getWorkoutTemplates,
     },
     {
       name: "foods",

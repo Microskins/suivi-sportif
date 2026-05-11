@@ -123,6 +123,38 @@ export const workoutResponseSchema = z.object({
 
 export const workoutListSchema = z.array(workoutResponseSchema);
 
+// ============== Workout Template Schemas ==============
+export const instantiateWorkoutTemplateSchema = z.object({
+  date: z.string().datetime(),
+});
+
+export const workoutTemplateExerciseResponseSchema = z.object({
+  id: z.string().uuid(),
+  exerciseId: z.string().uuid(),
+  order: z.number().int(),
+  sets: z.number().int(),
+  reps: z.number().int(),
+  durationSeconds: z.number().int().nullable(),
+  rest: z.number().int(),
+  weight: z.number(),
+  exercise: exerciseResponseSchema,
+});
+
+export const workoutTemplateResponseSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  category: z.string(),
+  level: z.string(),
+  duration: z.number().int(),
+  description: z.string().nullable(),
+  displayOrder: z.number().int(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  exercises: z.array(workoutTemplateExerciseResponseSchema),
+});
+
+export const workoutTemplateListSchema = z.array(workoutTemplateResponseSchema);
+
 // ============== Nutrition Schemas ==============
 const macroValueSchema = z.number().min(0).max(100000);
 
@@ -278,6 +310,12 @@ export type ExerciseResponse = z.infer<typeof exerciseResponseSchema>;
 export type CreateWorkoutInput = z.infer<typeof createWorkoutSchema>;
 export type UpdateWorkoutInput = z.infer<typeof updateWorkoutSchema>;
 export type WorkoutResponse = z.infer<typeof workoutResponseSchema>;
+export type InstantiateWorkoutTemplateInput = z.infer<
+  typeof instantiateWorkoutTemplateSchema
+>;
+export type WorkoutTemplateResponse = z.infer<
+  typeof workoutTemplateResponseSchema
+>;
 
 export type CreateFoodInput = z.infer<typeof createFoodSchema>;
 export type UpdateFoodInput = z.infer<typeof updateFoodSchema>;

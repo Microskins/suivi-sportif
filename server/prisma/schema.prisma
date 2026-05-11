@@ -71,6 +71,7 @@ model Exercise {
   equipment    ExerciseEquipment[]
   instructions ExerciseInstruction[]
   media        ExerciseMedia[]
+  templateExercises WorkoutTemplateExercise[]
 
   @@index([name])
   @@index([difficulty])
@@ -248,6 +249,47 @@ model WorkoutSet {
 
   @@index([workoutExerciseId])
   @@map("workout_sets")
+}
+
+// ============== Workout Template Model ==============
+
+model WorkoutTemplate {
+  id           String   @id @default(uuid())
+  name         String   @unique
+  category     String
+  level        String
+  duration     Int
+  description  String?  @db.Text
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  exercises WorkoutTemplateExercise[]
+
+  @@index([displayOrder])
+  @@index([category])
+  @@map("workout_templates")
+}
+
+// ============== Workout Template Exercise Model ==============
+
+model WorkoutTemplateExercise {
+  id              String  @id @default(uuid())
+  templateId      String  @map("template_id")
+  exerciseId      String  @map("exercise_id")
+  order           Int     @default(0)
+  sets            Int
+  reps            Int
+  durationSeconds Int?    @map("duration_seconds")
+  rest            Int     @default(60)
+  weight          Decimal @default(0) @db.Decimal(10, 2)
+
+  template WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  exercise Exercise        @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, exerciseId])
+  @@index([exerciseId])
+  @@map("workout_template_exercises")
 }
 
 // ============== Food Model ==============
