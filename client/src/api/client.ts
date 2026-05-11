@@ -80,6 +80,37 @@ export type Workout = {
   }>;
 };
 
+export type WorkoutTemplate = {
+  id: string;
+  name: string;
+  category: string;
+  level: string;
+  duration: number;
+  description: string | null;
+  displayOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  exercises: Array<{
+    id: string;
+    exerciseId: string;
+    order: number;
+    sets: number;
+    reps: number;
+    durationSeconds: number | null;
+    rest: number;
+    weight: number;
+    exercise: {
+      id: string;
+      name: string;
+      description: string | null;
+      difficulty: string;
+      exerciseType: string;
+      createdAt: string;
+      updatedAt: string;
+    };
+  }>;
+};
+
 export type Food = {
   id: string;
   userId: string | null;
@@ -350,6 +381,18 @@ class ApiClient {
   async deleteWorkout(id: string) {
     return this.request<void>(`/api/workouts/${id}`, {
       method: "DELETE",
+    });
+  }
+
+  // Workout templates
+  async getWorkoutTemplates() {
+    return this.request<WorkoutTemplate[]>("/api/workout-templates");
+  }
+
+  async instantiateWorkoutTemplate(id: string, date: string) {
+    return this.request<Workout>(`/api/workout-templates/${id}/instantiate`, {
+      method: "POST",
+      body: JSON.stringify({ date }),
     });
   }
 

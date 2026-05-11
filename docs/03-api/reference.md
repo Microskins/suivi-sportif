@@ -187,6 +187,24 @@ Creation:
 
 Pour `range`, les dates sont des datetime ISO encodees dans l'URL.
 
+## Workout Templates
+
+Toutes les routes sont protegees. Les modeles sont globaux et l'instanciation
+cree une seance personnelle pour l'utilisateur du JWT.
+
+- `GET /api/workout-templates`
+- `POST /api/workout-templates/:id/instantiate`
+
+Instanciation:
+
+```json
+{
+  "date": "2026-05-04T10:00:00.000Z"
+}
+```
+
+Reponse `201`: une seance au meme format que `POST /api/workouts`.
+
 ## Nutrition
 
 Toutes les routes sont protegees et utilisent l'utilisateur du JWT.
