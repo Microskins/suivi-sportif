@@ -19,11 +19,10 @@
 - [x] Creer ce plan.
 - [x] Ajouter `env: FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: \"true\"` dans
   `.github/workflows/deploy-production.yml`.
-- [ ] Verifier sur un run `workflow_dispatch` que `Verify` et `Deploy` passent.
+- [x] Verifier sur un run (push ou `workflow_dispatch`) que `Verify` et `Deploy` passent.
 
 ## Notes de verification
 
 - 2026-05-11: run "Deploy production" #19 (push sur `main`, commit `f7b1e99`) OK: jobs `Verify` et `Deploy` en succes.
 - 2026-05-11: warnings attendus confirmant que les actions Node 20 sont forcees a tourner sur Node 24 (checkout/setup-node/buildx).
 - Run: https://github.com/Microskins/suivi-sportif/actions/runs/25684466832
-- 2026-05-11: la verification ci-dessus est basee sur un run declenche par push; il reste a confirmer via `workflow_dispatch` comme indique dans la todo.
