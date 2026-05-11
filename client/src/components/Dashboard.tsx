@@ -11,18 +11,21 @@ import type {
   NutritionGoalInput,
   Workout,
   WorkoutInput,
+  WorkoutTemplate,
 } from "../api/client";
 import { DashboardOverview } from "./DashboardOverview";
 import { useExercisesStore } from "../stores/exercisesStore";
 import { useFoodsStore } from "../stores/foodsStore";
 import { useMealsStore } from "../stores/mealsStore";
 import { useNutritionGoalsStore } from "../stores/nutritionGoalsStore";
+import { useWorkoutTemplatesStore } from "../stores/workoutTemplatesStore";
 import { useWorkoutsStore } from "../stores/workoutsStore";
 
 type Resource = "dashboard" | "workouts" | "exercises" | "foods" | "meals" | "goals";
 type ModalState =
   | { type: "exercise"; item?: Exercise }
   | { type: "workout"; item?: Workout }
+  | { type: "workout-template" }
   | { type: "food"; item?: Food }
   | { type: "meal"; item?: Meal }
   | { type: "goal"; item?: NutritionGoal }
@@ -402,6 +405,101 @@ function updateSet(
   });
 }
 
+function WorkoutTemplatePicker({
+  templates,
+  onInstantiate,
+  onCancel,
+}: {
+  templates: WorkoutTemplate[];
+  onInstantiate: (id: string, date: string) => Promise<void>;
+  onCancel: () => void;
+}) {
+  const [date, setDate] = useState(toInputDateTime());
+  const [selectedId, setSelectedId] = useState(templates[0]?.id ?? "");
+  const [isSaving, setIsSaving] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selectedId) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await onInstantiate(selectedId, dateTimeToIso(date));
+      onCancel();
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <Field label="Date de la seance">
+        <input
+          className={inputClass}
+          type="datetime-local"
+          value={date}
+          onChange={(event) => setDate(event.target.value)}
+          required
+        />
+      </Field>
+      {!templates.length && <EmptyState label="Aucun modele de seance disponible." />}
+      <div className="grid gap-3 lg:grid-cols-2">
+        {templates.map((template) => (
+          <label
+            key={template.id}
+            className={`block rounded border p-4 text-sm ${
+              selectedId === template.id
+                ? "border-emerald-600 bg-emerald-50"
+                : "border-slate-200 bg-white"
+            }`}
+          >
+            <span className="flex items-start gap-3">
+              <input
+                type="radio"
+                name="workout-template"
+                value={template.id}
+                checked={selectedId === template.id}
+                onChange={() => setSelectedId(template.id)}
+                className="mt-1"
+              />
+              <span>
+                <span className="block font-semibold text-slate-950">
+                  {template.name}
+                </span>
+                <span className="mt-1 block text-slate-600">
+                  {template.category} - {template.level} - {template.duration} min
+                </span>
+                <span className="mt-1 block text-slate-500">
+                  {template.exercises.length} exercice(s)
+                </span>
+                {template.description && (
+                  <span className="mt-2 block text-slate-500">
+                    {template.description}
+                  </span>
+                )}
+              </span>
+            </span>
+          </label>
+        ))}
+      </div>
+      <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
+        <button type="button" className={secondaryButtonClass} onClick={onCancel}>
+          Annuler
+        </button>
+        <button
+          type="submit"
+          disabled={isSaving || !selectedId}
+          className={buttonClass}
+        >
+          {isSaving ? "Creation..." : "Creer la seance"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 function FoodForm({
   item,
   onSubmit,
@@ -652,6 +750,7 @@ export function Dashboard({
   const [modal, setModal] = useState<ModalState>(null);
   const exercisesStore = useExercisesStore();
   const workoutsStore = useWorkoutsStore();
+  const workoutTemplatesStore = useWorkoutTemplatesStore();
   const foodsStore = useFoodsStore();
   const mealsStore = useMealsStore();
   const goalsStore = useNutritionGoalsStore();
@@ -659,6 +758,7 @@ export function Dashboard({
   useEffect(() => {
     void exercisesStore.fetchExercises();
     void workoutsStore.fetchWorkouts();
+    void workoutTemplatesStore.fetchWorkoutTemplates();
     void foodsStore.fetchFoods();
     void mealsStore.fetchMeals();
     void goalsStore.fetchNutritionGoals();
@@ -667,6 +767,7 @@ export function Dashboard({
   const isLoading =
     exercisesStore.isLoading ||
     workoutsStore.isLoading ||
+    workoutTemplatesStore.isLoading ||
     foodsStore.isLoading ||
     mealsStore.isLoading ||
     goalsStore.isLoading;
@@ -675,7 +776,7 @@ export function Dashboard({
     resource === "dashboard"
       ? null
       : resource === "workouts"
-      ? workoutsStore.error
+      ? workoutsStore.error ?? workoutTemplatesStore.error
       : resource === "exercises"
         ? exercisesStore.error
         : resource === "foods"
@@ -763,7 +864,16 @@ export function Dashboard({
 
           <div className={contentClass}>
             {resource !== "dashboard" && (
-              <ResourceHeader resource={resource} onCreate={() => openCreate(resource, setModal)} isLoading={isLoading} />
+              <ResourceHeader
+                resource={resource}
+                onCreate={() => openCreate(resource, setModal)}
+                onCreateFromTemplate={
+                  resource === "workouts"
+                    ? () => setModal({ type: "workout-template" })
+                    : undefined
+                }
+                isLoading={isLoading}
+              />
             )}
             <div className={resource === "dashboard" ? "space-y-4" : "mt-4 space-y-4"}>
               <ErrorBox message={activeError} />
@@ -837,6 +947,15 @@ export function Dashboard({
               onSubmit={(data) => modal.item ? workoutsStore.updateWorkout(modal.item.id, data) : workoutsStore.createWorkout(data)}
             />
           )}
+          {modal.type === "workout-template" && (
+            <WorkoutTemplatePicker
+              templates={workoutTemplatesStore.workoutTemplates}
+              onCancel={() => setModal(null)}
+              onInstantiate={(id, date) =>
+                workoutTemplatesStore.instantiateWorkoutTemplate(id, date)
+              }
+            />
+          )}
           {modal.type === "food" && (
             <FoodForm
               item={modal.item}
@@ -865,7 +984,17 @@ export function Dashboard({
   );
 }
 
-function ResourceHeader({ resource, onCreate, isLoading }: { resource: Resource; onCreate: () => void; isLoading: boolean }) {
+function ResourceHeader({
+  resource,
+  onCreate,
+  onCreateFromTemplate,
+  isLoading,
+}: {
+  resource: Resource;
+  onCreate: () => void;
+  onCreateFromTemplate?: () => void;
+  isLoading: boolean;
+}) {
   const titles: Record<Resource, string> = {
     dashboard: "Synthese",
     workouts: "Seances",
@@ -881,7 +1010,18 @@ function ResourceHeader({ resource, onCreate, isLoading }: { resource: Resource;
         <h2 className="text-xl font-semibold">{titles[resource]}</h2>
         {isLoading && <p className="mt-1 text-sm text-slate-500">Chargement...</p>}
       </div>
-      <button type="button" className={buttonClass} onClick={onCreate}>Creer</button>
+      <div className="flex flex-wrap gap-2">
+        {onCreateFromTemplate && (
+          <button
+            type="button"
+            className={secondaryButtonClass}
+            onClick={onCreateFromTemplate}
+          >
+            Depuis un modele
+          </button>
+        )}
+        <button type="button" className={buttonClass} onClick={onCreate}>Creer</button>
+      </div>
     </div>
   );
 }
@@ -895,6 +1035,10 @@ function openCreate(resource: Resource, setModal: (modal: ModalState) => void) {
 }
 
 function modalTitle(modal: Exclude<ModalState, null>) {
+  if (modal.type === "workout-template") {
+    return "Creer depuis un modele";
+  }
+
   const prefix = modal.item ? "Modifier" : "Creer";
   const names = {
     exercise: "un exercice",

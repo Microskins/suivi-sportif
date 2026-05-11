@@ -166,3 +166,33 @@
 ## Liens
 
 - Plan: docs/90-plans/XXX-... (quand ce sera actee)
+
+---
+
+## 2026-05-11 - Modeles: etiquettes et recherche rapide
+
+## Contexte
+
+- Les premiers modeles de seances vont couvrir quelques cas simples.
+- Quand la bibliotheque grandira, une liste brute deviendra moins pratique.
+
+## Proposition
+
+- Ajouter des etiquettes aux modeles:
+  - objectif principal (force, cardio, hypertrophie, reprise);
+  - duree courte / moyenne / longue;
+  - materiel requis.
+- Ajouter une recherche et des filtres dans la modale de choix de modele.
+
+## Impact
+
+- Selection plus rapide du bon modele.
+- Meilleure extensibilite quand on ajoutera plus de seances preconstruites.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/015-modeles-seances-defaut.md
