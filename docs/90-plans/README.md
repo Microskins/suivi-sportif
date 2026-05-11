@@ -13,6 +13,8 @@ Index chronologique des chantiers planifies et executes.
 7. [Dashboard suivi frontend](./007-dashboard-suivi-frontend.md)
 8. [Automatisation deploiement](./008-automatisation-deploiement.md)
 9. [Optimisation du deploiement production npm](./009-Optimisation-deploiement-npm.md)
+10. [Docs idees: structure et index](./010-docs-idees-index.md)
+11. [Skill IA idees pendant creation de plan](./011-skill-ia-idees-plan.md)
 
 ## Convention
 
