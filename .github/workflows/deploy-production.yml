@@ -10,6 +10,11 @@ concurrency:
   group: production-deploy
   cancel-in-progress: false
 
+env:
+  # GitHub will switch JavaScript actions from Node 20 to Node 24 by default on June 2, 2026.
+  # Opt in early to catch incompatibilities sooner. The deprecation warning may still appear.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   verify:
     name: Verify
