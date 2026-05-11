@@ -53,6 +53,9 @@ jobs:
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          name: suivi-sportif
+          cleanup: false
 
       - name: Deploy locally
         shell: bash
