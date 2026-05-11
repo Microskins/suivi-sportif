@@ -1,0 +1,4 @@
+# This file is used by Prisma Migrate to identify the provider used by the migrations in this folder.
+# It is normally created automatically; we version it to make `prisma migrate diff` reliable.
+provider = "postgresql"
+
