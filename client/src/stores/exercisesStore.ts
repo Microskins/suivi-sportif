@@ -47,9 +47,8 @@ export const useExercisesStore = create<ExercisesState>((set) => ({
         id: `bypass-exercise-${Date.now()}`,
         name: data.name,
         description: data.description ?? null,
-        muscleGroup: data.muscleGroup,
-        equipment: data.equipment ?? "none",
-        difficulty: data.difficulty ?? "beginner",
+        difficulty: data.difficulty ?? "BEGINNER",
+        exerciseType: data.exerciseType ?? "STRENGTH",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

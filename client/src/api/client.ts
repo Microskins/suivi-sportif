@@ -21,9 +21,8 @@ export type Exercise = {
   id: string;
   name: string;
   description: string | null;
-  muscleGroup: string;
-  equipment: string;
   difficulty: string;
+  exerciseType: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -31,9 +30,8 @@ export type Exercise = {
 export type ExerciseInput = {
   name: string;
   description?: string | null;
-  muscleGroup: string;
-  equipment?: string;
-  difficulty?: string;
+  difficulty?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  exerciseType?: "STRENGTH" | "CARDIO" | "MOBILITY";
 };
 
 export type WorkoutSetInput = {

@@ -41,11 +41,7 @@ function buildWorkoutFromTemplate(
       id: `bypass-workout-template-exercise-${Date.now()}-${templateExercise.order}`,
       exerciseId: templateExercise.exerciseId,
       order: templateExercise.order,
-      exercise: {
-        ...templateExercise.exercise,
-        muscleGroup: template.category,
-        equipment: "Modele",
-      },
+      exercise: templateExercise.exercise,
       sets: Array.from({ length: templateExercise.sets }, (_, setIndex) => ({
         id: `bypass-template-set-${Date.now()}-${templateExercise.order}-${setIndex}`,
         setNumber: setIndex + 1,

@@ -31,30 +31,16 @@ type ModalState =
   | { type: "goal"; item?: NutritionGoal }
   | null;
 
-const muscleGroups = [
-  ["chest", "Pectoraux"],
-  ["back", "Dos"],
-  ["shoulders", "Epaules"],
-  ["arms", "Bras"],
-  ["legs", "Jambes"],
-  ["core", "Tronc"],
-  ["cardio", "Cardio"],
-] as const;
-
-const equipmentOptions = [
-  ["none", "Aucun"],
-  ["barbell", "Barre"],
-  ["dumbbell", "Halteres"],
-  ["machine", "Machine"],
-  ["cable", "Poulie"],
-  ["kettlebell", "Kettlebell"],
-  ["resistance_band", "Elastique"],
-] as const;
-
 const difficultyOptions = [
-  ["beginner", "Debutant"],
-  ["intermediate", "Intermediaire"],
-  ["advanced", "Avance"],
+  ["BEGINNER", "Debutant"],
+  ["INTERMEDIATE", "Intermediaire"],
+  ["ADVANCED", "Avance"],
+] as const;
+
+const exerciseTypeOptions = [
+  ["STRENGTH", "Musculation"],
+  ["CARDIO", "Cardio"],
+  ["MOBILITY", "Mobilite"],
 ] as const;
 
 const mealTypes: Array<[MealType, string]> = [
@@ -196,9 +182,24 @@ function ExerciseForm({
 }) {
   const [name, setName] = useState(item?.name ?? "");
   const [description, setDescription] = useState(item?.description ?? "");
-  const [muscleGroup, setMuscleGroup] = useState(item?.muscleGroup ?? "legs");
-  const [equipment, setEquipment] = useState(item?.equipment ?? "none");
-  const [difficulty, setDifficulty] = useState(item?.difficulty ?? "beginner");
+  const [difficulty, setDifficulty] = useState<
+    "BEGINNER" | "INTERMEDIATE" | "ADVANCED"
+  >(
+    item?.difficulty === "BEGINNER" ||
+      item?.difficulty === "INTERMEDIATE" ||
+      item?.difficulty === "ADVANCED"
+      ? item.difficulty
+      : "BEGINNER",
+  );
+  const [exerciseType, setExerciseType] = useState<
+    "STRENGTH" | "CARDIO" | "MOBILITY"
+  >(
+    item?.exerciseType === "STRENGTH" ||
+      item?.exerciseType === "CARDIO" ||
+      item?.exerciseType === "MOBILITY"
+      ? item.exerciseType
+      : "STRENGTH",
+  );
   const [isSaving, setIsSaving] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -208,9 +209,8 @@ function ExerciseForm({
       await onSubmit({
         name,
         description: emptyToNull(description),
-        muscleGroup,
-        equipment,
         difficulty,
+        exerciseType,
       });
       onCancel();
     } finally {
@@ -226,24 +226,33 @@ function ExerciseForm({
       <Field label="Description">
         <textarea className={inputClass} value={description} onChange={(event) => setDescription(event.target.value)} rows={3} />
       </Field>
-      <div className="grid gap-4 md:grid-cols-3">
-        <Field label="Groupe">
-          <select className={inputClass} value={muscleGroup} onChange={(event) => setMuscleGroup(event.target.value)}>
-            {muscleGroups.map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Equipement">
-          <select className={inputClass} value={equipment} onChange={(event) => setEquipment(event.target.value)}>
-            {equipmentOptions.map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-        </Field>
+      <div className="grid gap-4 md:grid-cols-2">
         <Field label="Difficulte">
-          <select className={inputClass} value={difficulty} onChange={(event) => setDifficulty(event.target.value)}>
+          <select
+            className={inputClass}
+            value={difficulty}
+            onChange={(event) =>
+              setDifficulty(
+                event.target.value as "BEGINNER" | "INTERMEDIATE" | "ADVANCED",
+              )
+            }
+          >
             {difficultyOptions.map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Type">
+          <select
+            className={inputClass}
+            value={exerciseType}
+            onChange={(event) =>
+              setExerciseType(
+                event.target.value as "STRENGTH" | "CARDIO" | "MOBILITY",
+              )
+            }
+          >
+            {exerciseTypeOptions.map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
             ))}
           </select>
@@ -1094,7 +1103,9 @@ function ExercisesList({ exercises, onEdit, onDelete }: { exercises: Exercise[];
           <div className="flex h-full flex-col justify-between gap-3">
             <div>
               <p className="font-semibold">{exercise.name}</p>
-              <p className="mt-1 text-sm text-slate-600">{labelFromOptions(muscleGroups, exercise.muscleGroup)} - {labelFromOptions(difficultyOptions, exercise.difficulty)}</p>
+              <p className="mt-1 text-sm text-slate-600">
+                {labelFromOptions(exerciseTypeOptions, exercise.exerciseType)} - {labelFromOptions(difficultyOptions, exercise.difficulty)}
+              </p>
               {exercise.description && <p className="mt-2 text-sm text-slate-500">{exercise.description}</p>}
             </div>
             <ItemActions item={exercise} onEdit={onEdit} onDelete={onDelete} />
