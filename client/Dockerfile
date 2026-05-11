@@ -7,7 +7,7 @@ COPY server/package*.json ./server/
 COPY client/package*.json ./client/
 COPY mcp/package*.json ./mcp/
 
-RUN --mount=type=cache,target=/root/.npm npm ci
+RUN --mount=type=cache,id=npm-cache,target=/root/.npm,sharing=locked npm ci --no-audit --fund=false
 
 COPY client ./client
 

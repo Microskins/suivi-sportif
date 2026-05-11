@@ -8,7 +8,7 @@ Réduire fortement le temps de déploiement GitHub Actions en évitant la réins
 
 ## Statut
 
-✅ **TERMINÉ** — 2026-05-09
+🟡 **EN COURS** — 2026-05-09 (implementation terminee, validation CI a confirmer)
 
 ---
 
@@ -96,7 +96,7 @@ La majeure partie du temps de déploiement venait de `npm ci` dans les builds Do
 
 Pour éviter de retélécharger à chaque run, on active le cache npm via BuildKit :
 
-- Utilisation de `RUN --mount=type=cache,target=/root/.npm npm ci` dans :
+- Utilisation de `RUN --mount=type=cache,id=npm-cache,target=/root/.npm,sharing=locked npm ci --no-audit --fund=false` dans :
   - [`server/Dockerfile`](../../server/Dockerfile)
   - [`client/Dockerfile`](../../client/Dockerfile)
   - [`mcp/Dockerfile`](../../mcp/Dockerfile)
@@ -116,3 +116,8 @@ On ajoute donc `docker/setup-buildx-action@v3` et on force BuildKit pour le job 
 Le script [`scripts/deploy-production.sh`](../../scripts/deploy-production.sh) n'avait déjà pas d'installation npm globale (déploiement uniquement via Docker Compose).
 
 Les optimisations se concentrent donc sur les builds Docker, qui représentent la majorité du temps de déploiement.
+
+## Notes de verification
+
+- Inspection du 2026-05-11: `.github/workflows/deploy-production.yml` contient `docker/setup-buildx-action@v3` et force BuildKit via `DOCKER_BUILDKIT=1` + `COMPOSE_DOCKER_CLI_BUILD=1`.
+- Inspection du 2026-05-11: `server/Dockerfile`, `client/Dockerfile` et `mcp/Dockerfile` utilisent `RUN --mount=type=cache,id=npm-cache,target=/root/.npm,sharing=locked npm ci --no-audit --fund=false` et ne contiennent plus de `npm install -g npm@...`.

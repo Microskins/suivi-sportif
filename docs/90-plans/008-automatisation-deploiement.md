@@ -13,7 +13,7 @@
   appelle un script versionne localement sur le serveur de production.
 - Le script refuse de deployer si le working tree serveur est sale.
 - Les images Docker restent construites sur le serveur de production.
-- Le runner production utilise les labels `self-hosted`, `linux`, `x64` et
+- Le runner production utilise les labels `self-hosted`, `linux`, `ARM64` et
   `production`.
 
 ## Todo
@@ -29,7 +29,7 @@
 - [x] Documenter l'installation du runner `production`.
 - [x] Documenter la procedure complete utilisateur `deploy`, service runner et
   verification.
-- [ ] Installer et enregistrer le runner sur le serveur production.
+- [x] Installer et enregistrer le runner sur le serveur production.
 
 ## Notes de verification
 
@@ -54,6 +54,6 @@
   `deploy`, verrouillage du mot de passe apres installation, labels attendus et
   verifications sans `sudo`.
 - Runner installe et operationnel le 2026-05-09: service
-  `actions.runner.Microskins-suivi-sportif.prod-192-168-1-64.service` actif
-  depuis le 2026-05-07, deploiements automatises fonctionnels.
-- Architecture du serveur de production: ARM64 (aarch64), pas x64.
+  `actions.runner.Microskins-suivi-sportif.prod-192-168-1-64.service` actif.
+- Le workflow `.github/workflows/deploy-production.yml` cible bien le runner
+  `runs-on: [self-hosted, linux, ARM64, production]`.
