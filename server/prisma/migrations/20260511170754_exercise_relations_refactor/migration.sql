@@ -21,6 +21,9 @@ ALTER TABLE "exercises"
 
 -- Convert difficulty from legacy text values to enum values.
 ALTER TABLE "exercises"
+  ALTER COLUMN "difficulty" DROP DEFAULT;
+
+ALTER TABLE "exercises"
   ALTER COLUMN "difficulty" TYPE "ExerciseDifficulty"
   USING (
     CASE lower("difficulty")
@@ -30,6 +33,9 @@ ALTER TABLE "exercises"
       ELSE 'BEGINNER'
     END
   )::"ExerciseDifficulty";
+
+ALTER TABLE "exercises"
+  ALTER COLUMN "difficulty" SET DEFAULT 'BEGINNER'::"ExerciseDifficulty";
 
 -- CreateTable
 CREATE TABLE "exercise_categories" (
