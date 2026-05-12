@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Dashboard } from "./components/Dashboard";
+import { CookieConsentLayer } from "./components/CookieConsentLayer";
+import { CookiePolicyPage } from "./components/CookiePolicyPage";
 import { useAuthStore } from "./stores/authStore";
 
 type AuthMode = "login" | "register";
@@ -7,6 +9,7 @@ type AuthMode = "login" | "register";
 const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
 
 export default function App() {
+  const isPolicyPage = window.location.pathname === "/politique-cookies";
   const {
     user,
     isAuthenticated,
@@ -52,120 +55,146 @@ export default function App() {
     setMode(nextMode);
   }
 
+  if (isPolicyPage) {
+    return (
+      <>
+        <CookiePolicyPage />
+        <CookieConsentLayer />
+      </>
+    );
+  }
+
   if (isInitializing) {
     return (
-      <main className="min-h-screen bg-slate-100 text-slate-900">
-        <div className="mx-auto flex min-h-screen max-w-md items-center justify-center px-6">
-          <p className="text-sm font-medium">Chargement du profil...</p>
-        </div>
-      </main>
+      <>
+        <main className="min-h-screen bg-slate-100 text-slate-900">
+          <div className="mx-auto flex min-h-screen max-w-md items-center justify-center px-6">
+            <p className="text-sm font-medium">Chargement du profil...</p>
+          </div>
+        </main>
+        <CookieConsentLayer />
+      </>
     );
   }
 
   if (isAuthenticated && user) {
     return (
-      <Dashboard
-        userName={user.name}
-        userEmail={user.email}
-        onLogout={logout}
-        isAuthBypassEnabled={isAuthBypassEnabled}
-      />
+      <>
+        <Dashboard
+          userName={user.name}
+          userEmail={user.email}
+          onLogout={logout}
+          isAuthBypassEnabled={isAuthBypassEnabled}
+        />
+        <CookieConsentLayer />
+      </>
     );
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-900">
-      <section className="mx-auto max-w-md px-6 py-10">
-        <h1 className="text-2xl font-bold">Suivi Sportif</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Connecte-toi pour gerer tes entrainements et ta nutrition.
-        </p>
+    <>
+      <main className="min-h-screen bg-slate-100 text-slate-900">
+        <section className="mx-auto max-w-md px-6 py-10">
+          <h1 className="text-2xl font-bold">Suivi Sportif</h1>
+          <p className="mt-1 text-sm text-slate-600">
+            Connecte-toi pour gerer tes entrainements et ta nutrition.
+          </p>
 
-        <div className="mt-6 grid grid-cols-2 gap-2 rounded border border-slate-300 bg-white p-1">
-          <button
-            type="button"
-            onClick={() => handleModeChange("login")}
-            className={`rounded px-3 py-2 text-sm font-medium ${
-              mode === "login"
-                ? "bg-slate-900 text-white"
-                : "text-slate-700 hover:bg-slate-100"
-            }`}
+          <div className="mt-6 grid grid-cols-2 gap-2 rounded border border-slate-300 bg-white p-1">
+            <button
+              type="button"
+              onClick={() => handleModeChange("login")}
+              className={`rounded px-3 py-2 text-sm font-medium ${
+                mode === "login"
+                  ? "bg-slate-900 text-white"
+                  : "text-slate-700 hover:bg-slate-100"
+              }`}
+            >
+              Connexion
+            </button>
+            <button
+              type="button"
+              onClick={() => handleModeChange("register")}
+              className={`rounded px-3 py-2 text-sm font-medium ${
+                mode === "register"
+                  ? "bg-slate-900 text-white"
+                  : "text-slate-700 hover:bg-slate-100"
+              }`}
+            >
+              Inscription
+            </button>
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            className="mt-4 rounded border border-slate-300 bg-white p-6 shadow-sm"
           >
-            Connexion
-          </button>
-          <button
-            type="button"
-            onClick={() => handleModeChange("register")}
-            className={`rounded px-3 py-2 text-sm font-medium ${
-              mode === "register"
-                ? "bg-slate-900 text-white"
-                : "text-slate-700 hover:bg-slate-100"
-            }`}
-          >
-            Inscription
-          </button>
-        </div>
+            <h2 className="text-lg font-semibold">{title}</h2>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mt-4 rounded border border-slate-300 bg-white p-6 shadow-sm"
-        >
-          <h2 className="text-lg font-semibold">{title}</h2>
+            {mode === "register" && (
+              <label className="mt-4 block text-sm font-medium text-slate-700">
+                Nom
+                <input
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  type="text"
+                  autoComplete="name"
+                  required
+                  className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                />
+              </label>
+            )}
 
-          {mode === "register" && (
             <label className="mt-4 block text-sm font-medium text-slate-700">
-              Nom
+              Email
               <input
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                type="text"
-                autoComplete="name"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                type="email"
+                autoComplete="email"
                 required
                 className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
               />
             </label>
-          )}
 
-          <label className="mt-4 block text-sm font-medium text-slate-700">
-            Email
-            <input
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              type="email"
-              autoComplete="email"
-              required
-              className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-            />
-          </label>
+            <label className="mt-4 block text-sm font-medium text-slate-700">
+              Mot de passe
+              <input
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                type="password"
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                required
+                minLength={8}
+                className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+              />
+            </label>
 
-          <label className="mt-4 block text-sm font-medium text-slate-700">
-            Mot de passe
-            <input
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              type="password"
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-              required
-              minLength={8}
-              className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-            />
-          </label>
+            {error && (
+              <p className="mt-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {error}
+              </p>
+            )}
 
-          {error && (
-            <p className="mt-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {error}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="mt-6 w-full rounded bg-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isLoading ? "Traitement..." : title}
+            </button>
+
+            <p className="mt-4 text-xs text-slate-500">
+              En continuant, tu peux consulter notre{" "}
+              <a href="/politique-cookies" className="font-medium text-slate-800 underline">
+                politique cookies
+              </a>
+              .
             </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="mt-6 w-full rounded bg-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isLoading ? "Traitement..." : title}
-          </button>
-        </form>
-      </section>
-    </main>
+          </form>
+        </section>
+      </main>
+      <CookieConsentLayer />
+    </>
   );
 }

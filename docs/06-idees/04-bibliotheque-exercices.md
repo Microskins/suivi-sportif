@@ -9,6 +9,7 @@
 
 - Fournir une bibliotheque d'exercices par defaut.
 - Utiliser ces donnees pour alimenter la creation de seances et les modeles preconstruits.
+- AJouter des filtres lors de la création de sceances.
 
 ## Donnees proposees
 

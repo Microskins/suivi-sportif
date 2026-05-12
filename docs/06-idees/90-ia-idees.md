@@ -196,3 +196,31 @@
 ## Liens
 
 - Plan: docs/90-plans/015-modeles-seances-defaut.md
+
+---
+
+## 2026-05-12 - Conformite cookies: mode policy-version
+
+## Contexte
+
+- Une CMP frontend peut devenir obsolète quand la politique legale evolue.
+- Sans versionning explicite, le consentement stocke est difficile a invalider proprement.
+
+## Proposition
+
+- Versionner la politique cookies (ex: date ISO) dans l'objet de consentement.
+- Re-afficher la banniere automatiquement quand la version change.
+- Garder un journal minimal des changements de version dans la doc legale.
+
+## Impact
+
+- Conformite plus robuste dans le temps.
+- Moins de risques d'utiliser un ancien consentement sur de nouvelles finalites.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/017-cmp-cookies-frontend.md
