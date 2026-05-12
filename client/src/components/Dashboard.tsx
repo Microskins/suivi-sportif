@@ -11,9 +11,11 @@ import type {
   NutritionGoalInput,
   Workout,
   WorkoutInput,
+  WorkoutStatus,
   WorkoutTemplate,
 } from "../api/client";
 import { DashboardOverview } from "./DashboardOverview";
+import { WorkoutsCalendar } from "./WorkoutsCalendar";
 import { useExercisesStore } from "../stores/exercisesStore";
 import { useFoodsStore } from "../stores/foodsStore";
 import { useMealsStore } from "../stores/mealsStore";
@@ -21,10 +23,17 @@ import { useNutritionGoalsStore } from "../stores/nutritionGoalsStore";
 import { useWorkoutTemplatesStore } from "../stores/workoutTemplatesStore";
 import { useWorkoutsStore } from "../stores/workoutsStore";
 
-type Resource = "dashboard" | "workouts" | "exercises" | "foods" | "meals" | "goals";
+type Resource =
+  | "dashboard"
+  | "calendar"
+  | "workouts"
+  | "exercises"
+  | "foods"
+  | "meals"
+  | "goals";
 type ModalState =
   | { type: "exercise"; item?: Exercise }
-  | { type: "workout"; item?: Workout }
+  | { type: "workout"; item?: Workout; presetDate?: string }
   | { type: "workout-template" }
   | { type: "food"; item?: Food }
   | { type: "meal"; item?: Meal }
@@ -42,6 +51,12 @@ const exerciseTypeOptions = [
   ["CARDIO", "Cardio"],
   ["MOBILITY", "Mobilite"],
 ] as const;
+
+const workoutStatusOptions: Array<[WorkoutStatus, string]> = [
+  ["PLANNED", "Prevue"],
+  ["COMPLETED", "Realisee"],
+  ["CANCELED", "Annulee"],
+];
 
 const mealTypes: Array<[MealType, string]> = [
   ["breakfast", "Petit-dejeuner"],
@@ -67,6 +82,10 @@ function toInputDate(value?: string | null) {
 
 function dateTimeToIso(value: string) {
   return new Date(value).toISOString();
+}
+
+function inferWorkoutStatusFromDate(value: string): WorkoutStatus {
+  return new Date(value).getTime() > Date.now() ? "PLANNED" : "COMPLETED";
 }
 
 function dateToIso(value: string) {
@@ -270,17 +289,24 @@ type WorkoutExerciseFormRow = {
 
 function WorkoutForm({
   item,
+  initialDate,
   exercises,
   onSubmit,
   onCancel,
 }: {
   item?: Workout;
+  initialDate?: string;
   exercises: Exercise[];
   onSubmit: (data: WorkoutInput) => Promise<void>;
   onCancel: () => void;
 }) {
   const [name, setName] = useState(item?.name ?? "");
-  const [date, setDate] = useState(toInputDateTime(item?.date));
+  const [date, setDate] = useState(
+    toInputDateTime(item?.date ?? initialDate),
+  );
+  const [status, setStatus] = useState<WorkoutStatus>(
+    item?.status ?? inferWorkoutStatusFromDate(item?.date ?? initialDate ?? new Date().toISOString()),
+  );
   const [duration, setDuration] = useState(String(item?.duration ?? 45));
   const [notes, setNotes] = useState(item?.notes ?? "");
   const [rows, setRows] = useState<WorkoutExerciseFormRow[]>(
@@ -310,6 +336,7 @@ function WorkoutForm({
       await onSubmit({
         name,
         date: dateTimeToIso(date),
+        status,
         duration: Number(duration),
         notes: emptyToNull(notes),
         exercises: rows.map((row) => ({
@@ -340,6 +367,21 @@ function WorkoutForm({
           <input className={inputClass} type="number" min="0" value={duration} onChange={(event) => setDuration(event.target.value)} required />
         </Field>
       </div>
+      <Field label="Statut">
+        <select
+          className={inputClass}
+          value={status}
+          onChange={(event) =>
+            setStatus(event.target.value as WorkoutStatus)
+          }
+        >
+          {workoutStatusOptions.map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </Field>
       <Field label="Notes">
         <textarea className={inputClass} value={notes} onChange={(event) => setNotes(event.target.value)} rows={3} />
       </Field>
@@ -782,7 +824,7 @@ export function Dashboard({
     goalsStore.isLoading;
 
   const activeError =
-    resource === "dashboard"
+    resource === "dashboard" || resource === "calendar"
       ? null
       : resource === "workouts"
       ? workoutsStore.error ?? workoutTemplatesStore.error
@@ -795,7 +837,7 @@ export function Dashboard({
             : goalsStore.error;
 
   const contentClass =
-    resource === "dashboard"
+    resource === "dashboard" || resource === "calendar"
       ? "min-w-0"
       : "rounded border border-neutral-200 bg-white p-5 shadow-sm";
 
@@ -831,6 +873,17 @@ export function Dashboard({
               }`}
             >
               Synthese
+            </button>
+            <button
+              type="button"
+              onClick={() => setResource("calendar")}
+              className={`mb-1 block w-full rounded px-3 py-2 text-left text-sm font-medium ${
+                resource === "calendar"
+                  ? "bg-emerald-700 text-white shadow-sm"
+                  : "text-neutral-700 hover:bg-neutral-100"
+              }`}
+            >
+              Calendrier
             </button>
             <p className="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
               Sport
@@ -872,7 +925,7 @@ export function Dashboard({
           </nav>
 
           <div className={contentClass}>
-            {resource !== "dashboard" && (
+            {resource !== "dashboard" && resource !== "calendar" && (
               <ResourceHeader
                 resource={resource}
                 onCreate={() => openCreate(resource, setModal)}
@@ -897,6 +950,17 @@ export function Dashboard({
                     if (action === "meal") setModal({ type: "meal" });
                     if (action === "goal") setModal({ type: "goal" });
                   }}
+                />
+              )}
+              {resource === "calendar" && (
+                <WorkoutsCalendar
+                  workouts={workoutsStore.workouts}
+                  isLoading={isLoading}
+                  onPlan={(dateIso) => setModal({ type: "workout", presetDate: dateIso })}
+                  onAssociate={async (workoutId, dateIso) => {
+                    await workoutsStore.updateWorkout(workoutId, { date: dateIso });
+                  }}
+                  onEdit={(workout) => setModal({ type: "workout", item: workout })}
                 />
               )}
               {resource === "workouts" && (
@@ -951,6 +1015,7 @@ export function Dashboard({
           {modal.type === "workout" && (
             <WorkoutForm
               item={modal.item}
+              initialDate={modal.presetDate}
               exercises={exercisesStore.exercises}
               onCancel={() => setModal(null)}
               onSubmit={(data) => modal.item ? workoutsStore.updateWorkout(modal.item.id, data) : workoutsStore.createWorkout(data)}
@@ -1006,6 +1071,7 @@ function ResourceHeader({
 }) {
   const titles: Record<Resource, string> = {
     dashboard: "Synthese",
+    calendar: "Calendrier",
     workouts: "Seances",
     exercises: "Exercices",
     foods: "Aliments",
@@ -1082,7 +1148,22 @@ function WorkoutsList({ workouts, onEdit, onDelete }: { workouts: Workout[]; onE
         <li key={workout.id} className="rounded border border-slate-200 p-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div>
-              <p className="font-semibold">{workout.name}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold">{workout.name}</p>
+                <span className={`rounded px-2 py-0.5 text-xs font-medium ${
+                  workout.status === "COMPLETED"
+                    ? "bg-emerald-100 text-emerald-800"
+                    : workout.status === "CANCELED"
+                    ? "bg-rose-100 text-rose-800"
+                    : "bg-blue-100 text-blue-800"
+                }`}>
+                  {workout.status === "COMPLETED"
+                    ? "Realisee"
+                    : workout.status === "CANCELED"
+                    ? "Annulee"
+                    : "Prevue"}
+                </span>
+              </div>
               <p className="mt-1 text-sm text-slate-600">{formatDate(workout.date)} - {workout.duration} min</p>
               <p className="mt-1 text-sm text-slate-500">{workout.exercises?.length ?? 0} exercice(s)</p>
             </div>

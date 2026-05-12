@@ -24,6 +24,7 @@ const workoutSchema = {
     userId: { type: "string", format: "uuid" },
     name: { type: "string" },
     date: { type: "string", format: "date-time" },
+    status: { type: "string", enum: ["PLANNED", "COMPLETED", "CANCELED"] },
     duration: { type: "number" },
     notes: { type: ["string", "null"] },
     createdAt: { type: "string", format: "date-time" },
@@ -59,6 +60,7 @@ const workoutSchema = {
     "userId",
     "name",
     "date",
+    "status",
     "duration",
     "notes",
     "createdAt",
@@ -259,6 +261,7 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
           properties: {
             name: { type: "string" },
             date: { type: "string", format: "date-time" },
+            status: { type: "string", enum: ["PLANNED", "COMPLETED", "CANCELED"] },
             duration: { type: "number" },
             notes: { type: ["string", "null"] },
             exercises: {
@@ -341,6 +344,7 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
           properties: {
             name: { type: "string" },
             date: { type: "string", format: "date-time" },
+            status: { type: "string", enum: ["PLANNED", "COMPLETED", "CANCELED"] },
             duration: { type: "number" },
             notes: { type: ["string", "null"] },
           },

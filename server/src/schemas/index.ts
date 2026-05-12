@@ -72,6 +72,7 @@ export const exerciseListSchema = z.array(exerciseResponseSchema);
 export const createWorkoutSchema = z.object({
   name: z.string().min(1, "Nom requis").max(200),
   date: z.string().datetime(),
+  status: z.enum(["PLANNED", "COMPLETED", "CANCELED"]).optional(),
   duration: z.number().int().min(0), // en minutes
   notes: z.string().max(2000).nullable().optional(),
   exercises: z
@@ -114,6 +115,7 @@ export const workoutResponseSchema = z.object({
   userId: z.string().uuid(),
   name: z.string(),
   date: z.string().datetime(),
+  status: z.enum(["PLANNED", "COMPLETED", "CANCELED"]),
   duration: z.number().int(),
   notes: z.string().nullable(),
   createdAt: z.string().datetime(),

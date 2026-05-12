@@ -8,6 +8,10 @@ import type {
 } from "../../schemas/index.js";
 import { getWorkoutById } from "./workouts.js";
 
+function inferStatusFromDate(dateIso: string): "PLANNED" | "COMPLETED" {
+  return new Date(dateIso).getTime() > Date.now() ? "PLANNED" : "COMPLETED";
+}
+
 type WorkoutTemplateWithDetails = {
   id: string;
   name: string;
@@ -123,6 +127,7 @@ export async function instantiateWorkoutTemplate(
       userId,
       name: template.name,
       date: new Date(data.date),
+      status: inferStatusFromDate(data.date),
       duration: template.duration,
       notes: template.description,
       workoutExercises: {

@@ -34,6 +34,7 @@ type Workout = {
   id: string;
   name: string;
   notes: string | null;
+  status: "PLANNED" | "COMPLETED" | "CANCELED";
   updatedAt: Date;
   userId: string;
 };
@@ -71,6 +72,7 @@ function formatWorkout(workout: WorkoutWithDetails): WorkoutResponse {
     userId: workout.userId,
     name: workout.name,
     date: workout.date.toISOString(),
+    status: workout.status,
     duration: workout.duration,
     notes: workout.notes,
     createdAt: workout.createdAt.toISOString(),
@@ -100,6 +102,10 @@ function formatWorkout(workout: WorkoutWithDetails): WorkoutResponse {
       })),
     })),
   };
+}
+
+function inferStatusFromDate(dateIso: string): "PLANNED" | "COMPLETED" {
+  return new Date(dateIso).getTime() > Date.now() ? "PLANNED" : "COMPLETED";
 }
 
 export async function getWorkouts(userId: string): Promise<WorkoutResponse[]> {
@@ -146,11 +152,13 @@ export async function createWorkout(
   userId: string,
   data: CreateWorkoutInput,
 ): Promise<WorkoutResponse> {
+  const status = data.status ?? inferStatusFromDate(data.date);
   const workout = await prisma.workout.create({
     data: {
       userId,
       name: data.name,
       date: new Date(data.date),
+      status,
       duration: data.duration,
       notes: data.notes,
       workoutExercises: data.exercises
@@ -184,11 +192,15 @@ export async function updateWorkout(
   if (!existing || existing.userId !== userId) return null;
 
   if (!data.exercises) {
+    const nextStatus =
+      data.status ??
+      (data.date ? inferStatusFromDate(data.date) : undefined);
     const workout = await prisma.workout.update({
       where: { id },
       data: {
         ...(data.name && { name: data.name }),
         ...(data.date && { date: new Date(data.date) }),
+        ...(nextStatus && { status: nextStatus }),
         ...(data.duration !== undefined && { duration: data.duration }),
         ...(data.notes !== undefined && { notes: data.notes }),
       },
@@ -199,6 +211,9 @@ export async function updateWorkout(
   }
 
   const exercises = data.exercises;
+  const nextStatus =
+    data.status ??
+    (data.date ? inferStatusFromDate(data.date) : undefined);
 
   const workout = await prisma.$transaction(async (tx: any) => {
     await tx.workoutExercise.deleteMany({ where: { workoutId: id } });
@@ -208,6 +223,7 @@ export async function updateWorkout(
       data: {
         ...(data.name && { name: data.name }),
         ...(data.date && { date: new Date(data.date) }),
+        ...(nextStatus && { status: nextStatus }),
         ...(data.duration !== undefined && { duration: data.duration }),
         ...(data.notes !== undefined && { notes: data.notes }),
         workoutExercises: {

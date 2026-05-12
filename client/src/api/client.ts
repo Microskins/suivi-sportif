@@ -45,9 +45,12 @@ export type WorkoutExerciseInput = {
   sets: WorkoutSetInput[];
 };
 
+export type WorkoutStatus = "PLANNED" | "COMPLETED" | "CANCELED";
+
 export type WorkoutInput = {
   name: string;
   date: string;
+  status?: WorkoutStatus;
   duration: number;
   notes?: string | null;
   exercises?: WorkoutExerciseInput[];
@@ -58,6 +61,7 @@ export type Workout = {
   userId: string;
   name: string;
   date: string;
+  status: WorkoutStatus;
   duration: number;
   notes: string | null;
   createdAt: string;

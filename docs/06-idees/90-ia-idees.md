@@ -224,3 +224,31 @@
 ## Liens
 
 - Plan: docs/90-plans/017-cmp-cookies-frontend.md
+
+---
+
+## 2026-05-12 - Calendrier: score de regularite hebdo
+
+## Contexte
+
+- Le calendrier montre les seances, mais la progression de regularite n'est pas explicite.
+
+## Proposition
+
+- Ajouter un score hebdomadaire simple dans la vue calendrier:
+  - nombre de seances realisees / objectif cible;
+  - jauge visuelle sur la semaine courante.
+- Conserver la logique de statut (`PLANNED`, `COMPLETED`, `CANCELED`) comme source de verite.
+
+## Impact
+
+- Feedback motivant immediat sur la constance.
+- Facilite la lecture "planifie vs realise" sans ouvrir chaque jour.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/018-calendrier-suivi-statut-seances.md

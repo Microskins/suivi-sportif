@@ -26,4 +26,4 @@
 
 ## Liens
 
-- Plan: docs/90-plans/XXX-... (quand ce sera actee)
+- Plan: docs/90-plans/018-calendrier-suivi-statut-seances.md

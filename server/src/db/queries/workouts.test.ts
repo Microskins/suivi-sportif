@@ -38,6 +38,7 @@ const workoutRecord = {
   userId: USER_ID,
   name: "Séance jambes",
   date: CREATED_AT,
+  status: "COMPLETED",
   duration: 60,
   notes: null,
   createdAt: CREATED_AT,
@@ -94,6 +95,7 @@ describe("workout queries", () => {
         userId: USER_ID,
         name: "Séance jambes",
         date: CREATED_AT.toISOString(),
+        status: "COMPLETED",
         duration: 60,
         notes: null,
         createdAt: CREATED_AT.toISOString(),
@@ -193,6 +195,29 @@ describe("workout queries", () => {
     expect(result.exercises?.[0].sets[0].weight).toBe(80);
   });
 
+  it("infers PLANNED status for a future workout when status is omitted", async () => {
+    const future = new Date(Date.now() + 86_400_000).toISOString();
+    mocks.prisma.workout.create.mockResolvedValue({
+      ...workoutRecord,
+      date: new Date(future),
+      status: "PLANNED",
+    });
+
+    await createWorkout(USER_ID, {
+      name: "Planifiee",
+      date: future,
+      duration: 30,
+    });
+
+    expect(mocks.prisma.workout.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: "PLANNED",
+        }),
+      }),
+    );
+  });
+
   it("does not update a workout owned by another user", async () => {
     mocks.prisma.workout.findUnique.mockResolvedValue({
       ...workoutRecord,
@@ -225,6 +250,25 @@ describe("workout queries", () => {
       }),
     );
     expect(result?.duration).toBe(0);
+  });
+
+  it("updates status explicitly when provided", async () => {
+    mocks.prisma.workout.findUnique.mockResolvedValue(workoutRecord);
+    mocks.prisma.workout.update.mockResolvedValue({
+      ...workoutRecord,
+      status: "CANCELED",
+    });
+
+    const result = await updateWorkout(WORKOUT_ID, USER_ID, {
+      status: "CANCELED",
+    });
+
+    expect(mocks.prisma.workout.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: "CANCELED" }),
+      }),
+    );
+    expect(result?.status).toBe("CANCELED");
   });
 
   it("does not delete a workout owned by another user", async () => {

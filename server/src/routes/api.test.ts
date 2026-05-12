@@ -96,6 +96,7 @@ const workout = {
   userId: USER_ID,
   name: "Séance jambes",
   date: "2026-05-04T10:00:00.000Z",
+  status: "COMPLETED",
   duration: 60,
   notes: null,
   createdAt: "2026-05-04T10:00:00.000Z",
@@ -874,6 +875,30 @@ describe("API", () => {
     expect(mocks.workouts.createWorkout).toHaveBeenCalledWith(USER_ID, payload);
   });
 
+  it("creates a workout with explicit status for the authenticated user", async () => {
+    mocks.workouts.createWorkout.mockResolvedValue({
+      ...workout,
+      status: "PLANNED",
+    });
+
+    const payload = {
+      name: workout.name,
+      date: workout.date,
+      status: "PLANNED",
+      duration: workout.duration,
+    };
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/workouts",
+      headers: authHeaders(),
+      payload,
+    });
+
+    expect(response.statusCode).toBe(201);
+    expect(mocks.workouts.createWorkout).toHaveBeenCalledWith(USER_ID, payload);
+  });
+
   it("rejects invalid workout creation before calling the database", async () => {
     const response = await app.inject({
       method: "POST",
@@ -1000,6 +1025,28 @@ describe("API", () => {
       WORKOUT_ID,
       USER_ID,
       payload,
+    );
+  });
+
+  it("updates workout status for the authenticated user only", async () => {
+    const updatedWorkout = {
+      ...workout,
+      status: "CANCELED",
+    };
+    mocks.workouts.updateWorkout.mockResolvedValue(updatedWorkout);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/workouts/${WORKOUT_ID}`,
+      headers: authHeaders(),
+      payload: { status: "CANCELED" },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(mocks.workouts.updateWorkout).toHaveBeenCalledWith(
+      WORKOUT_ID,
+      USER_ID,
+      { status: "CANCELED" },
     );
   });
 

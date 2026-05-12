@@ -35,6 +35,12 @@ enum ExerciseMediaType {
   GIF
 }
 
+enum WorkoutStatus {
+  PLANNED
+  COMPLETED
+  CANCELED
+}
+
 // ============== User Model ==============
 
 model User {
@@ -204,6 +210,7 @@ model Workout {
   userId    String   @map("user_id")
   name      String
   date      DateTime
+  status    WorkoutStatus @default(PLANNED)
   duration  Int // en minutes
   notes     String?  @db.Text
   createdAt DateTime @default(now()) @map("created_at")

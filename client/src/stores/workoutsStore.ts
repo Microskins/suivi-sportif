@@ -1,5 +1,10 @@
 import { create } from "zustand";
-import { api, type Workout, type WorkoutInput } from "../api/client";
+import {
+  api,
+  type Workout,
+  type WorkoutInput,
+  type WorkoutStatus,
+} from "../api/client";
 import { bypassWorkouts } from "./bypassMockData";
 
 const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
@@ -38,6 +43,10 @@ function buildBypassWorkoutExercises(data: WorkoutInput, now: string) {
   }));
 }
 
+function inferStatusFromDate(dateIso: string): WorkoutStatus {
+  return new Date(dateIso).getTime() > Date.now() ? "PLANNED" : "COMPLETED";
+}
+
 export const useWorkoutsStore = create<WorkoutsState>((set) => ({
   workouts: isAuthBypassEnabled ? bypassWorkouts : [],
   isLoading: false,
@@ -64,6 +73,7 @@ export const useWorkoutsStore = create<WorkoutsState>((set) => ({
         userId: "00000000-0000-4000-8000-000000000000",
         name: data.name,
         date: data.date,
+        status: data.status ?? inferStatusFromDate(data.date),
         duration: data.duration,
         notes: data.notes ?? null,
         exercises: [],
@@ -95,6 +105,9 @@ export const useWorkoutsStore = create<WorkoutsState>((set) => ({
                 ...workout,
                 name: data.name ?? workout.name,
                 date: data.date ?? workout.date,
+                status:
+                  data.status ??
+                  (data.date ? inferStatusFromDate(data.date) : workout.status),
                 duration: data.duration ?? workout.duration,
                 notes: data.notes === undefined ? workout.notes : data.notes,
                 exercises: data.exercises

@@ -33,6 +33,7 @@ function buildWorkoutFromTemplate(
     userId: bypassUserId,
     name: template.name,
     date,
+    status: new Date(date).getTime() > Date.now() ? "PLANNED" : "COMPLETED",
     duration: template.duration,
     notes: template.description,
     createdAt: now,
