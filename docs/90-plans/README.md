@@ -19,6 +19,7 @@ Index chronologique des chantiers planifies et executes.
 13. [GitHub Actions: opt-in Node 24 (deprecation Node 20)](./013-github-actions-node24.md)
 14. [Fusion idees seances](./014-fusion-idees-seances.md)
 15. [Modeles de seances par defaut](./015-modeles-seances-defaut.md)
+16. [Correction seed prod modeles seances](./016-fix-seances-defaut-seed-prod.md)
 89. [Mobile Android/iOS via Capacitor](./089-mobile-capacitor.md)
 
 ## Convention
@@ -41,3 +42,4 @@ chantier.
 - Les plans ne remplacent pas `README.md`, `01-getting-started/quick-start.md`,
   `03-api/reference.md` ou `02-architecture/overview.md`; ils expliquent
   l'historique des decisions.
+
