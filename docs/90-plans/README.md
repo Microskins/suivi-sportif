@@ -22,6 +22,7 @@ Index chronologique des chantiers planifies et executes.
 16. [Correction seed prod modeles seances](./016-fix-seances-defaut-seed-prod.md)
 17. [CMP cookies frontend](./017-cmp-cookies-frontend.md)
 18. [Calendrier suivi et statut seances](./018-calendrier-suivi-statut-seances.md)
+19. [Integration bibliotheque exos complete](./019-integration-bibliotheque-exos.md)
 89. [Mobile Android/iOS via Capacitor](./089-mobile-capacitor.md)
 
 ## Convention
@@ -44,6 +45,8 @@ chantier.
 - Les plans ne remplacent pas `README.md`, `01-getting-started/quick-start.md`,
   `03-api/reference.md` ou `02-architecture/overview.md`; ils expliquent
   l'historique des decisions.
+
+
 
 
 
