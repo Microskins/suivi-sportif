@@ -60,7 +60,10 @@ describe("WorkoutsCalendar", () => {
       />,
     );
 
-    fireEvent.click(screen.getAllByRole("button", { name: "Planifier une seance" })[0]);
+    const planButtons = screen.getAllByRole("button", {
+      name: "Planifier une seance",
+    });
+    fireEvent.click(planButtons[planButtons.length - 1]);
     expect(onPlan).toHaveBeenCalledTimes(1);
   });
 
@@ -76,10 +79,14 @@ describe("WorkoutsCalendar", () => {
       />,
     );
 
-    fireEvent.change(screen.getAllByRole("combobox")[0], {
+    const selectors = screen.getAllByRole("combobox");
+    fireEvent.change(selectors[selectors.length - 1], {
       target: { value: "w1" },
     });
-    fireEvent.click(screen.getAllByRole("button", { name: "Associer a ce jour" })[0]);
+    const associateButtons = screen.getAllByRole("button", {
+      name: "Associer a ce jour",
+    });
+    fireEvent.click(associateButtons[associateButtons.length - 1]);
     expect(onAssociate).toHaveBeenCalledTimes(1);
   });
 });
