@@ -26,3 +26,5 @@
 - La source `docs/06-idees/04-bibliotheque-exercices.md` a ete corrigee pour supprimer les artefacts d'encodage principaux.
 - Les deux seeds (`seed.ts` et `prod-seed.mjs`) ont ete aligns sur la meme liste avec noms accentues et descriptions detaillees non vides.
 - Reste a valider l'execution seed en environnement cible avant push final.
+- Point de vigilance: un ecart d'encodage UTF-8 persiste selon les environnements (Windows/Linux, terminal, conteneur) et doit etre reverifie apres pull/deploiement.
+- Extension demandee: ajout de filtres dans l'onglet Exercices (recherche texte, type, difficulte) pour exploiter la bibliotheque etendue.

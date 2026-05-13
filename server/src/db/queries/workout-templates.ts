@@ -2,6 +2,7 @@
 
 import prisma from "../index.js";
 import type {
+  CreateWorkoutTemplateInput,
   InstantiateWorkoutTemplateInput,
   WorkoutResponse,
   WorkoutTemplateResponse,
@@ -37,6 +38,9 @@ type WorkoutTemplateWithDetails = {
       description: string | null;
       difficulty: string;
       exerciseType: string;
+      muscles: Array<{
+        muscle: { name: string };
+      }>;
       createdAt: Date;
       updatedAt: Date;
     };
@@ -54,6 +58,13 @@ const workoutTemplateInclude = {
           description: true,
           difficulty: true,
           exerciseType: true,
+          muscles: {
+            select: {
+              muscle: {
+                select: { name: true },
+              },
+            },
+          },
           createdAt: true,
           updatedAt: true,
         },
@@ -90,11 +101,43 @@ function formatWorkoutTemplate(
         description: templateExercise.exercise.description,
         difficulty: String(templateExercise.exercise.difficulty),
         exerciseType: String(templateExercise.exercise.exerciseType),
+        bodyParts: templateExercise.exercise.muscles.map(
+          (item) => item.muscle.name,
+        ),
         createdAt: templateExercise.exercise.createdAt.toISOString(),
         updatedAt: templateExercise.exercise.updatedAt.toISOString(),
       },
     })),
   };
+}
+
+export async function createWorkoutTemplate(
+  data: CreateWorkoutTemplateInput,
+): Promise<WorkoutTemplateResponse> {
+  const created = await prisma.workoutTemplate.create({
+    data: {
+      name: data.name,
+      category: data.category,
+      level: data.level,
+      duration: data.duration,
+      description: data.description ?? null,
+      displayOrder: data.displayOrder ?? 0,
+      exercises: {
+        create: data.exercises.map((item) => ({
+          exerciseId: item.exerciseId,
+          order: item.order,
+          sets: item.sets,
+          reps: item.reps,
+          durationSeconds: item.durationSeconds ?? null,
+          rest: item.rest,
+          weight: item.weight,
+        })),
+      },
+    },
+    include: workoutTemplateInclude,
+  });
+
+  return formatWorkoutTemplate(created as WorkoutTemplateWithDetails);
 }
 
 export async function getWorkoutTemplates(): Promise<

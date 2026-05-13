@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { api, type Workout, type WorkoutTemplate } from "../api/client";
+import { api, type Workout, type WorkoutTemplate, type WorkoutTemplateInput } from "../api/client";
 import { bypassWorkoutTemplates } from "./bypassMockData";
 import { useWorkoutsStore } from "./workoutsStore";
 
@@ -12,6 +12,7 @@ type WorkoutTemplatesState = {
   error: string | null;
   fetchWorkoutTemplates: () => Promise<void>;
   instantiateWorkoutTemplate: (id: string, date: string) => Promise<void>;
+  createWorkoutTemplate: (data: WorkoutTemplateInput) => Promise<void>;
 };
 
 function getErrorMessage(error: unknown): string {
@@ -103,6 +104,21 @@ export const useWorkoutTemplatesStore = create<WorkoutTemplatesState>((set) => (
         error: null,
       }));
       set({ isLoading: false });
+    } catch (error) {
+      set({ isLoading: false, error: getErrorMessage(error) });
+      throw error;
+    }
+  },
+  async createWorkoutTemplate(data) {
+    set({ isLoading: true, error: null });
+    try {
+      const created = await api.createWorkoutTemplate(data);
+      set((state) => ({
+        workoutTemplates: [...state.workoutTemplates, created].sort(
+          (a, b) => a.displayOrder - b.displayOrder || a.name.localeCompare(b.name),
+        ),
+        isLoading: false,
+      }));
     } catch (error) {
       set({ isLoading: false, error: getErrorMessage(error) });
       throw error;

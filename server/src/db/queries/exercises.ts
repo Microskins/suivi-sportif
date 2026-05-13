@@ -9,6 +9,7 @@ import type {
 } from "../../schemas/index.js";
 
 type ExerciseRecord = Omit<ExerciseResponse, "createdAt" | "updatedAt"> & {
+  bodyParts?: string[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -30,11 +31,23 @@ export async function getExercises(): Promise<ExerciseResponse[]> {
       description: true,
       difficulty: true,
       exerciseType: true,
+      muscles: {
+        select: {
+          muscle: {
+            select: { name: true },
+          },
+        },
+      },
       createdAt: true,
       updatedAt: true,
     },
   });
-  return (exercises as ExerciseRecord[]).map(formatExercise);
+  return exercises.map((exercise) =>
+    formatExercise({
+      ...exercise,
+      bodyParts: exercise.muscles.map((item) => item.muscle.name),
+    } as ExerciseRecord),
+  );
 }
 
 export async function getExerciseById(
@@ -48,12 +61,22 @@ export async function getExerciseById(
       description: true,
       difficulty: true,
       exerciseType: true,
+      muscles: {
+        select: {
+          muscle: {
+            select: { name: true },
+          },
+        },
+      },
       createdAt: true,
       updatedAt: true,
     },
   });
   if (!exercise) return null;
-  return formatExercise(exercise as ExerciseRecord);
+  return formatExercise({
+    ...exercise,
+    bodyParts: exercise.muscles.map((item) => item.muscle.name),
+  } as ExerciseRecord);
 }
 
 export async function getExercisesByMuscleGroup(
@@ -77,11 +100,23 @@ export async function getExercisesByMuscleGroup(
       description: true,
       difficulty: true,
       exerciseType: true,
+      muscles: {
+        select: {
+          muscle: {
+            select: { name: true },
+          },
+        },
+      },
       createdAt: true,
       updatedAt: true,
     },
   });
-  return (exercises as ExerciseRecord[]).map(formatExercise);
+  return exercises.map((exercise) =>
+    formatExercise({
+      ...exercise,
+      bodyParts: exercise.muscles.map((item) => item.muscle.name),
+    } as ExerciseRecord),
+  );
 }
 
 export async function createExercise(
@@ -96,6 +131,21 @@ export async function createExercise(
       ...("exerciseType" in data && data.exerciseType
         ? { exerciseType: data.exerciseType }
         : {}),
+      ...(data.bodyParts
+        ? {
+            muscles: {
+              create: data.bodyParts.map((name) => ({
+                role: "PRIMARY" as const,
+                muscle: {
+                  connectOrCreate: {
+                    where: { name },
+                    create: { name },
+                  },
+                },
+              })),
+            },
+          }
+        : {}),
     },
     select: {
       id: true,
@@ -103,11 +153,21 @@ export async function createExercise(
       description: true,
       difficulty: true,
       exerciseType: true,
+      muscles: {
+        select: {
+          muscle: {
+            select: { name: true },
+          },
+        },
+      },
       createdAt: true,
       updatedAt: true,
     },
   });
-  return formatExercise(exercise as ExerciseRecord);
+  return formatExercise({
+    ...exercise,
+    bodyParts: exercise.muscles.map((item) => item.muscle.name),
+  } as ExerciseRecord);
 }
 
 export async function updateExercise(
@@ -126,6 +186,22 @@ export async function updateExercise(
       ...("exerciseType" in data && data.exerciseType
         ? { exerciseType: data.exerciseType }
         : {}),
+      ...(data.bodyParts
+        ? {
+            muscles: {
+              deleteMany: {},
+              create: data.bodyParts.map((name) => ({
+                role: "PRIMARY" as const,
+                muscle: {
+                  connectOrCreate: {
+                    where: { name },
+                    create: { name },
+                  },
+                },
+              })),
+            },
+          }
+        : {}),
     },
     select: {
       id: true,
@@ -133,11 +209,21 @@ export async function updateExercise(
       description: true,
       difficulty: true,
       exerciseType: true,
+      muscles: {
+        select: {
+          muscle: {
+            select: { name: true },
+          },
+        },
+      },
       createdAt: true,
       updatedAt: true,
     },
   });
-  return formatExercise(exercise as ExerciseRecord);
+  return formatExercise({
+    ...exercise,
+    bodyParts: exercise.muscles.map((item) => item.muscle.name),
+  } as ExerciseRecord);
 }
 
 export async function deleteExercise(id: string): Promise<boolean> {

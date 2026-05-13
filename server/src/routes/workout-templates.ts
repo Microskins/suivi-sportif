@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import * as workoutTemplates from "../db/queries/workout-templates.js";
 import {
+  createWorkoutTemplateSchema,
   idParamSchema,
   instantiateWorkoutTemplateSchema,
 } from "../schemas/index.js";
@@ -47,6 +48,7 @@ const workoutTemplateSchema = {
               description: { type: ["string", "null"] },
               difficulty: { type: "string" },
               exerciseType: { type: "string" },
+              bodyParts: { type: "array", items: { type: "string" } },
               createdAt: { type: "string", format: "date-time" },
               updatedAt: { type: "string", format: "date-time" },
             },
@@ -144,6 +146,75 @@ export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
           meta: { total: result.length, page: 1, limit: result.length },
         });
       } catch (error) {
+        fastify.log.error(error);
+        return reply.code(500).send({
+          error: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  );
+
+  fastify.post(
+    "/",
+    {
+      schema: {
+        tags: ["workout-templates"],
+        summary: "Create workout template",
+        security: [{ bearerAuth: [] }],
+        body: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            category: { type: "string" },
+            level: { type: "string" },
+            duration: { type: "number" },
+            description: { type: ["string", "null"] },
+            displayOrder: { type: "number" },
+            exercises: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  exerciseId: { type: "string", format: "uuid" },
+                  order: { type: "number" },
+                  sets: { type: "number" },
+                  reps: { type: "number" },
+                  durationSeconds: { type: ["number", "null"] },
+                  rest: { type: "number" },
+                  weight: { type: "number" },
+                },
+                required: ["exerciseId", "order", "sets", "reps", "rest", "weight"],
+              },
+            },
+          },
+          required: ["name", "category", "level", "duration", "exercises"],
+        },
+        response: {
+          201: {
+            type: "object",
+            properties: { data: workoutTemplateSchema },
+            required: ["data"],
+          },
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      try {
+        const parsed = createWorkoutTemplateSchema.parse(request.body);
+        const template = await workoutTemplates.createWorkoutTemplate(parsed);
+        return reply.code(201).send({ data: template });
+      } catch (error: any) {
+        if (error.name === "ZodError") {
+          return reply.code(400).send({
+            error: "Validation failed",
+            code: "VALIDATION_ERROR",
+            details: error.errors,
+          });
+        }
         fastify.log.error(error);
         return reply.code(500).send({
           error: "Internal Server Error",

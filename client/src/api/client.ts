@@ -23,6 +23,7 @@ export type Exercise = {
   description: string | null;
   difficulty: string;
   exerciseType: string;
+  bodyParts?: string[];
   createdAt: string;
   updatedAt: string;
 };
@@ -32,6 +33,7 @@ export type ExerciseInput = {
   description?: string | null;
   difficulty?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
   exerciseType?: "STRENGTH" | "CARDIO" | "MOBILITY";
+  bodyParts?: string[];
 };
 
 export type WorkoutSetInput = {
@@ -107,9 +109,28 @@ export type WorkoutTemplate = {
       description: string | null;
       difficulty: string;
       exerciseType: string;
+      bodyParts?: string[];
       createdAt: string;
       updatedAt: string;
     };
+  }>;
+};
+
+export type WorkoutTemplateInput = {
+  name: string;
+  category: string;
+  level: string;
+  duration: number;
+  description?: string | null;
+  displayOrder?: number;
+  exercises: Array<{
+    exerciseId: string;
+    order: number;
+    sets: number;
+    reps: number;
+    durationSeconds?: number | null;
+    rest: number;
+    weight: number;
   }>;
 };
 
@@ -395,6 +416,13 @@ class ApiClient {
     return this.request<Workout>(`/api/workout-templates/${id}/instantiate`, {
       method: "POST",
       body: JSON.stringify({ date }),
+    });
+  }
+
+  async createWorkoutTemplate(data: WorkoutTemplateInput) {
+    return this.request<WorkoutTemplate>("/api/workout-templates", {
+      method: "POST",
+      body: JSON.stringify(data),
     });
   }
 

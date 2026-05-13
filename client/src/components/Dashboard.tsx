@@ -219,6 +219,7 @@ function ExerciseForm({
       ? item.exerciseType
       : "STRENGTH",
   );
+  const [bodyParts, setBodyParts] = useState((item?.bodyParts ?? []).join(", "));
   const [isSaving, setIsSaving] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -230,6 +231,10 @@ function ExerciseForm({
         description: emptyToNull(description),
         difficulty,
         exerciseType,
+        bodyParts: bodyParts
+          .split(",")
+          .map((entry) => entry.trim())
+          .filter(Boolean),
       });
       onCancel();
     } finally {
@@ -277,6 +282,14 @@ function ExerciseForm({
           </select>
         </Field>
       </div>
+      <Field label="Parties du corps (separees par des virgules)">
+        <input
+          className={inputClass}
+          value={bodyParts}
+          onChange={(event) => setBodyParts(event.target.value)}
+          placeholder="Pectoraux, Triceps, Epaules"
+        />
+      </Field>
       <FormActions isSaving={isSaving} onCancel={onCancel} />
     </form>
   );
@@ -324,6 +337,34 @@ function WorkoutForm({
         : [],
   );
   const [isSaving, setIsSaving] = useState(false);
+  const [exerciseSearch, setExerciseSearch] = useState("");
+  const [exerciseTypeFilter, setExerciseTypeFilter] = useState<"ALL" | "STRENGTH" | "CARDIO" | "MOBILITY">("ALL");
+  const [exerciseDifficultyFilter, setExerciseDifficultyFilter] = useState<"ALL" | "BEGINNER" | "INTERMEDIATE" | "ADVANCED">("ALL");
+  const [exerciseBodyPartFilter, setExerciseBodyPartFilter] = useState("ALL");
+
+  const bodyPartOptions = Array.from(
+    new Set(
+      exercises.flatMap((exercise) => exercise.bodyParts ?? []),
+    ),
+  ).sort((a, b) => a.localeCompare(b, "fr"));
+
+  const normalizedExerciseSearch = exerciseSearch.trim().toLocaleLowerCase("fr-FR");
+  const filteredExercises = exercises.filter((exercise) => {
+    const matchesSearch =
+      normalizedExerciseSearch.length === 0 ||
+      exercise.name.toLocaleLowerCase("fr-FR").includes(normalizedExerciseSearch) ||
+      (exercise.description?.toLocaleLowerCase("fr-FR").includes(normalizedExerciseSearch) ?? false);
+    const matchesType =
+      exerciseTypeFilter === "ALL" || exercise.exerciseType === exerciseTypeFilter;
+    const matchesDifficulty =
+      exerciseDifficultyFilter === "ALL" ||
+      exercise.difficulty === exerciseDifficultyFilter;
+    const matchesBodyPart =
+      exerciseBodyPartFilter === "ALL" ||
+      (exercise.bodyParts ?? []).includes(exerciseBodyPartFilter);
+
+    return matchesSearch && matchesType && matchesDifficulty && matchesBodyPart;
+  });
 
   function updateRow(index: number, nextRow: WorkoutExerciseFormRow) {
     setRows((current) => current.map((row, rowIndex) => (rowIndex === index ? nextRow : row)));
@@ -386,6 +427,59 @@ function WorkoutForm({
         <textarea className={inputClass} value={notes} onChange={(event) => setNotes(event.target.value)} rows={3} />
       </Field>
       <div className="space-y-3">
+        <div className="rounded border border-slate-200 p-3">
+          <p className="mb-2 text-sm font-semibold text-slate-800">Filtres exercices</p>
+          <div className="grid gap-2 md:grid-cols-4">
+            <input
+              className={inputClass}
+              value={exerciseSearch}
+              onChange={(event) => setExerciseSearch(event.target.value)}
+              placeholder="Rechercher..."
+            />
+            <select
+              className={inputClass}
+              value={exerciseTypeFilter}
+              onChange={(event) =>
+                setExerciseTypeFilter(
+                  event.target.value as "ALL" | "STRENGTH" | "CARDIO" | "MOBILITY",
+                )
+              }
+            >
+              <option value="ALL">Tous les types</option>
+              {exerciseTypeOptions.map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+            <select
+              className={inputClass}
+              value={exerciseDifficultyFilter}
+              onChange={(event) =>
+                setExerciseDifficultyFilter(
+                  event.target.value as
+                    | "ALL"
+                    | "BEGINNER"
+                    | "INTERMEDIATE"
+                    | "ADVANCED",
+                )
+              }
+            >
+              <option value="ALL">Toutes difficultes</option>
+              {difficultyOptions.map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+            <select
+              className={inputClass}
+              value={exerciseBodyPartFilter}
+              onChange={(event) => setExerciseBodyPartFilter(event.target.value)}
+            >
+              <option value="ALL">Toutes parties</option>
+              {bodyPartOptions.map((part) => (
+                <option key={part} value={part}>{part}</option>
+              ))}
+            </select>
+          </div>
+        </div>
         <div className="flex items-center justify-between gap-3">
           <p className="text-sm font-semibold text-slate-800">Exercices et series</p>
           <button
@@ -411,7 +505,7 @@ function WorkoutForm({
                 value={row.exerciseId}
                 onChange={(event) => updateRow(rowIndex, { ...row, exerciseId: event.target.value })}
               >
-                {exercises.map((exercise) => (
+                {(filteredExercises.length ? filteredExercises : exercises).map((exercise) => (
                   <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
                 ))}
               </select>
@@ -458,26 +552,72 @@ function updateSet(
 
 function WorkoutTemplatePicker({
   templates,
+  exercises,
   onInstantiate,
+  onCreateTemplate,
   onCancel,
 }: {
   templates: WorkoutTemplate[];
+  exercises: Exercise[];
   onInstantiate: (id: string, date: string) => Promise<void>;
+  onCreateTemplate: (data: {
+    name: string;
+    category: string;
+    level: string;
+    duration: number;
+    description?: string | null;
+    exercises: Array<{
+      exerciseId: string;
+      order: number;
+      sets: number;
+      reps: number;
+      rest: number;
+      weight: number;
+      durationSeconds?: number | null;
+    }>;
+  }) => Promise<void>;
   onCancel: () => void;
 }) {
+  const [mode, setMode] = useState<"instantiate" | "create">("instantiate");
   const [date, setDate] = useState(toInputDateTime());
   const [selectedId, setSelectedId] = useState(templates[0]?.id ?? "");
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("Musculation");
+  const [level, setLevel] = useState("Intermediaire");
+  const [duration, setDuration] = useState("45");
+  const [description, setDescription] = useState("");
+  const [rows, setRows] = useState<
+    Array<{ exerciseId: string; sets: string; reps: string; rest: string; weight: string }>
+  >(exercises[0] ? [{ exerciseId: exercises[0].id, sets: "3", reps: "10", rest: "60", weight: "0" }] : []);
   const [isSaving, setIsSaving] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selectedId) {
-      return;
-    }
 
     setIsSaving(true);
     try {
-      await onInstantiate(selectedId, dateTimeToIso(date));
+      if (mode === "instantiate") {
+        if (!selectedId) {
+          return;
+        }
+        await onInstantiate(selectedId, dateTimeToIso(date));
+      } else {
+        await onCreateTemplate({
+          name,
+          category,
+          level,
+          duration: Number(duration),
+          description: emptyToNull(description),
+          exercises: rows.map((row, index) => ({
+            exerciseId: row.exerciseId,
+            order: index,
+            sets: Number(row.sets),
+            reps: Number(row.reps),
+            rest: Number(row.rest),
+            weight: Number(row.weight),
+          })),
+        });
+      }
       onCancel();
     } finally {
       setIsSaving(false);
@@ -486,65 +626,115 @@ function WorkoutTemplatePicker({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Field label="Date de la seance">
-        <input
-          className={inputClass}
-          type="datetime-local"
-          value={date}
-          onChange={(event) => setDate(event.target.value)}
-          required
-        />
-      </Field>
-      {!templates.length && <EmptyState label="Aucun modele de seance disponible." />}
-      <div className="grid gap-3 lg:grid-cols-2">
-        {templates.map((template) => (
-          <label
-            key={template.id}
-            className={`block rounded border p-4 text-sm ${
-              selectedId === template.id
-                ? "border-emerald-600 bg-emerald-50"
-                : "border-slate-200 bg-white"
-            }`}
-          >
-            <span className="flex items-start gap-3">
-              <input
-                type="radio"
-                name="workout-template"
-                value={template.id}
-                checked={selectedId === template.id}
-                onChange={() => setSelectedId(template.id)}
-                className="mt-1"
-              />
-              <span>
-                <span className="block font-semibold text-slate-950">
-                  {template.name}
-                </span>
-                <span className="mt-1 block text-slate-600">
-                  {template.category} - {template.level} - {template.duration} min
-                </span>
-                <span className="mt-1 block text-slate-500">
-                  {template.exercises.length} exercice(s)
-                </span>
-                {template.description && (
-                  <span className="mt-2 block text-slate-500">
-                    {template.description}
-                  </span>
-                )}
-              </span>
-            </span>
-          </label>
-        ))}
+      <div className="flex gap-2">
+        <button type="button" className={secondaryButtonClass} onClick={() => setMode("instantiate")}>Creer une seance</button>
+        <button type="button" className={secondaryButtonClass} onClick={() => setMode("create")}>Creer un modele</button>
       </div>
+      {mode === "instantiate" ? (
+        <>
+          <Field label="Date de la seance">
+            <input
+              className={inputClass}
+              type="datetime-local"
+              value={date}
+              onChange={(event) => setDate(event.target.value)}
+              required
+            />
+          </Field>
+          {!templates.length && <EmptyState label="Aucun modele de seance disponible." />}
+          <div className="grid gap-3 lg:grid-cols-2">
+            {templates.map((template) => (
+              <label
+                key={template.id}
+                className={`block rounded border p-4 text-sm ${
+                  selectedId === template.id
+                    ? "border-emerald-600 bg-emerald-50"
+                    : "border-slate-200 bg-white"
+                }`}
+              >
+                <span className="flex items-start gap-3">
+                  <input
+                    type="radio"
+                    name="workout-template"
+                    value={template.id}
+                    checked={selectedId === template.id}
+                    onChange={() => setSelectedId(template.id)}
+                    className="mt-1"
+                  />
+                  <span>
+                    <span className="block font-semibold text-slate-950">
+                      {template.name}
+                    </span>
+                    <span className="mt-1 block text-slate-600">
+                      {template.category} - {template.level} - {template.duration} min
+                    </span>
+                    <span className="mt-1 block text-slate-500">
+                      {template.exercises.length} exercice(s)
+                    </span>
+                    {template.description && (
+                      <span className="mt-2 block text-slate-500">
+                        {template.description}
+                      </span>
+                    )}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="space-y-3 rounded border border-slate-200 p-3">
+          <div className="grid gap-3 md:grid-cols-2">
+            <Field label="Nom">
+              <input className={inputClass} value={name} onChange={(event) => setName(event.target.value)} required />
+            </Field>
+            <Field label="Categorie">
+              <input className={inputClass} value={category} onChange={(event) => setCategory(event.target.value)} required />
+            </Field>
+            <Field label="Niveau">
+              <input className={inputClass} value={level} onChange={(event) => setLevel(event.target.value)} required />
+            </Field>
+            <Field label="Duree (min)">
+              <input className={inputClass} type="number" min="0" value={duration} onChange={(event) => setDuration(event.target.value)} required />
+            </Field>
+          </div>
+          <Field label="Description">
+            <textarea className={inputClass} rows={2} value={description} onChange={(event) => setDescription(event.target.value)} />
+          </Field>
+          {rows.map((row, index) => (
+            <div key={index} className="grid gap-2 md:grid-cols-6">
+              <select className={inputClass} value={row.exerciseId} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, exerciseId: event.target.value } : entry))}>
+                {exercises.map((exercise) => (
+                  <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
+                ))}
+              </select>
+              <input className={inputClass} type="number" min="1" value={row.sets} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, sets: event.target.value } : entry))} />
+              <input className={inputClass} type="number" min="0" value={row.reps} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, reps: event.target.value } : entry))} />
+              <input className={inputClass} type="number" min="0" value={row.rest} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, rest: event.target.value } : entry))} />
+              <input className={inputClass} type="number" min="0" value={row.weight} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, weight: event.target.value } : entry))} />
+              <button type="button" className={dangerButtonClass} onClick={() => setRows((current) => current.filter((_, rowIndex) => rowIndex !== index))}>Retirer</button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className={secondaryButtonClass}
+            onClick={() => setRows((current) => [...current, { exerciseId: exercises[0]?.id ?? "", sets: "3", reps: "10", rest: "60", weight: "0" }])}
+            disabled={!exercises.length}
+          >
+            Ajouter un exercice
+          </button>
+        </div>
+      )}
       <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
         <button type="button" className={secondaryButtonClass} onClick={onCancel}>
           Annuler
         </button>
         <button
           type="submit"
-          disabled={isSaving || !selectedId}
+          disabled={isSaving || (mode === "instantiate" ? !selectedId : rows.length === 0)}
           className={buttonClass}
         >
-          {isSaving ? "Creation..." : "Creer la seance"}
+          {isSaving ? "Creation..." : mode === "instantiate" ? "Creer la seance" : "Creer le modele"}
         </button>
       </div>
     </form>
@@ -799,6 +989,9 @@ export function Dashboard({
 }) {
   const [resource, setResource] = useState<Resource>("dashboard");
   const [modal, setModal] = useState<ModalState>(null);
+  const [workoutsView, setWorkoutsView] = useState<"list" | "create" | "from-template">("list");
+  const [exerciseDraft, setExerciseDraft] = useState<Exercise | undefined>(undefined);
+  const [workoutDraft, setWorkoutDraft] = useState<Workout | undefined>(undefined);
   const exercisesStore = useExercisesStore();
   const workoutsStore = useWorkoutsStore();
   const workoutTemplatesStore = useWorkoutTemplatesStore();
@@ -928,10 +1121,21 @@ export function Dashboard({
             {resource !== "dashboard" && resource !== "calendar" && (
               <ResourceHeader
                 resource={resource}
-                onCreate={() => openCreate(resource, setModal)}
+                onCreate={() => {
+                  if (resource === "workouts") {
+                    setWorkoutsView("create");
+                    setWorkoutDraft(undefined);
+                    return;
+                  }
+                  if (resource === "exercises") {
+                    setExerciseDraft({} as Exercise);
+                    return;
+                  }
+                  openCreate(resource, setModal);
+                }}
                 onCreateFromTemplate={
                   resource === "workouts"
-                    ? () => setModal({ type: "workout-template" })
+                    ? () => setWorkoutsView("from-template")
                     : undefined
                 }
                 isLoading={isLoading}
@@ -964,18 +1168,79 @@ export function Dashboard({
                 />
               )}
               {resource === "workouts" && (
-                <WorkoutsList
-                  workouts={workoutsStore.workouts}
-                  onEdit={(item) => setModal({ type: "workout", item })}
-                  onDelete={(item) => confirmDelete(item.name, () => workoutsStore.deleteWorkout(item.id))}
-                />
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    <button type="button" className={secondaryButtonClass} onClick={() => { setWorkoutsView("list"); setWorkoutDraft(undefined); }}>Liste</button>
+                    <button type="button" className={secondaryButtonClass} onClick={() => { setWorkoutsView("create"); setWorkoutDraft(undefined); }}>Creer une seance</button>
+                    <button type="button" className={secondaryButtonClass} onClick={() => setWorkoutsView("from-template")}>Depuis un modele</button>
+                  </div>
+                  {workoutsView === "list" && (
+                    <WorkoutsList
+                      workouts={workoutsStore.workouts}
+                      onEdit={(item) => { setWorkoutDraft(item); setWorkoutsView("create"); }}
+                      onDelete={(item) => confirmDelete(item.name, () => workoutsStore.deleteWorkout(item.id))}
+                    />
+                  )}
+                  {workoutsView === "create" && (
+                    <div className="rounded border border-slate-200 bg-white p-4">
+                      <WorkoutForm
+                        item={workoutDraft}
+                        exercises={exercisesStore.exercises}
+                        onCancel={() => {
+                          setWorkoutDraft(undefined);
+                          setWorkoutsView("list");
+                        }}
+                        onSubmit={(data) =>
+                          workoutDraft
+                            ? workoutsStore.updateWorkout(workoutDraft.id, data)
+                            : workoutsStore.createWorkout(data)
+                        }
+                      />
+                    </div>
+                  )}
+                  {workoutsView === "from-template" && (
+                    <div className="rounded border border-slate-200 bg-white p-4">
+                      <WorkoutTemplatePicker
+                        templates={workoutTemplatesStore.workoutTemplates}
+                        exercises={exercisesStore.exercises}
+                        onCancel={() => setWorkoutsView("list")}
+                        onInstantiate={(id, date) =>
+                          workoutTemplatesStore.instantiateWorkoutTemplate(id, date)
+                        }
+                        onCreateTemplate={(data) =>
+                          workoutTemplatesStore.createWorkoutTemplate(data)
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
               )}
               {resource === "exercises" && (
-                <ExercisesList
-                  exercises={exercisesStore.exercises}
-                  onEdit={(item) => setModal({ type: "exercise", item })}
-                  onDelete={(item) => confirmDelete(item.name, () => exercisesStore.deleteExercise(item.id))}
-                />
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    <button type="button" className={secondaryButtonClass} onClick={() => setExerciseDraft(undefined)}>Liste</button>
+                    <button type="button" className={secondaryButtonClass} onClick={() => setExerciseDraft({} as Exercise)}>Creer un exercice</button>
+                  </div>
+                  {exerciseDraft !== undefined ? (
+                    <div className="rounded border border-slate-200 bg-white p-4">
+                      <ExerciseForm
+                        item={exerciseDraft.id ? exerciseDraft : undefined}
+                        onCancel={() => setExerciseDraft(undefined)}
+                        onSubmit={(data) =>
+                          exerciseDraft.id
+                            ? exercisesStore.updateExercise(exerciseDraft.id, data)
+                            : exercisesStore.createExercise(data)
+                        }
+                      />
+                    </div>
+                  ) : (
+                    <ExercisesList
+                      exercises={exercisesStore.exercises}
+                      onEdit={(item) => setExerciseDraft(item)}
+                      onDelete={(item) => confirmDelete(item.name, () => exercisesStore.deleteExercise(item.id))}
+                    />
+                  )}
+                </div>
               )}
               {resource === "foods" && (
                 <FoodsList
@@ -1024,9 +1289,13 @@ export function Dashboard({
           {modal.type === "workout-template" && (
             <WorkoutTemplatePicker
               templates={workoutTemplatesStore.workoutTemplates}
+              exercises={exercisesStore.exercises}
               onCancel={() => setModal(null)}
               onInstantiate={(id, date) =>
                 workoutTemplatesStore.instantiateWorkoutTemplate(id, date)
+              }
+              onCreateTemplate={(data) =>
+                workoutTemplatesStore.createWorkoutTemplate(data)
               }
             />
           )}
@@ -1177,23 +1446,109 @@ function WorkoutsList({ workouts, onEdit, onDelete }: { workouts: Workout[]; onE
 
 function ExercisesList({ exercises, onEdit, onDelete }: { exercises: Exercise[]; onEdit: (item: Exercise) => void; onDelete: (item: Exercise) => void }) {
   if (!exercises.length) return <EmptyState label="Aucun exercice disponible." />;
+
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"ALL" | "STRENGTH" | "CARDIO" | "MOBILITY">("ALL");
+  const [difficultyFilter, setDifficultyFilter] = useState<"ALL" | "BEGINNER" | "INTERMEDIATE" | "ADVANCED">("ALL");
+
+  const normalizedSearch = search.trim().toLocaleLowerCase("fr-FR");
+  const filteredExercises = exercises.filter((exercise) => {
+    const matchesSearch =
+      normalizedSearch.length === 0 ||
+      exercise.name.toLocaleLowerCase("fr-FR").includes(normalizedSearch) ||
+      (exercise.description?.toLocaleLowerCase("fr-FR").includes(normalizedSearch) ?? false);
+    const matchesType = typeFilter === "ALL" || exercise.exerciseType === typeFilter;
+    const matchesDifficulty =
+      difficultyFilter === "ALL" || exercise.difficulty === difficultyFilter;
+
+    return matchesSearch && matchesType && matchesDifficulty;
+  });
+
   return (
-    <ul className="grid gap-3 lg:grid-cols-2">
-      {exercises.map((exercise) => (
-        <li key={exercise.id} className="rounded border border-slate-200 p-4">
-          <div className="flex h-full flex-col justify-between gap-3">
-            <div>
-              <p className="font-semibold">{exercise.name}</p>
-              <p className="mt-1 text-sm text-slate-600">
-                {labelFromOptions(exerciseTypeOptions, exercise.exerciseType)} - {labelFromOptions(difficultyOptions, exercise.difficulty)}
-              </p>
-              {exercise.description && <p className="mt-2 text-sm text-slate-500">{exercise.description}</p>}
-            </div>
-            <ItemActions item={exercise} onEdit={onEdit} onDelete={onDelete} />
-          </div>
-        </li>
-      ))}
-    </ul>
+    <div className="space-y-4">
+      <div className="rounded border border-slate-200 bg-white p-3">
+        <div className="grid gap-3 md:grid-cols-4">
+          <input
+            className={inputClass}
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Rechercher un exercice..."
+          />
+          <select
+            className={inputClass}
+            value={typeFilter}
+            onChange={(event) =>
+              setTypeFilter(
+                event.target.value as "ALL" | "STRENGTH" | "CARDIO" | "MOBILITY",
+              )
+            }
+          >
+            <option value="ALL">Tous les types</option>
+            {exerciseTypeOptions.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <select
+            className={inputClass}
+            value={difficultyFilter}
+            onChange={(event) =>
+              setDifficultyFilter(
+                event.target.value as "ALL" | "BEGINNER" | "INTERMEDIATE" | "ADVANCED",
+              )
+            }
+          >
+            <option value="ALL">Toutes difficultes</option>
+            {difficultyOptions.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            className={secondaryButtonClass}
+            onClick={() => {
+              setSearch("");
+              setTypeFilter("ALL");
+              setDifficultyFilter("ALL");
+            }}
+          >
+            Reinitialiser
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-slate-500">
+          {filteredExercises.length} / {exercises.length} exercice(s)
+        </p>
+      </div>
+
+      {!filteredExercises.length ? (
+        <EmptyState label="Aucun exercice ne correspond a tes filtres." />
+      ) : (
+        <ul className="grid gap-3 lg:grid-cols-2">
+          {filteredExercises.map((exercise) => (
+            <li key={exercise.id} className="rounded border border-slate-200 p-4">
+              <div className="flex h-full flex-col justify-between gap-3">
+                <div>
+                  <p className="font-semibold">{exercise.name}</p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    {labelFromOptions(exerciseTypeOptions, exercise.exerciseType)} - {labelFromOptions(difficultyOptions, exercise.difficulty)}
+                  </p>
+                  {(exercise.bodyParts?.length ?? 0) > 0 && (
+                    <p className="mt-1 text-xs text-slate-500">
+                      Zone cible: {exercise.bodyParts?.join(", ")}
+                    </p>
+                  )}
+                  {exercise.description && <p className="mt-2 text-sm text-slate-500">{exercise.description}</p>}
+                </div>
+                <ItemActions item={exercise} onEdit={onEdit} onDelete={onDelete} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

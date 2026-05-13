@@ -25,6 +25,7 @@ const exerciseSchema = {
     description: { type: ["string", "null"] },
     difficulty: { type: "string" },
     exerciseType: { type: "string" },
+    bodyParts: { type: "array", items: { type: "string" } },
     createdAt: { type: "string", format: "date-time" },
     updatedAt: { type: "string", format: "date-time" },
   },

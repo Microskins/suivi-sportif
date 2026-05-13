@@ -46,6 +46,7 @@ export const createExerciseSchema = z.object({
   description: z.string().max(1000).nullable().optional(),
   difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).default("BEGINNER"),
   exerciseType: z.enum(["STRENGTH", "CARDIO", "MOBILITY"]).default("STRENGTH"),
+  bodyParts: z.array(z.string().min(1).max(100)).optional(),
 });
 
 export const updateExerciseSchema = createExerciseSchema.partial();
@@ -62,6 +63,7 @@ export const exerciseResponseSchema = z.object({
   description: z.string().nullable(),
   difficulty: z.string(),
   exerciseType: z.string(),
+  bodyParts: z.array(z.string()).optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
@@ -128,6 +130,26 @@ export const workoutListSchema = z.array(workoutResponseSchema);
 // ============== Workout Template Schemas ==============
 export const instantiateWorkoutTemplateSchema = z.object({
   date: z.string().datetime(),
+});
+
+export const createWorkoutTemplateSchema = z.object({
+  name: z.string().min(1).max(200),
+  category: z.string().min(1).max(100),
+  level: z.string().min(1).max(100),
+  duration: z.number().int().min(0),
+  description: z.string().max(2000).nullable().optional(),
+  displayOrder: z.number().int().min(0).optional(),
+  exercises: z.array(
+    z.object({
+      exerciseId: z.string().uuid(),
+      order: z.number().int().min(0),
+      sets: z.number().int().min(1),
+      reps: z.number().int().min(0),
+      durationSeconds: z.number().int().min(0).nullable().optional(),
+      rest: z.number().int().min(0),
+      weight: z.number().min(0),
+    }),
+  ).min(1),
 });
 
 export const workoutTemplateExerciseResponseSchema = z.object({
@@ -314,6 +336,9 @@ export type UpdateWorkoutInput = z.infer<typeof updateWorkoutSchema>;
 export type WorkoutResponse = z.infer<typeof workoutResponseSchema>;
 export type InstantiateWorkoutTemplateInput = z.infer<
   typeof instantiateWorkoutTemplateSchema
+>;
+export type CreateWorkoutTemplateInput = z.infer<
+  typeof createWorkoutTemplateSchema
 >;
 export type WorkoutTemplateResponse = z.infer<
   typeof workoutTemplateResponseSchema
