@@ -152,6 +152,8 @@ export const createWorkoutTemplateSchema = z.object({
   ).min(1),
 });
 
+export const updateWorkoutTemplateSchema = createWorkoutTemplateSchema.partial();
+
 export const workoutTemplateExerciseResponseSchema = z.object({
   id: z.string().uuid(),
   exerciseId: z.string().uuid(),
@@ -339,6 +341,9 @@ export type InstantiateWorkoutTemplateInput = z.infer<
 >;
 export type CreateWorkoutTemplateInput = z.infer<
   typeof createWorkoutTemplateSchema
+>;
+export type UpdateWorkoutTemplateInput = z.infer<
+  typeof updateWorkoutTemplateSchema
 >;
 export type WorkoutTemplateResponse = z.infer<
   typeof workoutTemplateResponseSchema

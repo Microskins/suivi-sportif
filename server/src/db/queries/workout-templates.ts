@@ -4,6 +4,7 @@ import prisma from "../index.js";
 import type {
   CreateWorkoutTemplateInput,
   InstantiateWorkoutTemplateInput,
+  UpdateWorkoutTemplateInput,
   WorkoutResponse,
   WorkoutTemplateResponse,
 } from "../../schemas/index.js";
@@ -200,4 +201,54 @@ export async function instantiateWorkoutTemplate(
   });
 
   return getWorkoutById(workout.id, userId);
+}
+
+export async function updateWorkoutTemplate(
+  id: string,
+  data: UpdateWorkoutTemplateInput,
+): Promise<WorkoutTemplateResponse | null> {
+  const existing = await prisma.workoutTemplate.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+
+  if (!existing) {
+    return null;
+  }
+
+  const updated = await prisma.$transaction(async (tx) => {
+    if (data.exercises) {
+      await tx.workoutTemplateExercise.deleteMany({
+        where: { templateId: id },
+      });
+    }
+
+    return tx.workoutTemplate.update({
+      where: { id },
+      data: {
+        name: data.name,
+        category: data.category,
+        level: data.level,
+        duration: data.duration,
+        description: data.description,
+        displayOrder: data.displayOrder,
+        exercises: data.exercises
+          ? {
+              create: data.exercises.map((item) => ({
+                exerciseId: item.exerciseId,
+                order: item.order,
+                sets: item.sets,
+                reps: item.reps,
+                durationSeconds: item.durationSeconds ?? null,
+                rest: item.rest,
+                weight: item.weight,
+              })),
+            }
+          : undefined,
+      },
+      include: workoutTemplateInclude,
+    });
+  });
+
+  return formatWorkoutTemplate(updated as WorkoutTemplateWithDetails);
 }

@@ -252,3 +252,33 @@
 ## Liens
 
 - Plan: docs/90-plans/018-calendrier-suivi-statut-seances.md
+
+---
+
+## 2026-05-13 - Modeles: historique des revisions
+
+## Contexte
+
+- Une fois les modeles modifiables, il peut etre utile de comprendre qui a change quoi.
+- Sans historique, une regression de contenu est difficile a expliquer.
+
+## Proposition
+
+- Ajouter un historique simple des modifications de modele:
+  - date de modification;
+  - resume des champs modifies;
+  - auteur (si role admin introduit plus tard).
+- Exposer cet historique en lecture dans l'interface de gestion des modeles.
+
+## Impact
+
+- Meilleure tracabilite sur le contenu des modeles.
+- Diagnostic plus rapide en cas de changement non attendu.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/020-edition-modeles-seances.md

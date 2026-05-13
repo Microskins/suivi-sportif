@@ -30,6 +30,8 @@ const mocks = vi.hoisted(() => ({
   },
   workoutTemplates: {
     getWorkoutTemplates: vi.fn(),
+    createWorkoutTemplate: vi.fn(),
+    updateWorkoutTemplate: vi.fn(),
     instantiateWorkoutTemplate: vi.fn(),
   },
   foods: {
@@ -276,6 +278,7 @@ describe("API", () => {
       "/api/workouts",
       "/api/workouts/{id}",
       "/api/workout-templates",
+      "/api/workout-templates/{id}",
       "/api/workout-templates/{id}/instantiate",
       "/api/foods",
       "/api/foods/{id}",
@@ -301,6 +304,12 @@ describe("API", () => {
     expect(openApiPath(paths, "/api/workout-templates").get.security).toEqual([
       { bearerAuth: [] },
     ]);
+    expect(
+      openApiPath(paths, "/api/workout-templates/{id}").put.security,
+    ).toEqual([{ bearerAuth: [] }]);
+    expect(openApiPath(paths, "/api/workout-templates/{id}").put.responses).toHaveProperty(
+      "404",
+    );
     expect(
       openApiPath(paths, "/api/workout-templates/{id}/instantiate").post
         .responses,
@@ -997,6 +1006,66 @@ describe("API", () => {
     expect(
       mocks.workoutTemplates.instantiateWorkoutTemplate,
     ).not.toHaveBeenCalled();
+  });
+
+  it("updates a workout template", async () => {
+    const updatedTemplate = {
+      ...workoutTemplate,
+      name: "Push avance",
+      duration: 70,
+    };
+    const payload = {
+      name: updatedTemplate.name,
+      duration: updatedTemplate.duration,
+    };
+    mocks.workoutTemplates.updateWorkoutTemplate.mockResolvedValue(updatedTemplate);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/workout-templates/${WORKOUT_TEMPLATE_ID}`,
+      headers: authHeaders(),
+      payload,
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(updatedTemplate);
+    expect(mocks.workoutTemplates.updateWorkoutTemplate).toHaveBeenCalledWith(
+      WORKOUT_TEMPLATE_ID,
+      payload,
+    );
+  });
+
+  it("returns 404 when updating a missing workout template", async () => {
+    mocks.workoutTemplates.updateWorkoutTemplate.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/workout-templates/${WORKOUT_TEMPLATE_ID}`,
+      headers: authHeaders(),
+      payload: { name: "Inexistant" },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("WORKOUT_TEMPLATE_NOT_FOUND");
+  });
+
+  it("rejects invalid workout template updates before calling the database", async () => {
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/workout-templates/${WORKOUT_TEMPLATE_ID}`,
+      headers: authHeaders(),
+      payload: {
+        duration: -1,
+        exercises: [],
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.workoutTemplates.updateWorkoutTemplate).not.toHaveBeenCalled();
   });
 
   it("updates a workout for the authenticated user only", async () => {

@@ -426,6 +426,13 @@ class ApiClient {
     });
   }
 
+  async updateWorkoutTemplate(id: string, data: Partial<WorkoutTemplateInput>) {
+    return this.request<WorkoutTemplate>(`/api/workout-templates/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
   // Foods
   async getFoods() {
     return this.request<Food[]>("/api/foods");

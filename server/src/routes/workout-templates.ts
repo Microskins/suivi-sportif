@@ -4,6 +4,7 @@ import {
   createWorkoutTemplateSchema,
   idParamSchema,
   instantiateWorkoutTemplateSchema,
+  updateWorkoutTemplateSchema,
 } from "../schemas/index.js";
 
 const errorResponseSchema = {
@@ -207,6 +208,89 @@ export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
         const parsed = createWorkoutTemplateSchema.parse(request.body);
         const template = await workoutTemplates.createWorkoutTemplate(parsed);
         return reply.code(201).send({ data: template });
+      } catch (error: any) {
+        if (error.name === "ZodError") {
+          return reply.code(400).send({
+            error: "Validation failed",
+            code: "VALIDATION_ERROR",
+            details: error.errors,
+          });
+        }
+        fastify.log.error(error);
+        return reply.code(500).send({
+          error: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  );
+
+  fastify.put(
+    "/:id",
+    {
+      schema: {
+        tags: ["workout-templates"],
+        summary: "Update workout template",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: { id: { type: "string", format: "uuid" } },
+          required: ["id"],
+        },
+        body: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            category: { type: "string" },
+            level: { type: "string" },
+            duration: { type: "number" },
+            description: { type: ["string", "null"] },
+            displayOrder: { type: "number" },
+            exercises: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  exerciseId: { type: "string", format: "uuid" },
+                  order: { type: "number" },
+                  sets: { type: "number" },
+                  reps: { type: "number" },
+                  durationSeconds: { type: ["number", "null"] },
+                  rest: { type: "number" },
+                  weight: { type: "number" },
+                },
+                required: ["exerciseId", "order", "sets", "reps", "rest", "weight"],
+              },
+            },
+          },
+        },
+        response: {
+          200: {
+            type: "object",
+            properties: { data: workoutTemplateSchema },
+            required: ["data"],
+          },
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      try {
+        const { id } = idParamSchema.parse(request.params);
+        const parsed = updateWorkoutTemplateSchema.parse(request.body);
+        const template = await workoutTemplates.updateWorkoutTemplate(id, parsed);
+
+        if (!template) {
+          return reply.code(404).send({
+            error: "Workout template not found",
+            code: "WORKOUT_TEMPLATE_NOT_FOUND",
+          });
+        }
+
+        return reply.code(200).send({ data: template });
       } catch (error: any) {
         if (error.name === "ZodError") {
           return reply.code(400).send({

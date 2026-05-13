@@ -13,6 +13,10 @@ type WorkoutTemplatesState = {
   fetchWorkoutTemplates: () => Promise<void>;
   instantiateWorkoutTemplate: (id: string, date: string) => Promise<void>;
   createWorkoutTemplate: (data: WorkoutTemplateInput) => Promise<void>;
+  updateWorkoutTemplate: (
+    id: string,
+    data: Partial<WorkoutTemplateInput>,
+  ) => Promise<void>;
 };
 
 function getErrorMessage(error: unknown): string {
@@ -117,6 +121,64 @@ export const useWorkoutTemplatesStore = create<WorkoutTemplatesState>((set) => (
         workoutTemplates: [...state.workoutTemplates, created].sort(
           (a, b) => a.displayOrder - b.displayOrder || a.name.localeCompare(b.name),
         ),
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({ isLoading: false, error: getErrorMessage(error) });
+      throw error;
+    }
+  },
+  async updateWorkoutTemplate(id, data) {
+    if (isAuthBypassEnabled) {
+      set((state) => ({
+        workoutTemplates: state.workoutTemplates.map((template) => {
+          if (template.id !== id) {
+            return template;
+          }
+
+          return {
+            ...template,
+            ...data,
+            exercises: data.exercises
+              ? data.exercises.map((exercise, index) => ({
+                  id: `${template.id}-exercise-${index}`,
+                  exerciseId: exercise.exerciseId,
+                  order: exercise.order,
+                  sets: exercise.sets,
+                  reps: exercise.reps,
+                  durationSeconds: exercise.durationSeconds ?? null,
+                  rest: exercise.rest,
+                  weight: exercise.weight,
+                  exercise:
+                    template.exercises.find(
+                      (item) => item.exerciseId === exercise.exerciseId,
+                    )?.exercise ?? {
+                      id: exercise.exerciseId,
+                      name: "Exercice",
+                      description: null,
+                      difficulty: "BEGINNER",
+                      exerciseType: "STRENGTH",
+                      bodyParts: [],
+                      createdAt: new Date().toISOString(),
+                      updatedAt: new Date().toISOString(),
+                    },
+                }))
+              : template.exercises,
+            updatedAt: new Date().toISOString(),
+          };
+        }),
+        error: null,
+      }));
+      return;
+    }
+
+    set({ isLoading: true, error: null });
+    try {
+      const updated = await api.updateWorkoutTemplate(id, data);
+      set((state) => ({
+        workoutTemplates: state.workoutTemplates
+          .map((template) => (template.id === id ? updated : template))
+          .sort((a, b) => a.displayOrder - b.displayOrder || a.name.localeCompare(b.name)),
         isLoading: false,
       }));
     } catch (error) {

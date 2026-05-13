@@ -193,7 +193,18 @@ Toutes les routes sont protegees. Les modeles sont globaux et l'instanciation
 cree une seance personnelle pour l'utilisateur du JWT.
 
 - `GET /api/workout-templates`
+- `PUT /api/workout-templates/:id`
 - `POST /api/workout-templates/:id/instantiate`
+
+Mise a jour de modele (body partiel autorise):
+
+```json
+{
+  "name": "Push avance",
+  "duration": 70,
+  "description": "Version mise a jour"
+}
+```
 
 Instanciation:
 

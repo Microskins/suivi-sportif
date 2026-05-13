@@ -555,6 +555,7 @@ function WorkoutTemplatePicker({
   exercises,
   onInstantiate,
   onCreateTemplate,
+  onUpdateTemplate,
   onCancel,
 }: {
   templates: WorkoutTemplate[];
@@ -576,9 +577,28 @@ function WorkoutTemplatePicker({
       durationSeconds?: number | null;
     }>;
   }) => Promise<void>;
+  onUpdateTemplate: (
+    id: string,
+    data: {
+      name: string;
+      category: string;
+      level: string;
+      duration: number;
+      description?: string | null;
+      exercises: Array<{
+        exerciseId: string;
+        order: number;
+        sets: number;
+        reps: number;
+        rest: number;
+        weight: number;
+        durationSeconds?: number | null;
+      }>;
+    },
+  ) => Promise<void>;
   onCancel: () => void;
 }) {
-  const [mode, setMode] = useState<"instantiate" | "create">("instantiate");
+  const [mode, setMode] = useState<"instantiate" | "create" | "edit">("instantiate");
   const [date, setDate] = useState(toInputDateTime());
   const [selectedId, setSelectedId] = useState(templates[0]?.id ?? "");
   const [name, setName] = useState("");
@@ -591,6 +611,28 @@ function WorkoutTemplatePicker({
   >(exercises[0] ? [{ exerciseId: exercises[0].id, sets: "3", reps: "10", rest: "60", weight: "0" }] : []);
   const [isSaving, setIsSaving] = useState(false);
 
+  useEffect(() => {
+    const selectedTemplate = templates.find((item) => item.id === selectedId);
+    if (!selectedTemplate || mode !== "edit") {
+      return;
+    }
+
+    setName(selectedTemplate.name);
+    setCategory(selectedTemplate.category);
+    setLevel(selectedTemplate.level);
+    setDuration(String(selectedTemplate.duration));
+    setDescription(selectedTemplate.description ?? "");
+    setRows(
+      selectedTemplate.exercises.map((entry) => ({
+        exerciseId: entry.exerciseId,
+        sets: String(entry.sets),
+        reps: String(entry.reps),
+        rest: String(entry.rest),
+        weight: String(entry.weight),
+      })),
+    );
+  }, [mode, selectedId, templates]);
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -601,8 +643,24 @@ function WorkoutTemplatePicker({
           return;
         }
         await onInstantiate(selectedId, dateTimeToIso(date));
-      } else {
+      } else if (mode === "create") {
         await onCreateTemplate({
+          name,
+          category,
+          level,
+          duration: Number(duration),
+          description: emptyToNull(description),
+          exercises: rows.map((row, index) => ({
+            exerciseId: row.exerciseId,
+            order: index,
+            sets: Number(row.sets),
+            reps: Number(row.reps),
+            rest: Number(row.rest),
+            weight: Number(row.weight),
+          })),
+        });
+      } else if (selectedId) {
+        await onUpdateTemplate(selectedId, {
           name,
           category,
           level,
@@ -629,6 +687,7 @@ function WorkoutTemplatePicker({
       <div className="flex gap-2">
         <button type="button" className={secondaryButtonClass} onClick={() => setMode("instantiate")}>Creer une seance</button>
         <button type="button" className={secondaryButtonClass} onClick={() => setMode("create")}>Creer un modele</button>
+        <button type="button" className={secondaryButtonClass} onClick={() => setMode("edit")} disabled={!templates.length}>Modifier un modele</button>
       </div>
       {mode === "instantiate" ? (
         <>
@@ -684,6 +743,17 @@ function WorkoutTemplatePicker({
         </>
       ) : (
         <div className="space-y-3 rounded border border-slate-200 p-3">
+          {mode === "edit" && (
+            <Field label="Modele a modifier">
+              <select className={inputClass} value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>
+                {templates.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          )}
           <div className="grid gap-3 md:grid-cols-2">
             <Field label="Nom">
               <input className={inputClass} value={name} onChange={(event) => setName(event.target.value)} required />
@@ -731,10 +801,16 @@ function WorkoutTemplatePicker({
         </button>
         <button
           type="submit"
-          disabled={isSaving || (mode === "instantiate" ? !selectedId : rows.length === 0)}
+          disabled={isSaving || (mode === "instantiate" ? !selectedId : rows.length === 0 || (mode === "edit" && !selectedId))}
           className={buttonClass}
         >
-          {isSaving ? "Creation..." : mode === "instantiate" ? "Creer la seance" : "Creer le modele"}
+          {isSaving
+            ? "Enregistrement..."
+            : mode === "instantiate"
+              ? "Creer la seance"
+              : mode === "create"
+                ? "Creer le modele"
+                : "Mettre a jour le modele"}
         </button>
       </div>
     </form>
@@ -1210,6 +1286,9 @@ export function Dashboard({
                         onCreateTemplate={(data) =>
                           workoutTemplatesStore.createWorkoutTemplate(data)
                         }
+                        onUpdateTemplate={(id, data) =>
+                          workoutTemplatesStore.updateWorkoutTemplate(id, data)
+                        }
                       />
                     </div>
                   )}
@@ -1296,6 +1375,9 @@ export function Dashboard({
               }
               onCreateTemplate={(data) =>
                 workoutTemplatesStore.createWorkoutTemplate(data)
+              }
+              onUpdateTemplate={(id, data) =>
+                workoutTemplatesStore.updateWorkoutTemplate(id, data)
               }
             />
           )}
