@@ -14,6 +14,23 @@ type ExerciseRecord = Omit<ExerciseResponse, "createdAt" | "updatedAt"> & {
   updatedAt: Date;
 };
 
+type ExerciseMuscleRow = {
+  muscle: {
+    name: string;
+  };
+};
+
+type ExerciseRowWithMuscles = {
+  id: string;
+  name: string;
+  description: string | null;
+  difficulty: string;
+  exerciseType: string;
+  muscles: ExerciseMuscleRow[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 function formatExercise(e: ExerciseRecord): ExerciseResponse {
   return {
     ...e,
@@ -42,10 +59,10 @@ export async function getExercises(): Promise<ExerciseResponse[]> {
       updatedAt: true,
     },
   });
-  return exercises.map((exercise) =>
+  return exercises.map((exercise: ExerciseRowWithMuscles) =>
     formatExercise({
       ...exercise,
-      bodyParts: exercise.muscles.map((item) => item.muscle.name),
+      bodyParts: exercise.muscles.map((item: ExerciseMuscleRow) => item.muscle.name),
     } as ExerciseRecord),
   );
 }
@@ -75,7 +92,7 @@ export async function getExerciseById(
   if (!exercise) return null;
   return formatExercise({
     ...exercise,
-    bodyParts: exercise.muscles.map((item) => item.muscle.name),
+    bodyParts: exercise.muscles.map((item: ExerciseMuscleRow) => item.muscle.name),
   } as ExerciseRecord);
 }
 
@@ -111,10 +128,10 @@ export async function getExercisesByMuscleGroup(
       updatedAt: true,
     },
   });
-  return exercises.map((exercise) =>
+  return exercises.map((exercise: ExerciseRowWithMuscles) =>
     formatExercise({
       ...exercise,
-      bodyParts: exercise.muscles.map((item) => item.muscle.name),
+      bodyParts: exercise.muscles.map((item: ExerciseMuscleRow) => item.muscle.name),
     } as ExerciseRecord),
   );
 }
@@ -166,7 +183,7 @@ export async function createExercise(
   });
   return formatExercise({
     ...exercise,
-    bodyParts: exercise.muscles.map((item) => item.muscle.name),
+    bodyParts: exercise.muscles.map((item: ExerciseMuscleRow) => item.muscle.name),
   } as ExerciseRecord);
 }
 
@@ -222,7 +239,7 @@ export async function updateExercise(
   });
   return formatExercise({
     ...exercise,
-    bodyParts: exercise.muscles.map((item) => item.muscle.name),
+    bodyParts: exercise.muscles.map((item: ExerciseMuscleRow) => item.muscle.name),
   } as ExerciseRecord);
 }
 
