@@ -6,6 +6,7 @@ REMOTE_NAME="${REMOTE_NAME:-origin}"
 BRANCH_NAME="${BRANCH_NAME:-main}"
 HEALTH_RETRIES="${HEALTH_RETRIES:-30}"
 HEALTH_SLEEP_SECONDS="${HEALTH_SLEEP_SECONDS:-3}"
+DEPLOY_SSH_KEY_PATH="${DEPLOY_SSH_KEY_PATH:-/home/deploy/.ssh/github_deploy}"
 
 log() {
   printf '\n== %s ==\n' "$*"
@@ -38,6 +39,10 @@ health_check() {
 require_command git
 require_command docker
 require_command curl
+
+if [ -z "${GIT_SSH_COMMAND:-}" ] && [ -f "$DEPLOY_SSH_KEY_PATH" ]; then
+  export GIT_SSH_COMMAND="ssh -i $DEPLOY_SSH_KEY_PATH -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+fi
 
 PRISMA_SCHEMA_PATH="server/prisma/schema.prisma"
 FAILED_MIGRATION_NAME="20260511170754_exercise_relations_refactor"
