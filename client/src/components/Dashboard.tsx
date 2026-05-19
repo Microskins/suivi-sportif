@@ -554,19 +554,39 @@ function WorkoutForm({
           <div
             key={rowIndex}
             className="rounded border border-slate-200 p-3"
-            draggable
-            onDragStart={() => setDraggedRowIndex(rowIndex)}
             onDragOver={(event) => event.preventDefault()}
-            onDrop={() => {
-              if (draggedRowIndex === null) {
+            onDrop={(event) => {
+              event.preventDefault();
+              const draggedIndexFromTransfer = Number(
+                event.dataTransfer.getData("text/plain"),
+              );
+              const sourceIndex =
+                Number.isFinite(draggedIndexFromTransfer) &&
+                draggedIndexFromTransfer >= 0
+                  ? draggedIndexFromTransfer
+                  : draggedRowIndex;
+              if (sourceIndex === null) {
                 return;
               }
-              setRows((current) => moveItem(current, draggedRowIndex, rowIndex));
+              setRows((current) => moveItem(current, sourceIndex, rowIndex));
               setDraggedRowIndex(null);
             }}
             onDragEnd={() => setDraggedRowIndex(null)}
           >
             <div className="flex items-center gap-3">
+              <button
+                type="button"
+                className={secondaryButtonClass}
+                draggable
+                onDragStart={(event) => {
+                  setDraggedRowIndex(rowIndex);
+                  event.dataTransfer.effectAllowed = "move";
+                  event.dataTransfer.setData("text/plain", String(rowIndex));
+                }}
+                title="Glisser pour deplacer l'exercice"
+              >
+                ↕
+              </button>
               <select
                 className={inputClass}
                 value={row.exerciseId}
@@ -954,18 +974,38 @@ function WorkoutTemplatePicker({
             <div
               key={index}
               className="grid gap-2 md:grid-cols-6"
-              draggable
-              onDragStart={() => setDraggedTemplateRowIndex(index)}
               onDragOver={(event) => event.preventDefault()}
-              onDrop={() => {
-                if (draggedTemplateRowIndex === null) {
+              onDrop={(event) => {
+                event.preventDefault();
+                const draggedIndexFromTransfer = Number(
+                  event.dataTransfer.getData("text/plain"),
+                );
+                const sourceIndex =
+                  Number.isFinite(draggedIndexFromTransfer) &&
+                  draggedIndexFromTransfer >= 0
+                    ? draggedIndexFromTransfer
+                    : draggedTemplateRowIndex;
+                if (sourceIndex === null) {
                   return;
                 }
-                setRows((current) => moveItem(current, draggedTemplateRowIndex, index));
+                setRows((current) => moveItem(current, sourceIndex, index));
                 setDraggedTemplateRowIndex(null);
               }}
               onDragEnd={() => setDraggedTemplateRowIndex(null)}
             >
+              <button
+                type="button"
+                className={secondaryButtonClass}
+                draggable
+                onDragStart={(event) => {
+                  setDraggedTemplateRowIndex(index);
+                  event.dataTransfer.effectAllowed = "move";
+                  event.dataTransfer.setData("text/plain", String(index));
+                }}
+                title="Glisser pour deplacer l'exercice"
+              >
+                ↕
+              </button>
               <select className={inputClass} value={row.exerciseId} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, exerciseId: event.target.value } : entry))}>
                 {exercises.map((exercise) => (
                   <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
