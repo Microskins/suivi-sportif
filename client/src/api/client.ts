@@ -37,8 +37,11 @@ export type ExerciseInput = {
 };
 
 export type WorkoutSetInput = {
-  reps: number;
-  weight: number;
+  reps?: number;
+  weight?: number;
+  durationMinutes?: number | null;
+  avgKmh?: number | null;
+  inclinePercent?: number | null;
   rest: number;
 };
 
@@ -78,6 +81,9 @@ export type Workout = {
       setNumber: number;
       reps: number;
       weight: number;
+      durationMinutes?: number | null;
+      avgKmh?: number | null;
+      inclinePercent?: number | null;
       rest: number;
       createdAt: string;
     }>;

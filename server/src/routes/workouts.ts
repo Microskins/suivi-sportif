@@ -46,6 +46,9 @@ const workoutSchema = {
                 setNumber: { type: "number" },
                 reps: { type: "number" },
                 weight: { type: "number" },
+                durationMinutes: { type: ["number", "null"] },
+                avgKmh: { type: ["number", "null"] },
+                inclinePercent: { type: ["number", "null"] },
                 rest: { type: "number" },
                 createdAt: { type: "string", format: "date-time" },
               },
@@ -277,9 +280,12 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
                       properties: {
                         reps: { type: "number" },
                         weight: { type: "number" },
+                        durationMinutes: { type: ["number", "null"] },
+                        avgKmh: { type: ["number", "null"] },
+                        inclinePercent: { type: ["number", "null"] },
                         rest: { type: "number" },
                       },
-                      required: ["reps", "weight", "rest"],
+                      required: ["rest"],
                     },
                   },
                 },
@@ -317,6 +323,16 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
           details: error.errors,
         });
       }
+      if (
+        error instanceof workouts.WorkoutValidationError ||
+        error?.name === "WorkoutValidationError"
+      ) {
+        return reply.code(400).send({
+          error: "Validation failed",
+          code: "VALIDATION_ERROR",
+          details: error.details ?? [],
+        });
+      }
       fastify.log.error(error);
       return reply.code(500).send({
         error: "Internal Server Error",
@@ -347,6 +363,31 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
             status: { type: "string", enum: ["PLANNED", "COMPLETED", "CANCELED"] },
             duration: { type: "number" },
             notes: { type: ["string", "null"] },
+            exercises: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  exerciseId: { type: "string", format: "uuid" },
+                  sets: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        reps: { type: "number" },
+                        weight: { type: "number" },
+                        durationMinutes: { type: ["number", "null"] },
+                        avgKmh: { type: ["number", "null"] },
+                        inclinePercent: { type: ["number", "null"] },
+                        rest: { type: "number" },
+                      },
+                      required: ["rest"],
+                    },
+                  },
+                },
+                required: ["exerciseId", "sets"],
+              },
+            },
           },
         },
         response: {
@@ -384,6 +425,16 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
           error: "Validation failed",
           code: "VALIDATION_ERROR",
           details: error.errors,
+        });
+      }
+      if (
+        error instanceof workouts.WorkoutValidationError ||
+        error?.name === "WorkoutValidationError"
+      ) {
+        return reply.code(400).send({
+          error: "Validation failed",
+          code: "VALIDATION_ERROR",
+          details: error.details ?? [],
         });
       }
       fastify.log.error(error);

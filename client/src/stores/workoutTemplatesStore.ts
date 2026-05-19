@@ -53,6 +53,12 @@ function buildWorkoutFromTemplate(
         setNumber: setIndex + 1,
         reps: templateExercise.reps,
         weight: templateExercise.weight,
+        durationMinutes:
+          templateExercise.durationSeconds === null
+            ? null
+            : Number((templateExercise.durationSeconds / 60).toFixed(2)),
+        avgKmh: null,
+        inclinePercent: null,
         rest: templateExercise.rest,
         createdAt: now,
       })),

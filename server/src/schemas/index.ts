@@ -83,8 +83,11 @@ export const createWorkoutSchema = z.object({
         exerciseId: z.string().uuid(),
         sets: z.array(
           z.object({
-            reps: z.number().int().min(0),
-            weight: z.number().min(0),
+            reps: z.number().int().min(0).optional(),
+            weight: z.number().min(0).optional(),
+            durationMinutes: z.number().min(0).nullable().optional(),
+            avgKmh: z.number().min(0).nullable().optional(),
+            inclinePercent: z.number().min(0).nullable().optional(),
             rest: z.number().int().min(0),
           }),
         ),
@@ -100,6 +103,9 @@ export const workoutSetResponseSchema = z.object({
   setNumber: z.number().int(),
   reps: z.number().int(),
   weight: z.number(),
+  durationMinutes: z.number().nullable(),
+  avgKmh: z.number().nullable(),
+  inclinePercent: z.number().nullable(),
   rest: z.number().int(),
   createdAt: z.string().datetime(),
 });

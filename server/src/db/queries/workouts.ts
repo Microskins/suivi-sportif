@@ -46,13 +46,28 @@ type WorkoutExercise = {
 };
 
 type WorkoutSet = {
+  avgKmh: unknown;
   createdAt: Date;
+  durationMinutes: unknown;
   id: string;
+  inclinePercent: unknown;
   reps: number;
   rest: number;
   setNumber: number;
   weight: unknown;
 };
+
+type ExerciseType = "STRENGTH" | "CARDIO" | "MOBILITY";
+
+export class WorkoutValidationError extends Error {
+  details: Array<{ path: string; message: string }>;
+
+  constructor(details: Array<{ path: string; message: string }>) {
+    super("Validation failed");
+    this.name = "WorkoutValidationError";
+    this.details = details;
+  }
+}
 
 const workoutDetailsInclude = {
   workoutExercises: {
@@ -97,11 +112,80 @@ function formatWorkout(workout: WorkoutWithDetails): WorkoutResponse {
         setNumber: set.setNumber,
         reps: set.reps,
         weight: Number(set.weight),
+        durationMinutes:
+          set.durationMinutes === null ? null : Number(set.durationMinutes),
+        avgKmh: set.avgKmh === null ? null : Number(set.avgKmh),
+        inclinePercent:
+          set.inclinePercent === null ? null : Number(set.inclinePercent),
         rest: set.rest,
         createdAt: set.createdAt.toISOString(),
       })),
     })),
   };
+}
+
+async function getExerciseTypeMap(exerciseIds: string[]): Promise<Map<string, ExerciseType>> {
+  const uniqueExerciseIds = Array.from(new Set(exerciseIds));
+  const exercises = await prisma.exercise.findMany({
+    where: { id: { in: uniqueExerciseIds } },
+    select: { id: true, exerciseType: true },
+  });
+
+  return new Map(
+    exercises.map((exercise) => [exercise.id, String(exercise.exerciseType) as ExerciseType]),
+  );
+}
+
+async function validateWorkoutExerciseSets(exercises: NonNullable<CreateWorkoutInput["exercises"]>) {
+  const exerciseTypeMap = await getExerciseTypeMap(
+    exercises.map((exercise) => exercise.exerciseId),
+  );
+  const details: Array<{ path: string; message: string }> = [];
+
+  exercises.forEach((exercise, exerciseIndex) => {
+    const type = exerciseTypeMap.get(exercise.exerciseId);
+    if (!type) {
+      details.push({
+        path: `exercises.${exerciseIndex}.exerciseId`,
+        message: "Exercice introuvable",
+      });
+      return;
+    }
+
+    exercise.sets.forEach((set, setIndex) => {
+      if (type === "CARDIO") {
+        if (set.durationMinutes === undefined || set.durationMinutes === null) {
+          details.push({
+            path: `exercises.${exerciseIndex}.sets.${setIndex}.durationMinutes`,
+            message: "durationMinutes est requis pour un exercice cardio",
+          });
+        }
+        if (set.avgKmh === undefined || set.avgKmh === null) {
+          details.push({
+            path: `exercises.${exerciseIndex}.sets.${setIndex}.avgKmh`,
+            message: "avgKmh est requis pour un exercice cardio",
+          });
+        }
+      } else {
+        if (set.reps === undefined) {
+          details.push({
+            path: `exercises.${exerciseIndex}.sets.${setIndex}.reps`,
+            message: "reps est requis pour un exercice non cardio",
+          });
+        }
+        if (set.weight === undefined) {
+          details.push({
+            path: `exercises.${exerciseIndex}.sets.${setIndex}.weight`,
+            message: "weight est requis pour un exercice non cardio",
+          });
+        }
+      }
+    });
+  });
+
+  if (details.length > 0) {
+    throw new WorkoutValidationError(details);
+  }
 }
 
 function inferStatusFromDate(dateIso: string): "PLANNED" | "COMPLETED" {
@@ -152,6 +236,10 @@ export async function createWorkout(
   userId: string,
   data: CreateWorkoutInput,
 ): Promise<WorkoutResponse> {
+  if (data.exercises?.length) {
+    await validateWorkoutExerciseSets(data.exercises);
+  }
+
   const status = data.status ?? inferStatusFromDate(data.date);
   const workout = await prisma.workout.create({
     data: {
@@ -169,8 +257,11 @@ export async function createWorkout(
               sets: {
                 create: exercise.sets.map((set, setIndex) => ({
                   setNumber: setIndex + 1,
-                  reps: set.reps,
-                  weight: set.weight,
+                  reps: set.reps ?? 0,
+                  weight: set.weight ?? 0,
+                  durationMinutes: set.durationMinutes ?? null,
+                  avgKmh: set.avgKmh ?? null,
+                  inclinePercent: set.inclinePercent ?? null,
                   rest: set.rest,
                 })),
               },
@@ -211,6 +302,7 @@ export async function updateWorkout(
   }
 
   const exercises = data.exercises;
+  await validateWorkoutExerciseSets(exercises);
   const nextStatus =
     data.status ??
     (data.date ? inferStatusFromDate(data.date) : undefined);
@@ -233,8 +325,11 @@ export async function updateWorkout(
             sets: {
               create: exercise.sets.map((set, setIndex) => ({
                 setNumber: setIndex + 1,
-                reps: set.reps,
-                weight: set.weight,
+                reps: set.reps ?? 0,
+                weight: set.weight ?? 0,
+                durationMinutes: set.durationMinutes ?? null,
+                avgKmh: set.avgKmh ?? null,
+                inclinePercent: set.inclinePercent ?? null,
                 rest: set.rest,
               })),
             },

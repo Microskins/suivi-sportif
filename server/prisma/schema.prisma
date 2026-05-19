@@ -249,6 +249,9 @@ model WorkoutSet {
   setNumber         Int      @map("set_number")
   reps              Int
   weight            Decimal  @db.Decimal(10, 2)
+  durationMinutes   Decimal? @map("duration_minutes") @db.Decimal(10, 2)
+  avgKmh            Decimal? @map("avg_kmh") @db.Decimal(10, 2)
+  inclinePercent    Decimal? @map("incline_percent") @db.Decimal(10, 2)
   rest              Int      @default(60) // en secondes
   createdAt         DateTime @default(now()) @map("created_at")
 

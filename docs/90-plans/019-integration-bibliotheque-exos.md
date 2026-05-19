@@ -18,7 +18,7 @@
 - [x] Injecter le catalogue dans `server/prisma/seed.ts`.
 - [x] Injecter le catalogue dans `server/prisma/prod-seed.mjs`.
 - [x] Nettoyer les libelles moisis par l'encodage de la table source.
-- [ ] Verifier l'execution du seed et pousser.
+- [x] Verifier l'execution du seed et pousser.
 
 ## Notes de verification
 

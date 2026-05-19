@@ -926,6 +926,44 @@ describe("API", () => {
     expect(mocks.workouts.createWorkout).not.toHaveBeenCalled();
   });
 
+  it("returns 400 when cardio workout validation fails in query layer", async () => {
+    mocks.workouts.createWorkout.mockRejectedValue({
+      name: "WorkoutValidationError",
+      details: [
+        {
+          path: "exercises.0.sets.0.durationMinutes",
+          message: "durationMinutes est requis pour un exercice cardio",
+        },
+      ],
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/workouts",
+      headers: authHeaders(),
+      payload: {
+        name: workout.name,
+        date: workout.date,
+        duration: workout.duration,
+        exercises: [
+          {
+            exerciseId: EXERCISE_ID,
+            sets: [
+              {
+                rest: 60,
+              },
+            ],
+          },
+        ],
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(Array.isArray(body.details)).toBe(true);
+  });
+
   it("rejects workout template routes without a token", async () => {
     const response = await app.inject({
       method: "GET",

@@ -24,6 +24,7 @@ Index chronologique des chantiers planifies et executes.
 18. [Calendrier suivi et statut seances](./018-calendrier-suivi-statut-seances.md)
 19. [Integration bibliotheque exos complete](./019-integration-bibliotheque-exos.md)
 20. [Edition modeles de seances](./020-edition-modeles-seances.md)
+21. [Suivi cardio dans les seances](./021-suivi-cardio-dans-seances.md)
 89. [Mobile Android/iOS via Capacitor](./089-mobile-capacitor.md)
 
 ## Convention

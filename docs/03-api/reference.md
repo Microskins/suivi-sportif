@@ -185,6 +185,34 @@ Creation:
 }
 ```
 
+Exemple cardio (exercise de type `CARDIO`):
+
+```json
+{
+  "name": "Cardio tapis",
+  "date": "2026-05-04T10:00:00.000Z",
+  "duration": 35,
+  "exercises": [
+    {
+      "exerciseId": "uuid",
+      "sets": [
+        {
+          "durationMinutes": 12.5,
+          "avgKmh": 10.8,
+          "inclinePercent": 2.5,
+          "rest": 60
+        }
+      ]
+    }
+  ]
+}
+```
+
+Regles metier sur les sets:
+
+- Exercice `CARDIO`: `durationMinutes` et `avgKmh` requis, `inclinePercent` optionnel.
+- Exercice non `CARDIO`: `reps` et `weight` requis.
+
 Pour `range`, les dates sont des datetime ISO encodees dans l'URL.
 
 ## Workout Templates

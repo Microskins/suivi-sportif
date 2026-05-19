@@ -20,6 +20,7 @@
 - [x] Ajouter schema/query/route backend pour modifier un modele.
 - [x] Ajouter les tests API Fastify pour le `PUT /api/workout-templates/:id`.
 - [x] Integrer la mise a jour dans le client (API/store/UI).
+- [x] Corriger la preselection frontend en mode edition quand les modeles se chargent apres le montage.
 - [x] Mettre a jour la documentation API.
 - [x] Lancer les verifications et noter les resultats.
 
@@ -31,3 +32,4 @@
   - `npm run typecheck -w server`
   - `npm run typecheck -w client`
 - Resultat: `npm` introuvable dans la session PowerShell (`CommandNotFoundException`), verification locale non executable sans Node/npm disponible dans le PATH.
+- Correctif local ajoute dans `client/src/components/Dashboard.tsx`: la selection du modele est maintenant re-synchronisee avec la liste chargee, et le mode "Modifier un modele" force un id valide avant pre-remplissage.

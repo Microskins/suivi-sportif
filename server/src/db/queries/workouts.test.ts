@@ -9,6 +9,9 @@ import {
 
 const mocks = vi.hoisted(() => ({
   prisma: {
+    exercise: {
+      findMany: vi.fn(),
+    },
     workout: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
@@ -65,6 +68,9 @@ const workoutRecord = {
           setNumber: 1,
           reps: 10,
           weight: 80,
+          durationMinutes: null,
+          avgKmh: null,
+          inclinePercent: null,
           rest: 90,
           createdAt: CREATED_AT,
         },
@@ -120,6 +126,9 @@ describe("workout queries", () => {
                 setNumber: 1,
                 reps: 10,
                 weight: 80,
+                durationMinutes: null,
+                avgKmh: null,
+                inclinePercent: null,
                 rest: 90,
                 createdAt: CREATED_AT.toISOString(),
               },
@@ -144,6 +153,9 @@ describe("workout queries", () => {
   });
 
   it("creates nested workout exercises and sets", async () => {
+    mocks.prisma.exercise.findMany.mockResolvedValue([
+      { id: EXERCISE_ID, exerciseType: "STRENGTH" },
+    ]);
     mocks.prisma.workout.create.mockResolvedValue(workoutRecord);
 
     const payload = {
@@ -182,6 +194,9 @@ describe("workout queries", () => {
                       setNumber: 1,
                       reps: 10,
                       weight: 80,
+                      durationMinutes: null,
+                      avgKmh: null,
+                      inclinePercent: null,
                       rest: 90,
                     },
                   ],
@@ -196,6 +211,7 @@ describe("workout queries", () => {
   });
 
   it("infers PLANNED status for a future workout when status is omitted", async () => {
+    mocks.prisma.exercise.findMany.mockResolvedValue([]);
     const future = new Date(Date.now() + 86_400_000).toISOString();
     mocks.prisma.workout.create.mockResolvedValue({
       ...workoutRecord,
@@ -292,5 +308,28 @@ describe("workout queries", () => {
     expect(mocks.prisma.workout.delete).toHaveBeenCalledWith({
       where: { id: WORKOUT_ID },
     });
+  });
+
+  it("rejects cardio sets without required cardio metrics", async () => {
+    mocks.prisma.exercise.findMany.mockResolvedValue([
+      { id: EXERCISE_ID, exerciseType: "CARDIO" },
+    ]);
+
+    await expect(
+      createWorkout(USER_ID, {
+        name: "Cardio",
+        date: CREATED_AT.toISOString(),
+        duration: 30,
+        exercises: [
+          {
+            exerciseId: EXERCISE_ID,
+            sets: [{ rest: 60 }],
+          },
+        ],
+      }),
+    ).rejects.toMatchObject({
+      name: "WorkoutValidationError",
+    });
+    expect(mocks.prisma.workout.create).not.toHaveBeenCalled();
   });
 });

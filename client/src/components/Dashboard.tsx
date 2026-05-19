@@ -297,7 +297,14 @@ function ExerciseForm({
 
 type WorkoutExerciseFormRow = {
   exerciseId: string;
-  sets: Array<{ reps: string; weight: string; rest: string }>;
+  sets: Array<{
+    reps: string;
+    weight: string;
+    rest: string;
+    durationMinutes: string;
+    avgKmh: string;
+    inclinePercent: string;
+  }>;
 };
 
 function WorkoutForm({
@@ -330,10 +337,32 @@ function WorkoutForm({
             reps: String(set.reps),
             weight: String(set.weight),
             rest: String(set.rest),
+            durationMinutes:
+              set.durationMinutes === null || set.durationMinutes === undefined
+                ? ""
+                : String(set.durationMinutes),
+            avgKmh:
+              set.avgKmh === null || set.avgKmh === undefined
+                ? ""
+                : String(set.avgKmh),
+            inclinePercent:
+              set.inclinePercent === null || set.inclinePercent === undefined
+                ? ""
+                : String(set.inclinePercent),
           })),
         }))
       : exercises[0]
-        ? [{ exerciseId: exercises[0].id, sets: [{ reps: "10", weight: "0", rest: "60" }] }]
+        ? [{
+            exerciseId: exercises[0].id,
+            sets: [{
+              reps: "10",
+              weight: "0",
+              rest: "60",
+              durationMinutes: "",
+              avgKmh: "",
+              inclinePercent: "",
+            }],
+          }]
         : [],
   );
   const [isSaving, setIsSaving] = useState(false);
@@ -383,8 +412,11 @@ function WorkoutForm({
         exercises: rows.map((row) => ({
           exerciseId: row.exerciseId,
           sets: row.sets.map((set) => ({
-            reps: Number(set.reps),
-            weight: Number(set.weight),
+            reps: set.reps === "" ? undefined : Number(set.reps),
+            weight: set.weight === "" ? undefined : Number(set.weight),
+            durationMinutes: numberOrNull(set.durationMinutes),
+            avgKmh: numberOrNull(set.avgKmh),
+            inclinePercent: numberOrNull(set.inclinePercent),
             rest: Number(set.rest),
           })),
         })),
@@ -489,7 +521,17 @@ function WorkoutForm({
             onClick={() =>
               setRows((current) => [
                 ...current,
-                { exerciseId: exercises[0]?.id ?? "", sets: [{ reps: "10", weight: "0", rest: "60" }] },
+                {
+                  exerciseId: exercises[0]?.id ?? "",
+                  sets: [{
+                    reps: "10",
+                    weight: "0",
+                    rest: "60",
+                    durationMinutes: "",
+                    avgKmh: "",
+                    inclinePercent: "",
+                  }],
+                },
               ])
             }
           >
@@ -515,16 +557,53 @@ function WorkoutForm({
             </div>
             <div className="mt-3 space-y-2">
               {row.sets.map((set, setIndex) => (
-                <div key={setIndex} className="grid gap-2 md:grid-cols-[1fr_1fr_1fr_auto]">
-                  <input className={inputClass} type="number" min="0" placeholder="Reps" value={set.reps} onChange={(event) => updateSet(row, rowIndex, setIndex, "reps", event.target.value, updateRow)} />
-                  <input className={inputClass} type="number" min="0" step="0.5" placeholder="Poids" value={set.weight} onChange={(event) => updateSet(row, rowIndex, setIndex, "weight", event.target.value, updateRow)} />
-                  <input className={inputClass} type="number" min="0" placeholder="Repos sec" value={set.rest} onChange={(event) => updateSet(row, rowIndex, setIndex, "rest", event.target.value, updateRow)} />
+                <div
+                  key={setIndex}
+                  className={`grid gap-2 ${
+                    exercises.find((exercise) => exercise.id === row.exerciseId)?.exerciseType === "CARDIO"
+                      ? "md:grid-cols-[1fr_1fr_1fr_1fr_auto]"
+                      : "md:grid-cols-[1fr_1fr_1fr_auto]"
+                  }`}
+                >
+                  {exercises.find((exercise) => exercise.id === row.exerciseId)?.exerciseType === "CARDIO" ? (
+                    <>
+                      <input className={inputClass} type="number" min="0" step="0.1" placeholder="Duree (min)" value={set.durationMinutes} onChange={(event) => updateSet(row, rowIndex, setIndex, "durationMinutes", event.target.value, updateRow)} required />
+                      <input className={inputClass} type="number" min="0" step="0.1" placeholder="KM/H moyen" value={set.avgKmh} onChange={(event) => updateSet(row, rowIndex, setIndex, "avgKmh", event.target.value, updateRow)} required />
+                      <input className={inputClass} type="number" min="0" step="0.1" placeholder="Inclinaison %" value={set.inclinePercent} onChange={(event) => updateSet(row, rowIndex, setIndex, "inclinePercent", event.target.value, updateRow)} />
+                      <input className={inputClass} type="number" min="0" placeholder="Repos sec" value={set.rest} onChange={(event) => updateSet(row, rowIndex, setIndex, "rest", event.target.value, updateRow)} required />
+                    </>
+                  ) : (
+                    <>
+                      <input className={inputClass} type="number" min="0" placeholder="Reps" value={set.reps} onChange={(event) => updateSet(row, rowIndex, setIndex, "reps", event.target.value, updateRow)} required />
+                      <input className={inputClass} type="number" min="0" step="0.5" placeholder="Poids" value={set.weight} onChange={(event) => updateSet(row, rowIndex, setIndex, "weight", event.target.value, updateRow)} required />
+                      <input className={inputClass} type="number" min="0" placeholder="Repos sec" value={set.rest} onChange={(event) => updateSet(row, rowIndex, setIndex, "rest", event.target.value, updateRow)} required />
+                    </>
+                  )}
                   <button type="button" className={secondaryButtonClass} onClick={() => updateRow(rowIndex, { ...row, sets: row.sets.filter((_, index) => index !== setIndex) })}>
                     Suppr.
                   </button>
                 </div>
               ))}
-              <button type="button" className={secondaryButtonClass} onClick={() => updateRow(rowIndex, { ...row, sets: [...row.sets, { reps: "10", weight: "0", rest: "60" }] })}>
+              <button
+                type="button"
+                className={secondaryButtonClass}
+                onClick={() =>
+                  updateRow(rowIndex, {
+                    ...row,
+                    sets: [
+                      ...row.sets,
+                      {
+                        reps: "10",
+                        weight: "0",
+                        rest: "60",
+                        durationMinutes: "",
+                        avgKmh: "",
+                        inclinePercent: "",
+                      },
+                    ],
+                  })
+                }
+              >
                 Ajouter une serie
               </button>
             </div>
@@ -540,7 +619,13 @@ function updateSet(
   row: WorkoutExerciseFormRow,
   rowIndex: number,
   setIndex: number,
-  key: "reps" | "weight" | "rest",
+  key:
+    | "reps"
+    | "weight"
+    | "rest"
+    | "durationMinutes"
+    | "avgKmh"
+    | "inclinePercent",
   value: string,
   updateRow: (index: number, nextRow: WorkoutExerciseFormRow) => void,
 ) {
@@ -610,6 +695,31 @@ function WorkoutTemplatePicker({
     Array<{ exerciseId: string; sets: string; reps: string; rest: string; weight: string }>
   >(exercises[0] ? [{ exerciseId: exercises[0].id, sets: "3", reps: "10", rest: "60", weight: "0" }] : []);
   const [isSaving, setIsSaving] = useState(false);
+
+  function resetTemplateFormToCreateDefaults() {
+    setName("");
+    setCategory("Musculation");
+    setLevel("Intermediaire");
+    setDuration("45");
+    setDescription("");
+    setRows(
+      exercises[0]
+        ? [{ exerciseId: exercises[0].id, sets: "3", reps: "10", rest: "60", weight: "0" }]
+        : [],
+    );
+  }
+
+  useEffect(() => {
+    if (!templates.length) {
+      setSelectedId("");
+      return;
+    }
+
+    const selectedStillExists = templates.some((item) => item.id === selectedId);
+    if (!selectedStillExists) {
+      setSelectedId(templates[0].id);
+    }
+  }, [selectedId, templates]);
 
   useEffect(() => {
     const selectedTemplate = templates.find((item) => item.id === selectedId);
@@ -686,8 +796,31 @@ function WorkoutTemplatePicker({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex gap-2">
         <button type="button" className={secondaryButtonClass} onClick={() => setMode("instantiate")}>Creer une seance</button>
-        <button type="button" className={secondaryButtonClass} onClick={() => setMode("create")}>Creer un modele</button>
-        <button type="button" className={secondaryButtonClass} onClick={() => setMode("edit")} disabled={!templates.length}>Modifier un modele</button>
+        <button
+          type="button"
+          className={secondaryButtonClass}
+          onClick={() => {
+            setMode("create");
+            resetTemplateFormToCreateDefaults();
+          }}
+        >
+          Creer un modele
+        </button>
+        <button
+          type="button"
+          className={secondaryButtonClass}
+          onClick={() => {
+            if (templates.length) {
+              setSelectedId((current) =>
+                templates.some((item) => item.id === current) ? current : templates[0].id,
+              );
+            }
+            setMode("edit");
+          }}
+          disabled={!templates.length}
+        >
+          Modifier un modele
+        </button>
       </div>
       {mode === "instantiate" ? (
         <>
