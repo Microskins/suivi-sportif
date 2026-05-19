@@ -6,7 +6,7 @@ REMOTE_NAME="${REMOTE_NAME:-origin}"
 BRANCH_NAME="${BRANCH_NAME:-main}"
 HEALTH_RETRIES="${HEALTH_RETRIES:-30}"
 HEALTH_SLEEP_SECONDS="${HEALTH_SLEEP_SECONDS:-3}"
-DEPLOY_SSH_KEY_PATH="${DEPLOY_SSH_KEY_PATH:-/home/deploy/.ssh/github_deploy}"
+DEPLOY_SSH_KEY_PATH="${DEPLOY_SSH_KEY_PATH:-}"
 
 log() {
   printf '\n== %s ==\n' "$*"
@@ -40,8 +40,18 @@ require_command git
 require_command docker
 require_command curl
 
-if [ -z "${GIT_SSH_COMMAND:-}" ] && [ -f "$DEPLOY_SSH_KEY_PATH" ]; then
-  export GIT_SSH_COMMAND="ssh -i $DEPLOY_SSH_KEY_PATH -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+if [ -z "${GIT_SSH_COMMAND:-}" ]; then
+  if [ -z "$DEPLOY_SSH_KEY_PATH" ]; then
+    if [ -f "/home/deploy/.ssh/id_ed25519" ]; then
+      DEPLOY_SSH_KEY_PATH="/home/deploy/.ssh/id_ed25519"
+    elif [ -f "/home/deploy/.ssh/github_deploy" ]; then
+      DEPLOY_SSH_KEY_PATH="/home/deploy/.ssh/github_deploy"
+    fi
+  fi
+
+  if [ -n "$DEPLOY_SSH_KEY_PATH" ] && [ -f "$DEPLOY_SSH_KEY_PATH" ]; then
+    export GIT_SSH_COMMAND="ssh -i $DEPLOY_SSH_KEY_PATH -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+  fi
 fi
 
 PRISMA_SCHEMA_PATH="server/prisma/schema.prisma"
