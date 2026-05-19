@@ -20,7 +20,7 @@ export function buildApp(options: FastifyServerOptions = { logger: true }) {
     secret: process.env.JWT_SECRET || "default-secret-change-me",
   });
   fastify.register(authPlugin);
-  fastify.setErrorHandler((error, request, reply) => {
+  fastify.setErrorHandler((error: any, request, reply) => {
     if ("validation" in error) {
       return reply.code(400).send({
         error: "Validation failed",
