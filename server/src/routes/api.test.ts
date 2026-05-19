@@ -927,15 +927,15 @@ describe("API", () => {
   });
 
   it("returns 400 when cardio workout validation fails in query layer", async () => {
-    mocks.workouts.createWorkout.mockRejectedValue({
-      name: "WorkoutValidationError",
-      details: [
-        {
-          path: "exercises.0.sets.0.durationMinutes",
-          message: "durationMinutes est requis pour un exercice cardio",
-        },
-      ],
-    });
+    const validationError = new Error("Validation failed");
+    validationError.name = "WorkoutValidationError";
+    (validationError as Error & { details: Array<{ path: string; message: string }> }).details = [
+      {
+        path: "exercises.0.sets.0.durationMinutes",
+        message: "durationMinutes est requis pour un exercice cardio",
+      },
+    ];
+    mocks.workouts.createWorkout.mockRejectedValue(validationError);
 
     const response = await app.inject({
       method: "POST",
