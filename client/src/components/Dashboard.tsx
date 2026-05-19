@@ -600,7 +600,7 @@ function WorkoutForm({
                 Deposer ici
               </p>
             )}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 md:flex-nowrap">
               <button
                 type="button"
                 className={dragHandleButtonClass}
@@ -616,7 +616,7 @@ function WorkoutForm({
                 ::
               </button>
               <select
-                className={inputClass}
+                className={`${inputClass} md:min-w-[240px] md:flex-1`}
                 value={row.exerciseId}
                 onChange={(event) => updateRow(rowIndex, { ...row, exerciseId: event.target.value })}
               >
@@ -1008,7 +1008,7 @@ function WorkoutTemplatePicker({
           {rows.map((row, index) => (
             <div
               key={index}
-              className={`grid gap-2 rounded border p-2 transition md:grid-cols-6 ${
+              className={`rounded border p-2 transition ${
                 dragOverTemplateRowIndex === index
                   ? "border-emerald-500 bg-emerald-50/60"
                   : "border-transparent"
@@ -1045,55 +1045,57 @@ function WorkoutTemplatePicker({
                 setDragOverTemplateRowIndex(null);
               }}
             >
-              <button
-                type="button"
-                className={dragHandleButtonClass}
-                draggable
-                onDragStart={(event) => {
-                  setDraggedTemplateRowIndex(index);
-                  event.dataTransfer.effectAllowed = "move";
-                  event.dataTransfer.setData("text/plain", String(index));
-                }}
-                title="Glisser pour deplacer l'exercice"
-                aria-label="Glisser pour deplacer l'exercice"
-              >
-                ::
-              </button>
-              <select className={inputClass} value={row.exerciseId} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, exerciseId: event.target.value } : entry))}>
-                {exercises.map((exercise) => (
-                  <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
-                ))}
-              </select>
-              <input className={inputClass} type="number" min="1" value={row.sets} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, sets: event.target.value } : entry))} />
-              <input className={inputClass} type="number" min="0" value={row.reps} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, reps: event.target.value } : entry))} />
-              <input className={inputClass} type="number" min="0" value={row.rest} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, rest: event.target.value } : entry))} />
-              <input className={inputClass} type="number" min="0" value={row.weight} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, weight: event.target.value } : entry))} />
-              <div className="flex gap-2">
+              <div className="flex w-full items-center gap-2 overflow-x-auto pb-1">
                 <button
                   type="button"
-                  className={iconButtonClass}
-                  disabled={index === 0}
-                  onClick={() =>
-                    setRows((current) => moveItem(current, index, index - 1))
-                  }
-                  title="Monter"
-                  aria-label="Monter"
+                  className={dragHandleButtonClass}
+                  draggable
+                  onDragStart={(event) => {
+                    setDraggedTemplateRowIndex(index);
+                    event.dataTransfer.effectAllowed = "move";
+                    event.dataTransfer.setData("text/plain", String(index));
+                  }}
+                  title="Glisser pour deplacer l'exercice"
+                  aria-label="Glisser pour deplacer l'exercice"
                 >
-                  ^
+                  ::
                 </button>
-                <button
-                  type="button"
-                  className={iconButtonClass}
-                  disabled={index === rows.length - 1}
-                  onClick={() =>
-                    setRows((current) => moveItem(current, index, index + 1))
-                  }
-                  title="Descendre"
-                  aria-label="Descendre"
-                >
-                  v
-                </button>
-                <button type="button" className={dangerButtonClass} onClick={() => setRows((current) => current.filter((_, rowIndex) => rowIndex !== index))}>Retirer</button>
+                <select className={`${inputClass} min-w-[220px]`} value={row.exerciseId} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, exerciseId: event.target.value } : entry))}>
+                  {exercises.map((exercise) => (
+                    <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
+                  ))}
+                </select>
+                <input className={`${inputClass} w-24 min-w-24`} type="number" min="1" value={row.sets} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, sets: event.target.value } : entry))} />
+                <input className={`${inputClass} w-24 min-w-24`} type="number" min="0" value={row.reps} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, reps: event.target.value } : entry))} />
+                <input className={`${inputClass} w-24 min-w-24`} type="number" min="0" value={row.rest} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, rest: event.target.value } : entry))} />
+                <input className={`${inputClass} w-24 min-w-24`} type="number" min="0" value={row.weight} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, weight: event.target.value } : entry))} />
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    className={iconButtonClass}
+                    disabled={index === 0}
+                    onClick={() =>
+                      setRows((current) => moveItem(current, index, index - 1))
+                    }
+                    title="Monter"
+                    aria-label="Monter"
+                  >
+                    ^
+                  </button>
+                  <button
+                    type="button"
+                    className={iconButtonClass}
+                    disabled={index === rows.length - 1}
+                    onClick={() =>
+                      setRows((current) => moveItem(current, index, index + 1))
+                    }
+                    title="Descendre"
+                    aria-label="Descendre"
+                  >
+                    v
+                  </button>
+                  <button type="button" className={dangerButtonClass} onClick={() => setRows((current) => current.filter((_, rowIndex) => rowIndex !== index))}>Retirer</button>
+                </div>
               </div>
             </div>
           ))}
