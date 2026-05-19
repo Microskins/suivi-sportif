@@ -101,6 +101,16 @@ function numberOrNull(value: string) {
   return value === "" ? null : Number(value);
 }
 
+function moveItem<T>(items: T[], fromIndex: number, toIndex: number): T[] {
+  if (toIndex < 0 || toIndex >= items.length || fromIndex === toIndex) {
+    return items;
+  }
+  const next = [...items];
+  const [moved] = next.splice(fromIndex, 1);
+  next.splice(toIndex, 0, moved);
+  return next;
+}
+
 function formatDate(value: string) {
   return new Date(value).toLocaleString("fr-FR", {
     day: "2-digit",
@@ -370,6 +380,7 @@ function WorkoutForm({
   const [exerciseTypeFilter, setExerciseTypeFilter] = useState<"ALL" | "STRENGTH" | "CARDIO" | "MOBILITY">("ALL");
   const [exerciseDifficultyFilter, setExerciseDifficultyFilter] = useState<"ALL" | "BEGINNER" | "INTERMEDIATE" | "ADVANCED">("ALL");
   const [exerciseBodyPartFilter, setExerciseBodyPartFilter] = useState("ALL");
+  const [draggedRowIndex, setDraggedRowIndex] = useState<number | null>(null);
 
   const bodyPartOptions = Array.from(
     new Set(
@@ -540,7 +551,21 @@ function WorkoutForm({
         </div>
         {!exercises.length && <EmptyState label="Cree un exercice avant de composer une seance." />}
         {rows.map((row, rowIndex) => (
-          <div key={rowIndex} className="rounded border border-slate-200 p-3">
+          <div
+            key={rowIndex}
+            className="rounded border border-slate-200 p-3"
+            draggable
+            onDragStart={() => setDraggedRowIndex(rowIndex)}
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={() => {
+              if (draggedRowIndex === null) {
+                return;
+              }
+              setRows((current) => moveItem(current, draggedRowIndex, rowIndex));
+              setDraggedRowIndex(null);
+            }}
+            onDragEnd={() => setDraggedRowIndex(null)}
+          >
             <div className="flex items-center gap-3">
               <select
                 className={inputClass}
@@ -551,6 +576,26 @@ function WorkoutForm({
                   <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
                 ))}
               </select>
+              <button
+                type="button"
+                className={secondaryButtonClass}
+                disabled={rowIndex === 0}
+                onClick={() =>
+                  setRows((current) => moveItem(current, rowIndex, rowIndex - 1))
+                }
+              >
+                Monter
+              </button>
+              <button
+                type="button"
+                className={secondaryButtonClass}
+                disabled={rowIndex === rows.length - 1}
+                onClick={() =>
+                  setRows((current) => moveItem(current, rowIndex, rowIndex + 1))
+                }
+              >
+                Descendre
+              </button>
               <button type="button" className={dangerButtonClass} onClick={() => setRows((current) => current.filter((_, index) => index !== rowIndex))}>
                 Retirer
               </button>
@@ -695,6 +740,7 @@ function WorkoutTemplatePicker({
     Array<{ exerciseId: string; sets: string; reps: string; rest: string; weight: string }>
   >(exercises[0] ? [{ exerciseId: exercises[0].id, sets: "3", reps: "10", rest: "60", weight: "0" }] : []);
   const [isSaving, setIsSaving] = useState(false);
+  const [draggedTemplateRowIndex, setDraggedTemplateRowIndex] = useState<number | null>(null);
 
   function resetTemplateFormToCreateDefaults() {
     setName("");
@@ -905,7 +951,21 @@ function WorkoutTemplatePicker({
             <textarea className={inputClass} rows={2} value={description} onChange={(event) => setDescription(event.target.value)} />
           </Field>
           {rows.map((row, index) => (
-            <div key={index} className="grid gap-2 md:grid-cols-6">
+            <div
+              key={index}
+              className="grid gap-2 md:grid-cols-6"
+              draggable
+              onDragStart={() => setDraggedTemplateRowIndex(index)}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={() => {
+                if (draggedTemplateRowIndex === null) {
+                  return;
+                }
+                setRows((current) => moveItem(current, draggedTemplateRowIndex, index));
+                setDraggedTemplateRowIndex(null);
+              }}
+              onDragEnd={() => setDraggedTemplateRowIndex(null)}
+            >
               <select className={inputClass} value={row.exerciseId} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, exerciseId: event.target.value } : entry))}>
                 {exercises.map((exercise) => (
                   <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
@@ -915,7 +975,29 @@ function WorkoutTemplatePicker({
               <input className={inputClass} type="number" min="0" value={row.reps} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, reps: event.target.value } : entry))} />
               <input className={inputClass} type="number" min="0" value={row.rest} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, rest: event.target.value } : entry))} />
               <input className={inputClass} type="number" min="0" value={row.weight} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, weight: event.target.value } : entry))} />
-              <button type="button" className={dangerButtonClass} onClick={() => setRows((current) => current.filter((_, rowIndex) => rowIndex !== index))}>Retirer</button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className={secondaryButtonClass}
+                  disabled={index === 0}
+                  onClick={() =>
+                    setRows((current) => moveItem(current, index, index - 1))
+                  }
+                >
+                  Monter
+                </button>
+                <button
+                  type="button"
+                  className={secondaryButtonClass}
+                  disabled={index === rows.length - 1}
+                  onClick={() =>
+                    setRows((current) => moveItem(current, index, index + 1))
+                  }
+                >
+                  Descendre
+                </button>
+                <button type="button" className={dangerButtonClass} onClick={() => setRows((current) => current.filter((_, rowIndex) => rowIndex !== index))}>Retirer</button>
+              </div>
             </div>
           ))}
           <button
