@@ -33,7 +33,7 @@ type Resource =
   | "goals";
 type ModalState =
   | { type: "exercise"; item?: Exercise }
-  | { type: "workout"; item?: Workout; presetDate?: string }
+  | { type: "workout"; item?: Workout; prefillWorkout?: Workout; presetDate?: string }
   | { type: "workout-template" }
   | { type: "food"; item?: Food }
   | { type: "meal"; item?: Meal }
@@ -1561,6 +1561,12 @@ export function Dashboard({
                     await workoutsStore.updateWorkout(workoutId, { date: dateIso });
                   }}
                   onEdit={(workout) => setModal({ type: "workout", item: workout })}
+                  onDuplicate={(workout) =>
+                    setModal({
+                      type: "workout",
+                      prefillWorkout: workout,
+                    })
+                  }
                 />
               )}
               {resource === "workouts" && (
@@ -1690,6 +1696,7 @@ export function Dashboard({
           {modal.type === "workout" && (
             <WorkoutForm
               item={modal.item}
+              prefillWorkout={modal.prefillWorkout}
               initialDate={modal.presetDate}
               exercises={exercisesStore.exercises}
               onCancel={() => setModal(null)}

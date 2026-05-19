@@ -40,6 +40,7 @@ describe("WorkoutsCalendar", () => {
         onPlan={() => {}}
         onAssociate={async () => {}}
         onEdit={() => {}}
+        onDuplicate={() => {}}
       />,
     );
 
@@ -57,6 +58,7 @@ describe("WorkoutsCalendar", () => {
         onPlan={onPlan}
         onAssociate={async () => {}}
         onEdit={() => {}}
+        onDuplicate={() => {}}
       />,
     );
 
@@ -76,6 +78,7 @@ describe("WorkoutsCalendar", () => {
         onPlan={() => {}}
         onAssociate={onAssociate}
         onEdit={() => {}}
+        onDuplicate={() => {}}
       />,
     );
 

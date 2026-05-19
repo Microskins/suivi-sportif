@@ -27,6 +27,7 @@ Index chronologique des chantiers planifies et executes.
 21. [Suivi cardio dans les seances](./021-suivi-cardio-dans-seances.md)
 22. [Reordonner les exercices dans seances et modeles](./022-reordonner-exercices-seances-modeles.md)
 23. [Duplication de seances](./023-duplication-seances.md)
+24. [Duplication de seances depuis le calendrier](./024-duplication-seances-calendrier.md)
 88. [Remediation securite npm audit](./088-remediation-securite-npm-audit.md)
 89. [Mobile Android/iOS via Capacitor](./089-mobile-capacitor.md)
 

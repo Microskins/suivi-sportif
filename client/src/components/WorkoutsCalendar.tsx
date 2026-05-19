@@ -9,6 +9,7 @@ type WorkoutsCalendarProps = {
   onPlan: (dateIso: string) => void;
   onAssociate: (workoutId: string, dateIso: string) => Promise<void>;
   onEdit: (workout: Workout) => void;
+  onDuplicate: (workout: Workout) => void;
 };
 
 type CalendarDay = {
@@ -119,6 +120,7 @@ export function WorkoutsCalendar({
   onPlan,
   onAssociate,
   onEdit,
+  onDuplicate,
 }: WorkoutsCalendarProps) {
   const [mode, setMode] = useState<CalendarMode>("month");
   const [anchorDate, setAnchorDate] = useState(() => new Date());
@@ -307,13 +309,22 @@ export function WorkoutsCalendar({
                     })}{" "}
                     - {workout.duration} min
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => onEdit(workout)}
-                    className="mt-2 rounded border border-neutral-300 px-2 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100"
-                  >
-                    Modifier
-                  </button>
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onEdit(workout)}
+                      className="rounded border border-neutral-300 px-2 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100"
+                    >
+                      Modifier
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onDuplicate(workout)}
+                      className="rounded border border-neutral-300 px-2 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100"
+                    >
+                      Dupliquer
+                    </button>
+                  </div>
                 </article>
               ))
             ) : (
