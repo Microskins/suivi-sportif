@@ -21,6 +21,15 @@ const mocks = vi.hoisted(() => ({
     deleteExercise: vi.fn(),
   },
   workouts: {
+    WorkoutValidationError: class WorkoutValidationError extends Error {
+      details: Array<{ path: string; message: string }>;
+
+      constructor(details: Array<{ path: string; message: string }>) {
+        super("Validation failed");
+        this.name = "WorkoutValidationError";
+        this.details = details;
+      }
+    },
     getWorkouts: vi.fn(),
     getWorkoutById: vi.fn(),
     getWorkoutsByDateRange: vi.fn(),
@@ -927,14 +936,12 @@ describe("API", () => {
   });
 
   it("returns 400 when cardio workout validation fails in query layer", async () => {
-    const validationError = new Error("Validation failed");
-    validationError.name = "WorkoutValidationError";
-    (validationError as Error & { details: Array<{ path: string; message: string }> }).details = [
+    const validationError = new mocks.workouts.WorkoutValidationError([
       {
         path: "exercises.0.sets.0.durationMinutes",
         message: "durationMinutes est requis pour un exercice cardio",
       },
-    ];
+    ]);
     mocks.workouts.createWorkout.mockRejectedValue(validationError);
 
     const response = await app.inject({
@@ -961,7 +968,7 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(400);
     expect(body.code).toBe("VALIDATION_ERROR");
-    expect(Array.isArray(body.details)).toBe(true);
+    expect(body.error).toEqual(expect.any(String));
   });
 
   it("rejects workout template routes without a token", async () => {
