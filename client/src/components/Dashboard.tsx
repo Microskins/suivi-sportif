@@ -323,29 +323,33 @@ type WorkoutExerciseFormRow = {
 
 function WorkoutForm({
   item,
+  prefillWorkout,
   initialDate,
   exercises,
   onSubmit,
   onCancel,
 }: {
   item?: Workout;
+  prefillWorkout?: Workout;
   initialDate?: string;
   exercises: Exercise[];
   onSubmit: (data: WorkoutInput) => Promise<void>;
   onCancel: () => void;
 }) {
-  const [name, setName] = useState(item?.name ?? "");
+  const sourceWorkout = item ?? prefillWorkout;
+  const [name, setName] = useState(sourceWorkout?.name ?? "");
   const [date, setDate] = useState(
-    toInputDateTime(item?.date ?? initialDate),
+    toInputDateTime(sourceWorkout?.date ?? initialDate),
   );
   const [status, setStatus] = useState<WorkoutStatus>(
-    item?.status ?? inferWorkoutStatusFromDate(item?.date ?? initialDate ?? new Date().toISOString()),
+    sourceWorkout?.status ??
+      inferWorkoutStatusFromDate(sourceWorkout?.date ?? initialDate ?? new Date().toISOString()),
   );
-  const [duration, setDuration] = useState(String(item?.duration ?? 45));
-  const [notes, setNotes] = useState(item?.notes ?? "");
+  const [duration, setDuration] = useState(String(sourceWorkout?.duration ?? 45));
+  const [notes, setNotes] = useState(sourceWorkout?.notes ?? "");
   const [rows, setRows] = useState<WorkoutExerciseFormRow[]>(
-    item?.exercises?.length
-      ? item.exercises.map((entry) => ({
+    sourceWorkout?.exercises?.length
+      ? sourceWorkout.exercises.map((entry) => ({
           exerciseId: entry.exerciseId,
           sets: entry.sets.map((set) => ({
             reps: String(set.reps),
@@ -1382,6 +1386,7 @@ export function Dashboard({
   const [workoutsView, setWorkoutsView] = useState<"list" | "create" | "from-template">("list");
   const [exerciseDraft, setExerciseDraft] = useState<Exercise | undefined>(undefined);
   const [workoutDraft, setWorkoutDraft] = useState<Workout | undefined>(undefined);
+  const [workoutPrefillDraft, setWorkoutPrefillDraft] = useState<Workout | undefined>(undefined);
   const exercisesStore = useExercisesStore();
   const workoutsStore = useWorkoutsStore();
   const workoutTemplatesStore = useWorkoutTemplatesStore();
@@ -1515,6 +1520,7 @@ export function Dashboard({
                   if (resource === "workouts") {
                     setWorkoutsView("create");
                     setWorkoutDraft(undefined);
+                    setWorkoutPrefillDraft(undefined);
                     return;
                   }
                   if (resource === "exercises") {
@@ -1560,14 +1566,23 @@ export function Dashboard({
               {resource === "workouts" && (
                 <div className="space-y-4">
                   <div className="flex flex-wrap gap-2">
-                    <button type="button" className={secondaryButtonClass} onClick={() => { setWorkoutsView("list"); setWorkoutDraft(undefined); }}>Liste</button>
-                    <button type="button" className={secondaryButtonClass} onClick={() => { setWorkoutsView("create"); setWorkoutDraft(undefined); }}>Creer une seance</button>
+                    <button type="button" className={secondaryButtonClass} onClick={() => { setWorkoutsView("list"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); }}>Liste</button>
+                    <button type="button" className={secondaryButtonClass} onClick={() => { setWorkoutsView("create"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); }}>Creer une seance</button>
                     <button type="button" className={secondaryButtonClass} onClick={() => setWorkoutsView("from-template")}>Depuis un modele</button>
                   </div>
                   {workoutsView === "list" && (
                     <WorkoutsList
                       workouts={workoutsStore.workouts}
-                      onEdit={(item) => { setWorkoutDraft(item); setWorkoutsView("create"); }}
+                      onEdit={(item) => {
+                        setWorkoutDraft(item);
+                        setWorkoutPrefillDraft(undefined);
+                        setWorkoutsView("create");
+                      }}
+                      onDuplicate={(item) => {
+                        setWorkoutDraft(undefined);
+                        setWorkoutPrefillDraft(item);
+                        setWorkoutsView("create");
+                      }}
                       onDelete={(item) => confirmDelete(item.name, () => workoutsStore.deleteWorkout(item.id))}
                     />
                   )}
@@ -1575,9 +1590,11 @@ export function Dashboard({
                     <div className="rounded border border-slate-200 bg-white p-4">
                       <WorkoutForm
                         item={workoutDraft}
+                        prefillWorkout={workoutPrefillDraft}
                         exercises={exercisesStore.exercises}
                         onCancel={() => {
                           setWorkoutDraft(undefined);
+                          setWorkoutPrefillDraft(undefined);
                           setWorkoutsView("list");
                         }}
                         onSubmit={(data) =>
@@ -1805,7 +1822,17 @@ function ItemActions<T>({ item, onEdit, onDelete }: { item: T; onEdit: (item: T)
   );
 }
 
-function WorkoutsList({ workouts, onEdit, onDelete }: { workouts: Workout[]; onEdit: (item: Workout) => void; onDelete: (item: Workout) => void }) {
+function WorkoutsList({
+  workouts,
+  onEdit,
+  onDuplicate,
+  onDelete,
+}: {
+  workouts: Workout[];
+  onEdit: (item: Workout) => void;
+  onDuplicate: (item: Workout) => void;
+  onDelete: (item: Workout) => void;
+}) {
   if (!workouts.length) return <EmptyState label="Aucune seance pour le moment." />;
   return (
     <ul className="space-y-3">
@@ -1832,7 +1859,11 @@ function WorkoutsList({ workouts, onEdit, onDelete }: { workouts: Workout[]; onE
               <p className="mt-1 text-sm text-slate-600">{formatDate(workout.date)} - {workout.duration} min</p>
               <p className="mt-1 text-sm text-slate-500">{workout.exercises?.length ?? 0} exercice(s)</p>
             </div>
-            <ItemActions item={workout} onEdit={onEdit} onDelete={onDelete} />
+            <div className="flex gap-2">
+              <button type="button" className={secondaryButtonClass} onClick={() => onEdit(workout)}>Modifier</button>
+              <button type="button" className={secondaryButtonClass} onClick={() => onDuplicate(workout)}>Dupliquer</button>
+              <button type="button" className={dangerButtonClass} onClick={() => onDelete(workout)}>Supprimer</button>
+            </div>
           </div>
         </li>
       ))}
