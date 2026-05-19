@@ -323,10 +323,11 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
           details: error.errors,
         });
       }
-      if (
-        error instanceof workouts.WorkoutValidationError ||
-        error?.name === "WorkoutValidationError"
-      ) {
+      const isWorkoutValidationError =
+        (typeof workouts.WorkoutValidationError === "function" &&
+          error instanceof workouts.WorkoutValidationError) ||
+        error?.name === "WorkoutValidationError";
+      if (isWorkoutValidationError) {
         return reply.code(400).send({
           error: "Validation failed",
           code: "VALIDATION_ERROR",
@@ -427,10 +428,11 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
           details: error.errors,
         });
       }
-      if (
-        error instanceof workouts.WorkoutValidationError ||
-        error?.name === "WorkoutValidationError"
-      ) {
+      const isWorkoutValidationError =
+        (typeof workouts.WorkoutValidationError === "function" &&
+          error instanceof workouts.WorkoutValidationError) ||
+        error?.name === "WorkoutValidationError";
+      if (isWorkoutValidationError) {
         return reply.code(400).send({
           error: "Validation failed",
           code: "VALIDATION_ERROR",
