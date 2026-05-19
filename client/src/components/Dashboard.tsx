@@ -576,7 +576,7 @@ function WorkoutForm({
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                className={secondaryButtonClass}
+                className={`${secondaryButtonClass} cursor-grab active:cursor-grabbing`}
                 draggable
                 onDragStart={(event) => {
                   setDraggedRowIndex(rowIndex);
@@ -585,7 +585,7 @@ function WorkoutForm({
                 }}
                 title="Glisser pour deplacer l'exercice"
               >
-                ↕
+                Glisser
               </button>
               <select
                 className={inputClass}
@@ -995,7 +995,7 @@ function WorkoutTemplatePicker({
             >
               <button
                 type="button"
-                className={secondaryButtonClass}
+                className={`${secondaryButtonClass} cursor-grab active:cursor-grabbing`}
                 draggable
                 onDragStart={(event) => {
                   setDraggedTemplateRowIndex(index);
@@ -1004,7 +1004,7 @@ function WorkoutTemplatePicker({
                 }}
                 title="Glisser pour deplacer l'exercice"
               >
-                ↕
+                Glisser
               </button>
               <select className={inputClass} value={row.exerciseId} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, exerciseId: event.target.value } : entry))}>
                 {exercises.map((exercise) => (
