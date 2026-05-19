@@ -132,7 +132,10 @@ async function getExerciseTypeMap(exerciseIds: string[]): Promise<Map<string, Ex
   });
 
   return new Map(
-    exercises.map((exercise) => [exercise.id, String(exercise.exerciseType) as ExerciseType]),
+    exercises.map((exercise: { id: string; exerciseType: unknown }) => [
+      exercise.id,
+      String(exercise.exerciseType) as ExerciseType,
+    ]),
   );
 }
 

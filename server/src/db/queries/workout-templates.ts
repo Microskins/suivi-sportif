@@ -1,6 +1,7 @@
 // Workout template database queries - NEVER write SQL directly in routes
 
 import prisma from "../index.js";
+import type { Prisma } from "@prisma/client";
 import type {
   CreateWorkoutTemplateInput,
   InstantiateWorkoutTemplateInput,
@@ -216,7 +217,7 @@ export async function updateWorkoutTemplate(
     return null;
   }
 
-  const updated = await prisma.$transaction(async (tx) => {
+  const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     if (data.exercises) {
       await tx.workoutTemplateExercise.deleteMany({
         where: { templateId: id },
