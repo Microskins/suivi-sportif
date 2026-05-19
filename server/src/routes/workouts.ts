@@ -326,7 +326,8 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       const isWorkoutValidationError =
         (typeof workouts.WorkoutValidationError === "function" &&
           error instanceof workouts.WorkoutValidationError) ||
-        error?.name === "WorkoutValidationError";
+        error?.name === "WorkoutValidationError" ||
+        Array.isArray(error?.details);
       if (isWorkoutValidationError) {
         return reply.code(400).send({
           error: "Validation failed",
@@ -431,7 +432,8 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       const isWorkoutValidationError =
         (typeof workouts.WorkoutValidationError === "function" &&
           error instanceof workouts.WorkoutValidationError) ||
-        error?.name === "WorkoutValidationError";
+        error?.name === "WorkoutValidationError" ||
+        Array.isArray(error?.details);
       if (isWorkoutValidationError) {
         return reply.code(400).send({
           error: "Validation failed",
