@@ -316,6 +316,7 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       const workout = await workouts.createWorkout(userId, parsed);
       return reply.code(201).send({ data: workout });
     } catch (error: any) {
+      const workoutError = error?.cause ?? error;
       if (error.name === "ZodError") {
         return reply.code(400).send({
           error: "Validation failed",
@@ -325,14 +326,14 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       }
       const isWorkoutValidationError =
         (typeof workouts.WorkoutValidationError === "function" &&
-          error instanceof workouts.WorkoutValidationError) ||
-        error?.name === "WorkoutValidationError" ||
-        Array.isArray(error?.details);
+          workoutError instanceof workouts.WorkoutValidationError) ||
+        workoutError?.name === "WorkoutValidationError" ||
+        Array.isArray(workoutError?.details);
       if (isWorkoutValidationError) {
         return reply.code(400).send({
           error: "Validation failed",
           code: "VALIDATION_ERROR",
-          details: error.details ?? [],
+          details: workoutError?.details ?? [],
         });
       }
       fastify.log.error(error);
@@ -422,6 +423,7 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
 
       return reply.code(200).send({ data: workout });
     } catch (error: any) {
+      const workoutError = error?.cause ?? error;
       if (error.name === "ZodError") {
         return reply.code(400).send({
           error: "Validation failed",
@@ -431,14 +433,14 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       }
       const isWorkoutValidationError =
         (typeof workouts.WorkoutValidationError === "function" &&
-          error instanceof workouts.WorkoutValidationError) ||
-        error?.name === "WorkoutValidationError" ||
-        Array.isArray(error?.details);
+          workoutError instanceof workouts.WorkoutValidationError) ||
+        workoutError?.name === "WorkoutValidationError" ||
+        Array.isArray(workoutError?.details);
       if (isWorkoutValidationError) {
         return reply.code(400).send({
           error: "Validation failed",
           code: "VALIDATION_ERROR",
-          details: error.details ?? [],
+          details: workoutError?.details ?? [],
         });
       }
       fastify.log.error(error);
