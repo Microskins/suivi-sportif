@@ -89,8 +89,15 @@ function normalizeExerciseKey(value: string) {
 
 function buildExerciseImageUrl(path?: string | null) {
   if (!path) return null;
+  if (/^https?:\/\//i.test(path)) return path;
   const sanitized = path.replace(/^\/+/, "");
-  return `/${sanitized}`;
+  if (sanitized.startsWith("exercices-assets/")) {
+    return `/${sanitized}`;
+  }
+  if (sanitized.startsWith("images/")) {
+    return `/exercices-assets/${sanitized}`;
+  }
+  return `/exercices-assets/images/${sanitized}`;
 }
 
 function toInputDateTime(value?: string) {
@@ -1501,7 +1508,11 @@ export function Dashboard({
     let isCancelled = false;
 
     async function loadExerciseCatalog() {
-      const candidateUrls = ["/exercices.json", "/exercices/exercices.json"];
+      const candidateUrls = [
+        "/exercices-assets/exercices.json",
+        "/exercices.json",
+        "/exercices/exercices.json",
+      ];
       try {
         for (const url of candidateUrls) {
           const response = await fetch(url);
