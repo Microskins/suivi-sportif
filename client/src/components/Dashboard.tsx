@@ -71,8 +71,16 @@ type ExerciseCatalogEntry = {
   image: string;
 };
 
+function repairMojibake(value: string) {
+  try {
+    return decodeURIComponent(escape(value));
+  } catch {
+    return value;
+  }
+}
+
 function normalizeExerciseKey(value: string) {
-  return value
+  return repairMojibake(value)
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
@@ -1466,7 +1474,10 @@ export function Dashboard({
   const exerciseImageMap = useMemo(() => {
     const map = new Map<string, string>();
     for (const entry of exerciseCatalog) {
-      map.set(normalizeExerciseKey(entry.nom), entry.image);
+      const rawKey = normalizeExerciseKey(entry.nom);
+      map.set(rawKey, entry.image);
+      const repairedKey = normalizeExerciseKey(repairMojibake(entry.nom));
+      map.set(repairedKey, entry.image);
     }
     return map;
   }, [exerciseCatalog]);
@@ -1490,19 +1501,26 @@ export function Dashboard({
     let isCancelled = false;
 
     async function loadExerciseCatalog() {
+      const candidateUrls = ["/exercices.json", "/exercices/exercices.json"];
       try {
-        const response = await fetch("/exercices.json");
-        if (!response.ok) {
+        for (const url of candidateUrls) {
+          const response = await fetch(url);
+          if (!response.ok) {
+            continue;
+          }
+          const data = (await response.json()) as ExerciseCatalogEntry[];
+          if (!isCancelled && Array.isArray(data)) {
+            setExerciseCatalog(
+              data.filter(
+                (entry) =>
+                  typeof entry?.nom === "string" && typeof entry?.image === "string",
+              ),
+            );
+          }
           return;
         }
-        const data = (await response.json()) as ExerciseCatalogEntry[];
-        if (!isCancelled && Array.isArray(data)) {
-          setExerciseCatalog(
-            data.filter(
-              (entry) =>
-                typeof entry?.nom === "string" && typeof entry?.image === "string",
-            ),
-          );
+        if (!isCancelled) {
+          setExerciseCatalog([]);
         }
       } catch {
         if (!isCancelled) {
