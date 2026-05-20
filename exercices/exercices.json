@@ -1,0 +1,2305 @@
+[
+    {
+        "nom":  "Développé couché",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Triceps",
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre",
+        "niveau":  "intermédiaire",
+        "description":  "Développé couché est un exercice de pectoraux réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/developpe-couche.png"
+    },
+    {
+        "nom":  "Développé couché haltères",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Triceps",
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Développé couché haltères est un exercice de pectoraux réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/developpe-couche-halteres.png"
+    },
+    {
+        "nom":  "Développé incliné barre",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Dentelé antérieur"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre",
+        "niveau":  "intermédiaire",
+        "description":  "Développé incliné barre est un exercice de pectoraux réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/developpe-incline-barre.png"
+    },
+    {
+        "nom":  "Développé incliné haltères",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Dentelé antérieur"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Développé incliné haltères est un exercice de pectoraux réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/developpe-incline-halteres.png"
+    },
+    {
+        "nom":  "Développé décliné",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre / haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Développé décliné est un exercice de pectoraux réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/developpe-decline.png"
+    },
+    {
+        "nom":  "Pompes classiques",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Triceps",
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Pompes classiques est un exercice de pectoraux réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pompes-classiques.png"
+    },
+    {
+        "nom":  "Pompes inclinées",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Dentelé antérieur"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Pompes inclinées est un exercice de pectoraux réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pompes-inclinees.png"
+    },
+    {
+        "nom":  "Pompes déclinées",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "intermédiaire",
+        "description":  "Pompes déclinées est un exercice de pectoraux réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pompes-declinees.png"
+    },
+    {
+        "nom":  "Pompes diamant",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Deltoïdes antérieurs",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "intermédiaire",
+        "description":  "Pompes diamant est un exercice de pectoraux réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pompes-diamant-pectoraux.png"
+    },
+    {
+        "nom":  "Pompes explosives",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Triceps",
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "avancé",
+        "description":  "Pompes explosives est un exercice de pectoraux réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau avancé.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pompes-explosives.png"
+    },
+    {
+        "nom":  "Écarté couché haltères",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Écarté couché haltères est un exercice de pectoraux réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/ecarte-couche-halteres.png"
+    },
+    {
+        "nom":  "Écarté incliné haltères",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Dentelé antérieur"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Écarté incliné haltères est un exercice de pectoraux réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/ecarte-incline-halteres.png"
+    },
+    {
+        "nom":  "Écarté à la poulie",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie",
+        "niveau":  "intermédiaire",
+        "description":  "Écarté à la poulie est un exercice de pectoraux réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/ecarte-a-la-poulie.png"
+    },
+    {
+        "nom":  "Pec deck",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Pec deck est un exercice de pectoraux réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pec-deck.png"
+    },
+    {
+        "nom":  "Dips buste penché",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barres parallèles",
+        "niveau":  "intermédiaire",
+        "description":  "Dips buste penché est un exercice de pectoraux réalisé avec barres parallèles. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/dips-buste-penche.png"
+    },
+    {
+        "nom":  "Pull-over haltère",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Triceps long",
+                                    "Dentelé antérieur"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltère",
+        "niveau":  "intermédiaire",
+        "description":  "Pull-over haltère est un exercice de pectoraux réalisé avec haltère. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pull-over-haltere.png"
+    },
+    {
+        "nom":  "Chest press",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Triceps",
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Chest press est un exercice de pectoraux réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/chest-press.png"
+    },
+    {
+        "nom":  "Svend press",
+        "groupe_musculaire":  "Pectoraux",
+        "muscles_secondaires":  [
+                                    "Triceps",
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Disque",
+        "niveau":  "débutant",
+        "description":  "Svend press est un exercice de pectoraux réalisé avec disque. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/svend-press.png"
+    },
+    {
+        "nom":  "Tractions pronation",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Rhomboïdes",
+                                    "Trapèzes",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre de traction",
+        "niveau":  "intermédiaire",
+        "description":  "Tractions pronation est un exercice de dos réalisé avec barre de traction. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/tractions-pronation.png"
+    },
+    {
+        "nom":  "Tractions supination",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Rhomboïdes",
+                                    "Trapèzes",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre de traction",
+        "niveau":  "intermédiaire",
+        "description":  "Tractions supination est un exercice de dos réalisé avec barre de traction. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/tractions-supination-dos.png"
+    },
+    {
+        "nom":  "Tractions prise neutre",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Rhomboïdes",
+                                    "Trapèzes",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre de traction",
+        "niveau":  "intermédiaire",
+        "description":  "Tractions prise neutre est un exercice de dos réalisé avec barre de traction. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/tractions-prise-neutre.png"
+    },
+    {
+        "nom":  "Tractions assistées",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Rhomboïdes",
+                                    "Trapèzes",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Machine / élastique",
+        "niveau":  "débutant",
+        "description":  "Tractions assistées est un exercice de dos réalisé avec machine / élastique. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/tractions-assistees.png"
+    },
+    {
+        "nom":  "Tirage vertical poitrine",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Rhomboïdes",
+                                    "Trapèzes",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poulie",
+        "niveau":  "débutant",
+        "description":  "Tirage vertical poitrine est un exercice de dos réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/tirage-vertical-poitrine.png"
+    },
+    {
+        "nom":  "Tirage vertical prise serrée",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Rhomboïdes",
+                                    "Trapèzes",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poulie",
+        "niveau":  "débutant",
+        "description":  "Tirage vertical prise serrée est un exercice de dos réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/tirage-vertical-prise-serree.png"
+    },
+    {
+        "nom":  "Rowing barre",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Deltoïdes postérieurs",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre",
+        "niveau":  "intermédiaire",
+        "description":  "Rowing barre est un exercice de dos réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/rowing-barre.png"
+    },
+    {
+        "nom":  "Rowing haltère unilatéral",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Deltoïdes postérieurs",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltère",
+        "niveau":  "débutant",
+        "description":  "Rowing haltère unilatéral est un exercice de dos réalisé avec haltère. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/rowing-haltere-unilateral.png"
+    },
+    {
+        "nom":  "Rowing T-bar",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Deltoïdes postérieurs",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Machine / barre",
+        "niveau":  "intermédiaire",
+        "description":  "Rowing T-bar est un exercice de dos réalisé avec machine / barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/rowing-t-bar.png"
+    },
+    {
+        "nom":  "Rowing assis poulie basse",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Deltoïdes postérieurs",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poulie",
+        "niveau":  "débutant",
+        "description":  "Rowing assis poulie basse est un exercice de dos réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/rowing-assis-poulie-basse.png"
+    },
+    {
+        "nom":  "Rowing machine",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Deltoïdes postérieurs",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Rowing machine est un exercice de dos réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/rowing-machine.png"
+    },
+    {
+        "nom":  "Tirage bras tendus",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Rhomboïdes",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poulie",
+        "niveau":  "intermédiaire",
+        "description":  "Tirage bras tendus est un exercice de dos réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/tirage-bras-tendus.png"
+    },
+    {
+        "nom":  "Soulevé de terre",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Lombaires",
+                                    "Trapèzes",
+                                    "Avant-bras",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre",
+        "niveau":  "avancé",
+        "description":  "Soulevé de terre est un exercice de dos réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau avancé.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/souleve-de-terre.png"
+    },
+    {
+        "nom":  "Soulevé de terre roumain",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Lombaires",
+                                    "Adducteurs",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre / haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Soulevé de terre roumain est un exercice de dos réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/souleve-de-terre-roumain-dos.png"
+    },
+    {
+        "nom":  "Extensions lombaires",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Fessiers",
+                                    "Ischio-jambiers"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Banc lombaire",
+        "niveau":  "débutant",
+        "description":  "Extensions lombaires est un exercice de dos réalisé avec banc lombaire. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/extensions-lombaires.png"
+    },
+    {
+        "nom":  "Superman",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Fessiers",
+                                    "Ischio-jambiers"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Superman est un exercice de dos réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/superman.png"
+    },
+    {
+        "nom":  "Face pull",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Rhomboïdes",
+                                    "Rotateurs externes"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie / élastique",
+        "niveau":  "débutant",
+        "description":  "Face pull est un exercice de dos réalisé avec poulie / élastique. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/face-pull-dos.png"
+    },
+    {
+        "nom":  "Shrugs",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre / haltères",
+        "niveau":  "débutant",
+        "description":  "Shrugs est un exercice de dos réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/shrugs.png"
+    },
+    {
+        "nom":  "Pull-over poulie",
+        "groupe_musculaire":  "Dos",
+        "muscles_secondaires":  [
+                                    "Triceps long",
+                                    "Dentelé antérieur"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie",
+        "niveau":  "intermédiaire",
+        "description":  "Pull-over poulie est un exercice de dos réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pull-over-poulie.png"
+    },
+    {
+        "nom":  "Développé militaire",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Triceps",
+                                    "Trapèzes"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre",
+        "niveau":  "intermédiaire",
+        "description":  "Développé militaire est un exercice de épaules réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/developpe-militaire.png"
+    },
+    {
+        "nom":  "Développé épaules haltères",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Triceps",
+                                    "Trapèzes"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltères",
+        "niveau":  "débutant",
+        "description":  "Développé épaules haltères est un exercice de épaules réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/developpe-epaules-halteres.png"
+    },
+    {
+        "nom":  "Shoulder press",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Triceps",
+                                    "Trapèzes"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Shoulder press est un exercice de épaules réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/shoulder-press.png"
+    },
+    {
+        "nom":  "Arnold press",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Triceps",
+                                    "Trapèzes"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Arnold press est un exercice de épaules réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/arnold-press.png"
+    },
+    {
+        "nom":  "Élévations latérales",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Trapèzes supérieurs"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères",
+        "niveau":  "débutant",
+        "description":  "Élévations latérales est un exercice de épaules réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/elevations-laterales.png"
+    },
+    {
+        "nom":  "Élévations latérales poulie",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Trapèzes supérieurs"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie",
+        "niveau":  "intermédiaire",
+        "description":  "Élévations latérales poulie est un exercice de épaules réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/elevations-laterales-poulie.png"
+    },
+    {
+        "nom":  "Élévations frontales",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Pectoraux supérieurs"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères / disque",
+        "niveau":  "débutant",
+        "description":  "Élévations frontales est un exercice de épaules réalisé avec haltères / disque. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/elevations-frontales.png"
+    },
+    {
+        "nom":  "Oiseau haltères",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Trapèzes moyens",
+                                    "Rhomboïdes"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères",
+        "niveau":  "débutant",
+        "description":  "Oiseau haltères est un exercice de épaules réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/oiseau-halteres.png"
+    },
+    {
+        "nom":  "Oiseau sur banc incliné",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Dentelé antérieur"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltères",
+        "niveau":  "débutant",
+        "description":  "Oiseau sur banc incliné est un exercice de épaules réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/oiseau-sur-banc-incline.png"
+    },
+    {
+        "nom":  "Reverse pec deck",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Reverse pec deck est un exercice de épaules réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/reverse-pec-deck.png"
+    },
+    {
+        "nom":  "Face pull",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Rhomboïdes",
+                                    "Rotateurs externes"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie / élastique",
+        "niveau":  "débutant",
+        "description":  "Face pull est un exercice de épaules réalisé avec poulie / élastique. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/face-pull-epaules.png"
+    },
+    {
+        "nom":  "Upright row",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Biceps"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre / haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Upright row est un exercice de épaules réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/upright-row.png"
+    },
+    {
+        "nom":  "Pike push-up",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Pectoraux supérieurs",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "intermédiaire",
+        "description":  "Pike push-up est un exercice de épaules réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pike-push-up.png"
+    },
+    {
+        "nom":  "Handstand push-up",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Pectoraux supérieurs",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "avancé",
+        "description":  "Handstand push-up est un exercice de épaules réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau avancé.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/handstand-push-up.png"
+    },
+    {
+        "nom":  "Cuban press",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Deltoïdes postérieurs"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères légers",
+        "niveau":  "intermédiaire",
+        "description":  "Cuban press est un exercice de épaules réalisé avec haltères légers. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/cuban-press.png"
+    },
+    {
+        "nom":  "Rotation externe épaule",
+        "groupe_musculaire":  "Épaules",
+        "muscles_secondaires":  [
+                                    "Deltoïdes postérieurs"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Élastique / poulie",
+        "niveau":  "débutant",
+        "description":  "Rotation externe épaule est un exercice de épaules réalisé avec élastique / poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/rotation-externe-epaule.png"
+    },
+    {
+        "nom":  "Curl barre droite",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre",
+        "niveau":  "débutant",
+        "description":  "Curl barre droite est un exercice de biceps réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-barre-droite.png"
+    },
+    {
+        "nom":  "Curl barre EZ",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre EZ",
+        "niveau":  "débutant",
+        "description":  "Curl barre EZ est un exercice de biceps réalisé avec barre ez. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-barre-ez.png"
+    },
+    {
+        "nom":  "Curl haltères alterné",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères",
+        "niveau":  "débutant",
+        "description":  "Curl haltères alterné est un exercice de biceps réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-halteres-alterne.png"
+    },
+    {
+        "nom":  "Curl marteau",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères",
+        "niveau":  "débutant",
+        "description":  "Curl marteau est un exercice de biceps réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-marteau.png"
+    },
+    {
+        "nom":  "Curl incliné",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Dentelé antérieur"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Curl incliné est un exercice de biceps réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-incline.png"
+    },
+    {
+        "nom":  "Curl concentration",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltère",
+        "niveau":  "débutant",
+        "description":  "Curl concentration est un exercice de biceps réalisé avec haltère. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-concentration.png"
+    },
+    {
+        "nom":  "Curl pupitre",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre / machine",
+        "niveau":  "débutant",
+        "description":  "Curl pupitre est un exercice de biceps réalisé avec barre / machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-pupitre.png"
+    },
+    {
+        "nom":  "Curl poulie basse",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie",
+        "niveau":  "débutant",
+        "description":  "Curl poulie basse est un exercice de biceps réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-poulie-basse.png"
+    },
+    {
+        "nom":  "Curl câble unilatéral",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie",
+        "niveau":  "débutant",
+        "description":  "Curl câble unilatéral est un exercice de biceps réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-cable-unilateral.png"
+    },
+    {
+        "nom":  "Curl spider",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre / haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Curl spider est un exercice de biceps réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-spider.png"
+    },
+    {
+        "nom":  "Tractions supination",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Rhomboïdes",
+                                    "Trapèzes",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre de traction",
+        "niveau":  "intermédiaire",
+        "description":  "Tractions supination est un exercice de biceps réalisé avec barre de traction. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/tractions-supination-biceps.png"
+    },
+    {
+        "nom":  "Curl Zottman",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Curl Zottman est un exercice de biceps réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-zottman.png"
+    },
+    {
+        "nom":  "Curl inversé",
+        "groupe_musculaire":  "Biceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre / haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Curl inversé est un exercice de biceps réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-inverse-biceps.png"
+    },
+    {
+        "nom":  "Extension triceps poulie corde",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie",
+        "niveau":  "débutant",
+        "description":  "Extension triceps poulie corde est un exercice de triceps réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/extension-triceps-poulie-corde.png"
+    },
+    {
+        "nom":  "Extension triceps poulie barre",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie",
+        "niveau":  "débutant",
+        "description":  "Extension triceps poulie barre est un exercice de triceps réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/extension-triceps-poulie-barre.png"
+    },
+    {
+        "nom":  "Extension nuque haltère",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltère",
+        "niveau":  "débutant",
+        "description":  "Extension nuque haltère est un exercice de triceps réalisé avec haltère. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/extension-nuque-haltere.png"
+    },
+    {
+        "nom":  "Extension nuque barre EZ",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre EZ",
+        "niveau":  "intermédiaire",
+        "description":  "Extension nuque barre EZ est un exercice de triceps réalisé avec barre ez. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/extension-nuque-barre-ez.png"
+    },
+    {
+        "nom":  "Barre au front",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre EZ",
+        "niveau":  "intermédiaire",
+        "description":  "Barre au front est un exercice de triceps réalisé avec barre ez. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/barre-au-front.png"
+    },
+    {
+        "nom":  "Kickback triceps",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères",
+        "niveau":  "débutant",
+        "description":  "Kickback triceps est un exercice de triceps réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/kickback-triceps.png"
+    },
+    {
+        "nom":  "Dips triceps",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Pectoraux",
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Banc / barres",
+        "niveau":  "intermédiaire",
+        "description":  "Dips triceps est un exercice de triceps réalisé avec banc / barres. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/dips-triceps.png"
+    },
+    {
+        "nom":  "Pompes diamant",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Deltoïdes antérieurs",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "intermédiaire",
+        "description":  "Pompes diamant est un exercice de triceps réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pompes-diamant-triceps.png"
+    },
+    {
+        "nom":  "Développé couché prise serrée",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Triceps",
+                                    "Deltoïdes antérieurs"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre",
+        "niveau":  "intermédiaire",
+        "description":  "Développé couché prise serrée est un exercice de triceps réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/developpe-couche-prise-serree.png"
+    },
+    {
+        "nom":  "Extension triceps unilatérale",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie / haltère",
+        "niveau":  "débutant",
+        "description":  "Extension triceps unilatérale est un exercice de triceps réalisé avec poulie / haltère. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/extension-triceps-unilaterale.png"
+    },
+    {
+        "nom":  "Tate press",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Tate press est un exercice de triceps réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/tate-press.png"
+    },
+    {
+        "nom":  "Extension triceps au-dessus de la tête poulie",
+        "groupe_musculaire":  "Triceps",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie",
+        "niveau":  "intermédiaire",
+        "description":  "Extension triceps au-dessus de la tête poulie est un exercice de triceps réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/extension-triceps-au-dessus-de-la-tete-poulie.png"
+    },
+    {
+        "nom":  "Squat arrière",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre",
+        "niveau":  "intermédiaire",
+        "description":  "Squat arrière est un exercice de jambes - quadriceps réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/squat-arriere.png"
+    },
+    {
+        "nom":  "Squat avant",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre",
+        "niveau":  "avancé",
+        "description":  "Squat avant est un exercice de jambes - quadriceps réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau avancé.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/squat-avant.png"
+    },
+    {
+        "nom":  "Goblet squat",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltère / kettlebell",
+        "niveau":  "débutant",
+        "description":  "Goblet squat est un exercice de jambes - quadriceps réalisé avec haltère / kettlebell. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/goblet-squat.png"
+    },
+    {
+        "nom":  "Hack squat",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Machine",
+        "niveau":  "intermédiaire",
+        "description":  "Hack squat est un exercice de jambes - quadriceps réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/hack-squat.png"
+    },
+    {
+        "nom":  "Presse à cuisses",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Presse à cuisses est un exercice de jambes - quadriceps réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/presse-a-cuisses.png"
+    },
+    {
+        "nom":  "Leg extension",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Fléchisseurs de hanche"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Leg extension est un exercice de jambes - quadriceps réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/leg-extension.png"
+    },
+    {
+        "nom":  "Fentes avant",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps / haltères",
+        "niveau":  "débutant",
+        "description":  "Fentes avant est un exercice de jambes - quadriceps réalisé avec poids du corps / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/fentes-avant.png"
+    },
+    {
+        "nom":  "Fentes marchées",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps / haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Fentes marchées est un exercice de jambes - quadriceps réalisé avec poids du corps / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/fentes-marchees.png"
+    },
+    {
+        "nom":  "Fentes bulgares",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Fentes bulgares est un exercice de jambes - quadriceps réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/fentes-bulgares.png"
+    },
+    {
+        "nom":  "Step-up",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Banc / haltères",
+        "niveau":  "débutant",
+        "description":  "Step-up est un exercice de jambes - quadriceps réalisé avec banc / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/step-up.png"
+    },
+    {
+        "nom":  "Sissy squat",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "avancé",
+        "description":  "Sissy squat est un exercice de jambes - quadriceps réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau avancé.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/sissy-squat.png"
+    },
+    {
+        "nom":  "Wall sit / chaise",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Wall sit / chaise est un exercice de jambes - quadriceps réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/wall-sit-chaise.png"
+    },
+    {
+        "nom":  "Squat sauté",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "intermédiaire",
+        "description":  "Squat sauté est un exercice de jambes - quadriceps réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/squat-saute.png"
+    },
+    {
+        "nom":  "Pistol squat assisté",
+        "groupe_musculaire":  "Jambes - quadriceps",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "avancé",
+        "description":  "Pistol squat assisté est un exercice de jambes - quadriceps réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau avancé.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pistol-squat-assiste.png"
+    },
+    {
+        "nom":  "Soulevé de terre roumain",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Lombaires",
+                                    "Adducteurs",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre / haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Soulevé de terre roumain est un exercice de jambes - ischios / fessiers réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/souleve-de-terre-roumain-jambes-ischios-fessiers.png"
+    },
+    {
+        "nom":  "Soulevé de terre jambes tendues",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Lombaires",
+                                    "Adducteurs",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre / haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Soulevé de terre jambes tendues est un exercice de jambes - ischios / fessiers réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/souleve-de-terre-jambes-tendues.png"
+    },
+    {
+        "nom":  "Hip thrust",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Abdominaux"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre / machine",
+        "niveau":  "intermédiaire",
+        "description":  "Hip thrust est un exercice de jambes - ischios / fessiers réalisé avec barre / machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/hip-thrust.png"
+    },
+    {
+        "nom":  "Glute bridge",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Abdominaux"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poids du corps / barre",
+        "niveau":  "débutant",
+        "description":  "Glute bridge est un exercice de jambes - ischios / fessiers réalisé avec poids du corps / barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/glute-bridge.png"
+    },
+    {
+        "nom":  "Leg curl allongé",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Leg curl allongé est un exercice de jambes - ischios / fessiers réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/leg-curl-allonge.png"
+    },
+    {
+        "nom":  "Leg curl assis",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Leg curl assis est un exercice de jambes - ischios / fessiers réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/leg-curl-assis.png"
+    },
+    {
+        "nom":  "Leg curl debout",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Leg curl debout est un exercice de jambes - ischios / fessiers réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/leg-curl-debout.png"
+    },
+    {
+        "nom":  "Good morning",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Lombaires",
+                                    "Adducteurs",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre",
+        "niveau":  "avancé",
+        "description":  "Good morning est un exercice de jambes - ischios / fessiers réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau avancé.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/good-morning.png"
+    },
+    {
+        "nom":  "Pull-through",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Abdominaux"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie",
+        "niveau":  "intermédiaire",
+        "description":  "Pull-through est un exercice de jambes - ischios / fessiers réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pull-through.png"
+    },
+    {
+        "nom":  "Kettlebell swing",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Lombaires",
+                                    "Abdominaux",
+                                    "Épaules"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Kettlebell",
+        "niveau":  "intermédiaire",
+        "description":  "Kettlebell swing est un exercice de jambes - ischios / fessiers réalisé avec kettlebell. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/kettlebell-swing-jambes-ischios-fessiers.png"
+    },
+    {
+        "nom":  "Fentes arrière",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps / haltères",
+        "niveau":  "débutant",
+        "description":  "Fentes arrière est un exercice de jambes - ischios / fessiers réalisé avec poids du corps / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/fentes-arriere.png"
+    },
+    {
+        "nom":  "Abduction hanche machine",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Abdominaux"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Abduction hanche machine est un exercice de jambes - ischios / fessiers réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/abduction-hanche-machine.png"
+    },
+    {
+        "nom":  "Kickback fessier poulie",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie",
+        "niveau":  "débutant",
+        "description":  "Kickback fessier poulie est un exercice de jambes - ischios / fessiers réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/kickback-fessier-poulie.png"
+    },
+    {
+        "nom":  "Donkey kicks",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Abdominaux"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Donkey kicks est un exercice de jambes - ischios / fessiers réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/donkey-kicks.png"
+    },
+    {
+        "nom":  "Fire hydrants",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Abdominaux"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Fire hydrants est un exercice de jambes - ischios / fessiers réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/fire-hydrants.png"
+    },
+    {
+        "nom":  "Nordic curl",
+        "groupe_musculaire":  "Jambes - ischios / fessiers",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poids du corps",
+        "niveau":  "avancé",
+        "description":  "Nordic curl est un exercice de jambes - ischios / fessiers réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau avancé.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/nordic-curl.png"
+    },
+    {
+        "nom":  "Mollets debout",
+        "groupe_musculaire":  "Mollets",
+        "muscles_secondaires":  [
+                                    "Soléaire",
+                                    "Tibial postérieur"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Machine / haltères",
+        "niveau":  "débutant",
+        "description":  "Mollets debout est un exercice de mollets réalisé avec machine / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/mollets-debout.png"
+    },
+    {
+        "nom":  "Mollets assis",
+        "groupe_musculaire":  "Mollets",
+        "muscles_secondaires":  [
+                                    "Soléaire",
+                                    "Tibial postérieur"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Mollets assis est un exercice de mollets réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/mollets-assis.png"
+    },
+    {
+        "nom":  "Mollets à la presse",
+        "groupe_musculaire":  "Mollets",
+        "muscles_secondaires":  [
+                                    "Soléaire",
+                                    "Tibial postérieur"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Mollets à la presse est un exercice de mollets réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/mollets-a-la-presse.png"
+    },
+    {
+        "nom":  "Mollets unilatéral",
+        "groupe_musculaire":  "Mollets",
+        "muscles_secondaires":  [
+                                    "Soléaire",
+                                    "Tibial postérieur"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poids du corps / haltère",
+        "niveau":  "débutant",
+        "description":  "Mollets unilatéral est un exercice de mollets réalisé avec poids du corps / haltère. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/mollets-unilateral.png"
+    },
+    {
+        "nom":  "Farmer walk sur pointes",
+        "groupe_musculaire":  "Mollets",
+        "muscles_secondaires":  [
+                                    "Soléaire",
+                                    "Tibial postérieur"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Farmer walk sur pointes est un exercice de mollets réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/farmer-walk-sur-pointes.png"
+    },
+    {
+        "nom":  "Sauts à la corde",
+        "groupe_musculaire":  "Mollets",
+        "muscles_secondaires":  [
+                                    "Soléaire"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Corde",
+        "niveau":  "débutant",
+        "description":  "Sauts à la corde est un exercice de mollets réalisé avec corde. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/sauts-a-la-corde.png"
+    },
+    {
+        "nom":  "Donkey calf raise",
+        "groupe_musculaire":  "Mollets",
+        "muscles_secondaires":  [
+                                    "Soléaire",
+                                    "Tibial postérieur"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Machine / partenaire",
+        "niveau":  "intermédiaire",
+        "description":  "Donkey calf raise est un exercice de mollets réalisé avec machine / partenaire. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/donkey-calf-raise.png"
+    },
+    {
+        "nom":  "Crunch",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fléchisseurs de hanche",
+                                    "Obliques"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Crunch est un exercice de abdos / gainage réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/crunch.png"
+    },
+    {
+        "nom":  "Crunch poulie haute",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fléchisseurs de hanche",
+                                    "Obliques"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poulie",
+        "niveau":  "intermédiaire",
+        "description":  "Crunch poulie haute est un exercice de abdos / gainage réalisé avec poulie. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/crunch-poulie-haute.png"
+    },
+    {
+        "nom":  "Relevé de jambes au sol",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fléchisseurs de hanche",
+                                    "Obliques"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Relevé de jambes au sol est un exercice de abdos / gainage réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/releve-de-jambes-au-sol.png"
+    },
+    {
+        "nom":  "Relevé de jambes suspendu",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fléchisseurs de hanche",
+                                    "Obliques"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre",
+        "niveau":  "intermédiaire",
+        "description":  "Relevé de jambes suspendu est un exercice de abdos / gainage réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/releve-de-jambes-suspendu.png"
+    },
+    {
+        "nom":  "Relevé de genoux suspendu",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fléchisseurs de hanche",
+                                    "Obliques"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre",
+        "niveau":  "débutant",
+        "description":  "Relevé de genoux suspendu est un exercice de abdos / gainage réalisé avec barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/releve-de-genoux-suspendu.png"
+    },
+    {
+        "nom":  "Reverse crunch",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fléchisseurs de hanche",
+                                    "Obliques"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Reverse crunch est un exercice de abdos / gainage réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/reverse-crunch.png"
+    },
+    {
+        "nom":  "Sit-up",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fléchisseurs de hanche",
+                                    "Obliques"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Sit-up est un exercice de abdos / gainage réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/sit-up.png"
+    },
+    {
+        "nom":  "Planche",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fessiers",
+                                    "Lombaires",
+                                    "Épaules"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Planche est un exercice de abdos / gainage réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/planche.png"
+    },
+    {
+        "nom":  "Planche latérale",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fessiers",
+                                    "Lombaires",
+                                    "Épaules"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Planche latérale est un exercice de abdos / gainage réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/planche-laterale.png"
+    },
+    {
+        "nom":  "Dead bug",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fessiers",
+                                    "Lombaires",
+                                    "Épaules"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Dead bug est un exercice de abdos / gainage réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/dead-bug.png"
+    },
+    {
+        "nom":  "Hollow hold",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fessiers",
+                                    "Lombaires",
+                                    "Épaules"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "intermédiaire",
+        "description":  "Hollow hold est un exercice de abdos / gainage réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/hollow-hold.png"
+    },
+    {
+        "nom":  "Mountain climbers",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Transverse",
+                                    "Fléchisseurs de hanche"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Mountain climbers est un exercice de abdos / gainage réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/mountain-climbers-abdos-gainage.png"
+    },
+    {
+        "nom":  "Russian twist",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Transverse",
+                                    "Fléchisseurs de hanche"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps / disque",
+        "niveau":  "débutant",
+        "description":  "Russian twist est un exercice de abdos / gainage réalisé avec poids du corps / disque. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/russian-twist.png"
+    },
+    {
+        "nom":  "Woodchopper",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Transverse",
+                                    "Fléchisseurs de hanche"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poulie / élastique",
+        "niveau":  "intermédiaire",
+        "description":  "Woodchopper est un exercice de abdos / gainage réalisé avec poulie / élastique. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/woodchopper.png"
+    },
+    {
+        "nom":  "Pallof press",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fessiers",
+                                    "Lombaires",
+                                    "Épaules"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poulie / élastique",
+        "niveau":  "débutant",
+        "description":  "Pallof press est un exercice de abdos / gainage réalisé avec poulie / élastique. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/pallof-press.png"
+    },
+    {
+        "nom":  "Ab wheel rollout",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fessiers",
+                                    "Lombaires",
+                                    "Épaules"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Roue abdominale",
+        "niveau":  "intermédiaire",
+        "description":  "Ab wheel rollout est un exercice de abdos / gainage réalisé avec roue abdominale. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/ab-wheel-rollout.png"
+    },
+    {
+        "nom":  "Gainage Superman",
+        "groupe_musculaire":  "Abdos / gainage",
+        "muscles_secondaires":  [
+                                    "Fessiers",
+                                    "Ischio-jambiers"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Gainage Superman est un exercice de abdos / gainage réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/gainage-superman.png"
+    },
+    {
+        "nom":  "Curl poignets",
+        "groupe_musculaire":  "Avant-bras / grip",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre / haltères",
+        "niveau":  "débutant",
+        "description":  "Curl poignets est un exercice de avant-bras / grip réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-poignets.png"
+    },
+    {
+        "nom":  "Curl poignets inversé",
+        "groupe_musculaire":  "Avant-bras / grip",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre / haltères",
+        "niveau":  "débutant",
+        "description":  "Curl poignets inversé est un exercice de avant-bras / grip réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-poignets-inverse.png"
+    },
+    {
+        "nom":  "Farmer walk",
+        "groupe_musculaire":  "Avant-bras / grip",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Trapèzes"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères / kettlebells",
+        "niveau":  "intermédiaire",
+        "description":  "Farmer walk est un exercice de avant-bras / grip réalisé avec haltères / kettlebells. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/farmer-walk-avant-bras-grip.png"
+    },
+    {
+        "nom":  "Dead hang",
+        "groupe_musculaire":  "Avant-bras / grip",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Trapèzes"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre de traction",
+        "niveau":  "débutant",
+        "description":  "Dead hang est un exercice de avant-bras / grip réalisé avec barre de traction. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/dead-hang.png"
+    },
+    {
+        "nom":  "Plate pinch",
+        "groupe_musculaire":  "Avant-bras / grip",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Trapèzes"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Disques",
+        "niveau":  "intermédiaire",
+        "description":  "Plate pinch est un exercice de avant-bras / grip réalisé avec disques. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/plate-pinch.png"
+    },
+    {
+        "nom":  "Curl inversé",
+        "groupe_musculaire":  "Avant-bras / grip",
+        "muscles_secondaires":  [
+                                    "Avant-bras"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Barre / haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Curl inversé est un exercice de avant-bras / grip réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/curl-inverse-avant-bras-grip.png"
+    },
+    {
+        "nom":  "Wrist roller",
+        "groupe_musculaire":  "Avant-bras / grip",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Trapèzes"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Rouleau poignet",
+        "niveau":  "intermédiaire",
+        "description":  "Wrist roller est un exercice de avant-bras / grip réalisé avec rouleau poignet. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/wrist-roller.png"
+    },
+    {
+        "nom":  "Burpees",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Abdominaux",
+                                    "Fessiers",
+                                    "Dos"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "intermédiaire",
+        "description":  "Burpees est un exercice de full body / fonctionnel réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/burpees-full-body-fonctionnel.png"
+    },
+    {
+        "nom":  "Thruster",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Abdominaux",
+                                    "Fessiers",
+                                    "Dos"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltères / barre",
+        "niveau":  "intermédiaire",
+        "description":  "Thruster est un exercice de full body / fonctionnel réalisé avec haltères / barre. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/thruster.png"
+    },
+    {
+        "nom":  "Clean and press",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Abdominaux",
+                                    "Fessiers",
+                                    "Dos"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Barre / haltères",
+        "niveau":  "avancé",
+        "description":  "Clean and press est un exercice de full body / fonctionnel réalisé avec barre / haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau avancé.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/clean-and-press.png"
+    },
+    {
+        "nom":  "Turkish get-up",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Abdominaux",
+                                    "Fessiers",
+                                    "Dos"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Kettlebell",
+        "niveau":  "avancé",
+        "description":  "Turkish get-up est un exercice de full body / fonctionnel réalisé avec kettlebell. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau avancé.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/turkish-get-up.png"
+    },
+    {
+        "nom":  "Farmer walk",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Trapèzes"
+                                ],
+        "type":  "isolation",
+        "materiel":  "Haltères / kettlebells",
+        "niveau":  "intermédiaire",
+        "description":  "Farmer walk est un exercice de full body / fonctionnel réalisé avec haltères / kettlebells. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/farmer-walk-full-body-fonctionnel.png"
+    },
+    {
+        "nom":  "Sled push",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Abdominaux",
+                                    "Fessiers",
+                                    "Dos"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Traîneau",
+        "niveau":  "intermédiaire",
+        "description":  "Sled push est un exercice de full body / fonctionnel réalisé avec traîneau. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/sled-push.png"
+    },
+    {
+        "nom":  "Battle rope",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Abdominaux",
+                                    "Fessiers",
+                                    "Dos"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Cordes",
+        "niveau":  "débutant",
+        "description":  "Battle rope est un exercice de full body / fonctionnel réalisé avec cordes. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/battle-rope.png"
+    },
+    {
+        "nom":  "Med ball slam",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Abdominaux",
+                                    "Fessiers",
+                                    "Dos"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Médecine ball",
+        "niveau":  "débutant",
+        "description":  "Med ball slam est un exercice de full body / fonctionnel réalisé avec médecine ball. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/med-ball-slam.png"
+    },
+    {
+        "nom":  "Bear crawl",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Abdominaux",
+                                    "Fessiers",
+                                    "Dos"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Bear crawl est un exercice de full body / fonctionnel réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/bear-crawl.png"
+    },
+    {
+        "nom":  "Jumping jacks",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Abdominaux",
+                                    "Fessiers",
+                                    "Dos"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Jumping jacks est un exercice de full body / fonctionnel réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/jumping-jacks.png"
+    },
+    {
+        "nom":  "Kettlebell swing",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Lombaires",
+                                    "Abdominaux",
+                                    "Épaules"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Kettlebell",
+        "niveau":  "intermédiaire",
+        "description":  "Kettlebell swing est un exercice de full body / fonctionnel réalisé avec kettlebell. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/kettlebell-swing-full-body-fonctionnel.png"
+    },
+    {
+        "nom":  "Renegade row",
+        "groupe_musculaire":  "Full body / fonctionnel",
+        "muscles_secondaires":  [
+                                    "Biceps",
+                                    "Deltoïdes postérieurs",
+                                    "Avant-bras"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Haltères",
+        "niveau":  "intermédiaire",
+        "description":  "Renegade row est un exercice de full body / fonctionnel réalisé avec haltères. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/renegade-row.png"
+    },
+    {
+        "nom":  "Course tapis",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Quadriceps",
+                                    "Fessiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Tapis",
+        "niveau":  "débutant",
+        "description":  "Course tapis est un exercice de cardio / hiit réalisé avec tapis. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/course-tapis.png"
+    },
+    {
+        "nom":  "Vélo",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Quadriceps",
+                                    "Fessiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Vélo",
+        "niveau":  "débutant",
+        "description":  "Vélo est un exercice de cardio / hiit réalisé avec vélo. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/velo.png"
+    },
+    {
+        "nom":  "Rameur",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Quadriceps",
+                                    "Fessiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Rameur",
+        "niveau":  "débutant",
+        "description":  "Rameur est un exercice de cardio / hiit réalisé avec rameur. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/rameur.png"
+    },
+    {
+        "nom":  "Vélo elliptique",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Quadriceps",
+                                    "Fessiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Machine",
+        "niveau":  "débutant",
+        "description":  "Vélo elliptique est un exercice de cardio / hiit réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/velo-elliptique.png"
+    },
+    {
+        "nom":  "Assault bike",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Quadriceps",
+                                    "Fessiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Machine",
+        "niveau":  "intermédiaire",
+        "description":  "Assault bike est un exercice de cardio / hiit réalisé avec machine. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/assault-bike.png"
+    },
+    {
+        "nom":  "Corde à sauter",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Quadriceps",
+                                    "Fessiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Corde",
+        "niveau":  "débutant",
+        "description":  "Corde à sauter est un exercice de cardio / hiit réalisé avec corde. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/corde-a-sauter.png"
+    },
+    {
+        "nom":  "Sprint",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Quadriceps",
+                                    "Fessiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Aucun",
+        "niveau":  "intermédiaire",
+        "description":  "Sprint est un exercice de cardio / hiit réalisé avec aucun. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/sprint.png"
+    },
+    {
+        "nom":  "Montées de genoux",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Quadriceps",
+                                    "Fessiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Montées de genoux est un exercice de cardio / hiit réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/montees-de-genoux.png"
+    },
+    {
+        "nom":  "Jump squat",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Ischio-jambiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "intermédiaire",
+        "description":  "Jump squat est un exercice de cardio / hiit réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/jump-squat.png"
+    },
+    {
+        "nom":  "Burpees",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Abdominaux",
+                                    "Fessiers",
+                                    "Dos"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "intermédiaire",
+        "description":  "Burpees est un exercice de cardio / hiit réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau intermédiaire.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/burpees-cardio-hiit.png"
+    },
+    {
+        "nom":  "Mountain climbers",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Transverse",
+                                    "Fléchisseurs de hanche"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Poids du corps",
+        "niveau":  "débutant",
+        "description":  "Mountain climbers est un exercice de cardio / hiit réalisé avec poids du corps. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/mountain-climbers-cardio-hiit.png"
+    },
+    {
+        "nom":  "Shadow boxing",
+        "groupe_musculaire":  "Cardio / HIIT",
+        "muscles_secondaires":  [
+                                    "Quadriceps",
+                                    "Fessiers",
+                                    "Mollets",
+                                    "Abdominaux"
+                                ],
+        "type":  "polyarticulaire",
+        "materiel":  "Aucun",
+        "niveau":  "débutant",
+        "description":  "Shadow boxing est un exercice de cardio / hiit réalisé avec aucun. Le mouvement doit rester contrôlé, avec une posture stable et une amplitude adaptée au niveau débutant.",
+        "conseils":  "Gardez une posture stable et contrôlée Respirez de façon régulière pendant le mouvement Privilégiez une exécution propre plutôt qu’une charge trop lourde",
+        "image":  "images/shadow-boxing.png"
+    }
+]

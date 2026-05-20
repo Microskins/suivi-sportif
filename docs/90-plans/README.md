@@ -28,6 +28,8 @@ Index chronologique des chantiers planifies et executes.
 22. [Reordonner les exercices dans seances et modeles](./022-reordonner-exercices-seances-modeles.md)
 23. [Duplication de seances](./023-duplication-seances.md)
 24. [Duplication de seances depuis le calendrier](./024-duplication-seances-calendrier.md)
+25. [Base exercices IA gpt-image-2](./025-base-exercices-ia-gpt-image-2.md)
+26. [Images exercices dans UI](./026-images-exercices-ui.md)
 88. [Remediation securite npm audit](./088-remediation-securite-npm-audit.md)
 89. [Mobile Android/iOS via Capacitor](./089-mobile-capacitor.md)
 
@@ -51,6 +53,7 @@ chantier.
 - Les plans ne remplacent pas `README.md`, `01-getting-started/quick-start.md`,
   `03-api/reference.md` ou `02-architecture/overview.md`; ils expliquent
   l'historique des decisions.
+
 
 
 

@@ -203,7 +203,7 @@
 
 ## Contexte
 
-- Une CMP frontend peut devenir obsolète quand la politique legale evolue.
+- Une CMP frontend peut devenir obsolï¿½te quand la politique legale evolue.
 - Sans versionning explicite, le consentement stocke est difficile a invalider proprement.
 
 ## Proposition
@@ -282,3 +282,33 @@
 ## Liens
 
 - Plan: docs/90-plans/020-edition-modeles-seances.md
+
+---
+
+## 2026-05-20 - Exercices: controle qualite des images IA
+
+## Contexte
+
+- La base d'exercices peut contenir beaucoup d'images generees par IA.
+- Une image incorrecte, avec texte parasite ou posture dangereuse, peut degrader la confiance utilisateur.
+
+## Proposition
+
+- Ajouter un petit manifeste de validation des images d'exercices:
+  - taille et format attendus;
+  - presence du fichier reference par JSON/CSV;
+  - statut de revue humaine par lot;
+  - notes de rejet/regeneration.
+
+## Impact
+
+- Facilite la regeneration ciblee sans reprendre tout le catalogue.
+- Rend la qualite pedagogique plus controlable dans le temps.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/025-base-exercices-ia-gpt-image-2.md

@@ -1,4 +1,4 @@
-import { FormEvent, type ReactNode, useEffect, useState } from "react";
+import { FormEvent, type ReactNode, useEffect, useMemo, useState } from "react";
 import type {
   Exercise,
   ExerciseInput,
@@ -65,6 +65,25 @@ const mealTypes: Array<[MealType, string]> = [
   ["snack", "Collation"],
   ["other", "Autre"],
 ];
+
+type ExerciseCatalogEntry = {
+  nom: string;
+  image: string;
+};
+
+function normalizeExerciseKey(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function buildExerciseImageUrl(path?: string | null) {
+  if (!path) return null;
+  const sanitized = path.replace(/^\/+/, "");
+  return `/${sanitized}`;
+}
 
 function toInputDateTime(value?: string) {
   const date = value ? new Date(value) : new Date();
@@ -145,6 +164,35 @@ function EmptyState({ label }: { label: string }) {
     <div className="rounded border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-600">
       {label}
     </div>
+  );
+}
+
+function ExerciseImagePreview({
+  imageUrl,
+  label,
+  className = "",
+}: {
+  imageUrl?: string | null;
+  label: string;
+  className?: string;
+}) {
+  if (!imageUrl) {
+    return (
+      <div
+        className={`flex items-center justify-center rounded border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500 ${className}`}
+      >
+        Aucune image
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={imageUrl}
+      alt={`Illustration de ${label}`}
+      className={`rounded border border-slate-200 object-cover ${className}`}
+      loading="lazy"
+    />
   );
 }
 
@@ -326,6 +374,7 @@ function WorkoutForm({
   prefillWorkout,
   initialDate,
   exercises,
+  getExerciseImageUrl,
   onSubmit,
   onCancel,
 }: {
@@ -333,6 +382,7 @@ function WorkoutForm({
   prefillWorkout?: Workout;
   initialDate?: string;
   exercises: Exercise[];
+  getExerciseImageUrl: (exercise: Exercise | undefined) => string | null;
   onSubmit: (data: WorkoutInput) => Promise<void>;
   onCancel: () => void;
 }) {
@@ -390,6 +440,7 @@ function WorkoutForm({
   const [exerciseBodyPartFilter, setExerciseBodyPartFilter] = useState("ALL");
   const [draggedRowIndex, setDraggedRowIndex] = useState<number | null>(null);
   const [dragOverRowIndex, setDragOverRowIndex] = useState<number | null>(null);
+  const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
   const bodyPartOptions = Array.from(
     new Set(
@@ -562,7 +613,7 @@ function WorkoutForm({
         {rows.map((row, rowIndex) => (
           <div
             key={rowIndex}
-            className={`rounded border p-3 transition ${
+            className={`relative rounded border p-3 transition ${
               dragOverRowIndex === rowIndex
                 ? "border-emerald-500 bg-emerald-50/60"
                 : "border-slate-200"
@@ -619,15 +670,32 @@ function WorkoutForm({
               >
                 ::
               </button>
-              <select
-                className={`${inputClass} md:min-w-[240px] md:flex-1`}
-                value={row.exerciseId}
-                onChange={(event) => updateRow(rowIndex, { ...row, exerciseId: event.target.value })}
+              <div
+                className="relative md:min-w-[240px] md:flex-1"
+                onMouseEnter={() => setHoveredRowIndex(rowIndex)}
+                onMouseLeave={() => setHoveredRowIndex((current) => (current === rowIndex ? null : current))}
               >
-                {(filteredExercises.length ? filteredExercises : exercises).map((exercise) => (
-                  <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
-                ))}
-              </select>
+                <select
+                  className={inputClass}
+                  value={row.exerciseId}
+                  onChange={(event) => updateRow(rowIndex, { ...row, exerciseId: event.target.value })}
+                  onFocus={() => setHoveredRowIndex(rowIndex)}
+                  onBlur={() => setHoveredRowIndex((current) => (current === rowIndex ? null : current))}
+                >
+                  {(filteredExercises.length ? filteredExercises : exercises).map((exercise) => (
+                    <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
+                  ))}
+                </select>
+                {hoveredRowIndex === rowIndex && (
+                  <div className="pointer-events-none absolute left-0 top-full z-10 mt-2 hidden w-56 rounded border border-slate-200 bg-white p-2 shadow-lg md:block">
+                    <ExerciseImagePreview
+                      imageUrl={getExerciseImageUrl(exercises.find((exercise) => exercise.id === row.exerciseId))}
+                      label={exercises.find((exercise) => exercise.id === row.exerciseId)?.name ?? "Exercice"}
+                      className="h-32 w-full"
+                    />
+                  </div>
+                )}
+              </div>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -1393,6 +1461,21 @@ export function Dashboard({
   const foodsStore = useFoodsStore();
   const mealsStore = useMealsStore();
   const goalsStore = useNutritionGoalsStore();
+  const [exerciseCatalog, setExerciseCatalog] = useState<ExerciseCatalogEntry[]>([]);
+
+  const exerciseImageMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const entry of exerciseCatalog) {
+      map.set(normalizeExerciseKey(entry.nom), entry.image);
+    }
+    return map;
+  }, [exerciseCatalog]);
+
+  const getExerciseImageUrl = (exercise: Exercise | undefined) => {
+    if (!exercise) return null;
+    const imagePath = exerciseImageMap.get(normalizeExerciseKey(exercise.name));
+    return buildExerciseImageUrl(imagePath ?? null);
+  };
 
   useEffect(() => {
     void exercisesStore.fetchExercises();
@@ -1401,6 +1484,37 @@ export function Dashboard({
     void foodsStore.fetchFoods();
     void mealsStore.fetchMeals();
     void goalsStore.fetchNutritionGoals();
+  }, []);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadExerciseCatalog() {
+      try {
+        const response = await fetch("/exercices.json");
+        if (!response.ok) {
+          return;
+        }
+        const data = (await response.json()) as ExerciseCatalogEntry[];
+        if (!isCancelled && Array.isArray(data)) {
+          setExerciseCatalog(
+            data.filter(
+              (entry) =>
+                typeof entry?.nom === "string" && typeof entry?.image === "string",
+            ),
+          );
+        }
+      } catch {
+        if (!isCancelled) {
+          setExerciseCatalog([]);
+        }
+      }
+    }
+
+    void loadExerciseCatalog();
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   const isLoading =
@@ -1598,6 +1712,7 @@ export function Dashboard({
                         item={workoutDraft}
                         prefillWorkout={workoutPrefillDraft}
                         exercises={exercisesStore.exercises}
+                        getExerciseImageUrl={getExerciseImageUrl}
                         onCancel={() => {
                           setWorkoutDraft(undefined);
                           setWorkoutPrefillDraft(undefined);
@@ -1652,6 +1767,7 @@ export function Dashboard({
                   ) : (
                     <ExercisesList
                       exercises={exercisesStore.exercises}
+                      getExerciseImageUrl={getExerciseImageUrl}
                       onEdit={(item) => setExerciseDraft(item)}
                       onDelete={(item) => confirmDelete(item.name, () => exercisesStore.deleteExercise(item.id))}
                     />
@@ -1699,6 +1815,7 @@ export function Dashboard({
               prefillWorkout={modal.prefillWorkout}
               initialDate={modal.presetDate}
               exercises={exercisesStore.exercises}
+              getExerciseImageUrl={getExerciseImageUrl}
               onCancel={() => setModal(null)}
               onSubmit={(data) => modal.item ? workoutsStore.updateWorkout(modal.item.id, data) : workoutsStore.createWorkout(data)}
             />
@@ -1878,7 +1995,17 @@ function WorkoutsList({
   );
 }
 
-function ExercisesList({ exercises, onEdit, onDelete }: { exercises: Exercise[]; onEdit: (item: Exercise) => void; onDelete: (item: Exercise) => void }) {
+function ExercisesList({
+  exercises,
+  getExerciseImageUrl,
+  onEdit,
+  onDelete,
+}: {
+  exercises: Exercise[];
+  getExerciseImageUrl: (exercise: Exercise | undefined) => string | null;
+  onEdit: (item: Exercise) => void;
+  onDelete: (item: Exercise) => void;
+}) {
   if (!exercises.length) return <EmptyState label="Aucun exercice disponible." />;
 
   const [search, setSearch] = useState("");
@@ -1965,6 +2092,11 @@ function ExercisesList({ exercises, onEdit, onDelete }: { exercises: Exercise[];
             <li key={exercise.id} className="rounded border border-slate-200 p-4">
               <div className="flex h-full flex-col justify-between gap-3">
                 <div>
+                  <ExerciseImagePreview
+                    imageUrl={getExerciseImageUrl(exercise)}
+                    label={exercise.name}
+                    className="mb-3 h-40 w-full"
+                  />
                   <p className="font-semibold">{exercise.name}</p>
                   <p className="mt-1 text-sm text-slate-600">
                     {labelFromOptions(exerciseTypeOptions, exercise.exerciseType)} - {labelFromOptions(difficultyOptions, exercise.difficulty)}
