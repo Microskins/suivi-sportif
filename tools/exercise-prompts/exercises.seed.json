@@ -1,42 +1,1084 @@
 [
   {
-    "id": "developpe-couche-barre",
+    "id": "developpe-couche",
     "category": "pectoraux",
-    "title": "Développé couché à la barre",
+    "title": "Développé couché",
     "type": "Force",
     "mechanic": "Polyarticulaire",
-    "equipment": ["Barre olympique", "Banc plat"],
+    "equipment": [
+      "Barre"
+    ],
     "difficulty": "Intermédiaire",
-    "primaryMuscles": ["Pectoraux", "Triceps", "Deltoïdes antérieurs"],
-    "secondaryMuscles": ["Dentelé antérieur"],
-    "variants": ["Développé couché prise serrée", "Développé incliné à la barre"],
-    "tips": ["Gardez les pieds bien ancrés au sol", "Descendez la barre de manière contrôlée", "Poussez explosivement à la montée en contractant les pectoraux"]
+    "primaryMuscles": [
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Développé couché haltères",
+      "Développé incliné barre",
+      "Développé incliné haltères"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
   },
   {
-    "id": "squat-barre",
-    "category": "jambes",
-    "title": "Squat à la barre",
+    "id": "developpe-couche-halteres",
+    "category": "pectoraux",
+    "title": "Développé couché haltères",
     "type": "Force",
     "mechanic": "Polyarticulaire",
-    "equipment": ["Barre olympique", "Rack à squat"],
+    "equipment": [
+      "Haltères"
+    ],
     "difficulty": "Intermédiaire",
-    "primaryMuscles": ["Quadriceps", "Fessiers", "Ischio-jambiers"],
-    "secondaryMuscles": ["Mollets", "Lombaires", "Abdominaux"],
-    "variants": ["Squat avant", "Goblet squat", "Presse à cuisses"],
-    "tips": ["Gardez le dos droit et gainé", "Descendez jusqu’à une amplitude confortable", "Poussez dans les talons pour remonter"]
+    "primaryMuscles": [
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Développé couché",
+      "Développé incliné barre",
+      "Développé incliné haltères"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
   },
   {
-    "id": "traction-pronation",
-    "category": "dos",
-    "title": "Traction pronation",
+    "id": "developpe-incline-barre",
+    "category": "pectoraux",
+    "title": "Développé incliné barre",
     "type": "Force",
     "mechanic": "Polyarticulaire",
-    "equipment": ["Barre de traction"],
+    "equipment": [
+      "Barre"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Pectoraux supérieurs",
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "secondaryMuscles": [
+      "Dentelé antérieur"
+    ],
+    "variants": [
+      "Développé couché",
+      "Développé couché haltères",
+      "Développé incliné haltères"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "developpe-incline-halteres",
+    "category": "pectoraux",
+    "title": "Développé incliné haltères",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Pectoraux supérieurs",
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "secondaryMuscles": [
+      "Dentelé antérieur"
+    ],
+    "variants": [
+      "Développé couché",
+      "Développé couché haltères",
+      "Développé incliné barre"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "developpe-decline",
+    "category": "pectoraux",
+    "title": "Développé décliné",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Pectoraux inférieurs",
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Développé couché",
+      "Développé couché haltères",
+      "Développé incliné barre"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pompes-classiques",
+    "category": "pectoraux",
+    "title": "Pompes classiques",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Pompes inclinées",
+      "Pompes déclinées",
+      "Pompes diamant"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pompes-inclinees",
+    "category": "pectoraux",
+    "title": "Pompes inclinées",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Pectoraux supérieurs",
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "secondaryMuscles": [
+      "Dentelé antérieur"
+    ],
+    "variants": [
+      "Pompes classiques",
+      "Pompes déclinées",
+      "Pompes diamant"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pompes-declinees",
+    "category": "pectoraux",
+    "title": "Pompes déclinées",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Pectoraux inférieurs",
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Pompes classiques",
+      "Pompes inclinées",
+      "Pompes diamant"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pompes-diamant",
+    "category": "pectoraux",
+    "title": "Pompes diamant",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Triceps",
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Deltoïdes antérieurs",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Pompes classiques",
+      "Pompes inclinées",
+      "Pompes déclinées"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pompes-explosives",
+    "category": "pectoraux",
+    "title": "Pompes explosives",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
     "difficulty": "Avancé",
-    "primaryMuscles": ["Grand dorsal", "Biceps", "Trapèzes"],
-    "secondaryMuscles": ["Rhomboïdes", "Deltoïdes postérieurs", "Avant-bras"],
-    "variants": ["Traction supination", "Tirage vertical", "Traction assistée"],
-    "tips": ["Gardez les épaules basses", "Tirez la poitrine vers la barre", "Contrôlez la descente sans vous laisser tomber"]
+    "primaryMuscles": [
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Pompes classiques",
+      "Pompes inclinées",
+      "Pompes déclinées"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "ecarte-couche-halteres",
+    "category": "pectoraux",
+    "title": "Écarté couché haltères",
+    "type": "Force",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Développé couché",
+      "Développé couché haltères",
+      "Développé incliné haltères"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "ecarte-incline-halteres",
+    "category": "pectoraux",
+    "title": "Écarté incliné haltères",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Pectoraux supérieurs",
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "secondaryMuscles": [
+      "Dentelé antérieur"
+    ],
+    "variants": [
+      "Développé couché haltères",
+      "Développé incliné barre",
+      "Développé incliné haltères"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "ecarte-a-la-poulie",
+    "category": "pectoraux",
+    "title": "Écarté à la poulie",
+    "type": "Force",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Écarté couché haltères",
+      "Écarté incliné haltères",
+      "Développé couché"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pec-deck",
+    "category": "pectoraux",
+    "title": "Pec deck",
+    "type": "Force",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Développé couché",
+      "Développé couché haltères",
+      "Développé incliné barre"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "dips-buste-penche",
+    "category": "pectoraux",
+    "title": "Dips buste penché",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barres parallèles"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Pectoraux inférieurs",
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Développé couché",
+      "Développé couché haltères",
+      "Développé incliné barre"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pull-over-haltere",
+    "category": "pectoraux",
+    "title": "Pull-over haltère",
+    "type": "Force",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltère"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Triceps long",
+      "Dentelé antérieur"
+    ],
+    "variants": [
+      "Développé couché haltères",
+      "Développé incliné haltères",
+      "Écarté couché haltères"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "chest-press",
+    "category": "pectoraux",
+    "title": "Chest press",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Svend press",
+      "Développé couché",
+      "Développé couché haltères"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "svend-press",
+    "category": "pectoraux",
+    "title": "Svend press",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Disque"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Chest press",
+      "Développé couché",
+      "Développé couché haltères"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "tractions-pronation",
+    "category": "dos",
+    "title": "Tractions pronation",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre de traction"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Biceps"
+    ],
+    "secondaryMuscles": [
+      "Rhomboïdes",
+      "Trapèzes",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Tractions supination",
+      "Tractions prise neutre",
+      "Tractions assistées"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "tractions-supination",
+    "category": "dos",
+    "title": "Tractions supination",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre de traction"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Biceps"
+    ],
+    "secondaryMuscles": [
+      "Rhomboïdes",
+      "Trapèzes",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Tractions pronation",
+      "Tractions prise neutre",
+      "Tractions assistées"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "tractions-prise-neutre",
+    "category": "dos",
+    "title": "Tractions prise neutre",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre de traction"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Biceps"
+    ],
+    "secondaryMuscles": [
+      "Rhomboïdes",
+      "Trapèzes",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Tractions pronation",
+      "Tractions supination",
+      "Tractions assistées"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "tractions-assistees",
+    "category": "dos",
+    "title": "Tractions assistées",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Machine",
+      "élastique"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Biceps"
+    ],
+    "secondaryMuscles": [
+      "Rhomboïdes",
+      "Trapèzes",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Tractions pronation",
+      "Tractions supination",
+      "Tractions prise neutre"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "tirage-vertical-poitrine",
+    "category": "dos",
+    "title": "Tirage vertical poitrine",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Biceps"
+    ],
+    "secondaryMuscles": [
+      "Rhomboïdes",
+      "Trapèzes",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Tirage vertical prise serrée",
+      "Tirage bras tendus",
+      "Tractions pronation"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "tirage-vertical-prise-serree",
+    "category": "dos",
+    "title": "Tirage vertical prise serrée",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Biceps"
+    ],
+    "secondaryMuscles": [
+      "Rhomboïdes",
+      "Trapèzes",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Tractions prise neutre",
+      "Tirage vertical poitrine",
+      "Tirage bras tendus"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "rowing-barre",
+    "category": "dos",
+    "title": "Rowing barre",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Rhomboïdes",
+      "Trapèzes"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Deltoïdes postérieurs",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Rowing haltère unilatéral",
+      "Rowing T-bar",
+      "Rowing assis poulie basse"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "rowing-haltere-unilateral",
+    "category": "dos",
+    "title": "Rowing haltère unilatéral",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Haltère"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Rhomboïdes",
+      "Trapèzes"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Deltoïdes postérieurs",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Rowing barre",
+      "Rowing T-bar",
+      "Rowing assis poulie basse"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "rowing-t-bar",
+    "category": "dos",
+    "title": "Rowing T-bar",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Machine",
+      "barre"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Rhomboïdes",
+      "Trapèzes"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Deltoïdes postérieurs",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Rowing barre",
+      "Rowing haltère unilatéral",
+      "Rowing assis poulie basse"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "rowing-assis-poulie-basse",
+    "category": "dos",
+    "title": "Rowing assis poulie basse",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Rhomboïdes",
+      "Trapèzes"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Deltoïdes postérieurs",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Tractions assistées",
+      "Rowing barre",
+      "Rowing haltère unilatéral"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "rowing-machine",
+    "category": "dos",
+    "title": "Rowing machine",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Rhomboïdes",
+      "Trapèzes"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Deltoïdes postérieurs",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Rowing barre",
+      "Rowing haltère unilatéral",
+      "Rowing T-bar"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "tirage-bras-tendus",
+    "category": "dos",
+    "title": "Tirage bras tendus",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Trapèzes"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Rhomboïdes",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Tirage vertical poitrine",
+      "Tirage vertical prise serrée",
+      "Tractions pronation"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "souleve-de-terre",
+    "category": "dos",
+    "title": "Soulevé de terre",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre"
+    ],
+    "difficulty": "Avancé",
+    "primaryMuscles": [
+      "Chaîne postérieure",
+      "Fessiers",
+      "Ischio-jambiers"
+    ],
+    "secondaryMuscles": [
+      "Lombaires",
+      "Trapèzes",
+      "Avant-bras",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Tractions pronation",
+      "Tractions supination"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "souleve-de-terre-roumain",
+    "category": "dos",
+    "title": "Soulevé de terre roumain",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Ischio-jambiers",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Lombaires",
+      "Adducteurs",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre",
+      "Tractions pronation",
+      "Tractions supination"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "extensions-lombaires",
+    "category": "dos",
+    "title": "Extensions lombaires",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Banc lombaire"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Lombaires"
+    ],
+    "secondaryMuscles": [
+      "Fessiers",
+      "Ischio-jambiers"
+    ],
+    "variants": [
+      "Tractions pronation",
+      "Tractions supination",
+      "Tractions prise neutre"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "superman",
+    "category": "dos",
+    "title": "Superman",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Lombaires"
+    ],
+    "secondaryMuscles": [
+      "Fessiers",
+      "Ischio-jambiers"
+    ],
+    "variants": [
+      "Tractions pronation",
+      "Tractions supination",
+      "Tractions prise neutre"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "face-pull",
+    "category": "dos",
+    "title": "Face pull",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie",
+      "élastique"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Deltoïdes postérieurs",
+      "Trapèzes moyens"
+    ],
+    "secondaryMuscles": [
+      "Rhomboïdes",
+      "Rotateurs externes"
+    ],
+    "variants": [
+      "Pull-over poulie",
+      "Tractions pronation",
+      "Tractions supination"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "shrugs",
+    "category": "dos",
+    "title": "Shrugs",
+    "type": "Force",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Trapèzes supérieurs"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Tractions pronation",
+      "Tractions supination",
+      "Tractions prise neutre"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pull-over-poulie",
+    "category": "dos",
+    "title": "Pull-over poulie",
+    "type": "Force",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Triceps long",
+      "Dentelé antérieur"
+    ],
+    "variants": [
+      "Rowing assis poulie basse",
+      "Face pull",
+      "Tractions pronation"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
   },
   {
     "id": "developpe-militaire",
@@ -44,37 +1086,3669 @@
     "title": "Développé militaire",
     "type": "Force",
     "mechanic": "Polyarticulaire",
-    "equipment": ["Barre olympique"],
+    "equipment": [
+      "Barre"
+    ],
     "difficulty": "Intermédiaire",
-    "primaryMuscles": ["Deltoïdes antérieurs", "Deltoïdes moyens", "Triceps"],
-    "secondaryMuscles": ["Trapèzes", "Abdominaux", "Pectoraux supérieurs"],
-    "variants": ["Développé haltères", "Arnold press", "Développé assis"],
-    "tips": ["Gardez le tronc gainé", "Ne cambrez pas excessivement le dos", "Poussez la barre verticalement au-dessus de la tête"]
+    "primaryMuscles": [
+      "Deltoïdes antérieurs",
+      "Deltoïdes moyens"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Trapèzes"
+    ],
+    "variants": [
+      "Développé épaules haltères",
+      "Shoulder press",
+      "Arnold press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
   },
   {
-    "id": "curl-barre",
-    "category": "bras",
-    "title": "Curl à la barre",
+    "id": "developpe-epaules-halteres",
+    "category": "epaules",
+    "title": "Développé épaules haltères",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Deltoïdes antérieurs",
+      "Deltoïdes moyens"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Trapèzes"
+    ],
+    "variants": [
+      "Développé militaire",
+      "Oiseau haltères",
+      "Shoulder press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "shoulder-press",
+    "category": "epaules",
+    "title": "Shoulder press",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Deltoïdes antérieurs",
+      "Deltoïdes moyens"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Trapèzes"
+    ],
+    "variants": [
+      "Arnold press",
+      "Cuban press",
+      "Développé militaire"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "arnold-press",
+    "category": "epaules",
+    "title": "Arnold press",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Deltoïdes antérieurs",
+      "Deltoïdes moyens"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Trapèzes"
+    ],
+    "variants": [
+      "Shoulder press",
+      "Cuban press",
+      "Développé militaire"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "elevations-laterales",
+    "category": "epaules",
+    "title": "Élévations latérales",
     "type": "Hypertrophie",
     "mechanic": "Isolation",
-    "equipment": ["Barre droite ou EZ"],
+    "equipment": [
+      "Haltères"
+    ],
     "difficulty": "Débutant",
-    "primaryMuscles": ["Biceps brachial", "Brachial antérieur"],
-    "secondaryMuscles": ["Avant-bras"],
-    "variants": ["Curl haltères", "Curl pupitre", "Curl marteau"],
-    "tips": ["Gardez les coudes près du corps", "Évitez de balancer le buste", "Contrôlez la descente"]
+    "primaryMuscles": [
+      "Deltoïdes moyens"
+    ],
+    "secondaryMuscles": [
+      "Trapèzes supérieurs"
+    ],
+    "variants": [
+      "Élévations latérales poulie",
+      "Élévations frontales",
+      "Développé militaire"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
   },
   {
-    "id": "gainage-planche",
-    "category": "abdos",
-    "title": "Gainage planche",
+    "id": "elevations-laterales-poulie",
+    "category": "epaules",
+    "title": "Élévations latérales poulie",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Deltoïdes moyens"
+    ],
+    "secondaryMuscles": [
+      "Trapèzes supérieurs"
+    ],
+    "variants": [
+      "Élévations latérales",
+      "Élévations frontales",
+      "Développé militaire"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "elevations-frontales",
+    "category": "epaules",
+    "title": "Élévations frontales",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères",
+      "disque"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Deltoïdes antérieurs"
+    ],
+    "secondaryMuscles": [
+      "Pectoraux supérieurs"
+    ],
+    "variants": [
+      "Élévations latérales",
+      "Élévations latérales poulie",
+      "Développé militaire"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "oiseau-halteres",
+    "category": "epaules",
+    "title": "Oiseau haltères",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Deltoïdes postérieurs"
+    ],
+    "secondaryMuscles": [
+      "Trapèzes moyens",
+      "Rhomboïdes"
+    ],
+    "variants": [
+      "Développé épaules haltères",
+      "Oiseau sur banc incliné",
+      "Développé militaire"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "oiseau-sur-banc-incline",
+    "category": "epaules",
+    "title": "Oiseau sur banc incliné",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Pectoraux supérieurs",
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "secondaryMuscles": [
+      "Dentelé antérieur"
+    ],
+    "variants": [
+      "Oiseau haltères",
+      "Développé militaire",
+      "Développé épaules haltères"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "reverse-pec-deck",
+    "category": "epaules",
+    "title": "Reverse pec deck",
+    "type": "Force",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Développé militaire",
+      "Développé épaules haltères",
+      "Shoulder press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "face-pull",
+    "category": "epaules",
+    "title": "Face pull",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie",
+      "élastique"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Deltoïdes postérieurs",
+      "Trapèzes moyens"
+    ],
+    "secondaryMuscles": [
+      "Rhomboïdes",
+      "Rotateurs externes"
+    ],
+    "variants": [
+      "Développé militaire",
+      "Développé épaules haltères",
+      "Shoulder press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "upright-row",
+    "category": "epaules",
+    "title": "Upright row",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Deltoïdes moyens",
+      "Trapèzes"
+    ],
+    "secondaryMuscles": [
+      "Biceps"
+    ],
+    "variants": [
+      "Développé militaire",
+      "Développé épaules haltères",
+      "Shoulder press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pike-push-up",
+    "category": "epaules",
+    "title": "Pike push-up",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Épaules",
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Pectoraux supérieurs",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Handstand push-up",
+      "Développé militaire",
+      "Développé épaules haltères"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "handstand-push-up",
+    "category": "epaules",
+    "title": "Handstand push-up",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Avancé",
+    "primaryMuscles": [
+      "Épaules",
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Pectoraux supérieurs",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Pike push-up",
+      "Développé militaire",
+      "Développé épaules haltères"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "cuban-press",
+    "category": "epaules",
+    "title": "Cuban press",
+    "type": "Prévention",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères légers"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Coiffe des rotateurs"
+    ],
+    "secondaryMuscles": [
+      "Deltoïdes postérieurs"
+    ],
+    "variants": [
+      "Shoulder press",
+      "Arnold press",
+      "Développé militaire"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "rotation-externe-epaule",
+    "category": "epaules",
+    "title": "Rotation externe épaule",
+    "type": "Prévention",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Élastique",
+      "poulie"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Coiffe des rotateurs"
+    ],
+    "secondaryMuscles": [
+      "Deltoïdes postérieurs"
+    ],
+    "variants": [
+      "Développé épaules haltères",
+      "Développé militaire",
+      "Shoulder press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-barre-droite",
+    "category": "biceps",
+    "title": "Curl barre droite",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre EZ",
+      "Curl haltères alterné",
+      "Curl marteau"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-barre-ez",
+    "category": "biceps",
+    "title": "Curl barre EZ",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre EZ"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl haltères alterné",
+      "Curl marteau"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-halteres-alterne",
+    "category": "biceps",
+    "title": "Curl haltères alterné",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl barre EZ",
+      "Curl marteau"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-marteau",
+    "category": "biceps",
+    "title": "Curl marteau",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl barre EZ",
+      "Curl haltères alterné"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-incline",
+    "category": "biceps",
+    "title": "Curl incliné",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Pectoraux supérieurs",
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "secondaryMuscles": [
+      "Dentelé antérieur"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl barre EZ",
+      "Curl haltères alterné"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-concentration",
+    "category": "biceps",
+    "title": "Curl concentration",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltère"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl barre EZ",
+      "Curl haltères alterné"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-pupitre",
+    "category": "biceps",
+    "title": "Curl pupitre",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre",
+      "machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl barre EZ",
+      "Curl haltères alterné"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-poulie-basse",
+    "category": "biceps",
+    "title": "Curl poulie basse",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl barre EZ",
+      "Curl haltères alterné"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-cable-unilateral",
+    "category": "biceps",
+    "title": "Curl câble unilatéral",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl barre EZ",
+      "Curl haltères alterné"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-spider",
+    "category": "biceps",
+    "title": "Curl spider",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl barre EZ",
+      "Curl haltères alterné"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "tractions-supination",
+    "category": "biceps",
+    "title": "Tractions supination",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre de traction"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Biceps"
+    ],
+    "secondaryMuscles": [
+      "Rhomboïdes",
+      "Trapèzes",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl barre EZ",
+      "Curl haltères alterné"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-zottman",
+    "category": "biceps",
+    "title": "Curl Zottman",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl barre EZ",
+      "Curl haltères alterné"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-inverse",
+    "category": "biceps",
+    "title": "Curl inversé",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl barre droite",
+      "Curl barre EZ",
+      "Curl haltères alterné"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "extension-triceps-poulie-corde",
+    "category": "triceps",
+    "title": "Extension triceps poulie corde",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Extension triceps poulie barre",
+      "Extension nuque haltère",
+      "Extension nuque barre EZ"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "extension-triceps-poulie-barre",
+    "category": "triceps",
+    "title": "Extension triceps poulie barre",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Extension triceps poulie corde",
+      "Extension nuque haltère",
+      "Extension nuque barre EZ"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "extension-nuque-haltere",
+    "category": "triceps",
+    "title": "Extension nuque haltère",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltère"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Extension triceps poulie corde",
+      "Extension triceps poulie barre",
+      "Extension nuque barre EZ"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "extension-nuque-barre-ez",
+    "category": "triceps",
+    "title": "Extension nuque barre EZ",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre EZ"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Extension triceps poulie corde",
+      "Extension triceps poulie barre",
+      "Extension nuque haltère"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "barre-au-front",
+    "category": "triceps",
+    "title": "Barre au front",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre EZ"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Extension triceps poulie barre",
+      "Extension nuque barre EZ",
+      "Extension triceps poulie corde"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "kickback-triceps",
+    "category": "triceps",
+    "title": "Kickback triceps",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Extension triceps poulie corde",
+      "Extension triceps poulie barre",
+      "Dips triceps"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "dips-triceps",
+    "category": "triceps",
+    "title": "Dips triceps",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Banc",
+      "barres"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Pectoraux",
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Extension triceps poulie corde",
+      "Extension triceps poulie barre",
+      "Kickback triceps"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pompes-diamant",
+    "category": "triceps",
+    "title": "Pompes diamant",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Triceps",
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Deltoïdes antérieurs",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Extension triceps poulie corde",
+      "Extension triceps poulie barre",
+      "Extension nuque haltère"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "developpe-couche-prise-serree",
+    "category": "triceps",
+    "title": "Développé couché prise serrée",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Pectoraux"
+    ],
+    "secondaryMuscles": [
+      "Triceps",
+      "Deltoïdes antérieurs"
+    ],
+    "variants": [
+      "Extension triceps poulie corde",
+      "Extension triceps poulie barre",
+      "Extension nuque haltère"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "extension-triceps-unilaterale",
+    "category": "triceps",
+    "title": "Extension triceps unilatérale",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie",
+      "haltère"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Extension triceps poulie corde",
+      "Extension triceps poulie barre",
+      "Extension nuque haltère"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "tate-press",
+    "category": "triceps",
+    "title": "Tate press",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Extension triceps poulie corde",
+      "Extension triceps poulie barre",
+      "Extension nuque haltère"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "extension-triceps-au-dessus-de-la-tete-poulie",
+    "category": "triceps",
+    "title": "Extension triceps au-dessus de la tête poulie",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Extension triceps poulie corde",
+      "Extension triceps poulie barre",
+      "Extension nuque haltère"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "squat-arriere",
+    "category": "jambes-quadriceps",
+    "title": "Squat arrière",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Squat avant",
+      "Goblet squat",
+      "Hack squat"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "squat-avant",
+    "category": "jambes-quadriceps",
+    "title": "Squat avant",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre"
+    ],
+    "difficulty": "Avancé",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Squat arrière",
+      "Goblet squat",
+      "Hack squat"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "goblet-squat",
+    "category": "jambes-quadriceps",
+    "title": "Goblet squat",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Haltère",
+      "kettlebell"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Squat arrière",
+      "Squat avant",
+      "Hack squat"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "hack-squat",
+    "category": "jambes-quadriceps",
+    "title": "Hack squat",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Squat arrière",
+      "Squat avant",
+      "Goblet squat"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "presse-a-cuisses",
+    "category": "jambes-quadriceps",
+    "title": "Presse à cuisses",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Squat arrière",
+      "Squat avant",
+      "Goblet squat"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "leg-extension",
+    "category": "jambes-quadriceps",
+    "title": "Leg extension",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Quadriceps"
+    ],
+    "secondaryMuscles": [
+      "Fléchisseurs de hanche"
+    ],
+    "variants": [
+      "Squat arrière",
+      "Squat avant",
+      "Goblet squat"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "fentes-avant",
+    "category": "jambes-quadriceps",
+    "title": "Fentes avant",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps",
+      "haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Squat avant",
+      "Fentes marchées",
+      "Fentes bulgares"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "fentes-marchees",
+    "category": "jambes-quadriceps",
+    "title": "Fentes marchées",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps",
+      "haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Fentes avant",
+      "Fentes bulgares",
+      "Squat arrière"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "fentes-bulgares",
+    "category": "jambes-quadriceps",
+    "title": "Fentes bulgares",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Fentes avant",
+      "Fentes marchées",
+      "Squat arrière"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "step-up",
+    "category": "jambes-quadriceps",
+    "title": "Step-up",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Banc",
+      "haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Squat arrière",
+      "Squat avant",
+      "Goblet squat"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "sissy-squat",
+    "category": "jambes-quadriceps",
+    "title": "Sissy squat",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Avancé",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Squat arrière",
+      "Squat avant",
+      "Goblet squat"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "wall-sit-chaise",
+    "category": "jambes-quadriceps",
+    "title": "Wall sit / chaise",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Squat arrière",
+      "Squat avant",
+      "Goblet squat"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "squat-saute",
+    "category": "jambes-quadriceps",
+    "title": "Squat sauté",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Squat arrière",
+      "Squat avant",
+      "Goblet squat"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pistol-squat-assiste",
+    "category": "jambes-quadriceps",
+    "title": "Pistol squat assisté",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Avancé",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Squat arrière",
+      "Squat avant",
+      "Goblet squat"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "souleve-de-terre-roumain",
+    "category": "jambes-ischios-fessiers",
+    "title": "Soulevé de terre roumain",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Ischio-jambiers",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Lombaires",
+      "Adducteurs",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre jambes tendues",
+      "Hip thrust",
+      "Glute bridge"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "souleve-de-terre-jambes-tendues",
+    "category": "jambes-ischios-fessiers",
+    "title": "Soulevé de terre jambes tendues",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Ischio-jambiers",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Lombaires",
+      "Adducteurs",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Hip thrust",
+      "Glute bridge"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "hip-thrust",
+    "category": "jambes-ischios-fessiers",
+    "title": "Hip thrust",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre",
+      "machine"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Soulevé de terre jambes tendues",
+      "Glute bridge"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "glute-bridge",
+    "category": "jambes-ischios-fessiers",
+    "title": "Glute bridge",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poids du corps",
+      "barre"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Soulevé de terre jambes tendues",
+      "Hip thrust"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "leg-curl-allonge",
+    "category": "jambes-ischios-fessiers",
+    "title": "Leg curl allongé",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Leg curl assis",
+      "Leg curl debout",
+      "Nordic curl"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "leg-curl-assis",
+    "category": "jambes-ischios-fessiers",
+    "title": "Leg curl assis",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Leg curl allongé",
+      "Leg curl debout",
+      "Nordic curl"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "leg-curl-debout",
+    "category": "jambes-ischios-fessiers",
+    "title": "Leg curl debout",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Leg curl allongé",
+      "Leg curl assis",
+      "Nordic curl"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "good-morning",
+    "category": "jambes-ischios-fessiers",
+    "title": "Good morning",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Barre"
+    ],
+    "difficulty": "Avancé",
+    "primaryMuscles": [
+      "Ischio-jambiers",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Lombaires",
+      "Adducteurs",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Soulevé de terre jambes tendues",
+      "Hip thrust"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pull-through",
+    "category": "jambes-ischios-fessiers",
+    "title": "Pull-through",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Soulevé de terre jambes tendues",
+      "Hip thrust"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "kettlebell-swing",
+    "category": "jambes-ischios-fessiers",
+    "title": "Kettlebell swing",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Kettlebell"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Fessiers",
+      "Ischio-jambiers"
+    ],
+    "secondaryMuscles": [
+      "Lombaires",
+      "Abdominaux",
+      "Épaules"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Soulevé de terre jambes tendues",
+      "Hip thrust"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "fentes-arriere",
+    "category": "jambes-ischios-fessiers",
+    "title": "Fentes arrière",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps",
+      "haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Soulevé de terre jambes tendues",
+      "Hip thrust"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "abduction-hanche-machine",
+    "category": "jambes-ischios-fessiers",
+    "title": "Abduction hanche machine",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Soulevé de terre jambes tendues",
+      "Hip thrust"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "kickback-fessier-poulie",
+    "category": "jambes-ischios-fessiers",
+    "title": "Kickback fessier poulie",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Triceps"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Soulevé de terre jambes tendues",
+      "Hip thrust"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "donkey-kicks",
+    "category": "jambes-ischios-fessiers",
+    "title": "Donkey kicks",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Soulevé de terre jambes tendues",
+      "Hip thrust"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "fire-hydrants",
+    "category": "jambes-ischios-fessiers",
+    "title": "Fire hydrants",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Soulevé de terre roumain",
+      "Soulevé de terre jambes tendues",
+      "Hip thrust"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "nordic-curl",
+    "category": "jambes-ischios-fessiers",
+    "title": "Nordic curl",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Avancé",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Leg curl allongé",
+      "Leg curl assis",
+      "Leg curl debout"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "mollets-debout",
+    "category": "mollets",
+    "title": "Mollets debout",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Machine",
+      "haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Mollets"
+    ],
+    "secondaryMuscles": [
+      "Soléaire",
+      "Tibial postérieur"
+    ],
+    "variants": [
+      "Mollets assis",
+      "Mollets à la presse",
+      "Mollets unilatéral"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "mollets-assis",
+    "category": "mollets",
+    "title": "Mollets assis",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Mollets"
+    ],
+    "secondaryMuscles": [
+      "Soléaire",
+      "Tibial postérieur"
+    ],
+    "variants": [
+      "Mollets debout",
+      "Mollets à la presse",
+      "Mollets unilatéral"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "mollets-a-la-presse",
+    "category": "mollets",
+    "title": "Mollets à la presse",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Mollets"
+    ],
+    "secondaryMuscles": [
+      "Soléaire",
+      "Tibial postérieur"
+    ],
+    "variants": [
+      "Mollets debout",
+      "Mollets assis",
+      "Mollets unilatéral"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "mollets-unilateral",
+    "category": "mollets",
+    "title": "Mollets unilatéral",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poids du corps",
+      "haltère"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Mollets"
+    ],
+    "secondaryMuscles": [
+      "Soléaire",
+      "Tibial postérieur"
+    ],
+    "variants": [
+      "Mollets debout",
+      "Mollets assis",
+      "Mollets à la presse"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "farmer-walk-sur-pointes",
+    "category": "mollets",
+    "title": "Farmer walk sur pointes",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Mollets"
+    ],
+    "secondaryMuscles": [
+      "Soléaire",
+      "Tibial postérieur"
+    ],
+    "variants": [
+      "Mollets debout",
+      "Mollets assis",
+      "Mollets à la presse"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "sauts-a-la-corde",
+    "category": "mollets",
+    "title": "Sauts à la corde",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Corde"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Mollets"
+    ],
+    "secondaryMuscles": [
+      "Soléaire"
+    ],
+    "variants": [
+      "Mollets debout",
+      "Mollets assis",
+      "Mollets à la presse"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "donkey-calf-raise",
+    "category": "mollets",
+    "title": "Donkey calf raise",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Machine",
+      "partenaire"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Mollets"
+    ],
+    "secondaryMuscles": [
+      "Soléaire",
+      "Tibial postérieur"
+    ],
+    "variants": [
+      "Mollets debout",
+      "Mollets assis",
+      "Mollets à la presse"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "crunch",
+    "category": "abdos-gainage",
+    "title": "Crunch",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Grand droit"
+    ],
+    "secondaryMuscles": [
+      "Fléchisseurs de hanche",
+      "Obliques"
+    ],
+    "variants": [
+      "Crunch poulie haute",
+      "Reverse crunch",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "crunch-poulie-haute",
+    "category": "abdos-gainage",
+    "title": "Crunch poulie haute",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poulie"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand droit"
+    ],
+    "secondaryMuscles": [
+      "Fléchisseurs de hanche",
+      "Obliques"
+    ],
+    "variants": [
+      "Crunch",
+      "Reverse crunch",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "releve-de-jambes-au-sol",
+    "category": "abdos-gainage",
+    "title": "Relevé de jambes au sol",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Grand droit"
+    ],
+    "secondaryMuscles": [
+      "Fléchisseurs de hanche",
+      "Obliques"
+    ],
+    "variants": [
+      "Relevé de jambes suspendu",
+      "Relevé de genoux suspendu",
+      "Crunch"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "releve-de-jambes-suspendu",
+    "category": "abdos-gainage",
+    "title": "Relevé de jambes suspendu",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand droit"
+    ],
+    "secondaryMuscles": [
+      "Fléchisseurs de hanche",
+      "Obliques"
+    ],
+    "variants": [
+      "Relevé de jambes au sol",
+      "Relevé de genoux suspendu",
+      "Crunch"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "releve-de-genoux-suspendu",
+    "category": "abdos-gainage",
+    "title": "Relevé de genoux suspendu",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Grand droit"
+    ],
+    "secondaryMuscles": [
+      "Fléchisseurs de hanche",
+      "Obliques"
+    ],
+    "variants": [
+      "Relevé de jambes au sol",
+      "Relevé de jambes suspendu",
+      "Crunch"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "reverse-crunch",
+    "category": "abdos-gainage",
+    "title": "Reverse crunch",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Grand droit"
+    ],
+    "secondaryMuscles": [
+      "Fléchisseurs de hanche",
+      "Obliques"
+    ],
+    "variants": [
+      "Crunch",
+      "Crunch poulie haute",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "sit-up",
+    "category": "abdos-gainage",
+    "title": "Sit-up",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Grand droit"
+    ],
+    "secondaryMuscles": [
+      "Fléchisseurs de hanche",
+      "Obliques"
+    ],
+    "variants": [
+      "Crunch",
+      "Crunch poulie haute",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "planche",
+    "category": "abdos-gainage",
+    "title": "Planche",
     "type": "Renforcement",
     "mechanic": "Isométrique",
-    "equipment": ["Poids du corps", "Tapis"],
+    "equipment": [
+      "Poids du corps"
+    ],
     "difficulty": "Débutant",
-    "primaryMuscles": ["Grand droit", "Transverse", "Obliques"],
-    "secondaryMuscles": ["Fessiers", "Épaules", "Lombaires"],
-    "variants": ["Gainage latéral", "Planche dynamique", "Planche avec lever de jambe"],
-    "tips": ["Gardez le corps aligné", "Contractez les abdominaux et les fessiers", "Respirez régulièrement"]
+    "primaryMuscles": [
+      "Transverse",
+      "Grand droit",
+      "Obliques"
+    ],
+    "secondaryMuscles": [
+      "Fessiers",
+      "Lombaires",
+      "Épaules"
+    ],
+    "variants": [
+      "Planche latérale",
+      "Crunch",
+      "Crunch poulie haute"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "planche-laterale",
+    "category": "abdos-gainage",
+    "title": "Planche latérale",
+    "type": "Renforcement",
+    "mechanic": "Isométrique",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Transverse",
+      "Grand droit",
+      "Obliques"
+    ],
+    "secondaryMuscles": [
+      "Fessiers",
+      "Lombaires",
+      "Épaules"
+    ],
+    "variants": [
+      "Planche",
+      "Crunch",
+      "Crunch poulie haute"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "dead-bug",
+    "category": "abdos-gainage",
+    "title": "Dead bug",
+    "type": "Renforcement",
+    "mechanic": "Isométrique",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Transverse",
+      "Grand droit",
+      "Obliques"
+    ],
+    "secondaryMuscles": [
+      "Fessiers",
+      "Lombaires",
+      "Épaules"
+    ],
+    "variants": [
+      "Crunch",
+      "Crunch poulie haute",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "hollow-hold",
+    "category": "abdos-gainage",
+    "title": "Hollow hold",
+    "type": "Renforcement",
+    "mechanic": "Isométrique",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Transverse",
+      "Grand droit",
+      "Obliques"
+    ],
+    "secondaryMuscles": [
+      "Fessiers",
+      "Lombaires",
+      "Épaules"
+    ],
+    "variants": [
+      "Crunch",
+      "Crunch poulie haute",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "mountain-climbers",
+    "category": "abdos-gainage",
+    "title": "Mountain climbers",
+    "type": "Renforcement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Obliques",
+      "Grand droit"
+    ],
+    "secondaryMuscles": [
+      "Transverse",
+      "Fléchisseurs de hanche"
+    ],
+    "variants": [
+      "Crunch",
+      "Crunch poulie haute",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "russian-twist",
+    "category": "abdos-gainage",
+    "title": "Russian twist",
+    "type": "Renforcement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Poids du corps",
+      "disque"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Obliques",
+      "Grand droit"
+    ],
+    "secondaryMuscles": [
+      "Transverse",
+      "Fléchisseurs de hanche"
+    ],
+    "variants": [
+      "Crunch",
+      "Crunch poulie haute",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "woodchopper",
+    "category": "abdos-gainage",
+    "title": "Woodchopper",
+    "type": "Renforcement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Poulie",
+      "élastique"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Obliques",
+      "Grand droit"
+    ],
+    "secondaryMuscles": [
+      "Transverse",
+      "Fléchisseurs de hanche"
+    ],
+    "variants": [
+      "Crunch",
+      "Crunch poulie haute",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "pallof-press",
+    "category": "abdos-gainage",
+    "title": "Pallof press",
+    "type": "Renforcement",
+    "mechanic": "Isométrique",
+    "equipment": [
+      "Poulie",
+      "élastique"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Transverse",
+      "Grand droit",
+      "Obliques"
+    ],
+    "secondaryMuscles": [
+      "Fessiers",
+      "Lombaires",
+      "Épaules"
+    ],
+    "variants": [
+      "Crunch",
+      "Crunch poulie haute",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "ab-wheel-rollout",
+    "category": "abdos-gainage",
+    "title": "Ab wheel rollout",
+    "type": "Renforcement",
+    "mechanic": "Isométrique",
+    "equipment": [
+      "Roue abdominale"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Transverse",
+      "Grand droit",
+      "Obliques"
+    ],
+    "secondaryMuscles": [
+      "Fessiers",
+      "Lombaires",
+      "Épaules"
+    ],
+    "variants": [
+      "Crunch",
+      "Crunch poulie haute",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "gainage-superman",
+    "category": "abdos-gainage",
+    "title": "Gainage Superman",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Lombaires"
+    ],
+    "secondaryMuscles": [
+      "Fessiers",
+      "Ischio-jambiers"
+    ],
+    "variants": [
+      "Crunch",
+      "Crunch poulie haute",
+      "Relevé de jambes au sol"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-poignets",
+    "category": "avant-bras-grip",
+    "title": "Curl poignets",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl poignets inversé",
+      "Curl inversé",
+      "Farmer walk"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-poignets-inverse",
+    "category": "avant-bras-grip",
+    "title": "Curl poignets inversé",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl poignets",
+      "Curl inversé",
+      "Farmer walk"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "farmer-walk",
+    "category": "avant-bras-grip",
+    "title": "Farmer walk",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères",
+      "kettlebells"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Avant-bras",
+      "Grip"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Trapèzes"
+    ],
+    "variants": [
+      "Curl poignets",
+      "Curl poignets inversé",
+      "Dead hang"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "dead-hang",
+    "category": "avant-bras-grip",
+    "title": "Dead hang",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre de traction"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Avant-bras",
+      "Grip"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Trapèzes"
+    ],
+    "variants": [
+      "Curl poignets",
+      "Curl poignets inversé",
+      "Farmer walk"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "plate-pinch",
+    "category": "avant-bras-grip",
+    "title": "Plate pinch",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Disques"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Avant-bras",
+      "Grip"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Trapèzes"
+    ],
+    "variants": [
+      "Curl poignets",
+      "Curl poignets inversé",
+      "Farmer walk"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "curl-inverse",
+    "category": "avant-bras-grip",
+    "title": "Curl inversé",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Biceps brachial",
+      "Brachial antérieur"
+    ],
+    "secondaryMuscles": [
+      "Avant-bras"
+    ],
+    "variants": [
+      "Curl poignets",
+      "Curl poignets inversé",
+      "Farmer walk"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "wrist-roller",
+    "category": "avant-bras-grip",
+    "title": "Wrist roller",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Rouleau poignet"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Avant-bras",
+      "Grip"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Trapèzes"
+    ],
+    "variants": [
+      "Curl poignets",
+      "Curl poignets inversé",
+      "Farmer walk"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "burpees",
+    "category": "full-body-fonctionnel",
+    "title": "Burpees",
+    "type": "Conditionnement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Chaîne postérieure",
+      "Quadriceps",
+      "Épaules"
+    ],
+    "secondaryMuscles": [
+      "Abdominaux",
+      "Fessiers",
+      "Dos"
+    ],
+    "variants": [
+      "Thruster",
+      "Clean and press",
+      "Turkish get-up"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "thruster",
+    "category": "full-body-fonctionnel",
+    "title": "Thruster",
+    "type": "Conditionnement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Haltères",
+      "barre"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Chaîne postérieure",
+      "Quadriceps",
+      "Épaules"
+    ],
+    "secondaryMuscles": [
+      "Abdominaux",
+      "Fessiers",
+      "Dos"
+    ],
+    "variants": [
+      "Burpees",
+      "Clean and press",
+      "Turkish get-up"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "clean-and-press",
+    "category": "full-body-fonctionnel",
+    "title": "Clean and press",
+    "type": "Conditionnement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Barre",
+      "haltères"
+    ],
+    "difficulty": "Avancé",
+    "primaryMuscles": [
+      "Chaîne postérieure",
+      "Quadriceps",
+      "Épaules"
+    ],
+    "secondaryMuscles": [
+      "Abdominaux",
+      "Fessiers",
+      "Dos"
+    ],
+    "variants": [
+      "Burpees",
+      "Thruster",
+      "Turkish get-up"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "turkish-get-up",
+    "category": "full-body-fonctionnel",
+    "title": "Turkish get-up",
+    "type": "Conditionnement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Kettlebell"
+    ],
+    "difficulty": "Avancé",
+    "primaryMuscles": [
+      "Chaîne postérieure",
+      "Quadriceps",
+      "Épaules"
+    ],
+    "secondaryMuscles": [
+      "Abdominaux",
+      "Fessiers",
+      "Dos"
+    ],
+    "variants": [
+      "Burpees",
+      "Thruster",
+      "Clean and press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "farmer-walk",
+    "category": "full-body-fonctionnel",
+    "title": "Farmer walk",
+    "type": "Renforcement",
+    "mechanic": "Isolation",
+    "equipment": [
+      "Haltères",
+      "kettlebells"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Avant-bras",
+      "Grip"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Trapèzes"
+    ],
+    "variants": [
+      "Burpees",
+      "Thruster",
+      "Clean and press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "sled-push",
+    "category": "full-body-fonctionnel",
+    "title": "Sled push",
+    "type": "Conditionnement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Traîneau"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Chaîne postérieure",
+      "Quadriceps",
+      "Épaules"
+    ],
+    "secondaryMuscles": [
+      "Abdominaux",
+      "Fessiers",
+      "Dos"
+    ],
+    "variants": [
+      "Burpees",
+      "Thruster",
+      "Clean and press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "battle-rope",
+    "category": "full-body-fonctionnel",
+    "title": "Battle rope",
+    "type": "Conditionnement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Cordes"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Chaîne postérieure",
+      "Quadriceps",
+      "Épaules"
+    ],
+    "secondaryMuscles": [
+      "Abdominaux",
+      "Fessiers",
+      "Dos"
+    ],
+    "variants": [
+      "Burpees",
+      "Thruster",
+      "Clean and press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "med-ball-slam",
+    "category": "full-body-fonctionnel",
+    "title": "Med ball slam",
+    "type": "Conditionnement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Médecine ball"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Chaîne postérieure",
+      "Quadriceps",
+      "Épaules"
+    ],
+    "secondaryMuscles": [
+      "Abdominaux",
+      "Fessiers",
+      "Dos"
+    ],
+    "variants": [
+      "Burpees",
+      "Thruster",
+      "Clean and press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "bear-crawl",
+    "category": "full-body-fonctionnel",
+    "title": "Bear crawl",
+    "type": "Conditionnement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Chaîne postérieure",
+      "Quadriceps",
+      "Épaules"
+    ],
+    "secondaryMuscles": [
+      "Abdominaux",
+      "Fessiers",
+      "Dos"
+    ],
+    "variants": [
+      "Burpees",
+      "Thruster",
+      "Clean and press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "jumping-jacks",
+    "category": "full-body-fonctionnel",
+    "title": "Jumping jacks",
+    "type": "Conditionnement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Chaîne postérieure",
+      "Quadriceps",
+      "Épaules"
+    ],
+    "secondaryMuscles": [
+      "Abdominaux",
+      "Fessiers",
+      "Dos"
+    ],
+    "variants": [
+      "Burpees",
+      "Thruster",
+      "Clean and press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "kettlebell-swing",
+    "category": "full-body-fonctionnel",
+    "title": "Kettlebell swing",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Kettlebell"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Fessiers",
+      "Ischio-jambiers"
+    ],
+    "secondaryMuscles": [
+      "Lombaires",
+      "Abdominaux",
+      "Épaules"
+    ],
+    "variants": [
+      "Burpees",
+      "Thruster",
+      "Clean and press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "renegade-row",
+    "category": "full-body-fonctionnel",
+    "title": "Renegade row",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Haltères"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Grand dorsal",
+      "Rhomboïdes",
+      "Trapèzes"
+    ],
+    "secondaryMuscles": [
+      "Biceps",
+      "Deltoïdes postérieurs",
+      "Avant-bras"
+    ],
+    "variants": [
+      "Burpees",
+      "Thruster",
+      "Clean and press"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "course-tapis",
+    "category": "cardio-hiit",
+    "title": "Course tapis",
+    "type": "Cardio / HIIT",
+    "mechanic": "Cardio",
+    "equipment": [
+      "Tapis"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Système cardiovasculaire"
+    ],
+    "secondaryMuscles": [
+      "Quadriceps",
+      "Fessiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Vélo",
+      "Rameur",
+      "Vélo elliptique"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "velo",
+    "category": "cardio-hiit",
+    "title": "Vélo",
+    "type": "Cardio / HIIT",
+    "mechanic": "Cardio",
+    "equipment": [
+      "Vélo"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Système cardiovasculaire"
+    ],
+    "secondaryMuscles": [
+      "Quadriceps",
+      "Fessiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Vélo elliptique",
+      "Course tapis",
+      "Rameur"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "rameur",
+    "category": "cardio-hiit",
+    "title": "Rameur",
+    "type": "Cardio / HIIT",
+    "mechanic": "Cardio",
+    "equipment": [
+      "Rameur"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Système cardiovasculaire"
+    ],
+    "secondaryMuscles": [
+      "Quadriceps",
+      "Fessiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Course tapis",
+      "Vélo",
+      "Vélo elliptique"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "velo-elliptique",
+    "category": "cardio-hiit",
+    "title": "Vélo elliptique",
+    "type": "Cardio / HIIT",
+    "mechanic": "Cardio",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Système cardiovasculaire"
+    ],
+    "secondaryMuscles": [
+      "Quadriceps",
+      "Fessiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Vélo",
+      "Course tapis",
+      "Rameur"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "assault-bike",
+    "category": "cardio-hiit",
+    "title": "Assault bike",
+    "type": "Cardio / HIIT",
+    "mechanic": "Cardio",
+    "equipment": [
+      "Machine"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Système cardiovasculaire"
+    ],
+    "secondaryMuscles": [
+      "Quadriceps",
+      "Fessiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Course tapis",
+      "Vélo",
+      "Rameur"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "corde-a-sauter",
+    "category": "cardio-hiit",
+    "title": "Corde à sauter",
+    "type": "Cardio / HIIT",
+    "mechanic": "Cardio",
+    "equipment": [
+      "Corde"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Système cardiovasculaire"
+    ],
+    "secondaryMuscles": [
+      "Quadriceps",
+      "Fessiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Course tapis",
+      "Vélo",
+      "Rameur"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "sprint",
+    "category": "cardio-hiit",
+    "title": "Sprint",
+    "type": "Cardio / HIIT",
+    "mechanic": "Cardio",
+    "equipment": [
+      "Aucun"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Système cardiovasculaire"
+    ],
+    "secondaryMuscles": [
+      "Quadriceps",
+      "Fessiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Course tapis",
+      "Vélo",
+      "Rameur"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "montees-de-genoux",
+    "category": "cardio-hiit",
+    "title": "Montées de genoux",
+    "type": "Cardio / HIIT",
+    "mechanic": "Cardio",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Système cardiovasculaire"
+    ],
+    "secondaryMuscles": [
+      "Quadriceps",
+      "Fessiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Course tapis",
+      "Vélo",
+      "Rameur"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "jump-squat",
+    "category": "cardio-hiit",
+    "title": "Jump squat",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Quadriceps",
+      "Fessiers"
+    ],
+    "secondaryMuscles": [
+      "Ischio-jambiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Course tapis",
+      "Vélo",
+      "Rameur"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "burpees",
+    "category": "cardio-hiit",
+    "title": "Burpees",
+    "type": "Conditionnement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": [
+      "Chaîne postérieure",
+      "Quadriceps",
+      "Épaules"
+    ],
+    "secondaryMuscles": [
+      "Abdominaux",
+      "Fessiers",
+      "Dos"
+    ],
+    "variants": [
+      "Course tapis",
+      "Vélo",
+      "Rameur"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "mountain-climbers",
+    "category": "cardio-hiit",
+    "title": "Mountain climbers",
+    "type": "Renforcement",
+    "mechanic": "Fonctionnel",
+    "equipment": [
+      "Poids du corps"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Obliques",
+      "Grand droit"
+    ],
+    "secondaryMuscles": [
+      "Transverse",
+      "Fléchisseurs de hanche"
+    ],
+    "variants": [
+      "Course tapis",
+      "Vélo",
+      "Rameur"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
+  },
+  {
+    "id": "shadow-boxing",
+    "category": "cardio-hiit",
+    "title": "Shadow boxing",
+    "type": "Cardio / HIIT",
+    "mechanic": "Cardio",
+    "equipment": [
+      "Aucun"
+    ],
+    "difficulty": "Débutant",
+    "primaryMuscles": [
+      "Système cardiovasculaire"
+    ],
+    "secondaryMuscles": [
+      "Quadriceps",
+      "Fessiers",
+      "Mollets",
+      "Abdominaux"
+    ],
+    "variants": [
+      "Course tapis",
+      "Vélo",
+      "Rameur"
+    ],
+    "tips": [
+      "Gardez une posture stable et contrôlée",
+      "Respirez de façon régulière pendant le mouvement",
+      "Privilégiez une exécution propre plutôt qu’une charge trop lourde"
+    ]
   }
 ]
