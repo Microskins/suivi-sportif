@@ -1,0 +1,80 @@
+[
+  {
+    "id": "developpe-couche-barre",
+    "category": "pectoraux",
+    "title": "Développé couché à la barre",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": ["Barre olympique", "Banc plat"],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": ["Pectoraux", "Triceps", "Deltoïdes antérieurs"],
+    "secondaryMuscles": ["Dentelé antérieur"],
+    "variants": ["Développé couché prise serrée", "Développé incliné à la barre"],
+    "tips": ["Gardez les pieds bien ancrés au sol", "Descendez la barre de manière contrôlée", "Poussez explosivement à la montée en contractant les pectoraux"]
+  },
+  {
+    "id": "squat-barre",
+    "category": "jambes",
+    "title": "Squat à la barre",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": ["Barre olympique", "Rack à squat"],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": ["Quadriceps", "Fessiers", "Ischio-jambiers"],
+    "secondaryMuscles": ["Mollets", "Lombaires", "Abdominaux"],
+    "variants": ["Squat avant", "Goblet squat", "Presse à cuisses"],
+    "tips": ["Gardez le dos droit et gainé", "Descendez jusqu’à une amplitude confortable", "Poussez dans les talons pour remonter"]
+  },
+  {
+    "id": "traction-pronation",
+    "category": "dos",
+    "title": "Traction pronation",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": ["Barre de traction"],
+    "difficulty": "Avancé",
+    "primaryMuscles": ["Grand dorsal", "Biceps", "Trapèzes"],
+    "secondaryMuscles": ["Rhomboïdes", "Deltoïdes postérieurs", "Avant-bras"],
+    "variants": ["Traction supination", "Tirage vertical", "Traction assistée"],
+    "tips": ["Gardez les épaules basses", "Tirez la poitrine vers la barre", "Contrôlez la descente sans vous laisser tomber"]
+  },
+  {
+    "id": "developpe-militaire",
+    "category": "epaules",
+    "title": "Développé militaire",
+    "type": "Force",
+    "mechanic": "Polyarticulaire",
+    "equipment": ["Barre olympique"],
+    "difficulty": "Intermédiaire",
+    "primaryMuscles": ["Deltoïdes antérieurs", "Deltoïdes moyens", "Triceps"],
+    "secondaryMuscles": ["Trapèzes", "Abdominaux", "Pectoraux supérieurs"],
+    "variants": ["Développé haltères", "Arnold press", "Développé assis"],
+    "tips": ["Gardez le tronc gainé", "Ne cambrez pas excessivement le dos", "Poussez la barre verticalement au-dessus de la tête"]
+  },
+  {
+    "id": "curl-barre",
+    "category": "bras",
+    "title": "Curl à la barre",
+    "type": "Hypertrophie",
+    "mechanic": "Isolation",
+    "equipment": ["Barre droite ou EZ"],
+    "difficulty": "Débutant",
+    "primaryMuscles": ["Biceps brachial", "Brachial antérieur"],
+    "secondaryMuscles": ["Avant-bras"],
+    "variants": ["Curl haltères", "Curl pupitre", "Curl marteau"],
+    "tips": ["Gardez les coudes près du corps", "Évitez de balancer le buste", "Contrôlez la descente"]
+  },
+  {
+    "id": "gainage-planche",
+    "category": "abdos",
+    "title": "Gainage planche",
+    "type": "Renforcement",
+    "mechanic": "Isométrique",
+    "equipment": ["Poids du corps", "Tapis"],
+    "difficulty": "Débutant",
+    "primaryMuscles": ["Grand droit", "Transverse", "Obliques"],
+    "secondaryMuscles": ["Fessiers", "Épaules", "Lombaires"],
+    "variants": ["Gainage latéral", "Planche dynamique", "Planche avec lever de jambe"],
+    "tips": ["Gardez le corps aligné", "Contractez les abdominaux et les fessiers", "Respirez régulièrement"]
+  }
+]
