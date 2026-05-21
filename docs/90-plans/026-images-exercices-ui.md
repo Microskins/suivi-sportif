@@ -18,8 +18,17 @@
 - [x] Afficher image dans la liste Exercices.
 - [x] Ajouter apercu image au survol/focus dans le formulaire de seance.
 - [x] Verifier le typage TypeScript.
+- [x] Diagnostiquer les images manquantes servies en 200 HTML.
+- [x] Corriger le fallback des assets exercices et l'affichage en erreur.
+- [x] Revalider le typage/frontend.
 
 ## Notes de verification
 
 - `npx tsc --noEmit` (dans `client/`) : OK.
 - `npm run build -w client` non valide dans cet environnement WSL (Node 18, Vite requiert Node 20.19+).
+- `Invoke-WebRequest https://suivi-sportif.fr/exercices-assets/images/wall-sit-chaise.png` : 200 `text/html`, contenu `index.html`; le PNG n'est pas servi.
+- Inventaire local `client/public/exercices-assets/exercices.json` vs `client/public/exercices-assets/images` : 100 images referencees absentes, dont `images/wall-sit-chaise.png`.
+- Correction Nginx client : `/exercices-assets/` et `/assets/` utilisent `try_files $uri =404` pour ne plus renvoyer `index.html` en faux 200.
+- Correction UI : `ExerciseImagePreview` affiche `Image indisponible` quand le chargement ou le decodage image echoue.
+- `npm run typecheck -w client` via WSL : OK.
+- `nginx -t` via Docker non lanceable localement : Docker present dans WSL mais acces refuse a `/var/run/docker.sock`.

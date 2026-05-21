@@ -191,12 +191,18 @@ function ExerciseImagePreview({
   label: string;
   className?: string;
 }) {
-  if (!imageUrl) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [imageUrl]);
+
+  if (!imageUrl || imageFailed) {
     return (
       <div
         className={`flex items-center justify-center rounded border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500 ${className}`}
       >
-        Aucune image
+        {imageUrl ? "Image indisponible" : "Aucune image"}
       </div>
     );
   }
@@ -207,6 +213,7 @@ function ExerciseImagePreview({
       alt={`Illustration de ${label}`}
       className={`rounded border border-slate-200 object-cover ${className}`}
       loading="lazy"
+      onError={() => setImageFailed(true)}
     />
   );
 }
