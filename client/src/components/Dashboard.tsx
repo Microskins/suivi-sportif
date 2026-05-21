@@ -211,7 +211,7 @@ function ExerciseImagePreview({
     <img
       src={imageUrl}
       alt={`Illustration de ${label}`}
-      className={`rounded border border-slate-200 object-cover ${className}`}
+      className={`rounded border border-slate-200 object-cover object-[center_56%] ${className}`}
       loading="lazy"
       onError={() => setImageFailed(true)}
     />
@@ -713,7 +713,7 @@ function WorkoutForm({
                     <ExerciseImagePreview
                       imageUrl={getExerciseImageUrl(exercises.find((exercise) => exercise.id === row.exerciseId))}
                       label={exercises.find((exercise) => exercise.id === row.exerciseId)?.name ?? "Exercice"}
-                      className="h-32 w-full"
+                      className="h-24 w-full"
                     />
                   </div>
                 )}
@@ -2131,7 +2131,7 @@ function ExercisesList({
                   <ExerciseImagePreview
                     imageUrl={getExerciseImageUrl(exercise)}
                     label={exercise.name}
-                    className="mb-3 h-40 w-full"
+                    className="mb-3 h-32 w-full"
                   />
                   <p className="font-semibold">{exercise.name}</p>
                   <p className="mt-1 text-sm text-slate-600">

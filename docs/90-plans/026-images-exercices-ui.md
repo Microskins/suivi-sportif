@@ -21,6 +21,7 @@
 - [x] Diagnostiquer les images manquantes servies en 200 HTML.
 - [x] Corriger le fallback des assets exercices et l'affichage en erreur.
 - [x] Revalider le typage/frontend.
+- [x] Recadrer les miniatures sur les positions de depart et finale.
 
 ## Notes de verification
 
@@ -32,3 +33,5 @@
 - Correction UI : `ExerciseImagePreview` affiche `Image indisponible` quand le chargement ou le decodage image echoue.
 - `npm run typecheck -w client` via WSL : OK.
 - `nginx -t` via Docker non lanceable localement : Docker present dans WSL mais acces refuse a `/var/run/docker.sock`.
+- Miniatures recadrees avec `object-[center_56%]`, hauteur liste reduite a `h-32`, apercu formulaire reduit a `h-24`.
+- `npm run typecheck -w client` via WSL apres recadrage : OK.
