@@ -152,7 +152,7 @@ function StatCard({
   };
 
   return (
-    <div className={`rounded border border-neutral-200 border-l-4 p-4 shadow-sm ${accents[tone]}`}>
+    <div className={`rounded border border-neutral-200 border-l-4 p-4 shadow-sm transition hover:border-neutral-300 hover:shadow ${accents[tone]}`}>
       <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
         {label}
       </p>
@@ -220,13 +220,13 @@ export function DashboardOverview({
               <p className="mt-1 text-sm text-neutral-500">Chargement...</p>
             )}
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 rounded border border-neutral-200 bg-neutral-50 p-1">
             {periods.map((item) => (
               <button
                 key={item.key}
                 type="button"
                 onClick={() => setPeriod(item.key)}
-                className={`rounded border px-3 py-2 text-sm font-medium ${
+                className={`rounded border px-3 py-2 text-sm font-medium transition ${
                   period === item.key
                     ? "border-emerald-700 bg-emerald-700 text-white shadow-sm"
                     : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"

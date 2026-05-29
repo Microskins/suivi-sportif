@@ -264,15 +264,23 @@ function Field({
 const inputClass =
   "block w-full rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-950 outline-none focus:border-emerald-700";
 const buttonClass =
-  "rounded bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex min-h-10 items-center justify-center rounded bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:opacity-60";
 const secondaryButtonClass =
-  "rounded border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50";
+  "inline-flex min-h-10 items-center justify-center rounded border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 disabled:cursor-not-allowed disabled:opacity-60";
 const dangerButtonClass =
-  "rounded border border-red-200 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50";
+  "inline-flex min-h-10 items-center justify-center rounded border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600";
 const iconButtonClass =
   "inline-flex h-9 w-9 items-center justify-center rounded border border-neutral-300 bg-white text-sm font-semibold text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50";
 const dragHandleButtonClass =
   "inline-flex h-9 w-9 cursor-grab items-center justify-center rounded border border-dashed border-slate-400 bg-slate-50 text-slate-700 hover:bg-slate-100 active:cursor-grabbing";
+const viewButtonClass =
+  "inline-flex min-h-10 items-center justify-center rounded border px-3 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:opacity-60";
+const activeViewButtonClass =
+  `${viewButtonClass} border-emerald-700 bg-emerald-700 text-white shadow-sm`;
+const inactiveViewButtonClass =
+  `${viewButtonClass} border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50`;
+const itemCardClass =
+  "rounded border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300 hover:shadow";
 
 function ExerciseForm({
   item,
@@ -990,11 +998,11 @@ function WorkoutTemplatePicker({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex gap-2">
-        <button type="button" className={secondaryButtonClass} onClick={() => setMode("instantiate")}>Creer une seance</button>
+      <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
+        <button type="button" className={mode === "instantiate" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setMode("instantiate")}>Creer une seance</button>
         <button
           type="button"
-          className={secondaryButtonClass}
+          className={mode === "create" ? activeViewButtonClass : inactiveViewButtonClass}
           onClick={() => {
             setMode("create");
             resetTemplateFormToCreateDefaults();
@@ -1004,7 +1012,7 @@ function WorkoutTemplatePicker({
         </button>
         <button
           type="button"
-          className={secondaryButtonClass}
+          className={mode === "edit" ? activeViewButtonClass : inactiveViewButtonClass}
           onClick={() => {
             if (templates.length) {
               setSelectedId((current) =>
@@ -1454,7 +1462,7 @@ function NutritionGoalForm({
 
 function FormActions({ isSaving, onCancel }: { isSaving: boolean; onCancel: () => void }) {
   return (
-    <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
+    <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
       <button type="button" className={secondaryButtonClass} onClick={onCancel}>Annuler</button>
       <button type="submit" disabled={isSaving} className={buttonClass}>{isSaving ? "Enregistrement..." : "Enregistrer"}</button>
     </div>
@@ -1583,7 +1591,7 @@ export function Dashboard({
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#f7f8f5_0%,#edf4ef_48%,#f6f7f4_100%)] text-neutral-950">
       <section className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
-        <div className="rounded border border-neutral-200 bg-white/90 p-5 shadow-sm backdrop-blur">
+        <div className="rounded border border-neutral-200 bg-white/95 p-5 shadow-sm backdrop-blur">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Suivi Sportif</p>
@@ -1600,15 +1608,15 @@ export function Dashboard({
         </div>
 
         <div className="mt-5 grid gap-5 md:grid-cols-[230px_1fr]">
-          <nav className="h-fit rounded border border-neutral-200 bg-white/90 p-2 shadow-sm backdrop-blur">
+          <nav className="h-fit rounded border border-neutral-200 bg-white/95 p-2 shadow-sm backdrop-blur md:sticky md:top-6">
             <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
               Accueil
             </p>
             <button
               type="button"
               onClick={() => setResource("dashboard")}
-              className={`mb-1 block w-full rounded px-3 py-2 text-left text-sm font-medium ${
-                resource === "dashboard" ? "bg-emerald-700 text-white shadow-sm" : "text-neutral-700 hover:bg-neutral-100"
+              className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
+                resource === "dashboard" ? "border-emerald-700 bg-emerald-700 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
               }`}
             >
               Synthese
@@ -1616,10 +1624,10 @@ export function Dashboard({
             <button
               type="button"
               onClick={() => setResource("calendar")}
-              className={`mb-1 block w-full rounded px-3 py-2 text-left text-sm font-medium ${
+              className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
                 resource === "calendar"
-                  ? "bg-emerald-700 text-white shadow-sm"
-                  : "text-neutral-700 hover:bg-neutral-100"
+                  ? "border-emerald-700 bg-emerald-700 text-white shadow-sm"
+                  : "border-transparent text-neutral-700 hover:bg-neutral-100"
               }`}
             >
               Calendrier
@@ -1635,8 +1643,8 @@ export function Dashboard({
                 key={key}
                 type="button"
                 onClick={() => setResource(key as Resource)}
-                className={`mb-1 block w-full rounded px-3 py-2 text-left text-sm font-medium ${
-                  resource === key ? "bg-neutral-950 text-white shadow-sm" : "text-neutral-700 hover:bg-neutral-100"
+                className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
+                  resource === key ? "border-neutral-950 bg-neutral-950 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
                 }`}
               >
                 {label}
@@ -1654,8 +1662,8 @@ export function Dashboard({
                 key={key}
                 type="button"
                 onClick={() => setResource(key as Resource)}
-                className={`mb-1 block w-full rounded px-3 py-2 text-left text-sm font-medium ${
-                  resource === key ? "bg-amber-600 text-white shadow-sm" : "text-neutral-700 hover:bg-neutral-100"
+                className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
+                  resource === key ? "border-amber-600 bg-amber-600 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
                 }`}
               >
                 {label}
@@ -1722,10 +1730,10 @@ export function Dashboard({
               )}
               {resource === "workouts" && (
                 <div className="space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    <button type="button" className={secondaryButtonClass} onClick={() => { setWorkoutsView("list"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); }}>Liste</button>
-                    <button type="button" className={secondaryButtonClass} onClick={() => { setWorkoutsView("create"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); }}>Creer une seance</button>
-                    <button type="button" className={secondaryButtonClass} onClick={() => setWorkoutsView("from-template")}>Depuis un modele</button>
+                  <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
+                    <button type="button" className={workoutsView === "list" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => { setWorkoutsView("list"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); }}>Liste</button>
+                    <button type="button" className={workoutsView === "create" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => { setWorkoutsView("create"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); }}>Creer une seance</button>
+                    <button type="button" className={workoutsView === "from-template" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setWorkoutsView("from-template")}>Depuis un modele</button>
                   </div>
                   {workoutsView === "list" && (
                     <WorkoutsList
@@ -1785,9 +1793,9 @@ export function Dashboard({
               )}
               {resource === "exercises" && (
                 <div className="space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    <button type="button" className={secondaryButtonClass} onClick={() => setExerciseDraft(undefined)}>Liste</button>
-                    <button type="button" className={secondaryButtonClass} onClick={() => setExerciseDraft({} as Exercise)}>Creer un exercice</button>
+                  <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
+                    <button type="button" className={exerciseDraft === undefined ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setExerciseDraft(undefined)}>Liste</button>
+                    <button type="button" className={exerciseDraft !== undefined && !exerciseDraft.id ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setExerciseDraft({} as Exercise)}>Creer un exercice</button>
                   </div>
                   {exerciseDraft !== undefined ? (
                     <div className="rounded border border-slate-200 bg-white p-4">
@@ -1923,9 +1931,9 @@ function ResourceHeader({
   };
 
   return (
-    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-3 border-b border-slate-200 pb-4 md:flex-row md:items-center md:justify-between">
       <div>
-        <h2 className="text-xl font-semibold">{titles[resource]}</h2>
+        <h2 className="text-xl font-semibold text-slate-950">{titles[resource]}</h2>
         {isLoading && <p className="mt-1 text-sm text-slate-500">Chargement...</p>}
       </div>
       <div className="flex flex-wrap gap-2">
@@ -1976,7 +1984,7 @@ function confirmDelete(label: string, action: () => Promise<void>) {
 
 function ItemActions<T>({ item, onEdit, onDelete }: { item: T; onEdit: (item: T) => void; onDelete: (item: T) => void }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
       <button type="button" className={secondaryButtonClass} onClick={() => onEdit(item)}>Modifier</button>
       <button type="button" className={dangerButtonClass} onClick={() => onDelete(item)}>Supprimer</button>
     </div>
@@ -1998,7 +2006,7 @@ function WorkoutsList({
   return (
     <ul className="space-y-3">
       {workouts.map((workout) => (
-        <li key={workout.id} className="rounded border border-slate-200 p-4">
+        <li key={workout.id} className={itemCardClass}>
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div>
               <div className="flex items-center gap-2">
@@ -2020,7 +2028,7 @@ function WorkoutsList({
               <p className="mt-1 text-sm text-slate-600">{formatDate(workout.date)} - {workout.duration} min</p>
               <p className="mt-1 text-sm text-slate-500">{workout.exercises?.length ?? 0} exercice(s)</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button type="button" className={secondaryButtonClass} onClick={() => onEdit(workout)}>Modifier</button>
               <button type="button" className={secondaryButtonClass} onClick={() => onDuplicate(workout)}>Dupliquer</button>
               <button type="button" className={dangerButtonClass} onClick={() => onDelete(workout)}>Supprimer</button>
@@ -2043,11 +2051,11 @@ function ExercisesList({
   onEdit: (item: Exercise) => void;
   onDelete: (item: Exercise) => void;
 }) {
-  if (!exercises.length) return <EmptyState label="Aucun exercice disponible." />;
-
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"ALL" | "STRENGTH" | "CARDIO" | "MOBILITY">("ALL");
   const [difficultyFilter, setDifficultyFilter] = useState<"ALL" | "BEGINNER" | "INTERMEDIATE" | "ADVANCED">("ALL");
+
+  if (!exercises.length) return <EmptyState label="Aucun exercice disponible." />;
 
   const normalizedSearch = search.trim().toLocaleLowerCase("fr-FR");
   const filteredExercises = exercises.filter((exercise) => {
@@ -2126,7 +2134,7 @@ function ExercisesList({
       ) : (
         <ul className="grid gap-3 lg:grid-cols-2">
           {filteredExercises.map((exercise) => (
-            <li key={exercise.id} className="rounded border border-slate-200 p-4">
+            <li key={exercise.id} className={itemCardClass}>
               <div className="flex h-full flex-col justify-between gap-3">
                 <div>
                   <ExerciseImagePreview
@@ -2160,7 +2168,7 @@ function FoodsList({ foods, onEdit, onDelete }: { foods: Food[]; onEdit: (item: 
   return (
     <ul className="grid gap-3 lg:grid-cols-2">
       {foods.map((food) => (
-        <li key={food.id} className="rounded border border-slate-200 p-4">
+        <li key={food.id} className={itemCardClass}>
           <div className="flex h-full flex-col justify-between gap-3">
             <div>
               <p className="font-semibold">{food.name}</p>
@@ -2180,7 +2188,7 @@ function MealsList({ meals, onEdit, onDelete }: { meals: Meal[]; onEdit: (item: 
   return (
     <ul className="space-y-3">
       {meals.map((meal) => (
-        <li key={meal.id} className="rounded border border-slate-200 p-4">
+        <li key={meal.id} className={itemCardClass}>
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div>
               <p className="font-semibold">{meal.name}</p>
@@ -2200,7 +2208,7 @@ function NutritionGoalsList({ goals, onEdit, onDelete }: { goals: NutritionGoal[
   return (
     <ul className="grid gap-3 lg:grid-cols-2">
       {goals.map((goal) => (
-        <li key={goal.id} className="rounded border border-slate-200 p-4">
+        <li key={goal.id} className={itemCardClass}>
           <div className="flex h-full flex-col justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">

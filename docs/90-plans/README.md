@@ -32,6 +32,7 @@ Index chronologique des chantiers planifies et executes.
 26. [Images exercices dans UI](./026-images-exercices-ui.md)
 88. [Remediation securite npm audit](./088-remediation-securite-npm-audit.md)
 89. [Mobile Android/iOS via Capacitor](./089-mobile-capacitor.md)
+90. [Tour qualite UI](./090-tour-qualite-ui.md)
 
 ## Convention
 

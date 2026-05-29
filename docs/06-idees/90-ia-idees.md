@@ -312,3 +312,33 @@
 ## Liens
 
 - Plan: docs/90-plans/025-base-exercices-ia-gpt-image-2.md
+
+---
+
+## 2026-05-29 - UI: audit accessibilite et parcours critiques
+
+## Contexte
+
+- Le tour qualite UI corrige les irritants visibles, mais ne remplace pas un audit systematique.
+- Les formulaires et tableaux de bord gagnent vite en complexite avec les seances, repas et objectifs.
+
+## Proposition
+
+- Ajouter un audit UI dedie aux parcours critiques:
+  - navigation clavier et focus visible;
+  - contraste des badges et boutons;
+  - etats vides, chargement et erreurs;
+  - capture desktop/mobile des vues dashboard, calendrier, seances et exercices.
+
+## Impact
+
+- Meilleure robustesse avant mobile Capacitor.
+- Moins de regressions visuelles lors des prochains chantiers frontend.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/090-tour-qualite-ui.md

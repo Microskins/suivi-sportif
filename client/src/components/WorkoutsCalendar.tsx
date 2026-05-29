@@ -114,6 +114,10 @@ function labelDate(date: Date): string {
   });
 }
 
+function isTodayKey(key: string): boolean {
+  return key === dayKey(new Date());
+}
+
 export function WorkoutsCalendar({
   workouts,
   isLoading,
@@ -171,7 +175,7 @@ export function WorkoutsCalendar({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       <div className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
@@ -180,11 +184,11 @@ export function WorkoutsCalendar({
               Planifie et relis tes seances semaine par semaine.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 rounded border border-neutral-200 bg-neutral-50 p-1">
             <button
               type="button"
               onClick={() => setMode("week")}
-              className={`rounded border px-3 py-2 text-sm font-medium ${
+              className={`rounded border px-3 py-2 text-sm font-medium transition ${
                 mode === "week"
                   ? "border-emerald-700 bg-emerald-700 text-white"
                   : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100"
@@ -195,7 +199,7 @@ export function WorkoutsCalendar({
             <button
               type="button"
               onClick={() => setMode("month")}
-              className={`rounded border px-3 py-2 text-sm font-medium ${
+              className={`rounded border px-3 py-2 text-sm font-medium transition ${
                 mode === "month"
                   ? "border-emerald-700 bg-emerald-700 text-white"
                   : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100"
@@ -207,9 +211,9 @@ export function WorkoutsCalendar({
         </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1fr_320px]">
-        <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
-          <div className="mb-4 flex items-center justify-between gap-2">
+      <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <section className="min-w-0 overflow-hidden rounded border border-neutral-200 bg-white p-4 shadow-sm">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <button
               type="button"
               className="rounded border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-100"
@@ -217,7 +221,7 @@ export function WorkoutsCalendar({
             >
               Precedent
             </button>
-            <p className="text-sm font-semibold text-neutral-800">
+            <p className="min-w-0 flex-1 text-center text-sm font-semibold text-neutral-800">
               {mode === "month"
                 ? anchorDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })
                 : `${labelDate(startOfWeek(anchorDate))} - ${labelDate(endOfWeek(anchorDate))}`}
@@ -231,52 +235,67 @@ export function WorkoutsCalendar({
             </button>
           </div>
 
-          <div className="grid grid-cols-7 gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-            {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((label) => (
-              <p key={label} className="px-2 py-1">
-                {label}
-              </p>
-            ))}
-          </div>
+          <div className="overflow-x-auto pb-1">
+            <div className="grid min-w-[640px] grid-cols-7 gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+              {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((label) => (
+                <p key={label} className="px-2 py-1">
+                  {label}
+                </p>
+              ))}
+            </div>
 
-          <div className="mt-2 grid grid-cols-7 gap-2">
-            {days.map((day) => {
-              const dayWorkouts = workoutsByDay.get(day.key) ?? [];
-              const isSelected = day.key === selectedDayKey;
-              return (
-                <button
-                  key={day.key}
-                  type="button"
-                  onClick={() => setSelectedDayKey(day.key)}
-                  className={`min-h-24 rounded border p-2 text-left ${
-                    isSelected
-                      ? "border-emerald-600 bg-emerald-50"
-                      : day.isCurrentMonth
-                      ? "border-neutral-200 bg-white hover:bg-neutral-50"
-                      : "border-neutral-200 bg-neutral-50 text-neutral-400"
-                  }`}
-                >
-                  <p className="text-sm font-semibold">{day.date.getDate()}</p>
-                  <p className="mt-1 text-xs text-neutral-600">
-                    {dayWorkouts.length} seance(s)
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {dayWorkouts.slice(0, 2).map((workout) => (
-                      <span
-                        key={workout.id}
-                        className={`rounded px-2 py-0.5 text-[10px] font-medium ${statusTone[workout.status]}`}
-                      >
-                        {statusLabel[workout.status]}
-                      </span>
-                    ))}
-                  </div>
-                </button>
-              );
-            })}
+            <div className="mt-2 grid min-w-[640px] grid-cols-7 gap-2">
+              {days.map((day) => {
+                const dayWorkouts = workoutsByDay.get(day.key) ?? [];
+                const isSelected = day.key === selectedDayKey;
+                const isToday = isTodayKey(day.key);
+                return (
+                  <button
+                    key={day.key}
+                    type="button"
+                    onClick={() => setSelectedDayKey(day.key)}
+                    className={`min-h-28 rounded border p-2 text-left transition ${
+                      isSelected
+                        ? "border-emerald-600 bg-emerald-50 shadow-sm"
+                        : day.isCurrentMonth
+                        ? "border-neutral-200 bg-white hover:bg-neutral-50"
+                        : "border-neutral-200 bg-neutral-50 text-neutral-400"
+                    }`}
+                  >
+                    <span className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-semibold">{day.date.getDate()}</span>
+                      {isToday && (
+                        <span className="rounded bg-neutral-950 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                          Auj.
+                        </span>
+                      )}
+                    </span>
+                    <p className="mt-1 text-xs text-neutral-600">
+                      {dayWorkouts.length} seance(s)
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {dayWorkouts.slice(0, 2).map((workout) => (
+                        <span
+                          key={workout.id}
+                          className={`rounded px-2 py-0.5 text-[10px] font-medium ${statusTone[workout.status]}`}
+                        >
+                          {statusLabel[workout.status]}
+                        </span>
+                      ))}
+                      {dayWorkouts.length > 2 && (
+                        <span className="rounded bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-700">
+                          +{dayWorkouts.length - 2}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </section>
 
-        <aside className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
+        <aside className="min-w-0 rounded border border-neutral-200 bg-white p-4 shadow-sm">
           <h3 className="text-base font-semibold text-neutral-950">
             {selectedDay ? labelDate(selectedDay.date) : "Jour"}
           </h3>
