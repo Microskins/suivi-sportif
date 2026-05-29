@@ -43,3 +43,6 @@
 - 2026-05-29: `npm run typecheck -w client` via WSL : OK.
 - 2026-05-29: `npm run build -w client` via WSL bloque par Node 18.19.1; Vite requiert Node 20.19+ ou 22.12+.
 - 2026-05-29: generation des images restantes reportee, tokens IA indisponibles pour le moment.
+- 2026-05-29: Node 22.12.0 installe cote WSL dans `/home/thomas/.local/node-v22.12.0` et ajoute au PATH via `/home/thomas/.profile`.
+- 2026-05-29: `npm run typecheck -w client` via WSL avec Node 22.12.0 : OK.
+- 2026-05-29: `npm run build -w client` via WSL avec Node 22.12.0 : OK; `client/dist/` genere puis supprime apres verification.
