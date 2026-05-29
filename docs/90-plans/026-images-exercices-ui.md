@@ -10,6 +10,7 @@
 - Exposer `exercices/` via Vite `publicDir` pour servir `exercices.json` et `images/*`.
 - Charger le catalogue image cote `Dashboard` via `fetch("/exercices.json")`.
 - Associer image <-> exercice par nom normalise (accents/casse ignores).
+- La generation des images restantes est mise en pause tant que les tokens IA ne sont pas disponibles.
 
 ## Todo
 
@@ -22,6 +23,8 @@
 - [x] Corriger le fallback des assets exercices et l'affichage en erreur.
 - [x] Revalider le typage/frontend.
 - [x] Recadrer les miniatures sur les positions de depart et finale.
+- [x] Stabiliser les images dans le formulaire de creation de seance.
+- [ ] Generer les images d'exercices restantes quand les tokens IA seront de nouveau disponibles.
 
 ## Notes de verification
 
@@ -35,3 +38,8 @@
 - `nginx -t` via Docker non lanceable localement : Docker present dans WSL mais acces refuse a `/var/run/docker.sock`.
 - Miniatures recadrees avec `object-[center_56%]`, hauteur liste reduite a `h-32`, apercu formulaire reduit a `h-24`.
 - `npm run typecheck -w client` via WSL apres recadrage : OK.
+- Formulaire de seance : remplacement de l'apercu au survol par une miniature fixe par ligne, visible mobile/desktop, et maintien de l'exercice selectionne dans le select meme s'il est hors filtre.
+- `npm run typecheck -w client` via WSL apres stabilisation formulaire : OK.
+- 2026-05-29: `npm run typecheck -w client` via WSL : OK.
+- 2026-05-29: `npm run build -w client` via WSL bloque par Node 18.19.1; Vite requiert Node 20.19+ ou 22.12+.
+- 2026-05-29: generation des images restantes reportee, tokens IA indisponibles pour le moment.

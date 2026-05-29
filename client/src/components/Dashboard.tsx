@@ -462,8 +462,6 @@ function WorkoutForm({
   const [exerciseBodyPartFilter, setExerciseBodyPartFilter] = useState("ALL");
   const [draggedRowIndex, setDraggedRowIndex] = useState<number | null>(null);
   const [dragOverRowIndex, setDragOverRowIndex] = useState<number | null>(null);
-  const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
-
   const bodyPartOptions = Array.from(
     new Set(
       exercises.flatMap((exercise) => exercise.bodyParts ?? []),
@@ -632,7 +630,19 @@ function WorkoutForm({
           </button>
         </div>
         {!exercises.length && <EmptyState label="Cree un exercice avant de composer une seance." />}
-        {rows.map((row, rowIndex) => (
+        {rows.map((row, rowIndex) => {
+          const selectedExercise = exercises.find((exercise) => exercise.id === row.exerciseId);
+          const selectExercises =
+            filteredExercises.length === 0 ||
+            filteredExercises.some((exercise) => exercise.id === row.exerciseId)
+              ? filteredExercises.length
+                ? filteredExercises
+                : exercises
+              : selectedExercise
+                ? [selectedExercise, ...filteredExercises]
+                : filteredExercises;
+
+          return (
           <div
             key={rowIndex}
             className={`relative rounded border p-3 transition ${
@@ -692,31 +702,21 @@ function WorkoutForm({
               >
                 ::
               </button>
-              <div
-                className="relative md:min-w-[240px] md:flex-1"
-                onMouseEnter={() => setHoveredRowIndex(rowIndex)}
-                onMouseLeave={() => setHoveredRowIndex((current) => (current === rowIndex ? null : current))}
-              >
+              <ExerciseImagePreview
+                imageUrl={getExerciseImageUrl(selectedExercise)}
+                label={selectedExercise?.name ?? "Exercice"}
+                className="h-20 w-28 shrink-0"
+              />
+              <div className="min-w-[220px] flex-1">
                 <select
                   className={inputClass}
                   value={row.exerciseId}
                   onChange={(event) => updateRow(rowIndex, { ...row, exerciseId: event.target.value })}
-                  onFocus={() => setHoveredRowIndex(rowIndex)}
-                  onBlur={() => setHoveredRowIndex((current) => (current === rowIndex ? null : current))}
                 >
-                  {(filteredExercises.length ? filteredExercises : exercises).map((exercise) => (
+                  {selectExercises.map((exercise) => (
                     <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
                   ))}
                 </select>
-                {hoveredRowIndex === rowIndex && (
-                  <div className="pointer-events-none absolute left-0 top-full z-10 mt-2 hidden w-56 rounded border border-slate-200 bg-white p-2 shadow-lg md:block">
-                    <ExerciseImagePreview
-                      imageUrl={getExerciseImageUrl(exercises.find((exercise) => exercise.id === row.exerciseId))}
-                      label={exercises.find((exercise) => exercise.id === row.exerciseId)?.name ?? "Exercice"}
-                      className="h-24 w-full"
-                    />
-                  </div>
-                )}
               </div>
               <div className="flex items-center gap-1">
                 <button
@@ -801,7 +801,8 @@ function WorkoutForm({
               </button>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
       <FormActions isSaving={isSaving} onCancel={onCancel} />
     </form>
