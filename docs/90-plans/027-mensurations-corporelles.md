@@ -23,6 +23,8 @@
 - [x] Ajouter le client API, le store Zustand et les donnees bypass.
 - [x] Ajouter l'ecran UI dans le dashboard.
 - [x] Ajouter le choix de silhouette homme/femme et les assets generes.
+- [x] Ajouter les calculs IMC, masse grasse US Navy et metabolisme estime.
+- [x] Ajouter age + activite pour un calcul metabolique plus fiable.
 - [x] Mettre a jour les docs API si necessaire.
 - [x] Valider typecheck/tests/build backend et frontend.
 - [x] Nettoyer les artefacts non destines au commit.
@@ -56,6 +58,8 @@
 - 2026-05-30: `vitest --run server/src/routes/api.test.ts` : OK, 117 tests.
 - 2026-05-30: `vite build` cote client : OK, warning Vite attendu sur chunk > 500 kB.
 - 2026-05-30: `tsc -p server/tsconfig.json` : OK.
+- 2026-05-30: dashboard mensurations enrichi avec IMC, % masse grasse US Navy et metabolisme de base estime (Katch-McArdle).
+- 2026-05-30: ajout de `ageYears` et `isActiveLifestyle` dans les mensurations, calcul metabolique mis a jour avec Mifflin-St Jeor et depense journaliere estimee.
 - 2026-05-29: `npm run typecheck -w client` apres schema SVG : OK.
 - 2026-05-29: `npm run build -w client` apres schema SVG : OK, warning Vite attendu sur chunk > 500 kB.
 - 2026-05-29: schema SVG retravaille en silhouette verte avec lignes horizontales et libelles autour du corps, inspire de la reference fournie.

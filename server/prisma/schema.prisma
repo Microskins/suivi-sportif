@@ -405,6 +405,8 @@ model BodyMeasurement {
   userId         String   @map("user_id")
   date           DateTime
   silhouette     BodySilhouette @default(MALE)
+  ageYears       Int?     @map("age_years")
+  isActiveLifestyle Boolean? @map("is_active_lifestyle")
   weightKg       Decimal? @map("weight_kg") @db.Decimal(10, 2)
   heightCm       Decimal? @map("height_cm") @db.Decimal(10, 2)
   chestCm        Decimal? @map("chest_cm") @db.Decimal(10, 2)

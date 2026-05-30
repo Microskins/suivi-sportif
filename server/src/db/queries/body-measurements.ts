@@ -9,6 +9,7 @@ type BodyMeasurement = {
   chestCm: unknown | null;
   createdAt: Date;
   date: Date;
+  ageYears?: number | null;
   heightCm: unknown | null;
   hipsCm: unknown | null;
   id: string;
@@ -24,6 +25,7 @@ type BodyMeasurement = {
   rightThighCm: unknown | null;
   shouldersCm: unknown | null;
   silhouette: "MALE" | "FEMALE";
+  isActiveLifestyle?: boolean | null;
   updatedAt: Date;
   userId: string;
   waistCm: unknown | null;
@@ -60,6 +62,8 @@ function formatBodyMeasurement(
     userId: measurement.userId,
     date: measurement.date.toISOString(),
     silhouette: measurement.silhouette,
+    ageYears: measurement.ageYears ?? null,
+    isActiveLifestyle: measurement.isActiveLifestyle ?? null,
     weightKg: numberOrNull(measurement.weightKg),
     heightCm: numberOrNull(measurement.heightCm),
     chestCm: numberOrNull(measurement.chestCm),
@@ -92,6 +96,14 @@ function measurementData(
 
   if (data.silhouette !== undefined) {
     result.silhouette = data.silhouette;
+  }
+
+  if (data.ageYears !== undefined) {
+    result.ageYears = data.ageYears;
+  }
+
+  if (data.isActiveLifestyle !== undefined) {
+    result.isActiveLifestyle = data.isActiveLifestyle;
   }
 
   for (const field of decimalFields) {

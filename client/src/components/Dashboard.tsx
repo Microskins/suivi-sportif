@@ -1512,6 +1512,14 @@ function BodyMeasurementForm({
   const [silhouette, setSilhouette] = useState<BodySilhouette>(
     item?.silhouette ?? "MALE",
   );
+  const [ageYears, setAgeYears] = useState<string>(
+    item?.ageYears === null || item?.ageYears === undefined
+      ? ""
+      : String(item.ageYears),
+  );
+  const [isActiveLifestyle, setIsActiveLifestyle] = useState<boolean>(
+    item?.isActiveLifestyle ?? false,
+  );
   const [notes, setNotes] = useState(item?.notes ?? "");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -1526,6 +1534,8 @@ function BodyMeasurementForm({
       await onSubmit({
         date: dateTimeToIso(date),
         silhouette,
+        ageYears: numberOrNull(ageYears),
+        isActiveLifestyle,
         weightKg: numberOrNull(values.weightKg),
         heightCm: numberOrNull(values.heightCm),
         chestCm: numberOrNull(values.chestCm),
@@ -1573,6 +1583,29 @@ function BodyMeasurementForm({
           ))}
         </select>
       </Field>
+      <div className="grid gap-3 md:grid-cols-2">
+        <Field label="Age (ans)">
+          <input
+            className={inputClass}
+            type="number"
+            min="10"
+            max="120"
+            step="1"
+            value={ageYears}
+            onChange={(event) => setAgeYears(event.target.value)}
+          />
+        </Field>
+        <Field label="Niveau d'activite">
+          <label className="flex h-[42px] items-center gap-2 rounded border border-slate-300 bg-white px-3 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={isActiveLifestyle}
+              onChange={(event) => setIsActiveLifestyle(event.target.checked)}
+            />
+            Actif
+          </label>
+        </Field>
+      </div>
       <div className="grid gap-3 md:grid-cols-3">
         {bodyMeasurementFields.map(([key, label, unit]) => (
           <Field key={key} label={`${label} (${unit})`}>
@@ -1607,6 +1640,78 @@ function measurementValue(
 ) {
   const value = measurement[key];
   return value === null ? "-" : `${value} ${unit}`;
+}
+
+function formatComputedValue(value: number | null, decimals = 1) {
+  if (value === null || Number.isNaN(value) || !Number.isFinite(value)) return "-";
+  return value.toFixed(decimals);
+}
+
+function computeBmi(measurement: BodyMeasurement): number | null {
+  if (!measurement.weightKg || !measurement.heightCm || measurement.heightCm <= 0) {
+    return null;
+  }
+  const heightM = measurement.heightCm / 100;
+  return measurement.weightKg / (heightM * heightM);
+}
+
+function toInches(valueCm: number) {
+  return valueCm / 2.54;
+}
+
+function computeUsNavyBodyFat(measurement: BodyMeasurement): number | null {
+  if (!measurement.heightCm || !measurement.neckCm || !measurement.waistCm) {
+    return null;
+  }
+
+  const heightIn = toInches(measurement.heightCm);
+  const neckIn = toInches(measurement.neckCm);
+  const waistIn = toInches(measurement.waistCm);
+
+  if (
+    measurement.silhouette === "FEMALE" &&
+    measurement.hipsCm !== null &&
+    measurement.hipsCm !== undefined
+  ) {
+    const hipsIn = toInches(measurement.hipsCm);
+    const logArg = waistIn + hipsIn - neckIn;
+    if (logArg <= 0 || heightIn <= 0) return null;
+    const result =
+      163.205 * Math.log10(logArg) - 97.684 * Math.log10(heightIn) - 78.387;
+    return result > 0 ? result : null;
+  }
+
+  const logArg = waistIn - neckIn;
+  if (logArg <= 0 || heightIn <= 0) return null;
+  const result =
+    86.01 * Math.log10(logArg) - 70.041 * Math.log10(heightIn) + 36.76;
+  return result > 0 ? result : null;
+}
+
+function computeMifflinBmr(measurement: BodyMeasurement): number | null {
+  if (
+    !measurement.weightKg ||
+    !measurement.heightCm ||
+    !measurement.ageYears ||
+    measurement.weightKg <= 0 ||
+    measurement.heightCm <= 0 ||
+    measurement.ageYears <= 0
+  ) {
+    return null;
+  }
+
+  const base =
+    10 * measurement.weightKg +
+    6.25 * measurement.heightCm -
+    5 * measurement.ageYears;
+  return measurement.silhouette === "FEMALE" ? base - 161 : base + 5;
+}
+
+function computeDailyEnergyExpenditure(measurement: BodyMeasurement): number | null {
+  const bmr = computeMifflinBmr(measurement);
+  if (bmr === null) return null;
+  const multiplier = measurement.isActiveLifestyle ? 1.55 : 1.2;
+  return bmr * multiplier;
 }
 
 function BodyMeasurementDiagram({ measurement }: { measurement: BodyMeasurement }) {
@@ -1733,6 +1838,10 @@ function BodyMeasurementsList({
   }
 
   const latest = measurements[0];
+  const latestBmi = computeBmi(latest);
+  const latestBodyFat = computeUsNavyBodyFat(latest);
+  const latestBmr = computeMifflinBmr(latest);
+  const latestTdee = computeDailyEnergyExpenditure(latest);
 
   return (
     <div className="space-y-4">
@@ -1763,7 +1872,37 @@ function BodyMeasurementsList({
                 </p>
               </div>
             </div>
-            <div className="mt-4 grid gap-2 text-sm text-emerald-950/80 sm:grid-cols-2">
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <div className="rounded bg-white/75 px-3 py-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-emerald-900/70">IMC</p>
+                <p className="text-xl font-bold text-emerald-950">
+                  {formatComputedValue(latestBmi)}
+                </p>
+              </div>
+              <div className="rounded bg-white/75 px-3 py-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-emerald-900/70">Masse grasse (US Navy)</p>
+                <p className="text-xl font-bold text-emerald-950">
+                  {latestBodyFat === null ? "-" : `${formatComputedValue(latestBodyFat)} %`}
+                </p>
+              </div>
+              <div className="rounded bg-white/75 px-3 py-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-emerald-900/70">Metabolisme de base</p>
+                <p className="text-xl font-bold text-emerald-950">
+                  {latestBmr === null ? "-" : `${Math.round(latestBmr)} kcal`}
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <p className="rounded bg-white/70 px-3 py-2 text-sm text-emerald-950/85">
+                <span className="font-medium">Activite: </span>
+                {latest.isActiveLifestyle ? "Actif" : "Peu actif"}
+              </p>
+              <p className="rounded bg-white/70 px-3 py-2 text-sm text-emerald-950/85">
+                <span className="font-medium">Depense journaliere estimee: </span>
+                {latestTdee === null ? "-" : `${Math.round(latestTdee)} kcal`}
+              </p>
+            </div>
+            <div className="mt-3 grid gap-2 text-sm text-emerald-950/80 sm:grid-cols-2">
               {bodyMeasurementFields.slice(2, 9).map(([key, label, unit]) => (
                 <p key={key} className="rounded bg-white/70 px-3 py-2">
                   <span className="font-medium">{label}: </span>
@@ -1771,6 +1910,9 @@ function BodyMeasurementsList({
                 </p>
               ))}
             </div>
+            <p className="mt-2 text-xs text-emerald-900/70">
+              Le metabolisme de base est calcule avec Mifflin-St Jeor (necessite age, taille, poids).
+            </p>
             <p className="mt-3 text-sm text-emerald-900/70">
               {formatDate(latest.date)}
             </p>

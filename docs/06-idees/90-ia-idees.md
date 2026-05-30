@@ -372,3 +372,32 @@
 ## Liens
 
 - Plan: docs/90-plans/027-mensurations-corporelles.md
+
+---
+
+## 2026-05-30 - Mensurations: interpretation des indicateurs corporels
+
+## Contexte
+
+- Les calculs IMC, masse grasse US Navy et metabolisme sont maintenant visibles dans le dashboard.
+- L'utilisateur a besoin d'une lecture actionnable, pas seulement de chiffres bruts.
+
+## Proposition
+
+- Ajouter une couche d'interpretation:
+  - zone IMC (insuffisance, normal, surpoids, obésité) avec message court;
+  - fourchettes % masse grasse selon silhouette et objectif;
+  - tendance metabolique estimee et proposition de calories maintien / leger deficit / surplus.
+
+## Impact
+
+- Rend la section mensurations plus pedagogique et utile au quotidien.
+- Aide a transformer les mesures en decisions nutrition/entrainement.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/027-mensurations-corporelles.md

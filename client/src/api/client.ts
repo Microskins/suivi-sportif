@@ -249,6 +249,8 @@ export type BodyMeasurement = {
   userId: string;
   date: string;
   silhouette: "MALE" | "FEMALE";
+  ageYears: number | null;
+  isActiveLifestyle: boolean | null;
   weightKg: number | null;
   heightCm: number | null;
   chestCm: number | null;
@@ -272,6 +274,8 @@ export type BodyMeasurement = {
 export type BodyMeasurementInput = {
   date: string;
   silhouette?: "MALE" | "FEMALE";
+  ageYears?: number | null;
+  isActiveLifestyle?: boolean | null;
   weightKg?: number | null;
   heightCm?: number | null;
   chestCm?: number | null;

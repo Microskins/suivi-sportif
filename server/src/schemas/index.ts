@@ -336,6 +336,8 @@ export const bodySilhouetteSchema = z.enum(["MALE", "FEMALE"]);
 const bodyMeasurementBaseSchema = z.object({
   date: z.string().datetime(),
   silhouette: bodySilhouetteSchema.optional().default("MALE"),
+  ageYears: z.number().int().min(10).max(120).nullable().optional(),
+  isActiveLifestyle: z.boolean().nullable().optional(),
   weightKg: bodyMeasurementValueSchema.nullable().optional(),
   heightCm: bodyMeasurementValueSchema.nullable().optional(),
   chestCm: bodyMeasurementValueSchema.nullable().optional(),
@@ -362,6 +364,8 @@ export const bodyMeasurementResponseSchema = z.object({
   userId: z.string().uuid(),
   date: z.string().datetime(),
   silhouette: bodySilhouetteSchema,
+  ageYears: z.number().int().nullable(),
+  isActiveLifestyle: z.boolean().nullable(),
   weightKg: z.number().nullable(),
   heightCm: z.number().nullable(),
   chestCm: z.number().nullable(),

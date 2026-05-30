@@ -352,6 +352,8 @@ Creation:
 {
   "date": "2026-05-04T08:00:00.000Z",
   "silhouette": "MALE",
+  "ageYears": 34,
+  "isActiveLifestyle": true,
   "weightKg": 82.4,
   "heightCm": 181,
   "chestCm": 104,
@@ -372,6 +374,7 @@ Creation:
 ```
 
 `silhouette` vaut `MALE` ou `FEMALE` et vaut `MALE` par defaut.
+`ageYears` et `isActiveLifestyle` sont optionnels et servent aux calculs metaboliques.
 Tous les champs de mesure sauf `date` sont optionnels et peuvent etre `null`.
 Les valeurs sont stockees avec precision decimale.
 

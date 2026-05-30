@@ -223,6 +223,8 @@ const bodyMeasurement = {
   userId: USER_ID,
   date: "2026-05-04T08:00:00.000Z",
   silhouette: "MALE",
+  ageYears: 34,
+  isActiveLifestyle: true,
   weightKg: 82.4,
   heightCm: 181,
   chestCm: 104,
