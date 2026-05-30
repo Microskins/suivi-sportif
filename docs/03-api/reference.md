@@ -72,7 +72,8 @@ Public.
 {
   "email": "test@example.com",
   "password": "password123",
-  "name": "Test User"
+  "name": "Test User",
+  "dateOfBirth": "1992-06-15T00:00:00.000Z"
 }
 ```
 
@@ -84,7 +85,10 @@ Reponse `201`:
     "user": {
       "id": "uuid",
       "email": "test@example.com",
-      "name": "Test User"
+      "name": "Test User",
+      "dateOfBirth": "1992-06-15T00:00:00.000Z",
+      "createdAt": "2026-05-30T12:00:00.000Z",
+      "updatedAt": "2026-05-30T12:00:00.000Z"
     },
     "token": "jwt"
   }
@@ -118,7 +122,8 @@ Protege. Body partiel:
 
 ```json
 {
-  "name": "New Name"
+  "name": "New Name",
+  "dateOfBirth": "1992-06-15T00:00:00.000Z"
 }
 ```
 
@@ -352,7 +357,6 @@ Creation:
 {
   "date": "2026-05-04T08:00:00.000Z",
   "silhouette": "MALE",
-  "ageYears": 34,
   "isActiveLifestyle": true,
   "weightKg": 82.4,
   "heightCm": 181,
@@ -374,7 +378,8 @@ Creation:
 ```
 
 `silhouette` vaut `MALE` ou `FEMALE` et vaut `MALE` par defaut.
-`ageYears` et `isActiveLifestyle` sont optionnels et servent aux calculs metaboliques.
+`isActiveLifestyle` est optionnel et sert a ajuster la depense journaliere estimee.
+L'age est calcule automatiquement depuis `dateOfBirth` du profil utilisateur.
 Tous les champs de mesure sauf `date` sont optionnels et peuvent etre `null`.
 Les valeurs sont stockees avec precision decimale.
 

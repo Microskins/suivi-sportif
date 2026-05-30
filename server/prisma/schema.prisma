@@ -53,6 +53,7 @@ model User {
   email     String   @unique
   password  String
   name      String
+  dateOfBirth DateTime? @map("date_of_birth")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -405,7 +406,6 @@ model BodyMeasurement {
   userId         String   @map("user_id")
   date           DateTime
   silhouette     BodySilhouette @default(MALE)
-  ageYears       Int?     @map("age_years")
   isActiveLifestyle Boolean? @map("is_active_lifestyle")
   weightKg       Decimal? @map("weight_kg") @db.Decimal(10, 2)
   heightCm       Decimal? @map("height_cm") @db.Decimal(10, 2)

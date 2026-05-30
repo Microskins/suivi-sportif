@@ -13,6 +13,7 @@
 - Garder la taille dans chaque entree pour permettre un historique complet, meme si elle change rarement.
 - Rendre les mensurations optionnelles: poids, taille, poitrine, taille abdominale, hanches, cou, epaules, bras, avant-bras, cuisses, mollets.
 - Stocker la silhouette choisie par entree (`MALE` ou `FEMALE`) pour afficher l'image homme ou femme dans le schema.
+- Calculer l'age automatiquement depuis `dateOfBirth` utilisateur plutot que le stocker dans chaque mensuration.
 
 ## Todo
 
@@ -59,7 +60,13 @@
 - 2026-05-30: `vite build` cote client : OK, warning Vite attendu sur chunk > 500 kB.
 - 2026-05-30: `tsc -p server/tsconfig.json` : OK.
 - 2026-05-30: dashboard mensurations enrichi avec IMC, % masse grasse US Navy et metabolisme de base estime (Katch-McArdle).
-- 2026-05-30: ajout de `ageYears` et `isActiveLifestyle` dans les mensurations, calcul metabolique mis a jour avec Mifflin-St Jeor et depense journaliere estimee.
+- 2026-05-30: ajout de `isActiveLifestyle` dans les mensurations et de `dateOfBirth` dans le profil utilisateur, calcul metabolique mis a jour avec Mifflin-St Jeor base sur l'age calcule automatiquement.
+- 2026-05-30: migration SQL ajoutee pour `users.date_of_birth` et suppression de `body_measurements.age_years`.
+- 2026-05-30: `prisma generate` : OK.
+- 2026-05-30: `tsc -p server/tsconfig.json --noEmit` : OK.
+- 2026-05-30: `tsc -p client/tsconfig.json --noEmit` : OK.
+- 2026-05-30: `vitest --run server/src/routes/api.test.ts` : OK, 117 tests.
+- 2026-05-30: `vite build` cote client : OK, warning Vite attendu sur chunk > 500 kB.
 - 2026-05-29: `npm run typecheck -w client` apres schema SVG : OK.
 - 2026-05-29: `npm run build -w client` apres schema SVG : OK, warning Vite attendu sur chunk > 500 kB.
 - 2026-05-29: schema SVG retravaille en silhouette verte avec lignes horizontales et libelles autour du corps, inspire de la reference fournie.

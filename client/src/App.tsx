@@ -26,6 +26,7 @@ export default function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
 
   useEffect(() => {
     void initializeAuth();
@@ -44,7 +45,12 @@ export default function App() {
         return;
       }
 
-      await register(name, email, password);
+      await register(
+        name,
+        email,
+        password,
+        dateOfBirth ? new Date(`${dateOfBirth}T00:00:00.000Z`).toISOString() : null,
+      );
     } catch {
       return;
     }
@@ -83,6 +89,7 @@ export default function App() {
         <Dashboard
           userName={user.name}
           userEmail={user.email}
+          userDateOfBirth={user.dateOfBirth}
           onLogout={logout}
           isAuthBypassEnabled={isAuthBypassEnabled}
         />
@@ -132,17 +139,28 @@ export default function App() {
             <h2 className="text-lg font-semibold">{title}</h2>
 
             {mode === "register" && (
-              <label className="mt-4 block text-sm font-medium text-slate-700">
-                Nom
-                <input
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  type="text"
-                  autoComplete="name"
-                  required
-                  className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-                />
-              </label>
+              <>
+                <label className="mt-4 block text-sm font-medium text-slate-700">
+                  Nom
+                  <input
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    type="text"
+                    autoComplete="name"
+                    required
+                    className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  />
+                </label>
+                <label className="mt-4 block text-sm font-medium text-slate-700">
+                  Date de naissance
+                  <input
+                    value={dateOfBirth}
+                    onChange={(event) => setDateOfBirth(event.target.value)}
+                    type="date"
+                    className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  />
+                </label>
+              </>
             )}
 
             <label className="mt-4 block text-sm font-medium text-slate-700">

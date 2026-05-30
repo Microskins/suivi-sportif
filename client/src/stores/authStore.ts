@@ -7,6 +7,7 @@ const bypassUser: User = {
   id: "00000000-0000-4000-8000-000000000000",
   email: "bypass@local.dev",
   name: "Mode Bypass",
+  dateOfBirth: "1992-06-15T00:00:00.000Z",
   createdAt: new Date(0).toISOString(),
   updatedAt: new Date(0).toISOString(),
 };
@@ -19,7 +20,12 @@ type AuthState = {
   error: string | null;
   initializeAuth: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    dateOfBirth?: string | null,
+  ) => Promise<void>;
   logout: () => void;
   clearError: () => void;
 };
@@ -100,7 +106,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       throw error;
     }
   },
-  async register(name, email, password) {
+  async register(name, email, password, dateOfBirth) {
     if (isAuthBypassEnabled) {
       set({
         user: bypassUser,
@@ -114,7 +120,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const result = await api.register(email, password, name);
+      const result = await api.register(email, password, name, dateOfBirth);
       set({
         user: result.user,
         isAuthenticated: true,

@@ -23,10 +23,11 @@ const userSchema = {
     id: { type: "string", format: "uuid" },
     email: { type: "string", format: "email" },
     name: { type: "string" },
+    dateOfBirth: { type: ["string", "null"], format: "date-time" },
     createdAt: { type: "string", format: "date-time" },
     updatedAt: { type: "string", format: "date-time" },
   },
-  required: ["id", "email", "name", "createdAt", "updatedAt"],
+  required: ["id", "email", "name", "dateOfBirth", "createdAt", "updatedAt"],
 };
 
 export async function usersRoutes(fastify: FastifyInstance) {
@@ -108,6 +109,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
             email: { type: "string", format: "email" },
             password: { type: "string", minLength: 8 },
             name: { type: "string" },
+            dateOfBirth: { type: ["string", "null"], format: "date-time" },
           },
           required: ["email", "password", "name"],
         },
@@ -230,6 +232,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
             email: { type: "string", format: "email" },
             password: { type: "string", minLength: 8 },
             name: { type: "string" },
+            dateOfBirth: { type: ["string", "null"], format: "date-time" },
           },
         },
         response: {

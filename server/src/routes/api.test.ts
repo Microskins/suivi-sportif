@@ -98,6 +98,7 @@ const user = {
   id: USER_ID,
   email: "test@example.com",
   name: "Test User",
+  dateOfBirth: null,
   createdAt: "2026-05-04T10:00:00.000Z",
   updatedAt: "2026-05-04T10:00:00.000Z",
 };
@@ -223,7 +224,6 @@ const bodyMeasurement = {
   userId: USER_ID,
   date: "2026-05-04T08:00:00.000Z",
   silhouette: "MALE",
-  ageYears: 34,
   isActiveLifestyle: true,
   weightKg: 82.4,
   heightCm: 181,

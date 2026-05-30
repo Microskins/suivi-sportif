@@ -46,7 +46,6 @@ const bodyMeasurementBodySchema = {
   properties: {
     date: { type: "string", format: "date-time" },
     silhouette: bodySilhouetteJsonSchema,
-    ageYears: { type: ["integer", "null"], minimum: 10, maximum: 120 },
     isActiveLifestyle: { type: ["boolean", "null"] },
     weightKg: nullableNumber,
     heightCm: nullableNumber,
@@ -75,7 +74,6 @@ const bodyMeasurementSchema = {
     userId: { type: "string", format: "uuid" },
     date: { type: "string", format: "date-time" },
     silhouette: bodySilhouetteJsonSchema,
-    ageYears: { type: ["integer", "null"] },
     isActiveLifestyle: { type: ["boolean", "null"] },
     weightKg: nullableNumber,
     heightCm: nullableNumber,
@@ -101,7 +99,6 @@ const bodyMeasurementSchema = {
     "userId",
     "date",
     "silhouette",
-    "ageYears",
     "isActiveLifestyle",
     "weightKg",
     "heightCm",

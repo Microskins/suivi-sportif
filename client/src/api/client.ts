@@ -13,6 +13,7 @@ export type User = {
   id: string;
   email: string;
   name: string;
+  dateOfBirth: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -249,7 +250,6 @@ export type BodyMeasurement = {
   userId: string;
   date: string;
   silhouette: "MALE" | "FEMALE";
-  ageYears: number | null;
   isActiveLifestyle: boolean | null;
   weightKg: number | null;
   heightCm: number | null;
@@ -274,7 +274,6 @@ export type BodyMeasurement = {
 export type BodyMeasurementInput = {
   date: string;
   silhouette?: "MALE" | "FEMALE";
-  ageYears?: number | null;
   isActiveLifestyle?: boolean | null;
   weightKg?: number | null;
   heightCm?: number | null;
@@ -365,12 +364,17 @@ class ApiClient {
     return result;
   }
 
-  async register(email: string, password: string, name: string) {
+  async register(
+    email: string,
+    password: string,
+    name: string,
+    dateOfBirth?: string | null,
+  ) {
     const result = await this.request<{ user: User; token: string }>(
       "/api/users/register",
       {
         method: "POST",
-        body: JSON.stringify({ email, password, name }),
+        body: JSON.stringify({ email, password, name, dateOfBirth }),
       },
     );
     this.setToken(result.token);
@@ -387,7 +391,9 @@ class ApiClient {
   }
 
   async updateMe(
-    data: Partial<Pick<User, "email" | "name">> & { password?: string },
+    data: Partial<Pick<User, "email" | "name" | "dateOfBirth">> & {
+      password?: string;
+    },
   ) {
     return this.request<User>("/api/users/me", {
       method: "PUT",

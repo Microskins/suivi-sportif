@@ -45,7 +45,6 @@ function createBypassMeasurement(
     userId: bypassUserId,
     date: data.date,
     silhouette: data.silhouette ?? "MALE",
-    ageYears: data.ageYears ?? null,
     isActiveLifestyle: data.isActiveLifestyle ?? null,
     weightKg: data.weightKg ?? null,
     heightCm: data.heightCm ?? null,

@@ -13,6 +13,7 @@ const PASSWORD_SALT_ROUNDS = 10;
 
 type UserRecord = Omit<UserResponse, "createdAt" | "updatedAt"> & {
   createdAt: Date;
+  dateOfBirth: Date | null;
   updatedAt: Date;
 };
 
@@ -22,12 +23,14 @@ export async function getUsers(): Promise<UserResponse[]> {
       id: true,
       email: true,
       name: true,
+      dateOfBirth: true,
       createdAt: true,
       updatedAt: true,
     },
   });
   return (users as UserRecord[]).map((u) => ({
     ...u,
+    dateOfBirth: u.dateOfBirth ? u.dateOfBirth.toISOString() : null,
     createdAt: u.createdAt.toISOString(),
     updatedAt: u.updatedAt.toISOString(),
   }));
@@ -40,6 +43,7 @@ export async function getUserById(id: string): Promise<UserResponse | null> {
       id: true,
       email: true,
       name: true,
+      dateOfBirth: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -47,6 +51,7 @@ export async function getUserById(id: string): Promise<UserResponse | null> {
   if (!user) return null;
   return {
     ...user,
+    dateOfBirth: user.dateOfBirth ? user.dateOfBirth.toISOString() : null,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   };
@@ -63,6 +68,7 @@ export async function getUserByEmail(
     id: user.id,
     email: user.email,
     name: user.name,
+    dateOfBirth: user.dateOfBirth ? user.dateOfBirth.toISOString() : null,
     password: user.password,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
@@ -77,12 +83,14 @@ export async function createUser(data: CreateUserInput): Promise<UserResponse> {
       email: data.email,
       password: hashedPassword,
       name: data.name,
+      dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
     },
   });
   return {
     id: user.id,
     email: user.email,
     name: user.name,
+    dateOfBirth: user.dateOfBirth ? user.dateOfBirth.toISOString() : null,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   };
@@ -104,6 +112,9 @@ export async function updateUser(
     data: {
       ...(data.email && { email: data.email }),
       ...(data.name && { name: data.name }),
+      ...(data.dateOfBirth !== undefined && {
+        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+      }),
       ...(hashedPassword && { password: hashedPassword }),
     },
   });
@@ -111,6 +122,7 @@ export async function updateUser(
     id: user.id,
     email: user.email,
     name: user.name,
+    dateOfBirth: user.dateOfBirth ? user.dateOfBirth.toISOString() : null,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   };
@@ -141,6 +153,7 @@ export async function verifyCredentials(
     id: user.id,
     email: user.email,
     name: user.name,
+    dateOfBirth: user.dateOfBirth ? user.dateOfBirth.toISOString() : null,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   };

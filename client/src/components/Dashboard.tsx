@@ -1512,11 +1512,6 @@ function BodyMeasurementForm({
   const [silhouette, setSilhouette] = useState<BodySilhouette>(
     item?.silhouette ?? "MALE",
   );
-  const [ageYears, setAgeYears] = useState<string>(
-    item?.ageYears === null || item?.ageYears === undefined
-      ? ""
-      : String(item.ageYears),
-  );
   const [isActiveLifestyle, setIsActiveLifestyle] = useState<boolean>(
     item?.isActiveLifestyle ?? false,
   );
@@ -1534,7 +1529,6 @@ function BodyMeasurementForm({
       await onSubmit({
         date: dateTimeToIso(date),
         silhouette,
-        ageYears: numberOrNull(ageYears),
         isActiveLifestyle,
         weightKg: numberOrNull(values.weightKg),
         heightCm: numberOrNull(values.heightCm),
@@ -1584,17 +1578,6 @@ function BodyMeasurementForm({
         </select>
       </Field>
       <div className="grid gap-3 md:grid-cols-2">
-        <Field label="Age (ans)">
-          <input
-            className={inputClass}
-            type="number"
-            min="10"
-            max="120"
-            step="1"
-            value={ageYears}
-            onChange={(event) => setAgeYears(event.target.value)}
-          />
-        </Field>
         <Field label="Niveau d'activite">
           <label className="flex h-[42px] items-center gap-2 rounded border border-slate-300 bg-white px-3 text-sm text-slate-700">
             <input
@@ -1688,14 +1671,32 @@ function computeUsNavyBodyFat(measurement: BodyMeasurement): number | null {
   return result > 0 ? result : null;
 }
 
-function computeMifflinBmr(measurement: BodyMeasurement): number | null {
+function computeAgeFromDateOfBirth(dateOfBirth: string | null): number | null {
+  if (!dateOfBirth) return null;
+  const birthDate = new Date(dateOfBirth);
+  if (Number.isNaN(birthDate.getTime())) return null;
+
+  const now = new Date();
+  let age = now.getUTCFullYear() - birthDate.getUTCFullYear();
+  const monthDelta = now.getUTCMonth() - birthDate.getUTCMonth();
+  const dayDelta = now.getUTCDate() - birthDate.getUTCDate();
+  if (monthDelta < 0 || (monthDelta === 0 && dayDelta < 0)) {
+    age -= 1;
+  }
+  return age > 0 ? age : null;
+}
+
+function computeMifflinBmr(
+  measurement: BodyMeasurement,
+  ageYears: number | null,
+): number | null {
   if (
     !measurement.weightKg ||
     !measurement.heightCm ||
-    !measurement.ageYears ||
+    !ageYears ||
     measurement.weightKg <= 0 ||
     measurement.heightCm <= 0 ||
-    measurement.ageYears <= 0
+    ageYears <= 0
   ) {
     return null;
   }
@@ -1703,12 +1704,15 @@ function computeMifflinBmr(measurement: BodyMeasurement): number | null {
   const base =
     10 * measurement.weightKg +
     6.25 * measurement.heightCm -
-    5 * measurement.ageYears;
+    5 * ageYears;
   return measurement.silhouette === "FEMALE" ? base - 161 : base + 5;
 }
 
-function computeDailyEnergyExpenditure(measurement: BodyMeasurement): number | null {
-  const bmr = computeMifflinBmr(measurement);
+function computeDailyEnergyExpenditure(
+  measurement: BodyMeasurement,
+  ageYears: number | null,
+): number | null {
+  const bmr = computeMifflinBmr(measurement, ageYears);
   if (bmr === null) return null;
   const multiplier = measurement.isActiveLifestyle ? 1.55 : 1.2;
   return bmr * multiplier;
@@ -1826,10 +1830,12 @@ function BodyMeasurementDiagram({ measurement }: { measurement: BodyMeasurement 
 
 function BodyMeasurementsList({
   measurements,
+  userDateOfBirth,
   onEdit,
   onDelete,
 }: {
   measurements: BodyMeasurement[];
+  userDateOfBirth: string | null;
   onEdit: (item: BodyMeasurement) => void;
   onDelete: (item: BodyMeasurement) => void;
 }) {
@@ -1838,10 +1844,11 @@ function BodyMeasurementsList({
   }
 
   const latest = measurements[0];
+  const computedAge = computeAgeFromDateOfBirth(userDateOfBirth);
   const latestBmi = computeBmi(latest);
   const latestBodyFat = computeUsNavyBodyFat(latest);
-  const latestBmr = computeMifflinBmr(latest);
-  const latestTdee = computeDailyEnergyExpenditure(latest);
+  const latestBmr = computeMifflinBmr(latest, computedAge);
+  const latestTdee = computeDailyEnergyExpenditure(latest, computedAge);
 
   return (
     <div className="space-y-4">
@@ -1894,6 +1901,10 @@ function BodyMeasurementsList({
             </div>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <p className="rounded bg-white/70 px-3 py-2 text-sm text-emerald-950/85">
+                <span className="font-medium">Age: </span>
+                {computedAge === null ? "-" : `${computedAge} ans`}
+              </p>
+              <p className="rounded bg-white/70 px-3 py-2 text-sm text-emerald-950/85">
                 <span className="font-medium">Activite: </span>
                 {latest.isActiveLifestyle ? "Actif" : "Peu actif"}
               </p>
@@ -1911,7 +1922,7 @@ function BodyMeasurementsList({
               ))}
             </div>
             <p className="mt-2 text-xs text-emerald-900/70">
-              Le metabolisme de base est calcule avec Mifflin-St Jeor (necessite age, taille, poids).
+              Le metabolisme de base est calcule avec Mifflin-St Jeor depuis la date de naissance, la taille et le poids.
             </p>
             <p className="mt-3 text-sm text-emerald-900/70">
               {formatDate(latest.date)}
@@ -1961,11 +1972,13 @@ function FormActions({ isSaving, onCancel }: { isSaving: boolean; onCancel: () =
 export function Dashboard({
   userName,
   userEmail,
+  userDateOfBirth,
   onLogout,
   isAuthBypassEnabled,
 }: {
   userName: string;
   userEmail: string;
+  userDateOfBirth: string | null;
   onLogout: () => void;
   isAuthBypassEnabled: boolean;
 }) {
@@ -2371,6 +2384,7 @@ export function Dashboard({
                   ) : (
                     <BodyMeasurementsList
                       measurements={bodyMeasurementsStore.bodyMeasurements}
+                      userDateOfBirth={userDateOfBirth}
                       onEdit={(item) => setBodyMeasurementDraft(item)}
                       onDelete={(item) => confirmDelete(formatDate(item.date), () => bodyMeasurementsStore.deleteBodyMeasurement(item.id))}
                     />
