@@ -8,6 +8,7 @@ import { exercisesRoutes } from "./routes/exercises.js";
 import { foodsRoutes } from "./routes/foods.js";
 import { mealsRoutes } from "./routes/meals.js";
 import { nutritionGoalsRoutes } from "./routes/nutrition-goals.js";
+import { bodyMeasurementsRoutes } from "./routes/body-measurements.js";
 import { workoutsRoutes } from "./routes/workouts.js";
 import { workoutTemplatesRoutes } from "./routes/workout-templates.js";
 import { authPlugin } from "./plugins/auth.js";
@@ -93,6 +94,7 @@ export function buildApp(options: FastifyServerOptions = { logger: true }) {
   fastify.register(foodsRoutes, { prefix: "/api/foods" });
   fastify.register(mealsRoutes, { prefix: "/api/meals" });
   fastify.register(nutritionGoalsRoutes, { prefix: "/api/nutrition-goals" });
+  fastify.register(bodyMeasurementsRoutes, { prefix: "/api/body-measurements" });
   fastify.register(swaggerUi, {
     routePrefix: "/docs",
     uiConfig: {

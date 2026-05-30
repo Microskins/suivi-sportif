@@ -66,6 +66,14 @@ const mocks = vi.hoisted(() => ({
     updateNutritionGoal: vi.fn(),
     deleteNutritionGoal: vi.fn(),
   },
+  bodyMeasurements: {
+    getBodyMeasurements: vi.fn(),
+    getLatestBodyMeasurement: vi.fn(),
+    getBodyMeasurementById: vi.fn(),
+    createBodyMeasurement: vi.fn(),
+    updateBodyMeasurement: vi.fn(),
+    deleteBodyMeasurement: vi.fn(),
+  },
 }));
 
 vi.mock("../db/queries/users.js", () => mocks.users);
@@ -75,6 +83,7 @@ vi.mock("../db/queries/workout-templates.js", () => mocks.workoutTemplates);
 vi.mock("../db/queries/foods.js", () => mocks.foods);
 vi.mock("../db/queries/meals.js", () => mocks.meals);
 vi.mock("../db/queries/nutrition-goals.js", () => mocks.nutritionGoals);
+vi.mock("../db/queries/body-measurements.js", () => mocks.bodyMeasurements);
 
 const USER_ID = "11111111-1111-4111-8111-111111111111";
 const EXERCISE_ID = "22222222-2222-4222-8222-222222222222";
@@ -83,6 +92,7 @@ const WORKOUT_TEMPLATE_ID = "77777777-7777-4777-8777-777777777777";
 const FOOD_ID = "44444444-4444-4444-8444-444444444444";
 const MEAL_ID = "55555555-5555-4555-8555-555555555555";
 const NUTRITION_GOAL_ID = "66666666-6666-4666-8666-666666666666";
+const BODY_MEASUREMENT_ID = "99999999-9999-4999-8999-999999999999";
 
 const user = {
   id: USER_ID,
@@ -208,6 +218,31 @@ const nutritionGoal = {
   updatedAt: "2026-05-04T10:00:00.000Z",
 };
 
+const bodyMeasurement = {
+  id: BODY_MEASUREMENT_ID,
+  userId: USER_ID,
+  date: "2026-05-04T08:00:00.000Z",
+  silhouette: "MALE",
+  weightKg: 82.4,
+  heightCm: 181,
+  chestCm: 104,
+  waistCm: 86,
+  hipsCm: 99,
+  neckCm: 39,
+  shouldersCm: 121,
+  leftArmCm: 36,
+  rightArmCm: 36.5,
+  leftForearmCm: 29,
+  rightForearmCm: 29.5,
+  leftThighCm: 60,
+  rightThighCm: 60.5,
+  leftCalfCm: 39,
+  rightCalfCm: 39.5,
+  notes: "Mesure du matin",
+  createdAt: "2026-05-04T08:00:00.000Z",
+  updatedAt: "2026-05-04T08:00:00.000Z",
+};
+
 describe("API", () => {
   let app: FastifyInstance;
 
@@ -298,6 +333,9 @@ describe("API", () => {
       "/api/nutrition-goals",
       "/api/nutrition-goals/{id}",
       "/api/nutrition-goals/active",
+      "/api/body-measurements",
+      "/api/body-measurements/{id}",
+      "/api/body-measurements/latest",
     ]) {
       expect(openApiPath(paths, path), path).toBeDefined();
     }
@@ -306,10 +344,16 @@ describe("API", () => {
     expect(openApiPath(paths, "/api/nutrition-goals").get.tags).toContain(
       "nutrition-goals",
     );
+    expect(openApiPath(paths, "/api/body-measurements").get.tags).toContain(
+      "body-measurements",
+    );
     expect(openApiPath(paths, "/api/meals").get.security).toEqual([
       { bearerAuth: [] },
     ]);
     expect(openApiPath(paths, "/api/nutrition-goals").post.security).toEqual([
+      { bearerAuth: [] },
+    ]);
+    expect(openApiPath(paths, "/api/body-measurements").post.security).toEqual([
       { bearerAuth: [] },
     ]);
     expect(openApiPath(paths, "/api/workout-templates").get.security).toEqual([
@@ -1997,6 +2041,181 @@ describe("API", () => {
     expect(mocks.nutritionGoals.deleteNutritionGoal).not.toHaveBeenCalled();
   });
 
+  it("rejects listing body measurements without a token", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/body-measurements",
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expect(body.code).toBe("UNAUTHORIZED");
+    expect(mocks.bodyMeasurements.getBodyMeasurements).not.toHaveBeenCalled();
+  });
+
+  it("lists body measurements for the authenticated user only", async () => {
+    mocks.bodyMeasurements.getBodyMeasurements.mockResolvedValue([
+      bodyMeasurement,
+    ]);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/body-measurements",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([bodyMeasurement]);
+    expect(body.meta.total).toBe(1);
+    expect(mocks.bodyMeasurements.getBodyMeasurements).toHaveBeenCalledWith(
+      USER_ID,
+    );
+  });
+
+  it("creates a body measurement for the authenticated user", async () => {
+    const payload = {
+      date: bodyMeasurement.date,
+      silhouette: bodyMeasurement.silhouette,
+      weightKg: bodyMeasurement.weightKg,
+      heightCm: bodyMeasurement.heightCm,
+      waistCm: bodyMeasurement.waistCm,
+      notes: bodyMeasurement.notes,
+    };
+    mocks.bodyMeasurements.createBodyMeasurement.mockResolvedValue(
+      bodyMeasurement,
+    );
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/body-measurements",
+      headers: authHeaders(),
+      payload,
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(201);
+    expect(body.data).toEqual(bodyMeasurement);
+    expect(mocks.bodyMeasurements.createBodyMeasurement).toHaveBeenCalledWith(
+      USER_ID,
+      payload,
+    );
+  });
+
+  it("rejects invalid body measurement creation before calling the database", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/body-measurements",
+      headers: authHeaders(),
+      payload: {
+        date: "not-a-date",
+        weightKg: -1,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.bodyMeasurements.createBodyMeasurement).not.toHaveBeenCalled();
+  });
+
+  it("returns the latest body measurement for the authenticated user", async () => {
+    mocks.bodyMeasurements.getLatestBodyMeasurement.mockResolvedValue(
+      bodyMeasurement,
+    );
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/body-measurements/latest",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(bodyMeasurement);
+    expect(mocks.bodyMeasurements.getLatestBodyMeasurement).toHaveBeenCalledWith(
+      USER_ID,
+    );
+  });
+
+  it("gets a body measurement by id for the authenticated user only", async () => {
+    mocks.bodyMeasurements.getBodyMeasurementById.mockResolvedValue(
+      bodyMeasurement,
+    );
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/body-measurements/${BODY_MEASUREMENT_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(bodyMeasurement);
+    expect(mocks.bodyMeasurements.getBodyMeasurementById).toHaveBeenCalledWith(
+      BODY_MEASUREMENT_ID,
+      USER_ID,
+    );
+  });
+
+  it("updates a body measurement for the authenticated user only", async () => {
+    const updatedMeasurement = {
+      ...bodyMeasurement,
+      weightKg: 81.8,
+    };
+    mocks.bodyMeasurements.updateBodyMeasurement.mockResolvedValue(
+      updatedMeasurement,
+    );
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/body-measurements/${BODY_MEASUREMENT_ID}`,
+      headers: authHeaders(),
+      payload: {
+        weightKg: updatedMeasurement.weightKg,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(updatedMeasurement);
+    expect(mocks.bodyMeasurements.updateBodyMeasurement).toHaveBeenCalledWith(
+      BODY_MEASUREMENT_ID,
+      USER_ID,
+      { weightKg: updatedMeasurement.weightKg },
+    );
+  });
+
+  it("deletes a body measurement for the authenticated user only", async () => {
+    mocks.bodyMeasurements.deleteBodyMeasurement.mockResolvedValue(true);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/body-measurements/${BODY_MEASUREMENT_ID}`,
+      headers: authHeaders(),
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.body).toBe("");
+    expect(mocks.bodyMeasurements.deleteBodyMeasurement).toHaveBeenCalledWith(
+      BODY_MEASUREMENT_ID,
+      USER_ID,
+    );
+  });
+
+  it("rejects invalid body measurement ids before calling the database", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/body-measurements/not-a-uuid",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(mocks.bodyMeasurements.getBodyMeasurementById).not.toHaveBeenCalled();
+  });
+
   it("rejects invalid bearer tokens before calling protected queries", async () => {
     const response = await app.inject({
       method: "GET",
@@ -2071,6 +2290,12 @@ describe("API", () => {
       method: "GET" as const,
       url: "/api/nutrition-goals",
       mock: mocks.nutritionGoals.getNutritionGoals,
+    },
+    {
+      name: "body measurements",
+      method: "GET" as const,
+      url: "/api/body-measurements",
+      mock: mocks.bodyMeasurements.getBodyMeasurements,
     },
   ])("returns a standard 500 response for $name query failures", async (testCase) => {
     testCase.mock.mockRejectedValueOnce(new Error("database unavailable"));

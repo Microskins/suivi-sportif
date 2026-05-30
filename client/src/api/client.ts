@@ -244,6 +244,52 @@ export type NutritionGoalInput = {
   isActive?: boolean;
 };
 
+export type BodyMeasurement = {
+  id: string;
+  userId: string;
+  date: string;
+  silhouette: "MALE" | "FEMALE";
+  weightKg: number | null;
+  heightCm: number | null;
+  chestCm: number | null;
+  waistCm: number | null;
+  hipsCm: number | null;
+  neckCm: number | null;
+  shouldersCm: number | null;
+  leftArmCm: number | null;
+  rightArmCm: number | null;
+  leftForearmCm: number | null;
+  rightForearmCm: number | null;
+  leftThighCm: number | null;
+  rightThighCm: number | null;
+  leftCalfCm: number | null;
+  rightCalfCm: number | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type BodyMeasurementInput = {
+  date: string;
+  silhouette?: "MALE" | "FEMALE";
+  weightKg?: number | null;
+  heightCm?: number | null;
+  chestCm?: number | null;
+  waistCm?: number | null;
+  hipsCm?: number | null;
+  neckCm?: number | null;
+  shouldersCm?: number | null;
+  leftArmCm?: number | null;
+  rightArmCm?: number | null;
+  leftForearmCm?: number | null;
+  rightForearmCm?: number | null;
+  leftThighCm?: number | null;
+  rightThighCm?: number | null;
+  leftCalfCm?: number | null;
+  rightCalfCm?: number | null;
+  notes?: string | null;
+};
+
 class ApiClient {
   private token: string | null = null;
 
@@ -532,6 +578,42 @@ class ApiClient {
 
   async deleteNutritionGoal(id: string) {
     return this.request<void>(`/api/nutrition-goals/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  // Body measurements
+  async getBodyMeasurements() {
+    return this.request<BodyMeasurement[]>("/api/body-measurements");
+  }
+
+  async getLatestBodyMeasurement() {
+    return this.request<BodyMeasurement>("/api/body-measurements/latest");
+  }
+
+  async getBodyMeasurement(id: string) {
+    return this.request<BodyMeasurement>(`/api/body-measurements/${id}`);
+  }
+
+  async createBodyMeasurement(data: BodyMeasurementInput) {
+    return this.request<BodyMeasurement>("/api/body-measurements", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateBodyMeasurement(
+    id: string,
+    data: Partial<BodyMeasurementInput>,
+  ) {
+    return this.request<BodyMeasurement>(`/api/body-measurements/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteBodyMeasurement(id: string) {
+    return this.request<void>(`/api/body-measurements/${id}`, {
       method: "DELETE",
     });
   }

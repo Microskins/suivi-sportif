@@ -342,3 +342,33 @@
 ## Liens
 
 - Plan: docs/90-plans/090-tour-qualite-ui.md
+
+---
+
+## 2026-05-29 - Mensurations: graphiques de progression
+
+## Contexte
+
+- Le chantier mensurations ajoute d'abord la saisie et l'historique.
+- La valeur principale viendra ensuite de la visualisation des tendances.
+
+## Proposition
+
+- Ajouter des graphiques dedies aux mesures corporelles:
+  - courbe de poids;
+  - evolution taille abdominale / hanches / poitrine;
+  - variation depuis la premiere mesure et depuis la derniere mesure;
+  - indicateurs simples par periode 30j / 90j / 1 an.
+
+## Impact
+
+- Rend les donnees saisies plus utiles et motivantes.
+- Permet de suivre la recomposition corporelle au-dela du poids seul.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/027-mensurations-corporelles.md

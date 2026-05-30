@@ -335,6 +335,46 @@ Creation:
 Creer ou modifier un objectif avec `isActive: true` desactive les autres
 objectifs actifs de l'utilisateur.
 
+## Mensurations
+
+Toutes les routes sont protegees et utilisent l'utilisateur du JWT.
+
+- `GET /api/body-measurements`
+- `GET /api/body-measurements/latest`
+- `GET /api/body-measurements/:id`
+- `POST /api/body-measurements`
+- `PUT /api/body-measurements/:id`
+- `DELETE /api/body-measurements/:id`
+
+Creation:
+
+```json
+{
+  "date": "2026-05-04T08:00:00.000Z",
+  "silhouette": "MALE",
+  "weightKg": 82.4,
+  "heightCm": 181,
+  "chestCm": 104,
+  "waistCm": 86,
+  "hipsCm": 99,
+  "neckCm": 39,
+  "shouldersCm": 121,
+  "leftArmCm": 36,
+  "rightArmCm": 36.5,
+  "leftForearmCm": 29,
+  "rightForearmCm": 29.5,
+  "leftThighCm": 60,
+  "rightThighCm": 60.5,
+  "leftCalfCm": 39,
+  "rightCalfCm": 39.5,
+  "notes": "Mesure du matin"
+}
+```
+
+`silhouette` vaut `MALE` ou `FEMALE` et vaut `MALE` par defaut.
+Tous les champs de mesure sauf `date` sont optionnels et peuvent etre `null`.
+Les valeurs sont stockees avec precision decimale.
+
 ## Erreurs frequentes
 
 - `400 VALIDATION_ERROR`: body, params ou dates invalides.

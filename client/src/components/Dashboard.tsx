@@ -1,5 +1,7 @@
 import { FormEvent, type ReactNode, useEffect, useMemo, useState } from "react";
 import type {
+  BodyMeasurement,
+  BodyMeasurementInput,
   Exercise,
   ExerciseInput,
   Food,
@@ -16,6 +18,7 @@ import type {
 } from "../api/client";
 import { DashboardOverview } from "./DashboardOverview";
 import { WorkoutsCalendar } from "./WorkoutsCalendar";
+import { useBodyMeasurementsStore } from "../stores/bodyMeasurementsStore";
 import { useExercisesStore } from "../stores/exercisesStore";
 import { useFoodsStore } from "../stores/foodsStore";
 import { useMealsStore } from "../stores/mealsStore";
@@ -30,7 +33,8 @@ type Resource =
   | "exercises"
   | "foods"
   | "meals"
-  | "goals";
+  | "goals"
+  | "measurements";
 type ModalState =
   | { type: "exercise"; item?: Exercise }
   | { type: "workout"; item?: Workout; prefillWorkout?: Workout; presetDate?: string }
@@ -64,6 +68,32 @@ const mealTypes: Array<[MealType, string]> = [
   ["dinner", "Diner"],
   ["snack", "Collation"],
   ["other", "Autre"],
+];
+
+const bodyMeasurementFields = [
+  ["weightKg", "Poids", "kg"],
+  ["heightCm", "Taille", "cm"],
+  ["chestCm", "Poitrine", "cm"],
+  ["waistCm", "Taille abdominale", "cm"],
+  ["hipsCm", "Hanches", "cm"],
+  ["neckCm", "Cou", "cm"],
+  ["shouldersCm", "Epaules", "cm"],
+  ["leftArmCm", "Bras gauche", "cm"],
+  ["rightArmCm", "Bras droit", "cm"],
+  ["leftForearmCm", "Avant-bras gauche", "cm"],
+  ["rightForearmCm", "Avant-bras droit", "cm"],
+  ["leftThighCm", "Cuisse gauche", "cm"],
+  ["rightThighCm", "Cuisse droite", "cm"],
+  ["leftCalfCm", "Mollet gauche", "cm"],
+  ["rightCalfCm", "Mollet droit", "cm"],
+] as const;
+
+type BodyMeasurementField = (typeof bodyMeasurementFields)[number][0];
+type BodySilhouette = BodyMeasurement["silhouette"];
+
+const bodySilhouetteOptions: Array<[BodySilhouette, string]> = [
+  ["MALE", "Homme"],
+  ["FEMALE", "Femme"],
 ];
 
 type ExerciseCatalogEntry = {
@@ -1460,6 +1490,323 @@ function NutritionGoalForm({
   );
 }
 
+function decimalInputValue(value?: number | null) {
+  return value === null || value === undefined ? "" : String(value);
+}
+
+function BodyMeasurementForm({
+  item,
+  onSubmit,
+  onCancel,
+}: {
+  item?: BodyMeasurement;
+  onSubmit: (data: BodyMeasurementInput) => Promise<void>;
+  onCancel: () => void;
+}) {
+  const [date, setDate] = useState(toInputDateTime(item?.date));
+  const [values, setValues] = useState<Record<BodyMeasurementField, string>>(
+    Object.fromEntries(
+      bodyMeasurementFields.map(([key]) => [key, decimalInputValue(item?.[key])]),
+    ) as Record<BodyMeasurementField, string>,
+  );
+  const [silhouette, setSilhouette] = useState<BodySilhouette>(
+    item?.silhouette ?? "MALE",
+  );
+  const [notes, setNotes] = useState(item?.notes ?? "");
+  const [isSaving, setIsSaving] = useState(false);
+
+  function updateValue(key: BodyMeasurementField, value: string) {
+    setValues((current) => ({ ...current, [key]: value }));
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSaving(true);
+    try {
+      await onSubmit({
+        date: dateTimeToIso(date),
+        silhouette,
+        weightKg: numberOrNull(values.weightKg),
+        heightCm: numberOrNull(values.heightCm),
+        chestCm: numberOrNull(values.chestCm),
+        waistCm: numberOrNull(values.waistCm),
+        hipsCm: numberOrNull(values.hipsCm),
+        neckCm: numberOrNull(values.neckCm),
+        shouldersCm: numberOrNull(values.shouldersCm),
+        leftArmCm: numberOrNull(values.leftArmCm),
+        rightArmCm: numberOrNull(values.rightArmCm),
+        leftForearmCm: numberOrNull(values.leftForearmCm),
+        rightForearmCm: numberOrNull(values.rightForearmCm),
+        leftThighCm: numberOrNull(values.leftThighCm),
+        rightThighCm: numberOrNull(values.rightThighCm),
+        leftCalfCm: numberOrNull(values.leftCalfCm),
+        rightCalfCm: numberOrNull(values.rightCalfCm),
+        notes: emptyToNull(notes),
+      });
+      onCancel();
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <Field label="Date de mesure">
+        <input
+          className={inputClass}
+          type="datetime-local"
+          value={date}
+          onChange={(event) => setDate(event.target.value)}
+          required
+        />
+      </Field>
+      <Field label="Silhouette">
+        <select
+          className={inputClass}
+          value={silhouette}
+          onChange={(event) => setSilhouette(event.target.value as BodySilhouette)}
+        >
+          {bodySilhouetteOptions.map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <div className="grid gap-3 md:grid-cols-3">
+        {bodyMeasurementFields.map(([key, label, unit]) => (
+          <Field key={key} label={`${label} (${unit})`}>
+            <input
+              className={inputClass}
+              type="number"
+              min="0"
+              step="0.1"
+              value={values[key]}
+              onChange={(event) => updateValue(key, event.target.value)}
+            />
+          </Field>
+        ))}
+      </div>
+      <Field label="Notes">
+        <textarea
+          className={inputClass}
+          rows={3}
+          value={notes}
+          onChange={(event) => setNotes(event.target.value)}
+        />
+      </Field>
+      <FormActions isSaving={isSaving} onCancel={onCancel} />
+    </form>
+  );
+}
+
+function measurementValue(
+  measurement: BodyMeasurement,
+  key: BodyMeasurementField,
+  unit: string,
+) {
+  const value = measurement[key];
+  return value === null ? "-" : `${value} ${unit}`;
+}
+
+function BodyMeasurementDiagram({ measurement }: { measurement: BodyMeasurement }) {
+  const silhouetteSrc =
+    measurement.silhouette === "FEMALE"
+      ? "/body-measurements/body-silhouette-female.png"
+      : "/body-measurements/body-silhouette.png";
+  const callouts: Array<{
+    key: BodyMeasurementField;
+    label: string;
+    unit: string;
+    lineClassName: string;
+    labelClassName: string;
+  }> = [
+    {
+      key: "neckCm",
+      label: "Cou",
+      unit: "cm",
+      lineClassName: "left-[51%] top-[15%] w-[23%]",
+      labelClassName: "left-[77%] top-[11%] text-left",
+    },
+    {
+      key: "shouldersCm",
+      label: "Epaules",
+      unit: "cm",
+      lineClassName: "left-[55%] top-[24%] w-[21%]",
+      labelClassName: "left-[79%] top-[20%] text-left",
+    },
+    {
+      key: "chestCm",
+      label: "Poitrine",
+      unit: "cm",
+      lineClassName: "left-[22%] top-[30%] w-[23%]",
+      labelClassName: "left-[3%] top-[26%] text-left",
+    },
+    {
+      key: "rightArmCm",
+      label: "Biceps",
+      unit: "cm",
+      lineClassName: "left-[67%] top-[36%] w-[13%]",
+      labelClassName: "left-[82%] top-[32%] text-left",
+    },
+    {
+      key: "rightForearmCm",
+      label: "Avant-bras",
+      unit: "cm",
+      lineClassName: "left-[19%] top-[46%] w-[17%]",
+      labelClassName: "left-[3%] top-[42%] text-left",
+    },
+    {
+      key: "waistCm",
+      label: "Taille",
+      unit: "cm",
+      lineClassName: "left-[54%] top-[46%] w-[23%]",
+      labelClassName: "left-[80%] top-[42%] text-left",
+    },
+    {
+      key: "hipsCm",
+      label: "Hanches",
+      unit: "cm",
+      lineClassName: "left-[54%] top-[52%] w-[23%]",
+      labelClassName: "left-[80%] top-[48%] text-left",
+    },
+    {
+      key: "rightThighCm",
+      label: "Cuisses",
+      unit: "cm",
+      lineClassName: "left-[18%] top-[64%] w-[26%]",
+      labelClassName: "left-[3%] top-[60%] text-left",
+    },
+    {
+      key: "rightCalfCm",
+      label: "Mollets",
+      unit: "cm",
+      lineClassName: "left-[19%] top-[80%] w-[26%]",
+      labelClassName: "left-[3%] top-[76%] text-left",
+    },
+  ];
+
+  return (
+    <div
+      role="img"
+      aria-label="Schema des mensurations corporelles"
+      className="relative mx-auto aspect-[2/3] w-full max-w-[360px] overflow-hidden rounded border border-emerald-200 bg-emerald-50 shadow-sm"
+    >
+      <img
+        src={silhouetteSrc}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-emerald-900/5" />
+      <div className="absolute inset-0 text-[10px] sm:text-xs">
+        {callouts.map((callout) => (
+          <div key={callout.key}>
+            <span
+              className={`absolute h-px rounded-full bg-emerald-800/80 shadow-[0_0_0_1px_rgba(255,255,255,0.45)] ${callout.lineClassName}`}
+            />
+            <span
+              className={`absolute min-w-16 rounded bg-white/75 px-1.5 py-1 font-semibold leading-tight text-emerald-950 shadow-sm ring-1 ring-emerald-900/10 backdrop-blur ${callout.labelClassName}`}
+            >
+              {callout.label}
+              <span className="block font-medium text-emerald-900/70">
+                {measurementValue(measurement, callout.key, callout.unit)}
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BodyMeasurementsList({
+  measurements,
+  onEdit,
+  onDelete,
+}: {
+  measurements: BodyMeasurement[];
+  onEdit: (item: BodyMeasurement) => void;
+  onDelete: (item: BodyMeasurement) => void;
+}) {
+  if (!measurements.length) {
+    return <EmptyState label="Aucune mensuration enregistree pour le moment." />;
+  }
+
+  const latest = measurements[0];
+
+  return (
+    <div className="space-y-4">
+      <section className="rounded border border-emerald-200 bg-emerald-50/70 p-4 shadow-sm">
+        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
+          Derniere mesure
+        </p>
+        <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(220px,320px)_1fr]">
+          <BodyMeasurementDiagram measurement={latest} />
+          <div>
+            <div className="grid gap-3 md:grid-cols-3">
+              <div>
+                <p className="text-sm text-emerald-900/70">Poids</p>
+                <p className="text-2xl font-bold text-emerald-950">
+                  {measurementValue(latest, "weightKg", "kg")}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-emerald-900/70">Taille</p>
+                <p className="text-2xl font-bold text-emerald-950">
+                  {measurementValue(latest, "heightCm", "cm")}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-emerald-900/70">Taille abdominale</p>
+                <p className="text-2xl font-bold text-emerald-950">
+                  {measurementValue(latest, "waistCm", "cm")}
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 grid gap-2 text-sm text-emerald-950/80 sm:grid-cols-2">
+              {bodyMeasurementFields.slice(2, 9).map(([key, label, unit]) => (
+                <p key={key} className="rounded bg-white/70 px-3 py-2">
+                  <span className="font-medium">{label}: </span>
+                  {measurementValue(latest, key, unit)}
+                </p>
+              ))}
+            </div>
+            <p className="mt-3 text-sm text-emerald-900/70">
+              {formatDate(latest.date)}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <ul className="space-y-3">
+        {measurements.map((measurement) => (
+          <li key={measurement.id} className={itemCardClass}>
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div className="min-w-0">
+                <p className="font-semibold text-slate-950">
+                  {formatDate(measurement.date)}
+                </p>
+                <div className="mt-2 grid gap-2 text-sm text-slate-600 sm:grid-cols-2 lg:grid-cols-3">
+                  {bodyMeasurementFields.slice(0, 9).map(([key, label, unit]) => (
+                    <p key={key}>
+                      <span className="font-medium text-slate-800">{label}: </span>
+                      {measurementValue(measurement, key, unit)}
+                    </p>
+                  ))}
+                </div>
+                {measurement.notes && (
+                  <p className="mt-2 text-sm text-slate-500">{measurement.notes}</p>
+                )}
+              </div>
+              <ItemActions item={measurement} onEdit={onEdit} onDelete={onDelete} />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function FormActions({ isSaving, onCancel }: { isSaving: boolean; onCancel: () => void }) {
   return (
     <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
@@ -1484,8 +1831,10 @@ export function Dashboard({
   const [modal, setModal] = useState<ModalState>(null);
   const [workoutsView, setWorkoutsView] = useState<"list" | "create" | "from-template">("list");
   const [exerciseDraft, setExerciseDraft] = useState<Exercise | undefined>(undefined);
+  const [bodyMeasurementDraft, setBodyMeasurementDraft] = useState<BodyMeasurement | undefined>(undefined);
   const [workoutDraft, setWorkoutDraft] = useState<Workout | undefined>(undefined);
   const [workoutPrefillDraft, setWorkoutPrefillDraft] = useState<Workout | undefined>(undefined);
+  const bodyMeasurementsStore = useBodyMeasurementsStore();
   const exercisesStore = useExercisesStore();
   const workoutsStore = useWorkoutsStore();
   const workoutTemplatesStore = useWorkoutTemplatesStore();
@@ -1518,6 +1867,7 @@ export function Dashboard({
     void foodsStore.fetchFoods();
     void mealsStore.fetchMeals();
     void goalsStore.fetchNutritionGoals();
+    void bodyMeasurementsStore.fetchBodyMeasurements();
   }, []);
 
   useEffect(() => {
@@ -1568,7 +1918,8 @@ export function Dashboard({
     workoutTemplatesStore.isLoading ||
     foodsStore.isLoading ||
     mealsStore.isLoading ||
-    goalsStore.isLoading;
+    goalsStore.isLoading ||
+    bodyMeasurementsStore.isLoading;
 
   const activeError =
     resource === "dashboard" || resource === "calendar"
@@ -1579,9 +1930,11 @@ export function Dashboard({
         ? exercisesStore.error
         : resource === "foods"
           ? foodsStore.error
-          : resource === "meals"
-            ? mealsStore.error
-            : goalsStore.error;
+        : resource === "meals"
+          ? mealsStore.error
+          : resource === "goals"
+            ? goalsStore.error
+            : bodyMeasurementsStore.error;
 
   const contentClass =
     resource === "dashboard" || resource === "calendar"
@@ -1669,6 +2022,18 @@ export function Dashboard({
                 {label}
               </button>
             ))}
+            <p className="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+              Corps
+            </p>
+            <button
+              type="button"
+              onClick={() => setResource("measurements")}
+              className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
+                resource === "measurements" ? "border-rose-600 bg-rose-600 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
+              }`}
+            >
+              Mensurations
+            </button>
           </nav>
 
           <div className={contentClass}>
@@ -1687,6 +2052,9 @@ export function Dashboard({
                     return;
                   }
                   openCreate(resource, setModal);
+                  if (resource === "measurements") {
+                    setBodyMeasurementDraft({} as BodyMeasurement);
+                  }
                 }}
                 onCreateFromTemplate={
                   resource === "workouts"
@@ -1840,6 +2208,33 @@ export function Dashboard({
                   onDelete={(item) => confirmDelete(item.name, () => goalsStore.deleteNutritionGoal(item.id))}
                 />
               )}
+              {resource === "measurements" && (
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
+                    <button type="button" className={bodyMeasurementDraft === undefined ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setBodyMeasurementDraft(undefined)}>Historique</button>
+                    <button type="button" className={bodyMeasurementDraft !== undefined && !bodyMeasurementDraft.id ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setBodyMeasurementDraft({} as BodyMeasurement)}>Ajouter une mesure</button>
+                  </div>
+                  {bodyMeasurementDraft !== undefined ? (
+                    <div className="rounded border border-slate-200 bg-white p-4">
+                      <BodyMeasurementForm
+                        item={bodyMeasurementDraft.id ? bodyMeasurementDraft : undefined}
+                        onCancel={() => setBodyMeasurementDraft(undefined)}
+                        onSubmit={(data) =>
+                          bodyMeasurementDraft.id
+                            ? bodyMeasurementsStore.updateBodyMeasurement(bodyMeasurementDraft.id, data)
+                            : bodyMeasurementsStore.createBodyMeasurement(data)
+                        }
+                      />
+                    </div>
+                  ) : (
+                    <BodyMeasurementsList
+                      measurements={bodyMeasurementsStore.bodyMeasurements}
+                      onEdit={(item) => setBodyMeasurementDraft(item)}
+                      onDelete={(item) => confirmDelete(formatDate(item.date), () => bodyMeasurementsStore.deleteBodyMeasurement(item.id))}
+                    />
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1928,6 +2323,7 @@ function ResourceHeader({
     foods: "Aliments",
     meals: "Repas",
     goals: "Objectifs nutrition",
+    measurements: "Mensurations",
   };
 
   return (

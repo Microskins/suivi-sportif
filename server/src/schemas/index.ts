@@ -329,6 +329,59 @@ export const nutritionGoalResponseSchema = z.object({
   updatedAt: z.string().datetime(),
 });
 
+// ============== Body Measurement Schemas ==============
+const bodyMeasurementValueSchema = z.number().min(0).max(1000);
+export const bodySilhouetteSchema = z.enum(["MALE", "FEMALE"]);
+
+const bodyMeasurementBaseSchema = z.object({
+  date: z.string().datetime(),
+  silhouette: bodySilhouetteSchema.optional().default("MALE"),
+  weightKg: bodyMeasurementValueSchema.nullable().optional(),
+  heightCm: bodyMeasurementValueSchema.nullable().optional(),
+  chestCm: bodyMeasurementValueSchema.nullable().optional(),
+  waistCm: bodyMeasurementValueSchema.nullable().optional(),
+  hipsCm: bodyMeasurementValueSchema.nullable().optional(),
+  neckCm: bodyMeasurementValueSchema.nullable().optional(),
+  shouldersCm: bodyMeasurementValueSchema.nullable().optional(),
+  leftArmCm: bodyMeasurementValueSchema.nullable().optional(),
+  rightArmCm: bodyMeasurementValueSchema.nullable().optional(),
+  leftForearmCm: bodyMeasurementValueSchema.nullable().optional(),
+  rightForearmCm: bodyMeasurementValueSchema.nullable().optional(),
+  leftThighCm: bodyMeasurementValueSchema.nullable().optional(),
+  rightThighCm: bodyMeasurementValueSchema.nullable().optional(),
+  leftCalfCm: bodyMeasurementValueSchema.nullable().optional(),
+  rightCalfCm: bodyMeasurementValueSchema.nullable().optional(),
+  notes: z.string().max(2000).nullable().optional(),
+});
+
+export const createBodyMeasurementSchema = bodyMeasurementBaseSchema;
+export const updateBodyMeasurementSchema = bodyMeasurementBaseSchema.partial();
+
+export const bodyMeasurementResponseSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string().uuid(),
+  date: z.string().datetime(),
+  silhouette: bodySilhouetteSchema,
+  weightKg: z.number().nullable(),
+  heightCm: z.number().nullable(),
+  chestCm: z.number().nullable(),
+  waistCm: z.number().nullable(),
+  hipsCm: z.number().nullable(),
+  neckCm: z.number().nullable(),
+  shouldersCm: z.number().nullable(),
+  leftArmCm: z.number().nullable(),
+  rightArmCm: z.number().nullable(),
+  leftForearmCm: z.number().nullable(),
+  rightForearmCm: z.number().nullable(),
+  leftThighCm: z.number().nullable(),
+  rightThighCm: z.number().nullable(),
+  leftCalfCm: z.number().nullable(),
+  rightCalfCm: z.number().nullable(),
+  notes: z.string().nullable(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
 // ============== Type Exports ==============
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type LoginUserInput = z.infer<typeof loginUserSchema>;
@@ -369,4 +422,13 @@ export type UpdateNutritionGoalInput = z.infer<
 >;
 export type NutritionGoalResponse = z.infer<
   typeof nutritionGoalResponseSchema
+>;
+export type CreateBodyMeasurementInput = z.infer<
+  typeof createBodyMeasurementSchema
+>;
+export type UpdateBodyMeasurementInput = z.infer<
+  typeof updateBodyMeasurementSchema
+>;
+export type BodyMeasurementResponse = z.infer<
+  typeof bodyMeasurementResponseSchema
 >;

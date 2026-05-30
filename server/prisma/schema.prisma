@@ -41,6 +41,11 @@ enum WorkoutStatus {
   CANCELED
 }
 
+enum BodySilhouette {
+  MALE
+  FEMALE
+}
+
 // ============== User Model ==============
 
 model User {
@@ -51,10 +56,11 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  foods          Food[]
-  meals          Meal[]
-  nutritionGoals NutritionGoal[]
-  workouts       Workout[]
+  foods            Food[]
+  meals            Meal[]
+  nutritionGoals   NutritionGoal[]
+  workouts         Workout[]
+  bodyMeasurements BodyMeasurement[]
 
   @@map("users")
 }
@@ -62,21 +68,21 @@ model User {
 // ============== Exercise Model ==============
 
 model Exercise {
-  id           String              @id @default(uuid())
+  id           String             @id @default(uuid())
   name         String
-  description  String?             @db.Text
-  difficulty   ExerciseDifficulty  @default(BEGINNER)
-  exerciseType ExerciseType        @default(STRENGTH) @map("exercise_type")
-  createdAt    DateTime            @default(now()) @map("created_at")
-  updatedAt    DateTime            @updatedAt @map("updated_at")
+  description  String?            @db.Text
+  difficulty   ExerciseDifficulty @default(BEGINNER)
+  exerciseType ExerciseType       @default(STRENGTH) @map("exercise_type")
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
 
   workoutExercises WorkoutExercise[]
 
-  categories   ExerciseCategoryOnExercise[]
-  muscles      ExerciseMuscle[]
-  equipment    ExerciseEquipment[]
-  instructions ExerciseInstruction[]
-  media        ExerciseMedia[]
+  categories        ExerciseCategoryOnExercise[]
+  muscles           ExerciseMuscle[]
+  equipment         ExerciseEquipment[]
+  instructions      ExerciseInstruction[]
+  media             ExerciseMedia[]
   templateExercises WorkoutTemplateExercise[]
 
   @@index([name])
@@ -206,15 +212,15 @@ model ExerciseMedia {
 // ============== Workout Model ==============
 
 model Workout {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
+  id        String        @id @default(uuid())
+  userId    String        @map("user_id")
   name      String
   date      DateTime
   status    WorkoutStatus @default(PLANNED)
   duration  Int // en minutes
-  notes     String?  @db.Text
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  notes     String?       @db.Text
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
 
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   workoutExercises WorkoutExercise[]
@@ -390,6 +396,38 @@ model NutritionGoal {
   @@index([userId, isActive])
   @@index([userId, startDate])
   @@map("nutrition_goals")
+}
+
+// ============== Body Measurement Model ==============
+
+model BodyMeasurement {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  date           DateTime
+  silhouette     BodySilhouette @default(MALE)
+  weightKg       Decimal? @map("weight_kg") @db.Decimal(10, 2)
+  heightCm       Decimal? @map("height_cm") @db.Decimal(10, 2)
+  chestCm        Decimal? @map("chest_cm") @db.Decimal(10, 2)
+  waistCm        Decimal? @map("waist_cm") @db.Decimal(10, 2)
+  hipsCm         Decimal? @map("hips_cm") @db.Decimal(10, 2)
+  neckCm         Decimal? @map("neck_cm") @db.Decimal(10, 2)
+  shouldersCm    Decimal? @map("shoulders_cm") @db.Decimal(10, 2)
+  leftArmCm      Decimal? @map("left_arm_cm") @db.Decimal(10, 2)
+  rightArmCm     Decimal? @map("right_arm_cm") @db.Decimal(10, 2)
+  leftForearmCm  Decimal? @map("left_forearm_cm") @db.Decimal(10, 2)
+  rightForearmCm Decimal? @map("right_forearm_cm") @db.Decimal(10, 2)
+  leftThighCm    Decimal? @map("left_thigh_cm") @db.Decimal(10, 2)
+  rightThighCm   Decimal? @map("right_thigh_cm") @db.Decimal(10, 2)
+  leftCalfCm     Decimal? @map("left_calf_cm") @db.Decimal(10, 2)
+  rightCalfCm    Decimal? @map("right_calf_cm") @db.Decimal(10, 2)
+  notes          String?  @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("body_measurements")
 }
 
 // Note: Prisma uses Decimal for precise numeric values
