@@ -251,6 +251,15 @@ export async function usersRoutes(fastify: FastifyInstance) {
     async (request, reply) => {
     try {
       const parsed = updateUserSchema.parse(request.body as object);
+      if (parsed.email) {
+        const existing = await users.getUserByEmail(parsed.email);
+        if (existing && existing.id !== request.user.id) {
+          return reply
+            .code(400)
+            .send({ error: "Email deja utilise", code: "EMAIL_ALREADY_EXISTS" });
+        }
+      }
+
       const user = await users.updateUser(request.user.id, parsed);
 
       if (!user) {

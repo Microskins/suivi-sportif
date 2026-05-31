@@ -15,6 +15,7 @@ import type {
   WorkoutInput,
   WorkoutStatus,
   WorkoutTemplate,
+  User,
 } from "../api/client";
 import { DashboardOverview } from "./DashboardOverview";
 import { WorkoutsCalendar } from "./WorkoutsCalendar";
@@ -34,7 +35,8 @@ type Resource =
   | "foods"
   | "meals"
   | "goals"
-  | "measurements";
+  | "measurements"
+  | "profile";
 type ModalState =
   | { type: "exercise"; item?: Exercise }
   | { type: "workout"; item?: Workout; prefillWorkout?: Workout; presetDate?: string }
@@ -1969,17 +1971,128 @@ function FormActions({ isSaving, onCancel }: { isSaving: boolean; onCancel: () =
   );
 }
 
+function ProfileForm({
+  userName,
+  userEmail,
+  userDateOfBirth,
+  isSaving,
+  error,
+  onSubmit,
+}: {
+  userName: string;
+  userEmail: string;
+  userDateOfBirth: string | null;
+  isSaving: boolean;
+  error: string | null;
+  onSubmit: (data: {
+    email?: string;
+    dateOfBirth?: string | null;
+    password?: string;
+  }) => Promise<void>;
+}) {
+  const [email, setEmail] = useState(userEmail);
+  const [dateOfBirth, setDateOfBirth] = useState(toInputDate(userDateOfBirth));
+  const [password, setPassword] = useState("");
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setEmail(userEmail);
+    setDateOfBirth(toInputDate(userDateOfBirth));
+    setPassword("");
+  }, [userEmail, userDateOfBirth]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSuccessMessage(null);
+
+    try {
+      await onSubmit({
+        email,
+        dateOfBirth: dateOfBirth ? dateToIso(dateOfBirth) : null,
+        ...(password.trim() ? { password } : {}),
+      });
+      setPassword("");
+      setSuccessMessage("Profil mis a jour.");
+    } catch {
+      return;
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <h2 className="text-xl font-semibold text-slate-950">Profil</h2>
+        <p className="mt-1 text-sm text-slate-600">{userName}</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Field label="Email">
+          <input
+            className={inputClass}
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            type="email"
+            autoComplete="email"
+            required
+          />
+        </Field>
+        <Field label="Date de naissance">
+          <input
+            className={inputClass}
+            value={dateOfBirth}
+            onChange={(event) => setDateOfBirth(event.target.value)}
+            type="date"
+          />
+        </Field>
+      </div>
+
+      <Field label="Nouveau mot de passe">
+        <input
+          className={inputClass}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          type="password"
+          autoComplete="new-password"
+          minLength={8}
+          placeholder="Laisser vide pour ne pas changer"
+        />
+      </Field>
+
+      {successMessage && (
+        <p className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+          {successMessage}
+        </p>
+      )}
+      <ErrorBox message={error} />
+
+      <div className="flex justify-end border-t border-slate-200 pt-4">
+        <button type="submit" disabled={isSaving} className={buttonClass}>
+          {isSaving ? "Enregistrement..." : "Enregistrer le profil"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 export function Dashboard({
   userName,
   userEmail,
   userDateOfBirth,
+  onUpdateProfile,
   onLogout,
+  isProfileSaving,
+  profileError,
   isAuthBypassEnabled,
 }: {
   userName: string;
   userEmail: string;
   userDateOfBirth: string | null;
+  onUpdateProfile: (data: Partial<Pick<User, "email" | "dateOfBirth">> & {
+    password?: string;
+  }) => Promise<void>;
   onLogout: () => void;
+  isProfileSaving: boolean;
+  profileError: string | null;
   isAuthBypassEnabled: boolean;
 }) {
   const [resource, setResource] = useState<Resource>("dashboard");
@@ -2089,7 +2202,9 @@ export function Dashboard({
           ? mealsStore.error
           : resource === "goals"
             ? goalsStore.error
-            : bodyMeasurementsStore.error;
+            : resource === "measurements"
+              ? bodyMeasurementsStore.error
+              : null;
 
   const contentClass =
     resource === "dashboard" || resource === "calendar"
@@ -2189,10 +2304,22 @@ export function Dashboard({
             >
               Mensurations
             </button>
+            <p className="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+              Compte
+            </p>
+            <button
+              type="button"
+              onClick={() => setResource("profile")}
+              className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
+                resource === "profile" ? "border-sky-700 bg-sky-700 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
+              }`}
+            >
+              Profil
+            </button>
           </nav>
 
           <div className={contentClass}>
-            {resource !== "dashboard" && resource !== "calendar" && (
+            {resource !== "dashboard" && resource !== "calendar" && resource !== "profile" && (
               <ResourceHeader
                 resource={resource}
                 onCreate={() => {
@@ -2391,6 +2518,16 @@ export function Dashboard({
                   )}
                 </div>
               )}
+              {resource === "profile" && (
+                <ProfileForm
+                  userName={userName}
+                  userEmail={userEmail}
+                  userDateOfBirth={userDateOfBirth}
+                  isSaving={isProfileSaving}
+                  error={profileError}
+                  onSubmit={onUpdateProfile}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -2480,6 +2617,7 @@ function ResourceHeader({
     meals: "Repas",
     goals: "Objectifs nutrition",
     measurements: "Mensurations",
+    profile: "Profil",
   };
 
   return (
