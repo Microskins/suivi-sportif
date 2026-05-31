@@ -17,6 +17,7 @@
 
 ## Todo
 
+- [x] Replacer les labels du schema de mensurations selon la reference fournie.
 - [x] Creer ce plan.
 - [x] Ajouter les idees IA liees au chantier.
 - [x] Ajouter le modele Prisma et la migration.
@@ -32,6 +33,8 @@
 
 ## Notes de verification
 
+- 2026-05-31: ajustement demande pour replacer les labels du schema mensurations autour de la silhouette.
+- 2026-05-31: labels repositionnes: cou/poitrine/avant-bras/cuisses/mollets a gauche, epaules/biceps/taille/hanches a droite.
 - 2026-05-29: chantier ouvert pour l'ajout d'un suivi historise du poids, de la taille et des mensurations.
 - 2026-05-29: idee IA ajoutee dans `docs/06-idees/90-ia-idees.md` pour des graphiques de progression corporelle.
 - 2026-05-29: modele Prisma `BodyMeasurement` ajoute avec migration `20260529170000_add_body_measurements`.
