@@ -497,6 +497,30 @@ describe("API", () => {
     });
   });
 
+  it("rejects profile update when email belongs to another user", async () => {
+    const otherUser = {
+      ...user,
+      id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      email: "taken@example.com",
+    };
+    mocks.users.getUserByEmail.mockResolvedValue(otherUser);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: "/api/users/me",
+      headers: authHeaders(),
+      payload: {
+        email: otherUser.email,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("EMAIL_ALREADY_EXISTS");
+    expect(mocks.users.getUserByEmail).toHaveBeenCalledWith(otherUser.email);
+    expect(mocks.users.updateUser).not.toHaveBeenCalled();
+  });
+
   it("returns 404 when updating the authenticated user after deletion", async () => {
     mocks.users.updateUser.mockResolvedValue(null);
 

@@ -375,6 +375,34 @@
 
 ---
 
+## 2026-05-31 - Profil: securite compte et confirmation email
+
+## Contexte
+
+- Le chantier profil ajoute la modification email, mot de passe et date de naissance.
+- Ces changements deviennent plus sensibles si l'application evolue vers un usage public.
+
+## Proposition
+
+- Ajouter plus tard une confirmation de mot de passe actuel avant changement d'email ou de mot de passe.
+- Prevoir une verification du nouvel email par lien de confirmation.
+- Ajouter un journal minimal des changements de securite du compte.
+
+## Impact
+
+- Reduction du risque de prise de controle apres session ouverte.
+- Meilleure tracabilite pour diagnostiquer les changements de compte.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/028-onglet-profil.md
+
+---
+
 ## 2026-05-30 - Mensurations: interpretation des indicateurs corporels
 
 ## Contexte

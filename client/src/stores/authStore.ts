@@ -26,6 +26,12 @@ type AuthState = {
     password: string,
     dateOfBirth?: string | null,
   ) => Promise<void>;
+  updateProfile: (data: {
+    email?: string;
+    name?: string;
+    dateOfBirth?: string | null;
+    password?: string;
+  }) => Promise<void>;
   logout: () => void;
   clearError: () => void;
 };
@@ -132,6 +138,42 @@ export const useAuthStore = create<AuthState>((set) => ({
         error: getErrorMessage(error),
         isAuthenticated: false,
         user: null,
+      });
+      throw error;
+    }
+  },
+  async updateProfile(data) {
+    if (isAuthBypassEnabled) {
+      set({
+        user: {
+          ...bypassUser,
+          ...(data.email !== undefined ? { email: data.email } : {}),
+          ...(data.name !== undefined ? { name: data.name } : {}),
+          ...(data.dateOfBirth !== undefined
+            ? { dateOfBirth: data.dateOfBirth }
+            : {}),
+          updatedAt: new Date().toISOString(),
+        },
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      });
+      return;
+    }
+
+    set({ isLoading: true, error: null });
+
+    try {
+      const user = await api.updateMe(data);
+      set({
+        user,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: getErrorMessage(error),
       });
       throw error;
     }

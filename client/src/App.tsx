@@ -19,6 +19,7 @@ export default function App() {
     initializeAuth,
     login,
     register,
+    updateProfile,
     logout,
     clearError,
   } = useAuthStore();
@@ -90,7 +91,10 @@ export default function App() {
           userName={user.name}
           userEmail={user.email}
           userDateOfBirth={user.dateOfBirth}
+          onUpdateProfile={updateProfile}
           onLogout={logout}
+          isProfileSaving={isLoading}
+          profileError={error}
           isAuthBypassEnabled={isAuthBypassEnabled}
         />
         <CookieConsentLayer />
