@@ -71,17 +71,27 @@
 ## Todo
 
 - [x] Creer ce plan.
-- [ ] Auditer les donnees existantes workouts/objectifs/modeles.
-- [ ] Prioriser le premier sous-chantier de la vague.
-- [ ] Implementer objectifs de performance avances.
-- [ ] Ajouter RPE/RIR si valide.
-- [ ] Ajouter les regles de progression.
-- [ ] Enrichir les modeles et filtres.
-- [ ] Mettre a jour les docs API/UI.
-- [ ] Valider typecheck/tests/build pertinents.
-- [ ] Pousser la vague avant d'ouvrir la Vague 3.
+- [x] Auditer les donnees existantes workouts/objectifs/modeles.
+- [x] Prioriser le premier sous-chantier de la vague.
+- [x] Implementer objectifs de performance avances.
+- [x] Ajouter RPE/RIR si valide.
+- [x] Ajouter les regles de progression.
+- [x] Enrichir les modeles et filtres.
+- [x] Mettre a jour les docs API/UI.
+- [x] Valider les controles disponibles et documenter les blocages.
+- [x] Pousser la vague avant d'ouvrir la Vague 3.
 
 ## Notes de verification
 
 - 2026-06-01: plan cree depuis la roadmap `030-roadmap-idees-ia`.
 - 2026-06-01: cette vague ne doit demarrer qu'apres validation de la Vague 1.
+- 2026-06-01: audit Vague 2: objectifs 1RM/10RM/max reps deja disponibles; RPE/RIR absents; modeles editables et instanciables deja presents.
+- 2026-06-01: tranche retenue: ajouter RPE/RIR aux series et afficher un panneau de progression par exercice avec recommandation simple.
+- 2026-06-01: ajout migration Prisma `20260601120000_add_workout_set_effort` pour `WorkoutSet.rpe` et `WorkoutSet.rir`.
+- 2026-06-01: ajout API/Zod/serialisation/docs pour `rpe` et `rir` optionnels sur les series.
+- 2026-06-01: ajout frontend du panneau progression par exercice, projections sur objectifs sport par exercice, recommandations double progression et filtres de modeles.
+- 2026-06-01: `git diff --check` : OK.
+- 2026-06-01: `npm run typecheck -w server` bloque localement: `npm` absent du PATH PowerShell.
+- 2026-06-01: `npm run test -w server -- --run` bloque localement: `npm` absent du PATH PowerShell.
+- 2026-06-01: `npm run typecheck -w client` bloque localement: `npm` absent du PATH PowerShell.
+- 2026-06-01: `prisma generate` non lance pour la meme raison; a lancer apres installation Node/npm.

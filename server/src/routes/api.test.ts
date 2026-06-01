@@ -979,6 +979,8 @@ describe("API", () => {
             {
               reps: 10,
               weight: 80,
+              rpe: 8,
+              rir: 2,
               rest: 90,
             },
           ],

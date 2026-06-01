@@ -53,6 +53,8 @@ type WorkoutSet = {
   inclinePercent: unknown;
   reps: number;
   rest: number;
+  rpe: unknown;
+  rir: number | null;
   setNumber: number;
   weight: unknown;
 };
@@ -117,6 +119,8 @@ function formatWorkout(workout: WorkoutWithDetails): WorkoutResponse {
         avgKmh: set.avgKmh === null ? null : Number(set.avgKmh),
         inclinePercent:
           set.inclinePercent === null ? null : Number(set.inclinePercent),
+        rpe: set.rpe === null || set.rpe === undefined ? null : Number(set.rpe),
+        rir: set.rir,
         rest: set.rest,
         createdAt: set.createdAt.toISOString(),
       })),
@@ -265,6 +269,8 @@ export async function createWorkout(
                   durationMinutes: set.durationMinutes ?? null,
                   avgKmh: set.avgKmh ?? null,
                   inclinePercent: set.inclinePercent ?? null,
+                  rpe: set.rpe ?? null,
+                  rir: set.rir ?? null,
                   rest: set.rest,
                 })),
               },
@@ -333,6 +339,8 @@ export async function updateWorkout(
                 durationMinutes: set.durationMinutes ?? null,
                 avgKmh: set.avgKmh ?? null,
                 inclinePercent: set.inclinePercent ?? null,
+                rpe: set.rpe ?? null,
+                rir: set.rir ?? null,
                 rest: set.rest,
               })),
             },

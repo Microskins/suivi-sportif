@@ -90,6 +90,8 @@ export const createWorkoutSchema = z.object({
             durationMinutes: z.number().min(0).nullable().optional(),
             avgKmh: z.number().min(0).nullable().optional(),
             inclinePercent: z.number().min(0).nullable().optional(),
+            rpe: z.number().min(1).max(10).nullable().optional(),
+            rir: z.number().int().min(0).max(10).nullable().optional(),
             rest: z.number().int().min(0),
           }),
         ),
@@ -108,6 +110,8 @@ export const workoutSetResponseSchema = z.object({
   durationMinutes: z.number().nullable(),
   avgKmh: z.number().nullable(),
   inclinePercent: z.number().nullable(),
+  rpe: z.number().nullable(),
+  rir: z.number().int().nullable(),
   rest: z.number().int(),
   createdAt: z.string().datetime(),
 });
@@ -542,6 +546,5 @@ export type UpdateBodyMeasurementInput = z.infer<
 export type BodyMeasurementResponse = z.infer<
   typeof bodyMeasurementResponseSchema
 >;
-
 
 

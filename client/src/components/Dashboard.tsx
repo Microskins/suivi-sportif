@@ -521,6 +521,8 @@ type WorkoutExerciseFormRow = {
     durationMinutes: string;
     avgKmh: string;
     inclinePercent: string;
+    rpe: string;
+    rir: string;
   }>;
 };
 
@@ -572,6 +574,14 @@ function WorkoutForm({
               set.inclinePercent === null || set.inclinePercent === undefined
                 ? ""
                 : String(set.inclinePercent),
+            rpe:
+              set.rpe === null || set.rpe === undefined
+                ? ""
+                : String(set.rpe),
+            rir:
+              set.rir === null || set.rir === undefined
+                ? ""
+                : String(set.rir),
           })),
         }))
       : exercises[0]
@@ -584,6 +594,8 @@ function WorkoutForm({
               durationMinutes: "",
               avgKmh: "",
               inclinePercent: "",
+              rpe: "",
+              rir: "",
             }],
           }]
         : [],
@@ -641,6 +653,8 @@ function WorkoutForm({
             durationMinutes: numberOrNull(set.durationMinutes),
             avgKmh: numberOrNull(set.avgKmh),
             inclinePercent: numberOrNull(set.inclinePercent),
+            rpe: numberOrNull(set.rpe),
+            rir: numberOrNull(set.rir),
             rest: Number(set.rest),
           })),
         })),
@@ -754,6 +768,8 @@ function WorkoutForm({
                     durationMinutes: "",
                     avgKmh: "",
                     inclinePercent: "",
+                    rpe: "",
+                    rir: "",
                   }],
                 },
               ])
@@ -887,8 +903,8 @@ function WorkoutForm({
                   key={setIndex}
                   className={`grid gap-2 ${
                     exercises.find((exercise) => exercise.id === row.exerciseId)?.exerciseType === "CARDIO"
-                      ? "md:grid-cols-[1fr_1fr_1fr_1fr_auto]"
-                      : "md:grid-cols-[1fr_1fr_1fr_auto]"
+                      ? "md:grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_auto]"
+                      : "md:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto]"
                   }`}
                 >
                   {exercises.find((exercise) => exercise.id === row.exerciseId)?.exerciseType === "CARDIO" ? (
@@ -896,12 +912,16 @@ function WorkoutForm({
                       <input className={inputClass} type="number" min="0" step="0.1" placeholder="Duree (min)" value={set.durationMinutes} onChange={(event) => updateSet(row, rowIndex, setIndex, "durationMinutes", event.target.value, updateRow)} required />
                       <input className={inputClass} type="number" min="0" step="0.1" placeholder="KM/H moyen" value={set.avgKmh} onChange={(event) => updateSet(row, rowIndex, setIndex, "avgKmh", event.target.value, updateRow)} required />
                       <input className={inputClass} type="number" min="0" step="0.1" placeholder="Inclinaison %" value={set.inclinePercent} onChange={(event) => updateSet(row, rowIndex, setIndex, "inclinePercent", event.target.value, updateRow)} />
+                      <input className={inputClass} type="number" min="1" max="10" step="0.5" placeholder="RPE" value={set.rpe} onChange={(event) => updateSet(row, rowIndex, setIndex, "rpe", event.target.value, updateRow)} />
+                      <input className={inputClass} type="number" min="0" max="10" placeholder="RIR" value={set.rir} onChange={(event) => updateSet(row, rowIndex, setIndex, "rir", event.target.value, updateRow)} />
                       <input className={inputClass} type="number" min="0" placeholder="Repos sec" value={set.rest} onChange={(event) => updateSet(row, rowIndex, setIndex, "rest", event.target.value, updateRow)} required />
                     </>
                   ) : (
                     <>
                       <input className={inputClass} type="number" min="0" placeholder="Reps" value={set.reps} onChange={(event) => updateSet(row, rowIndex, setIndex, "reps", event.target.value, updateRow)} required />
                       <input className={inputClass} type="number" min="0" step="0.5" placeholder="Poids" value={set.weight} onChange={(event) => updateSet(row, rowIndex, setIndex, "weight", event.target.value, updateRow)} required />
+                      <input className={inputClass} type="number" min="1" max="10" step="0.5" placeholder="RPE" value={set.rpe} onChange={(event) => updateSet(row, rowIndex, setIndex, "rpe", event.target.value, updateRow)} />
+                      <input className={inputClass} type="number" min="0" max="10" placeholder="RIR" value={set.rir} onChange={(event) => updateSet(row, rowIndex, setIndex, "rir", event.target.value, updateRow)} />
                       <input className={inputClass} type="number" min="0" placeholder="Repos sec" value={set.rest} onChange={(event) => updateSet(row, rowIndex, setIndex, "rest", event.target.value, updateRow)} required />
                     </>
                   )}
@@ -925,6 +945,8 @@ function WorkoutForm({
                         durationMinutes: "",
                         avgKmh: "",
                         inclinePercent: "",
+                        rpe: "",
+                        rir: "",
                       },
                     ],
                   })
@@ -952,7 +974,9 @@ function updateSet(
     | "rest"
     | "durationMinutes"
     | "avgKmh"
-    | "inclinePercent",
+    | "inclinePercent"
+    | "rpe"
+    | "rir",
   value: string,
   updateRow: (index: number, nextRow: WorkoutExerciseFormRow) => void,
 ) {
@@ -1013,6 +1037,9 @@ function WorkoutTemplatePicker({
   const [mode, setMode] = useState<"instantiate" | "create" | "edit">("instantiate");
   const [date, setDate] = useState(toInputDateTime());
   const [selectedId, setSelectedId] = useState(templates[0]?.id ?? "");
+  const [templateSearch, setTemplateSearch] = useState("");
+  const [templateCategoryFilter, setTemplateCategoryFilter] = useState("ALL");
+  const [templateLevelFilter, setTemplateLevelFilter] = useState("ALL");
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Musculation");
   const [level, setLevel] = useState("Intermediaire");
@@ -1024,6 +1051,24 @@ function WorkoutTemplatePicker({
   const [isSaving, setIsSaving] = useState(false);
   const [draggedTemplateRowIndex, setDraggedTemplateRowIndex] = useState<number | null>(null);
   const [dragOverTemplateRowIndex, setDragOverTemplateRowIndex] = useState<number | null>(null);
+  const templateCategories = Array.from(new Set(templates.map((template) => template.category))).sort((a, b) =>
+    a.localeCompare(b, "fr"),
+  );
+  const templateLevels = Array.from(new Set(templates.map((template) => template.level))).sort((a, b) =>
+    a.localeCompare(b, "fr"),
+  );
+  const normalizedTemplateSearch = templateSearch.trim().toLocaleLowerCase("fr-FR");
+  const filteredTemplates = templates.filter((template) => {
+    const matchesSearch =
+      normalizedTemplateSearch.length === 0 ||
+      template.name.toLocaleLowerCase("fr-FR").includes(normalizedTemplateSearch) ||
+      (template.description?.toLocaleLowerCase("fr-FR").includes(normalizedTemplateSearch) ?? false);
+    const matchesCategory =
+      templateCategoryFilter === "ALL" || template.category === templateCategoryFilter;
+    const matchesLevel = templateLevelFilter === "ALL" || template.level === templateLevelFilter;
+
+    return matchesSearch && matchesCategory && matchesLevel;
+  });
 
   function resetTemplateFormToCreateDefaults() {
     setName("");
@@ -1049,6 +1094,15 @@ function WorkoutTemplatePicker({
       setSelectedId(templates[0].id);
     }
   }, [selectedId, templates]);
+
+  useEffect(() => {
+    if (mode !== "instantiate" || !filteredTemplates.length) {
+      return;
+    }
+    if (!filteredTemplates.some((template) => template.id === selectedId)) {
+      setSelectedId(filteredTemplates[0].id);
+    }
+  }, [filteredTemplates, mode, selectedId]);
 
   useEffect(() => {
     const selectedTemplate = templates.find((item) => item.id === selectedId);
@@ -1163,8 +1217,44 @@ function WorkoutTemplatePicker({
             />
           </Field>
           {!templates.length && <EmptyState label="Aucun modele de seance disponible." />}
+          {templates.length > 0 && (
+            <div className="rounded border border-slate-200 bg-slate-50 p-3">
+              <p className="mb-2 text-sm font-semibold text-slate-800">Filtres modeles</p>
+              <div className="grid gap-2 md:grid-cols-3">
+                <input
+                  className={inputClass}
+                  value={templateSearch}
+                  onChange={(event) => setTemplateSearch(event.target.value)}
+                  placeholder="Rechercher..."
+                />
+                <select
+                  className={inputClass}
+                  value={templateCategoryFilter}
+                  onChange={(event) => setTemplateCategoryFilter(event.target.value)}
+                >
+                  <option value="ALL">Toutes categories</option>
+                  {templateCategories.map((category) => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+                <select
+                  className={inputClass}
+                  value={templateLevelFilter}
+                  onChange={(event) => setTemplateLevelFilter(event.target.value)}
+                >
+                  <option value="ALL">Tous niveaux</option>
+                  {templateLevels.map((level) => (
+                    <option key={level} value={level}>{level}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+          {templates.length > 0 && !filteredTemplates.length && (
+            <EmptyState label="Aucun modele ne correspond aux filtres." />
+          )}
           <div className="grid gap-3 lg:grid-cols-2">
-            {templates.map((template) => (
+            {filteredTemplates.map((template) => (
               <label
                 key={template.id}
                 className={`block rounded border p-4 text-sm ${
@@ -2234,6 +2324,117 @@ function currentGoalValue(
   return null;
 }
 
+function estimateOneRepMax(weight: number, reps: number) {
+  if (weight <= 0 || reps <= 0) return null;
+  return weight * (1 + Math.max(reps, 1) / 30);
+}
+
+function completedWorkoutEntriesForExercise(workouts: Workout[], exerciseId: string) {
+  return [...workouts]
+    .filter((workout) => workout.status === "COMPLETED")
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .flatMap((workout) =>
+      (workout.exercises ?? [])
+        .filter((entry) => entry.exerciseId === exerciseId)
+        .map((entry) => ({ workout, entry })),
+    );
+}
+
+function exerciseHistoricalValues(goal: UserGoal, workouts: Workout[]) {
+  if (!goal.exerciseId || !goal.metric.startsWith("SPORT_EXERCISE_")) return [];
+
+  return completedWorkoutEntriesForExercise(workouts, goal.exerciseId)
+    .map(({ workout, entry }) => {
+      const values = entry.sets
+        .map((set) => {
+          if (goal.metric === "SPORT_EXERCISE_ONE_REP_MAX_KG") {
+            return estimateOneRepMax(set.weight, set.reps);
+          }
+          if (goal.metric === "SPORT_EXERCISE_TEN_REP_MAX_KG") {
+            return set.reps >= 10 ? set.weight : null;
+          }
+          if (goal.metric === "SPORT_EXERCISE_MAX_REPS") {
+            return set.reps;
+          }
+          return null;
+        })
+        .filter((value): value is number => value !== null);
+
+      return values.length
+        ? { date: workout.date, value: Math.max(...values) }
+        : null;
+    })
+    .filter((entry): entry is { date: string; value: number } => entry !== null);
+}
+
+function exerciseProgressionSummary(workouts: Workout[], exerciseId: string) {
+  const entries = completedWorkoutEntriesForExercise(workouts, exerciseId);
+  const allSets = entries.flatMap(({ workout, entry }) =>
+    entry.sets.map((set) => ({ ...set, date: workout.date })),
+  );
+  const bestOneRepMax = Math.max(
+    0,
+    ...allSets.map((set) => estimateOneRepMax(set.weight, set.reps) ?? 0),
+  );
+  const bestTenRepMax = Math.max(
+    0,
+    ...allSets.filter((set) => set.reps >= 10).map((set) => set.weight),
+  );
+  const maxReps = Math.max(0, ...allSets.map((set) => set.reps));
+  const latestEntry = entries[entries.length - 1];
+  const latestSets = latestEntry?.entry.sets ?? [];
+  const latestRpeValues = latestSets
+    .map((set) => set.rpe)
+    .filter((value): value is number => value !== null && value !== undefined);
+  const latestRirValues = latestSets
+    .map((set) => set.rir)
+    .filter((value): value is number => value !== null && value !== undefined);
+  const latestAvgRpe = latestRpeValues.length
+    ? latestRpeValues.reduce((total, value) => total + value, 0) / latestRpeValues.length
+    : null;
+  const latestAvgRir = latestRirValues.length
+    ? latestRirValues.reduce((total, value) => total + value, 0) / latestRirValues.length
+    : null;
+  const latestMinReps = latestSets.length
+    ? Math.min(...latestSets.map((set) => set.reps))
+    : null;
+  const latestTopWeight = latestSets.length
+    ? Math.max(...latestSets.map((set) => set.weight))
+    : null;
+
+  let recommendation = "Ajoute deux seances sur cet exercice pour obtenir un conseil fiable.";
+  let tone = "border-slate-200 bg-slate-50 text-slate-700";
+
+  if (latestSets.length >= 2 && latestMinReps !== null && latestTopWeight !== null) {
+    const effortComfortable =
+      latestAvgRir === null ? latestAvgRpe === null || latestAvgRpe <= 8 : latestAvgRir >= 2;
+    const effortTooHigh =
+      (latestAvgRir !== null && latestAvgRir <= 0) || (latestAvgRpe !== null && latestAvgRpe >= 9.5);
+
+    if (latestMinReps >= 10 && effortComfortable) {
+      recommendation = `Augmenter legerement la charge: ${roundOne(latestTopWeight + 2.5)} kg a tester.`;
+      tone = "border-emerald-200 bg-emerald-50 text-emerald-800";
+    } else if (latestMinReps < 6 || effortTooHigh) {
+      recommendation = "Reduire la charge ou garder plus de marge avant de monter.";
+      tone = "border-amber-200 bg-amber-50 text-amber-800";
+    } else {
+      recommendation = "Rester sur la meme charge et viser plus de reps propres.";
+      tone = "border-sky-200 bg-sky-50 text-sky-800";
+    }
+  }
+
+  return {
+    sessions: entries.length,
+    bestOneRepMax: bestOneRepMax > 0 ? bestOneRepMax : null,
+    bestTenRepMax: bestTenRepMax > 0 ? bestTenRepMax : null,
+    maxReps: maxReps > 0 ? maxReps : null,
+    latestAvgRpe,
+    latestAvgRir,
+    recommendation,
+    tone,
+  };
+}
+
 function goalProgressPercent(goal: UserGoal, currentValue: number | null) {
   if (currentValue === null || goal.targetValue <= 0) {
     return 0;
@@ -2289,9 +2490,15 @@ function bodyGoalHistoricalValues(goal: UserGoal, measurements: BodyMeasurement[
     .filter((entry): entry is { date: string; value: number } => entry.value !== null);
 }
 
-function goalProjectionLabel(goal: UserGoal, measurements: BodyMeasurement[]) {
-  const values = bodyGoalHistoricalValues(goal, measurements);
-  if (values.length < 2) return "Projection disponible apres deux mesures compatibles.";
+function goalProjectionLabel(
+  goal: UserGoal,
+  workouts: Workout[],
+  measurements: BodyMeasurement[],
+) {
+  const values = goal.metric.startsWith("BODY_")
+    ? bodyGoalHistoricalValues(goal, measurements)
+    : exerciseHistoricalValues(goal, workouts);
+  if (values.length < 2) return "Projection disponible apres deux donnees compatibles.";
 
   const first = values[0];
   const latest = values[values.length - 1];
@@ -2316,6 +2523,103 @@ function goalProjectionLabel(goal: UserGoal, measurements: BodyMeasurement[]) {
   }
 
   return `Projection: cible atteignable dans environ ${estimatedDays} jour(s).`;
+}
+
+function SportProgressionPanel({
+  exercises,
+  workouts,
+  goals,
+}: {
+  exercises: Exercise[];
+  workouts: Workout[];
+  goals: UserGoal[];
+}) {
+  const exerciseIdsFromGoals = goals
+    .filter((goal) => goal.isActive && goal.metric.startsWith("SPORT_EXERCISE_") && goal.exerciseId)
+    .map((goal) => goal.exerciseId as string);
+  const exerciseIdsFromWorkouts = workouts.flatMap((workout) =>
+    (workout.exercises ?? []).map((entry) => entry.exerciseId),
+  );
+  const exerciseIds = Array.from(new Set([...exerciseIdsFromGoals, ...exerciseIdsFromWorkouts])).slice(0, 6);
+  const rows = exerciseIds
+    .map((exerciseId) => {
+      const exercise = exercises.find((item) => item.id === exerciseId);
+      const summary = exerciseProgressionSummary(workouts, exerciseId);
+      const linkedGoals = goals.filter((goal) => goal.isActive && goal.exerciseId === exerciseId);
+      return exercise ? { exercise, summary, linkedGoals } : null;
+    })
+    .filter((row): row is {
+      exercise: Exercise;
+      summary: ReturnType<typeof exerciseProgressionSummary>;
+      linkedGoals: UserGoal[];
+    } => row !== null);
+
+  return (
+    <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
+      <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h3 className="font-semibold text-neutral-950">Progression par exercice</h3>
+          <p className="mt-1 text-sm text-neutral-500">
+            Meilleures perfs, effort recent et conseil de double progression.
+          </p>
+        </div>
+        <span className="w-fit rounded border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-600">
+          Plage cible 8-10 reps
+        </span>
+      </div>
+
+      {!rows.length ? (
+        <div className="mt-4 flex h-40 items-center justify-center rounded border border-dashed border-neutral-300 bg-neutral-50 px-4 text-center text-sm text-neutral-500">
+          Termine une seance avec exercices pour afficher les signaux de progression.
+        </div>
+      ) : (
+        <div className="mt-4 grid gap-3 xl:grid-cols-2">
+          {rows.map(({ exercise, summary, linkedGoals }) => (
+            <article key={exercise.id} className="rounded border border-slate-200 bg-slate-50/60 p-3">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="font-semibold text-slate-950">{exercise.name}</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {summary.sessions} seance(s) realisee(s)
+                  </p>
+                </div>
+                {linkedGoals.length > 0 && (
+                  <span className="w-fit rounded bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">
+                    {linkedGoals.length} objectif(s)
+                  </span>
+                )}
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                <p className="rounded bg-white px-3 py-2 text-sm text-slate-700">
+                  <span className="block text-xs font-medium uppercase tracking-wide text-slate-500">1RM</span>
+                  <span className="text-lg font-bold text-slate-950">{formatComputedValue(summary.bestOneRepMax)} kg</span>
+                </p>
+                <p className="rounded bg-white px-3 py-2 text-sm text-slate-700">
+                  <span className="block text-xs font-medium uppercase tracking-wide text-slate-500">10RM</span>
+                  <span className="text-lg font-bold text-slate-950">{formatComputedValue(summary.bestTenRepMax)} kg</span>
+                </p>
+                <p className="rounded bg-white px-3 py-2 text-sm text-slate-700">
+                  <span className="block text-xs font-medium uppercase tracking-wide text-slate-500">Max reps</span>
+                  <span className="text-lg font-bold text-slate-950">{summary.maxReps ?? "-"}</span>
+                </p>
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <p className="rounded bg-white px-3 py-2 text-sm text-slate-700">
+                  RPE moyen recent: <span className="font-semibold">{formatComputedValue(summary.latestAvgRpe)}</span>
+                </p>
+                <p className="rounded bg-white px-3 py-2 text-sm text-slate-700">
+                  RIR moyen recent: <span className="font-semibold">{formatComputedValue(summary.latestAvgRir)}</span>
+                </p>
+              </div>
+              <p className={`mt-3 rounded border px-3 py-2 text-sm font-medium ${summary.tone}`}>
+                {summary.recommendation}
+              </p>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
 }
 
 function UserGoalsPanel({
@@ -2382,9 +2686,10 @@ function UserGoalsPanel({
             const exercise = exercises.find((item) => item.id === goal.exerciseId);
             const daysUntilEnd = goalDaysUntilEnd(goal);
             const isDeadlineSoon = daysUntilEnd !== null && daysUntilEnd >= 0 && daysUntilEnd <= 14;
-            const projection = goal.metric.startsWith("BODY_")
-              ? goalProjectionLabel(goal, measurements)
-              : "Projection disponible avec les objectifs corporels historises.";
+            const projection =
+              goal.metric.startsWith("BODY_") || goal.metric.startsWith("SPORT_EXERCISE_")
+                ? goalProjectionLabel(goal, workouts, measurements)
+                : "Projection disponible avec les objectifs par exercice ou corporels.";
             return (
               <li key={goal.id} className={itemCardClass}>
                 <div className="flex h-full flex-col justify-between gap-4">
@@ -3196,23 +3501,30 @@ export function Dashboard({
                 </div>
               )}
               {resource === "sportGoals" && (
-                <UserGoalsPanel
-                  domain="SPORT"
-                  goals={userGoalsStore.userGoals}
-                  exercises={exercisesStore.exercises}
-                  workouts={workoutsStore.workouts}
-                  measurements={bodyMeasurementsStore.bodyMeasurements}
-                  draft={userGoalDraft}
-                  onCreate={() => setUserGoalDraft({} as UserGoal)}
-                  onEdit={(goal) => setUserGoalDraft(goal)}
-                  onCancel={() => setUserGoalDraft(undefined)}
-                  onSubmit={(data) =>
-                    userGoalDraft?.id
-                      ? userGoalsStore.updateUserGoal(userGoalDraft.id, data)
-                      : userGoalsStore.createUserGoal(data)
-                  }
-                  onDelete={(goal) => confirmDelete(goal.name, () => userGoalsStore.deleteUserGoal(goal.id))}
-                />
+                <div className="space-y-4">
+                  <SportProgressionPanel
+                    exercises={exercisesStore.exercises}
+                    workouts={workoutsStore.workouts}
+                    goals={userGoalsStore.userGoals}
+                  />
+                  <UserGoalsPanel
+                    domain="SPORT"
+                    goals={userGoalsStore.userGoals}
+                    exercises={exercisesStore.exercises}
+                    workouts={workoutsStore.workouts}
+                    measurements={bodyMeasurementsStore.bodyMeasurements}
+                    draft={userGoalDraft}
+                    onCreate={() => setUserGoalDraft({} as UserGoal)}
+                    onEdit={(goal) => setUserGoalDraft(goal)}
+                    onCancel={() => setUserGoalDraft(undefined)}
+                    onSubmit={(data) =>
+                      userGoalDraft?.id
+                        ? userGoalsStore.updateUserGoal(userGoalDraft.id, data)
+                        : userGoalsStore.createUserGoal(data)
+                    }
+                    onDelete={(goal) => confirmDelete(goal.name, () => userGoalsStore.deleteUserGoal(goal.id))}
+                  />
+                </div>
               )}
               {resource === "exercises" && (
                 <div className="space-y-4">
@@ -3511,6 +3823,27 @@ function WorkoutsList({
               </div>
               <p className="mt-1 text-sm text-slate-600">{formatDate(workout.date)} - {workout.duration} min</p>
               <p className="mt-1 text-sm text-slate-500">{workout.exercises?.length ?? 0} exercice(s)</p>
+              {workout.exercises?.length ? (
+                <div className="mt-3 space-y-2">
+                  {workout.exercises.map((entry) => (
+                    <div key={entry.id} className="rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                      <p className="font-medium text-slate-900">{entry.exercise?.name ?? "Exercice"}</p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {entry.sets.map((set) => {
+                          const effort = [
+                            set.rpe !== null && set.rpe !== undefined ? `RPE ${set.rpe}` : null,
+                            set.rir !== null && set.rir !== undefined ? `RIR ${set.rir}` : null,
+                          ].filter(Boolean).join(" / ");
+                          const base = set.durationMinutes
+                            ? `${set.durationMinutes} min a ${set.avgKmh ?? "-"} km/h`
+                            : `${set.reps} reps x ${set.weight} kg`;
+                          return effort ? `${base} (${effort})` : base;
+                        }).join(" | ")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </div>
             <div className="flex flex-wrap gap-2">
               <button type="button" className={secondaryButtonClass} onClick={() => onEdit(workout)}>Modifier</button>

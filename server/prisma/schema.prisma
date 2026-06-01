@@ -283,6 +283,8 @@ model WorkoutSet {
   durationMinutes   Decimal? @map("duration_minutes") @db.Decimal(10, 2)
   avgKmh            Decimal? @map("avg_kmh") @db.Decimal(10, 2)
   inclinePercent    Decimal? @map("incline_percent") @db.Decimal(10, 2)
+  rpe               Decimal? @db.Decimal(3, 1)
+  rir               Int?
   rest              Int      @default(60) // en secondes
   createdAt         DateTime @default(now()) @map("created_at")
 
