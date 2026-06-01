@@ -46,6 +46,25 @@ enum BodySilhouette {
   FEMALE
 }
 
+enum UserGoalDomain {
+  SPORT
+  BODY
+}
+
+enum UserGoalMetric {
+  SPORT_WORKOUTS_PER_WEEK
+  SPORT_MINUTES_PER_WEEK
+  BODY_WEIGHT_KG
+  BODY_BMI
+  BODY_FAT_PERCENT
+}
+
+enum UserGoalDirection {
+  AT_MOST
+  AT_LEAST
+  EXACT
+}
+
 // ============== User Model ==============
 
 model User {
@@ -60,6 +79,7 @@ model User {
   foods            Food[]
   meals            Meal[]
   nutritionGoals   NutritionGoal[]
+  userGoals        UserGoal[]
   workouts         Workout[]
   bodyMeasurements BodyMeasurement[]
 
@@ -397,6 +417,31 @@ model NutritionGoal {
   @@index([userId, isActive])
   @@index([userId, startDate])
   @@map("nutrition_goals")
+}
+
+// ============== User Goal Model ==============
+
+model UserGoal {
+  id          String            @id @default(uuid())
+  userId      String            @map("user_id")
+  domain      UserGoalDomain
+  metric      UserGoalMetric
+  direction   UserGoalDirection @default(AT_MOST)
+  name        String
+  targetValue Decimal           @map("target_value") @db.Decimal(10, 2)
+  startDate   DateTime          @map("start_date")
+  endDate     DateTime?         @map("end_date")
+  isActive    Boolean           @default(true) @map("is_active")
+  notes       String?           @db.Text
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, domain, isActive])
+  @@index([userId, metric])
+  @@index([userId, startDate])
+  @@map("user_goals")
 }
 
 // ============== Body Measurement Model ==============

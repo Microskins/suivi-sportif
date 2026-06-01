@@ -340,6 +340,43 @@ Creation:
 Creer ou modifier un objectif avec `isActive: true` desactive les autres
 objectifs actifs de l'utilisateur.
 
+## Objectifs sport et corps
+
+Toutes les routes sont protegees et utilisent l'utilisateur du JWT.
+
+- `GET /api/user-goals`
+- `GET /api/user-goals/:id`
+- `POST /api/user-goals`
+- `PUT /api/user-goals/:id`
+- `DELETE /api/user-goals/:id`
+
+Creation:
+
+```json
+{
+  "domain": "BODY",
+  "metric": "BODY_WEIGHT_KG",
+  "direction": "AT_MOST",
+  "name": "Poids cible",
+  "targetValue": 80,
+  "startDate": "2026-05-04T00:00:00.000Z",
+  "endDate": null,
+  "isActive": true,
+  "notes": null
+}
+```
+
+`domain` vaut `SPORT` ou `BODY`.
+`direction` vaut `AT_MOST`, `AT_LEAST` ou `EXACT`.
+
+Metriques disponibles:
+
+- `SPORT_WORKOUTS_PER_WEEK`
+- `SPORT_MINUTES_PER_WEEK`
+- `BODY_WEIGHT_KG`
+- `BODY_BMI`
+- `BODY_FAT_PERCENT`
+
 ## Mensurations
 
 Toutes les routes sont protegees et utilisent l'utilisateur du JWT.

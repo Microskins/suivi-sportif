@@ -331,6 +331,85 @@ export const nutritionGoalResponseSchema = z.object({
   updatedAt: z.string().datetime(),
 });
 
+// ============== User Goal Schemas ==============
+export const userGoalDomainSchema = z.enum(["SPORT", "BODY"]);
+export const userGoalMetricSchema = z.enum([
+  "SPORT_WORKOUTS_PER_WEEK",
+  "SPORT_MINUTES_PER_WEEK",
+  "BODY_WEIGHT_KG",
+  "BODY_BMI",
+  "BODY_FAT_PERCENT",
+]);
+export const userGoalDirectionSchema = z.enum(["AT_MOST", "AT_LEAST", "EXACT"]);
+
+const userGoalBaseSchema = z.object({
+  domain: userGoalDomainSchema,
+  metric: userGoalMetricSchema,
+  direction: userGoalDirectionSchema.default("AT_MOST"),
+  name: z.string().min(1, "Nom requis").max(200),
+  targetValue: z.number().min(0).max(100000),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime().nullable().optional(),
+  isActive: z.boolean().default(true),
+  notes: z.string().max(2000).nullable().optional(),
+});
+
+function isMetricInDomain(goal: {
+  domain?: z.infer<typeof userGoalDomainSchema>;
+  metric?: z.infer<typeof userGoalMetricSchema>;
+}) {
+  if (!goal.domain || !goal.metric) return true;
+  return goal.domain === "SPORT"
+    ? goal.metric.startsWith("SPORT_")
+    : goal.metric.startsWith("BODY_");
+}
+
+export const createUserGoalSchema = userGoalBaseSchema
+  .refine(isMetricInDomain, {
+    message: "La metrique doit correspondre au domaine",
+    path: ["metric"],
+  })
+  .refine(
+    (goal) => !goal.endDate || new Date(goal.startDate) <= new Date(goal.endDate),
+    {
+      message: "La date de fin doit etre apres la date de debut",
+      path: ["endDate"],
+    },
+  );
+
+export const updateUserGoalSchema = userGoalBaseSchema
+  .partial()
+  .refine(isMetricInDomain, {
+    message: "La metrique doit correspondre au domaine",
+    path: ["metric"],
+  })
+  .refine(
+    (goal) =>
+      !goal.startDate ||
+      !goal.endDate ||
+      new Date(goal.startDate) <= new Date(goal.endDate),
+    {
+      message: "La date de fin doit etre apres la date de debut",
+      path: ["endDate"],
+    },
+  );
+
+export const userGoalResponseSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string().uuid(),
+  domain: userGoalDomainSchema,
+  metric: userGoalMetricSchema,
+  direction: userGoalDirectionSchema,
+  name: z.string(),
+  targetValue: z.number(),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime().nullable(),
+  isActive: z.boolean(),
+  notes: z.string().nullable(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
 // ============== Body Measurement Schemas ==============
 const bodyMeasurementValueSchema = z.number().min(0).max(1000);
 export const bodySilhouetteSchema = z.enum(["MALE", "FEMALE"]);
@@ -427,6 +506,9 @@ export type UpdateNutritionGoalInput = z.infer<
 export type NutritionGoalResponse = z.infer<
   typeof nutritionGoalResponseSchema
 >;
+export type CreateUserGoalInput = z.infer<typeof createUserGoalSchema>;
+export type UpdateUserGoalInput = z.infer<typeof updateUserGoalSchema>;
+export type UserGoalResponse = z.infer<typeof userGoalResponseSchema>;
 export type CreateBodyMeasurementInput = z.infer<
   typeof createBodyMeasurementSchema
 >;

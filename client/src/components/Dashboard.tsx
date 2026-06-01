@@ -11,6 +11,11 @@ import type {
   MealType,
   NutritionGoal,
   NutritionGoalInput,
+  UserGoal,
+  UserGoalDirection,
+  UserGoalDomain,
+  UserGoalInput,
+  UserGoalMetric,
   Workout,
   WorkoutInput,
   WorkoutStatus,
@@ -24,6 +29,7 @@ import { useExercisesStore } from "../stores/exercisesStore";
 import { useFoodsStore } from "../stores/foodsStore";
 import { useMealsStore } from "../stores/mealsStore";
 import { useNutritionGoalsStore } from "../stores/nutritionGoalsStore";
+import { useUserGoalsStore } from "../stores/userGoalsStore";
 import { useWorkoutTemplatesStore } from "../stores/workoutTemplatesStore";
 import { useWorkoutsStore } from "../stores/workoutsStore";
 
@@ -31,11 +37,13 @@ type Resource =
   | "dashboard"
   | "calendar"
   | "workouts"
+  | "sportGoals"
   | "exercises"
   | "foods"
   | "meals"
   | "goals"
   | "measurements"
+  | "bodyGoals"
   | "profile";
 type ModalState =
   | { type: "exercise"; item?: Exercise }
@@ -96,6 +104,61 @@ type BodySilhouette = BodyMeasurement["silhouette"];
 const bodySilhouetteOptions: Array<[BodySilhouette, string]> = [
   ["MALE", "Homme"],
   ["FEMALE", "Femme"],
+];
+
+const userGoalDomainOptions: Array<[UserGoalDomain, string]> = [
+  ["SPORT", "Sport"],
+  ["BODY", "Corps"],
+];
+
+const userGoalDirectionOptions: Array<[UserGoalDirection, string]> = [
+  ["AT_MOST", "Au plus"],
+  ["AT_LEAST", "Au moins"],
+  ["EXACT", "Exactement"],
+];
+
+const userGoalMetricOptions: Array<{
+  value: UserGoalMetric;
+  label: string;
+  domain: UserGoalDomain;
+  unit: string;
+  defaultDirection: UserGoalDirection;
+}> = [
+  {
+    value: "SPORT_WORKOUTS_PER_WEEK",
+    label: "Seances par semaine",
+    domain: "SPORT",
+    unit: "seance(s)",
+    defaultDirection: "AT_LEAST",
+  },
+  {
+    value: "SPORT_MINUTES_PER_WEEK",
+    label: "Minutes par semaine",
+    domain: "SPORT",
+    unit: "min",
+    defaultDirection: "AT_LEAST",
+  },
+  {
+    value: "BODY_WEIGHT_KG",
+    label: "Poids",
+    domain: "BODY",
+    unit: "kg",
+    defaultDirection: "AT_MOST",
+  },
+  {
+    value: "BODY_BMI",
+    label: "IMC",
+    domain: "BODY",
+    unit: "",
+    defaultDirection: "AT_MOST",
+  },
+  {
+    value: "BODY_FAT_PERCENT",
+    label: "Masse grasse",
+    domain: "BODY",
+    unit: "%",
+    defaultDirection: "AT_MOST",
+  },
 ];
 
 type ExerciseCatalogEntry = {
@@ -1492,6 +1555,131 @@ function NutritionGoalForm({
   );
 }
 
+function UserGoalForm({
+  item,
+  initialDomain,
+  onSubmit,
+  onCancel,
+}: {
+  item?: UserGoal;
+  initialDomain: UserGoalDomain;
+  onSubmit: (data: UserGoalInput) => Promise<void>;
+  onCancel: () => void;
+}) {
+  const [domain, setDomain] = useState<UserGoalDomain>(item?.domain ?? initialDomain);
+  const metricOptions = userGoalMetricOptions.filter((option) => option.domain === domain);
+  const fallbackMetric = metricOptions[0] ?? userGoalMetricOptions[0];
+  const initialMetric =
+    metricOptions.find((option) => option.value === item?.metric) ?? fallbackMetric;
+  const [metric, setMetric] = useState<UserGoalMetric>(initialMetric.value);
+  const metricConfig =
+    userGoalMetricOptions.find((option) => option.value === metric) ?? fallbackMetric;
+  const [direction, setDirection] = useState<UserGoalDirection>(
+    item?.direction ?? initialMetric.defaultDirection,
+  );
+  const [name, setName] = useState(item?.name ?? initialMetric.label);
+  const [targetValue, setTargetValue] = useState(
+    item?.targetValue === undefined ? "" : String(item.targetValue),
+  );
+  const [startDate, setStartDate] = useState(toInputDate(item?.startDate) || toInputDate(new Date().toISOString()));
+  const [endDate, setEndDate] = useState(toInputDate(item?.endDate));
+  const [isActive, setIsActive] = useState(item?.isActive ?? true);
+  const [notes, setNotes] = useState(item?.notes ?? "");
+  const [isSaving, setIsSaving] = useState(false);
+
+  function handleDomainChange(nextDomain: UserGoalDomain) {
+    const nextMetric = userGoalMetricOptions.find((option) => option.domain === nextDomain);
+    setDomain(nextDomain);
+    if (nextMetric) {
+      setMetric(nextMetric.value);
+      setDirection(nextMetric.defaultDirection);
+      setName((current) => (current.trim() ? current : nextMetric.label));
+    }
+  }
+
+  function handleMetricChange(nextMetric: UserGoalMetric) {
+    const nextConfig = userGoalMetricOptions.find((option) => option.value === nextMetric);
+    setMetric(nextMetric);
+    if (nextConfig) {
+      setDirection(nextConfig.defaultDirection);
+      setName((current) =>
+        current.trim() === "" || current === metricConfig.label
+          ? nextConfig.label
+          : current,
+      );
+    }
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSaving(true);
+    try {
+      await onSubmit({
+        domain,
+        metric,
+        direction,
+        name,
+        targetValue: Number(targetValue),
+        startDate: dateToIso(startDate),
+        endDate: endDate ? dateToIso(endDate) : null,
+        isActive,
+        notes: emptyToNull(notes),
+      });
+      onCancel();
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Field label="Domaine">
+          <select className={inputClass} value={domain} onChange={(event) => handleDomainChange(event.target.value as UserGoalDomain)}>
+            {userGoalDomainOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          </select>
+        </Field>
+        <Field label="Type d'objectif">
+          <select className={inputClass} value={metric} onChange={(event) => handleMetricChange(event.target.value as UserGoalMetric)}>
+            {metricOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+          </select>
+        </Field>
+      </div>
+      <Field label="Nom">
+        <input className={inputClass} value={name} onChange={(event) => setName(event.target.value)} required />
+      </Field>
+      <div className="grid gap-4 md:grid-cols-3">
+        <Field label="Direction">
+          <select className={inputClass} value={direction} onChange={(event) => setDirection(event.target.value as UserGoalDirection)}>
+            {userGoalDirectionOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          </select>
+        </Field>
+        <Field label={`Cible${metricConfig.unit ? ` (${metricConfig.unit})` : ""}`}>
+          <input className={inputClass} type="number" min="0" step="0.1" value={targetValue} onChange={(event) => setTargetValue(event.target.value)} required />
+        </Field>
+        <Field label="Actif">
+          <label className="flex h-[42px] items-center gap-2 rounded border border-slate-300 bg-white px-3 text-sm text-slate-700">
+            <input type="checkbox" checked={isActive} onChange={(event) => setIsActive(event.target.checked)} />
+            Suivre cet objectif
+          </label>
+        </Field>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Field label="Debut">
+          <input className={inputClass} type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} required />
+        </Field>
+        <Field label="Fin">
+          <input className={inputClass} type="date" value={endDate} onChange={(event) => setEndDate(event.target.value)} />
+        </Field>
+      </div>
+      <Field label="Notes">
+        <textarea className={inputClass} rows={3} value={notes} onChange={(event) => setNotes(event.target.value)} />
+      </Field>
+      <FormActions isSaving={isSaving} onCancel={onCancel} />
+    </form>
+  );
+}
+
 function decimalInputValue(value?: number | null) {
   return value === null || value === undefined ? "" : String(value);
 }
@@ -1718,6 +1906,180 @@ function computeDailyEnergyExpenditure(
   if (bmr === null) return null;
   const multiplier = measurement.isActiveLifestyle ? 1.55 : 1.2;
   return bmr * multiplier;
+}
+
+function metricConfig(metric: UserGoalMetric) {
+  return (
+    userGoalMetricOptions.find((option) => option.value === metric) ??
+    userGoalMetricOptions[0]
+  );
+}
+
+function currentGoalValue(
+  goal: UserGoal,
+  workouts: Workout[],
+  measurements: BodyMeasurement[],
+): number | null {
+  if (goal.metric === "SPORT_WORKOUTS_PER_WEEK" || goal.metric === "SPORT_MINUTES_PER_WEEK") {
+    const since = new Date();
+    since.setDate(since.getDate() - 7);
+    const recentCompleted = workouts.filter(
+      (workout) =>
+        workout.status === "COMPLETED" && new Date(workout.date).getTime() >= since.getTime(),
+    );
+
+    if (goal.metric === "SPORT_WORKOUTS_PER_WEEK") {
+      return recentCompleted.length;
+    }
+
+    return recentCompleted.reduce((total, workout) => total + workout.duration, 0);
+  }
+
+  const latest = measurements[0];
+  if (!latest) return null;
+
+  if (goal.metric === "BODY_WEIGHT_KG") {
+    return latest.weightKg;
+  }
+  if (goal.metric === "BODY_BMI") {
+    return computeBmi(latest);
+  }
+  if (goal.metric === "BODY_FAT_PERCENT") {
+    return computeUsNavyBodyFat(latest);
+  }
+
+  return null;
+}
+
+function goalProgressPercent(goal: UserGoal, currentValue: number | null) {
+  if (currentValue === null || goal.targetValue <= 0) {
+    return 0;
+  }
+
+  if (goal.direction === "AT_LEAST") {
+    return Math.min(100, Math.round((currentValue / goal.targetValue) * 100));
+  }
+
+  if (goal.direction === "AT_MOST") {
+    return Math.min(100, Math.round((goal.targetValue / Math.max(currentValue, 0.1)) * 100));
+  }
+
+  const distance = Math.abs(currentValue - goal.targetValue);
+  return Math.max(0, Math.min(100, Math.round(100 - (distance / goal.targetValue) * 100)));
+}
+
+function goalStatus(goal: UserGoal, currentValue: number | null) {
+  if (currentValue === null) return "En attente";
+  if (goal.direction === "AT_LEAST") return currentValue >= goal.targetValue ? "Atteint" : "En cours";
+  if (goal.direction === "AT_MOST") return currentValue <= goal.targetValue ? "Atteint" : "En cours";
+  return Math.abs(currentValue - goal.targetValue) < 0.05 ? "Atteint" : "En cours";
+}
+
+function formatGoalValue(value: number | null, metric: UserGoalMetric) {
+  if (value === null || Number.isNaN(value) || !Number.isFinite(value)) return "-";
+  const config = metricConfig(metric);
+  const formatted = value.toFixed(metric === "SPORT_WORKOUTS_PER_WEEK" ? 0 : 1);
+  return config.unit ? `${formatted} ${config.unit}` : formatted;
+}
+
+function UserGoalsPanel({
+  domain,
+  goals,
+  workouts,
+  measurements,
+  draft,
+  onCreate,
+  onEdit,
+  onCancel,
+  onSubmit,
+  onDelete,
+}: {
+  domain: UserGoalDomain;
+  goals: UserGoal[];
+  workouts: Workout[];
+  measurements: BodyMeasurement[];
+  draft?: UserGoal;
+  onCreate: () => void;
+  onEdit: (goal: UserGoal) => void;
+  onCancel: () => void;
+  onSubmit: (data: UserGoalInput) => Promise<void>;
+  onDelete: (goal: UserGoal) => void;
+}) {
+  const domainGoals = goals.filter((goal) => goal.domain === domain);
+
+  if (draft !== undefined) {
+    return (
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
+          <button type="button" className={inactiveViewButtonClass} onClick={onCancel}>Liste</button>
+          <button type="button" className={activeViewButtonClass}>Objectif</button>
+        </div>
+        <div className="rounded border border-slate-200 bg-white p-4">
+          <UserGoalForm
+            item={draft.id ? draft : undefined}
+            initialDomain={domain}
+            onCancel={onCancel}
+            onSubmit={onSubmit}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
+        <button type="button" className={activeViewButtonClass}>Liste</button>
+        <button type="button" className={inactiveViewButtonClass} onClick={onCreate}>Ajouter un objectif</button>
+      </div>
+      {!domainGoals.length ? (
+        <EmptyState label={domain === "SPORT" ? "Aucun objectif sport pour le moment." : "Aucun objectif corps pour le moment."} />
+      ) : (
+        <ul className="grid gap-3 lg:grid-cols-2">
+          {domainGoals.map((goal) => {
+            const currentValue = currentGoalValue(goal, workouts, measurements);
+            const progress = goalProgressPercent(goal, currentValue);
+            const config = metricConfig(goal.metric);
+            return (
+              <li key={goal.id} className={itemCardClass}>
+                <div className="flex h-full flex-col justify-between gap-4">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-semibold text-slate-950">{goal.name}</p>
+                      {goal.isActive && <span className="rounded bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700">Actif</span>}
+                    </div>
+                    <p className="mt-1 text-sm text-slate-600">{config.label}</p>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      <p className="rounded bg-slate-50 px-3 py-2 text-sm">
+                        <span className="block text-xs font-medium uppercase tracking-wide text-slate-500">Actuel</span>
+                        <span className="text-lg font-bold text-slate-950">{formatGoalValue(currentValue, goal.metric)}</span>
+                      </p>
+                      <p className="rounded bg-slate-50 px-3 py-2 text-sm">
+                        <span className="block text-xs font-medium uppercase tracking-wide text-slate-500">Cible</span>
+                        <span className="text-lg font-bold text-slate-950">{formatGoalValue(goal.targetValue, goal.metric)}</span>
+                      </p>
+                    </div>
+                    <div className="mt-3">
+                      <div className="flex justify-between text-xs font-medium text-slate-500">
+                        <span>{goalStatus(goal, currentValue)}</span>
+                        <span>{progress}%</span>
+                      </div>
+                      <progress className="mt-1 h-2 w-full overflow-hidden rounded accent-emerald-600" value={progress} max={100} />
+                    </div>
+                    <p className="mt-2 text-xs text-slate-500">
+                      Depuis {toInputDate(goal.startDate)}{goal.endDate ? ` jusqu'au ${toInputDate(goal.endDate)}` : ""}
+                    </p>
+                    {goal.notes && <p className="mt-2 text-sm text-slate-500">{goal.notes}</p>}
+                  </div>
+                  <ItemActions item={goal} onEdit={onEdit} onDelete={onDelete} />
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 function BodyMeasurementDiagram({ measurement }: { measurement: BodyMeasurement }) {
@@ -2100,6 +2462,7 @@ export function Dashboard({
   const [workoutsView, setWorkoutsView] = useState<"list" | "create" | "from-template">("list");
   const [exerciseDraft, setExerciseDraft] = useState<Exercise | undefined>(undefined);
   const [bodyMeasurementDraft, setBodyMeasurementDraft] = useState<BodyMeasurement | undefined>(undefined);
+  const [userGoalDraft, setUserGoalDraft] = useState<UserGoal | undefined>(undefined);
   const [workoutDraft, setWorkoutDraft] = useState<Workout | undefined>(undefined);
   const [workoutPrefillDraft, setWorkoutPrefillDraft] = useState<Workout | undefined>(undefined);
   const bodyMeasurementsStore = useBodyMeasurementsStore();
@@ -2109,6 +2472,7 @@ export function Dashboard({
   const foodsStore = useFoodsStore();
   const mealsStore = useMealsStore();
   const goalsStore = useNutritionGoalsStore();
+  const userGoalsStore = useUserGoalsStore();
   const [exerciseCatalog, setExerciseCatalog] = useState<ExerciseCatalogEntry[]>([]);
 
   const exerciseImageMap = useMemo(() => {
@@ -2135,6 +2499,7 @@ export function Dashboard({
     void foodsStore.fetchFoods();
     void mealsStore.fetchMeals();
     void goalsStore.fetchNutritionGoals();
+    void userGoalsStore.fetchUserGoals();
     void bodyMeasurementsStore.fetchBodyMeasurements();
   }, []);
 
@@ -2187,6 +2552,7 @@ export function Dashboard({
     foodsStore.isLoading ||
     mealsStore.isLoading ||
     goalsStore.isLoading ||
+    userGoalsStore.isLoading ||
     bodyMeasurementsStore.isLoading;
 
   const activeError =
@@ -2194,6 +2560,8 @@ export function Dashboard({
       ? null
       : resource === "workouts"
       ? workoutsStore.error ?? workoutTemplatesStore.error
+      : resource === "sportGoals"
+        ? userGoalsStore.error
       : resource === "exercises"
         ? exercisesStore.error
         : resource === "foods"
@@ -2204,6 +2572,8 @@ export function Dashboard({
             ? goalsStore.error
             : resource === "measurements"
               ? bodyMeasurementsStore.error
+              : resource === "bodyGoals"
+                ? userGoalsStore.error
               : null;
 
   const contentClass =
@@ -2260,12 +2630,16 @@ export function Dashboard({
             </p>
             {[
               ["workouts", "Seances"],
+              ["sportGoals", "Objectifs"],
               ["exercises", "Exercices"],
             ].map(([key, label]) => (
               <button
                 key={key}
                 type="button"
-                onClick={() => setResource(key as Resource)}
+                onClick={() => {
+                  setUserGoalDraft(undefined);
+                  setResource(key as Resource);
+                }}
                 className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
                   resource === key ? "border-neutral-950 bg-neutral-950 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
                 }`}
@@ -2304,6 +2678,18 @@ export function Dashboard({
             >
               Mensurations
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                setUserGoalDraft(undefined);
+                setResource("bodyGoals");
+              }}
+              className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
+                resource === "bodyGoals" ? "border-rose-600 bg-rose-600 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
+              }`}
+            >
+              Objectifs
+            </button>
             <p className="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
               Compte
             </p>
@@ -2333,10 +2719,15 @@ export function Dashboard({
                     setExerciseDraft({} as Exercise);
                     return;
                   }
-                  openCreate(resource, setModal);
                   if (resource === "measurements") {
                     setBodyMeasurementDraft({} as BodyMeasurement);
+                    return;
                   }
+                  if (resource === "sportGoals" || resource === "bodyGoals") {
+                    setUserGoalDraft({} as UserGoal);
+                    return;
+                  }
+                  openCreate(resource, setModal);
                 }}
                 onCreateFromTemplate={
                   resource === "workouts"
@@ -2441,6 +2832,24 @@ export function Dashboard({
                   )}
                 </div>
               )}
+              {resource === "sportGoals" && (
+                <UserGoalsPanel
+                  domain="SPORT"
+                  goals={userGoalsStore.userGoals}
+                  workouts={workoutsStore.workouts}
+                  measurements={bodyMeasurementsStore.bodyMeasurements}
+                  draft={userGoalDraft}
+                  onCreate={() => setUserGoalDraft({} as UserGoal)}
+                  onEdit={(goal) => setUserGoalDraft(goal)}
+                  onCancel={() => setUserGoalDraft(undefined)}
+                  onSubmit={(data) =>
+                    userGoalDraft?.id
+                      ? userGoalsStore.updateUserGoal(userGoalDraft.id, data)
+                      : userGoalsStore.createUserGoal(data)
+                  }
+                  onDelete={(goal) => confirmDelete(goal.name, () => userGoalsStore.deleteUserGoal(goal.id))}
+                />
+              )}
               {resource === "exercises" && (
                 <div className="space-y-4">
                   <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
@@ -2517,6 +2926,24 @@ export function Dashboard({
                     />
                   )}
                 </div>
+              )}
+              {resource === "bodyGoals" && (
+                <UserGoalsPanel
+                  domain="BODY"
+                  goals={userGoalsStore.userGoals}
+                  workouts={workoutsStore.workouts}
+                  measurements={bodyMeasurementsStore.bodyMeasurements}
+                  draft={userGoalDraft}
+                  onCreate={() => setUserGoalDraft({} as UserGoal)}
+                  onEdit={(goal) => setUserGoalDraft(goal)}
+                  onCancel={() => setUserGoalDraft(undefined)}
+                  onSubmit={(data) =>
+                    userGoalDraft?.id
+                      ? userGoalsStore.updateUserGoal(userGoalDraft.id, data)
+                      : userGoalsStore.createUserGoal(data)
+                  }
+                  onDelete={(goal) => confirmDelete(goal.name, () => userGoalsStore.deleteUserGoal(goal.id))}
+                />
               )}
               {resource === "profile" && (
                 <ProfileForm
@@ -2612,11 +3039,13 @@ function ResourceHeader({
     dashboard: "Synthese",
     calendar: "Calendrier",
     workouts: "Seances",
+    sportGoals: "Objectifs sport",
     exercises: "Exercices",
     foods: "Aliments",
     meals: "Repas",
     goals: "Objectifs nutrition",
     measurements: "Mensurations",
+    bodyGoals: "Objectifs corps",
     profile: "Profil",
   };
 
