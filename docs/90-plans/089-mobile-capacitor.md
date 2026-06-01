@@ -12,10 +12,13 @@
 - Le build web est copie dans le dossier Capacitor (`mobile/www`) pour supporter le mode offline (assets embarques).
 - Stockage auth: utiliser Capacitor Preferences en mobile, sinon localStorage sur le web.
 - CI: poser une base GitHub Actions avec fastlane; la signature et les secrets restent a fournir.
+- Integrer la Vague 5 `mobile, ops et industrialisation` au moment de la
+  reprise de ce chantier.
 
 ## Todo
 
 - [x] Creer ce plan.
+- [ ] Integrer les items pertinents du plan `035-vague-5-mobile-ops-industrialisation`.
 - [ ] Ajouter le workspace `mobile/` (Capacitor) + scripts npm.
 - [ ] Rendre le frontend compatible mobile (routing, storage auth, API URL).
 - [ ] Ajuster le backend (CORS/HTTPS) pour les origins Capacitor.
@@ -26,4 +29,5 @@
 ## Notes de verification
 
 - A completer pendant le chantier.
-
+- 2026-06-01: decision utilisateur: le plan `035-vague-5-mobile-ops-industrialisation`
+  sera traite avec ce chantier mobile.
