@@ -1736,64 +1736,64 @@ function BodyMeasurementDiagram({ measurement }: { measurement: BodyMeasurement 
       key: "neckCm",
       label: "Cou",
       unit: "cm",
-      lineClassName: "left-[51%] top-[15%] w-[23%]",
-      labelClassName: "left-[77%] top-[11%] text-left",
+      lineClassName: "left-[24%] top-[19%] w-[26%]",
+      labelClassName: "left-[3%] top-[14%] text-left",
     },
     {
       key: "shouldersCm",
       label: "Epaules",
       unit: "cm",
-      lineClassName: "left-[55%] top-[24%] w-[21%]",
-      labelClassName: "left-[79%] top-[20%] text-left",
+      lineClassName: "left-[61%] top-[22%] w-[17%]",
+      labelClassName: "right-[3%] top-[18%] text-left",
     },
     {
       key: "chestCm",
       label: "Poitrine",
       unit: "cm",
-      lineClassName: "left-[22%] top-[30%] w-[23%]",
-      labelClassName: "left-[3%] top-[26%] text-left",
+      lineClassName: "left-[20%] top-[31%] w-[26%]",
+      labelClassName: "left-[3%] top-[27%] text-left",
     },
     {
       key: "rightArmCm",
       label: "Biceps",
       unit: "cm",
-      lineClassName: "left-[67%] top-[36%] w-[13%]",
-      labelClassName: "left-[82%] top-[32%] text-left",
+      lineClassName: "left-[64%] top-[34%] w-[15%]",
+      labelClassName: "right-[3%] top-[31%] text-left",
     },
     {
       key: "rightForearmCm",
       label: "Avant-bras",
       unit: "cm",
-      lineClassName: "left-[19%] top-[46%] w-[17%]",
-      labelClassName: "left-[3%] top-[42%] text-left",
+      lineClassName: "left-[21%] top-[44%] w-[13%]",
+      labelClassName: "left-[3%] top-[40%] text-left",
     },
     {
       key: "waistCm",
       label: "Taille",
       unit: "cm",
-      lineClassName: "left-[54%] top-[46%] w-[23%]",
-      labelClassName: "left-[80%] top-[42%] text-left",
+      lineClassName: "left-[53%] top-[44%] w-[25%]",
+      labelClassName: "right-[3%] top-[40%] text-left",
     },
     {
       key: "hipsCm",
       label: "Hanches",
       unit: "cm",
-      lineClassName: "left-[54%] top-[52%] w-[23%]",
-      labelClassName: "left-[80%] top-[48%] text-left",
+      lineClassName: "left-[53%] top-[57%] w-[25%]",
+      labelClassName: "right-[3%] top-[53%] text-left",
     },
     {
       key: "rightThighCm",
       label: "Cuisses",
       unit: "cm",
-      lineClassName: "left-[18%] top-[64%] w-[26%]",
-      labelClassName: "left-[3%] top-[60%] text-left",
+      lineClassName: "left-[23%] top-[60%] w-[21%]",
+      labelClassName: "left-[3%] top-[56%] text-left",
     },
     {
       key: "rightCalfCm",
       label: "Mollets",
       unit: "cm",
-      lineClassName: "left-[19%] top-[80%] w-[26%]",
-      labelClassName: "left-[3%] top-[76%] text-left",
+      lineClassName: "left-[25%] top-[78%] w-[20%]",
+      labelClassName: "left-[3%] top-[74%] text-left",
     },
   ];
 
@@ -1801,7 +1801,7 @@ function BodyMeasurementDiagram({ measurement }: { measurement: BodyMeasurement 
     <div
       role="img"
       aria-label="Schema des mensurations corporelles"
-      className="relative mx-auto aspect-[2/3] w-full max-w-[360px] overflow-hidden rounded border border-emerald-200 bg-emerald-50 shadow-sm"
+      className="relative mx-auto aspect-[447/627] w-full max-w-[430px] overflow-hidden rounded border border-emerald-200 bg-emerald-50 shadow-sm"
     >
       <img
         src={silhouetteSrc}
@@ -1858,7 +1858,7 @@ function BodyMeasurementsList({
         <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
           Derniere mesure
         </p>
-        <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(220px,320px)_1fr]">
+        <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(260px,430px)_1fr]">
           <BodyMeasurementDiagram measurement={latest} />
           <div>
             <div className="grid gap-3 md:grid-cols-3">
