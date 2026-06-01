@@ -537,6 +537,8 @@ describe("API", () => {
       id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
       email: "taken@example.com",
     };
+    mocks.users.getUserById.mockResolvedValue(user);
+    mocks.users.verifyCredentials.mockResolvedValue(user);
     mocks.users.getUserByEmail.mockResolvedValue(otherUser);
 
     const response = await app.inject({
@@ -545,6 +547,7 @@ describe("API", () => {
       headers: authHeaders(),
       payload: {
         email: otherUser.email,
+        currentPassword: "password123",
       },
     });
     const body = response.json();
@@ -553,6 +556,73 @@ describe("API", () => {
     expect(body.code).toBe("EMAIL_ALREADY_EXISTS");
     expect(mocks.users.getUserByEmail).toHaveBeenCalledWith(otherUser.email);
     expect(mocks.users.updateUser).not.toHaveBeenCalled();
+  });
+
+  it("requires the current password for sensitive profile updates", async () => {
+    mocks.users.getUserById.mockResolvedValue(user);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: "/api/users/me",
+      headers: authHeaders(),
+      payload: {
+        email: "new@example.com",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expect(body.code).toBe("CURRENT_PASSWORD_REQUIRED");
+    expect(mocks.users.updateUser).not.toHaveBeenCalled();
+  });
+
+  it("rejects sensitive profile updates when the current password is invalid", async () => {
+    mocks.users.getUserById.mockResolvedValue(user);
+    mocks.users.verifyCredentials.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: "/api/users/me",
+      headers: authHeaders(),
+      payload: {
+        password: "newpassword123",
+        currentPassword: "wrong-password",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expect(body.code).toBe("INVALID_CURRENT_PASSWORD");
+    expect(mocks.users.verifyCredentials).toHaveBeenCalledWith(
+      user.email,
+      "wrong-password",
+    );
+    expect(mocks.users.updateUser).not.toHaveBeenCalled();
+  });
+
+  it("updates sensitive profile fields after current password confirmation", async () => {
+    const updatedUser = { ...user, email: "new@example.com" };
+    mocks.users.getUserById.mockResolvedValue(user);
+    mocks.users.verifyCredentials.mockResolvedValue(user);
+    mocks.users.getUserByEmail.mockResolvedValue(null);
+    mocks.users.updateUser.mockResolvedValue(updatedUser);
+
+    const response = await app.inject({
+      method: "PUT",
+      url: "/api/users/me",
+      headers: authHeaders(),
+      payload: {
+        email: updatedUser.email,
+        currentPassword: "password123",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(updatedUser);
+    expect(mocks.users.updateUser).toHaveBeenCalledWith(USER_ID, {
+      email: updatedUser.email,
+    });
   });
 
   it("returns 404 when updating the authenticated user after deletion", async () => {

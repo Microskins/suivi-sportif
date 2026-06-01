@@ -67,6 +67,15 @@
 ## Todo
 
 - [x] Creer ce plan.
+- [x] Definir checklist audit UI.
+- [x] Auditer les parcours critiques.
+- [x] Corriger les problemes UI/accessibilite.
+- [x] Ajouter controle qualite images.
+- [x] Ajouter securite compte.
+- [x] Ajouter version de politique cookies.
+- [x] Mettre a jour docs sources de verite.
+- [x] Valider les controles disponibles et documenter les blocages.
+- [x] Pousser la vague avant d'ouvrir la Vague 5.
 - [ ] Definir checklist audit UI.
 - [ ] Auditer les parcours critiques.
 - [ ] Corriger les problemes UI/accessibilite.
@@ -81,3 +90,14 @@
 
 - 2026-06-01: plan cree depuis la roadmap `030-roadmap-idees-ia`.
 - 2026-06-01: cette vague doit attendre la fin de la Vague 3.
+- 2026-06-01: tranche retenue: checklist UI documentee, securite compte sur changements sensibles, version cookies explicite et manifeste qualite images.
+- 2026-06-01: ajout docs qualite `docs/07-qualite/` avec checklist UI/accessibilite et manifeste images exercices.
+- 2026-06-01: controle images: 163 exercices, 163 references, 64 fichiers presents, 100 images referencees absentes.
+- 2026-06-01: ajout confirmation du mot de passe actuel pour changement email/mot de passe et journalisation serveur des champs sensibles modifies.
+- 2026-06-01: version cookies passee a `2026-06-01`; les consentements d'ancienne version sont supprimes du localStorage.
+- 2026-06-01: reference API mise a jour pour `currentPassword` sur `PUT /api/users/me`.
+- 2026-06-01: `git diff --check` : OK.
+- 2026-06-01: `npm run typecheck -w server` bloque localement: `npm` absent du PATH PowerShell.
+- 2026-06-01: `npm run typecheck -w client` bloque localement: `npm` absent du PATH PowerShell.
+- 2026-06-01: `npm run test -w server -- --run` bloque localement: `npm` absent du PATH PowerShell.
+- 2026-06-01: `npm run test -w client -- --run` bloque localement: `npm` absent du PATH PowerShell.

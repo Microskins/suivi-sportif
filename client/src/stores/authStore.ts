@@ -31,6 +31,7 @@ type AuthState = {
     name?: string;
     dateOfBirth?: string | null;
     password?: string;
+    currentPassword?: string;
   }) => Promise<void>;
   logout: () => void;
   clearError: () => void;

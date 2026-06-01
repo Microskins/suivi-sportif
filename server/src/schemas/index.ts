@@ -29,6 +29,7 @@ export const loginUserSchema = z.object({
 
 export const updateUserSchema = createUserSchema.partial().extend({
   password: z.string().min(8).optional(),
+  currentPassword: z.string().min(1).optional(),
 });
 
 export const userResponseSchema = z.object({

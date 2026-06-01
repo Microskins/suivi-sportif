@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
   type CookieConsent,
   getConsent,
+  getConsentStorageKey,
   notifyConsentFromStorage,
   saveConsentFromChoices,
   subscribeConsent,
@@ -42,7 +43,7 @@ export const useCookieConsentStore = create<CookieConsentState>((set) => ({
     });
 
     const onStorage = (event: StorageEvent) => {
-      if (event.key === "cookie_consent_v1") {
+      if (event.key === getConsentStorageKey()) {
         notifyConsentFromStorage();
       }
     };

@@ -243,12 +243,22 @@ function dateTimeToIso(value: string) {
   return new Date(value).toISOString();
 }
 
+function safeDateTimeToIso(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+}
+
 function inferWorkoutStatusFromDate(value: string): WorkoutStatus {
   return new Date(value).getTime() > Date.now() ? "PLANNED" : "COMPLETED";
 }
 
 function dateToIso(value: string) {
   return new Date(`${value}T00:00:00`).toISOString();
+}
+
+function safeDateToIso(value: string) {
+  const date = new Date(`${value}T00:00:00`);
+  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
 }
 
 function emptyToNull(value: string) {
@@ -278,6 +288,13 @@ function formatDate(value: string) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function localDateKey(value: string | Date) {
+  const date = typeof value === "string" ? new Date(value) : value;
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    .toISOString()
+    .slice(0, 10);
 }
 
 function labelFromOptions<T extends string>(
@@ -1533,14 +1550,110 @@ type MealItemFormRow = {
   quantityGrams: string;
 };
 
+type MacroTotals = {
+  caloriesKcal: number;
+  proteinGrams: number;
+  carbsGrams: number;
+  fatGrams: number;
+};
+
+function emptyMacroTotals(): MacroTotals {
+  return { caloriesKcal: 0, proteinGrams: 0, carbsGrams: 0, fatGrams: 0 };
+}
+
+function roundMacro(value: number) {
+  return Math.round(value * 10) / 10;
+}
+
+function computeMealFormTotals(items: MealItemFormRow[], foods: Food[]): MacroTotals {
+  return items.reduce((totals, item) => {
+    const food = foods.find((candidate) => candidate.id === item.foodId);
+    const quantity = Number(item.quantityGrams);
+    if (!food || Number.isNaN(quantity) || quantity <= 0) {
+      return totals;
+    }
+
+    return {
+      caloriesKcal: totals.caloriesKcal + (food.caloriesKcal * quantity) / 100,
+      proteinGrams: totals.proteinGrams + (food.proteinGrams * quantity) / 100,
+      carbsGrams: totals.carbsGrams + (food.carbsGrams * quantity) / 100,
+      fatGrams: totals.fatGrams + (food.fatGrams * quantity) / 100,
+    };
+  }, emptyMacroTotals());
+}
+
+function recentFoodPortions(foodId: string, meals: Meal[]) {
+  const portions = [...meals]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .flatMap((meal) =>
+      meal.items
+        .filter((item) => item.foodId === foodId)
+        .map((item) => item.quantityGrams),
+    );
+
+  return Array.from(new Set(portions)).slice(0, 3);
+}
+
+function activeNutritionGoalForDate(goals: NutritionGoal[], dateIso: string) {
+  const day = new Date(dateIso).getTime();
+  return goals.find((goal) => {
+    if (!goal.isActive) return false;
+    const start = new Date(goal.startDate).getTime();
+    const end = goal.endDate ? new Date(goal.endDate).getTime() : Number.POSITIVE_INFINITY;
+    return day >= start && day <= end;
+  }) ?? goals.find((goal) => goal.isActive) ?? null;
+}
+
+function dayMealTotals(meals: Meal[], dateIso: string) {
+  const key = localDateKey(dateIso);
+  return meals
+    .filter((meal) => localDateKey(meal.date) === key)
+    .reduce((totals, meal) => ({
+      caloriesKcal: totals.caloriesKcal + meal.totals.caloriesKcal,
+      proteinGrams: totals.proteinGrams + meal.totals.proteinGrams,
+      carbsGrams: totals.carbsGrams + meal.totals.carbsGrams,
+      fatGrams: totals.fatGrams + meal.totals.fatGrams,
+    }), emptyMacroTotals());
+}
+
+function duplicateMealInput(meal: Meal): MealInput | null {
+  const items = meal.items
+    .filter((mealItem) => mealItem.foodId)
+    .map((mealItem) => ({
+      foodId: mealItem.foodId as string,
+      quantityGrams: mealItem.quantityGrams,
+    }));
+
+  if (!items.length) return null;
+
+  return {
+    name: `Copie - ${meal.name}`,
+    date: new Date().toISOString(),
+    mealType: meal.mealType,
+    notes: meal.notes,
+    items,
+  };
+}
+
+function macroDeltaLabel(current: number, target: number | null) {
+  if (target === null || target <= 0) return "Objectif non renseigne";
+  const delta = roundMacro(current - target);
+  if (delta === 0) return "pile sur cible";
+  return delta > 0 ? `+${delta}` : `${delta}`;
+}
+
 function MealForm({
   item,
   foods,
+  meals,
+  nutritionGoals,
   onSubmit,
   onCancel,
 }: {
   item?: Meal;
   foods: Food[];
+  meals: Meal[];
+  nutritionGoals: NutritionGoal[];
   onSubmit: (data: MealInput) => Promise<void>;
   onCancel: () => void;
 }) {
@@ -1558,6 +1671,16 @@ function MealForm({
         : [],
   );
   const [isSaving, setIsSaving] = useState(false);
+  const previewDateIso = safeDateTimeToIso(date);
+  const previewTotals = computeMealFormTotals(items, foods);
+  const activeGoal = activeNutritionGoalForDate(nutritionGoals, previewDateIso);
+  const existingDayTotals = item ? emptyMacroTotals() : dayMealTotals(meals, previewDateIso);
+  const projectedDayTotals = {
+    caloriesKcal: existingDayTotals.caloriesKcal + previewTotals.caloriesKcal,
+    proteinGrams: existingDayTotals.proteinGrams + previewTotals.proteinGrams,
+    carbsGrams: existingDayTotals.carbsGrams + previewTotals.carbsGrams,
+    fatGrams: existingDayTotals.fatGrams + previewTotals.fatGrams,
+  };
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -1591,6 +1714,39 @@ function MealForm({
         </Field>
       </div>
       <Field label="Notes"><textarea className={inputClass} value={notes} onChange={(event) => setNotes(event.target.value)} rows={3} /></Field>
+      <section className="rounded border border-amber-200 bg-amber-50/80 p-3">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-amber-950">Recap avant validation</p>
+            <p className="mt-1 text-xs text-amber-800/80">
+              {activeGoal
+                ? `Projection du jour comparee a ${activeGoal.name}.`
+                : "Aucun objectif actif pour comparer la journee."}
+            </p>
+          </div>
+          <p className="text-2xl font-bold text-amber-950">
+            {roundMacro(previewTotals.caloriesKcal)} kcal
+          </p>
+        </div>
+        <div className="mt-3 grid gap-2 sm:grid-cols-4">
+          {[
+            ["Calories", projectedDayTotals.caloriesKcal, activeGoal?.dailyCaloriesKcal ?? null, "kcal"],
+            ["Proteines", projectedDayTotals.proteinGrams, activeGoal?.dailyProteinGrams ?? null, "g"],
+            ["Glucides", projectedDayTotals.carbsGrams, activeGoal?.dailyCarbsGrams ?? null, "g"],
+            ["Lipides", projectedDayTotals.fatGrams, activeGoal?.dailyFatGrams ?? null, "g"],
+          ].map(([label, value, target, unit]) => (
+            <p key={label as string} className="rounded bg-white px-3 py-2 text-sm text-amber-950">
+              <span className="block text-xs font-medium uppercase tracking-wide text-amber-700">{label}</span>
+              <span className="font-bold">{roundMacro(value as number)} {unit}</span>
+              <span className="mt-1 block text-xs text-amber-700">
+                {typeof target === "number" && target > 0
+                  ? `${macroDeltaLabel(value as number, target)} ${unit} vs objectif`
+                  : "Objectif non renseigne"}
+              </span>
+            </p>
+          ))}
+        </div>
+      </section>
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-slate-800">Aliments</p>
@@ -1600,12 +1756,34 @@ function MealForm({
         </div>
         {!foods.length && <EmptyState label="Cree un aliment avant de composer un repas." />}
         {items.map((entry, index) => (
-          <div key={index} className="grid gap-2 md:grid-cols-[1fr_160px_auto]">
-            <select className={inputClass} value={entry.foodId} onChange={(event) => setItems((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, foodId: event.target.value } : row))}>
-              {foods.map((food) => <option key={food.id} value={food.id}>{food.name}</option>)}
-            </select>
-            <input className={inputClass} type="number" min="0.01" step="0.01" value={entry.quantityGrams} onChange={(event) => setItems((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, quantityGrams: event.target.value } : row))} />
-            <button type="button" className={dangerButtonClass} onClick={() => setItems((current) => current.filter((_, rowIndex) => rowIndex !== index))}>Retirer</button>
+          <div key={index} className="rounded border border-slate-200 bg-white p-3">
+            <div className="grid gap-2 md:grid-cols-[1fr_160px_auto]">
+              <select className={inputClass} value={entry.foodId} onChange={(event) => setItems((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, foodId: event.target.value } : row))}>
+                {foods.map((food) => <option key={food.id} value={food.id}>{food.name}</option>)}
+              </select>
+              <input className={inputClass} type="number" min="0.01" step="0.01" value={entry.quantityGrams} onChange={(event) => setItems((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, quantityGrams: event.target.value } : row))} />
+              <button type="button" className={dangerButtonClass} onClick={() => setItems((current) => current.filter((_, rowIndex) => rowIndex !== index))}>Retirer</button>
+            </div>
+            {recentFoodPortions(entry.foodId, meals).length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {recentFoodPortions(entry.foodId, meals).map((portion) => (
+                  <button
+                    key={portion}
+                    type="button"
+                    className="rounded border border-amber-200 bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800 hover:bg-amber-100"
+                    onClick={() =>
+                      setItems((current) =>
+                        current.map((row, rowIndex) =>
+                          rowIndex === index ? { ...row, quantityGrams: String(portion) } : row,
+                        ),
+                      )
+                    }
+                  >
+                    {portion} g
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -3016,17 +3194,21 @@ function ProfileForm({
     email?: string;
     dateOfBirth?: string | null;
     password?: string;
+    currentPassword?: string;
   }) => Promise<void>;
 }) {
   const [email, setEmail] = useState(userEmail);
   const [dateOfBirth, setDateOfBirth] = useState(toInputDate(userDateOfBirth));
   const [password, setPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const sensitiveChange = email.trim() !== userEmail || password.trim().length > 0;
 
   useEffect(() => {
     setEmail(userEmail);
     setDateOfBirth(toInputDate(userDateOfBirth));
     setPassword("");
+    setCurrentPassword("");
   }, [userEmail, userDateOfBirth]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -3035,11 +3217,13 @@ function ProfileForm({
 
     try {
       await onSubmit({
-        email,
+        ...(email.trim() !== userEmail ? { email } : {}),
         dateOfBirth: dateOfBirth ? dateToIso(dateOfBirth) : null,
         ...(password.trim() ? { password } : {}),
+        ...(sensitiveChange ? { currentPassword } : {}),
       });
       setPassword("");
+      setCurrentPassword("");
       setSuccessMessage("Profil mis a jour.");
     } catch {
       return;
@@ -3086,6 +3270,19 @@ function ProfileForm({
         />
       </Field>
 
+      {sensitiveChange && (
+        <Field label="Mot de passe actuel">
+          <input
+            className={inputClass}
+            value={currentPassword}
+            onChange={(event) => setCurrentPassword(event.target.value)}
+            type="password"
+            autoComplete="current-password"
+            required
+          />
+        </Field>
+      )}
+
       {successMessage && (
         <p className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
           {successMessage}
@@ -3117,6 +3314,7 @@ export function Dashboard({
   userDateOfBirth: string | null;
   onUpdateProfile: (data: Partial<Pick<User, "email" | "dateOfBirth">> & {
     password?: string;
+    currentPassword?: string;
   }) => Promise<void>;
   onLogout: () => void;
   isProfileSaving: boolean;
@@ -3562,11 +3760,23 @@ export function Dashboard({
                 />
               )}
               {resource === "meals" && (
-                <MealsList
-                  meals={mealsStore.meals}
-                  onEdit={(item) => setModal({ type: "meal", item })}
-                  onDelete={(item) => confirmDelete(item.name, () => mealsStore.deleteMeal(item.id))}
-                />
+                <div className="space-y-4">
+                  <NutritionDayPanel
+                    meals={mealsStore.meals}
+                    goals={goalsStore.nutritionGoals}
+                  />
+                  <MealsList
+                    meals={mealsStore.meals}
+                    onEdit={(item) => setModal({ type: "meal", item })}
+                    onDuplicate={(item) => {
+                      const copy = duplicateMealInput(item);
+                      if (copy) {
+                        void mealsStore.createMeal(copy, foodsStore.foods);
+                      }
+                    }}
+                    onDelete={(item) => confirmDelete(item.name, () => mealsStore.deleteMeal(item.id))}
+                  />
+                </div>
               )}
               {resource === "goals" && (
                 <NutritionGoalsList
@@ -3684,6 +3894,8 @@ export function Dashboard({
             <MealForm
               item={modal.item}
               foods={foodsStore.foods}
+              meals={mealsStore.meals}
+              nutritionGoals={goalsStore.nutritionGoals}
               onCancel={() => setModal(null)}
               onSubmit={(data) => modal.item ? mealsStore.updateMeal(modal.item.id, data, foodsStore.foods) : mealsStore.createMeal(data, foodsStore.foods)}
             />
@@ -3981,26 +4193,134 @@ function ExercisesList({
 }
 
 function FoodsList({ foods, onEdit, onDelete }: { foods: Food[]; onEdit: (item: Food) => void; onDelete: (item: Food) => void }) {
+  const [search, setSearch] = useState("");
+  const normalizedSearch = search.trim().toLocaleLowerCase("fr-FR");
+  const filteredFoods = foods.filter((food) => {
+    if (!normalizedSearch) return true;
+    return (
+      food.name.toLocaleLowerCase("fr-FR").includes(normalizedSearch) ||
+      (food.brand?.toLocaleLowerCase("fr-FR").includes(normalizedSearch) ?? false) ||
+      (food.barcode?.toLocaleLowerCase("fr-FR").includes(normalizedSearch) ?? false)
+    );
+  });
+
   if (!foods.length) return <EmptyState label="Aucun aliment disponible." />;
+
   return (
-    <ul className="grid gap-3 lg:grid-cols-2">
-      {foods.map((food) => (
-        <li key={food.id} className={itemCardClass}>
-          <div className="flex h-full flex-col justify-between gap-3">
-            <div>
-              <p className="font-semibold">{food.name}</p>
-              <p className="mt-1 text-sm text-slate-600">{food.caloriesKcal} kcal - P {food.proteinGrams} / G {food.carbsGrams} / L {food.fatGrams}</p>
-              <p className="mt-1 text-xs text-slate-500">{food.isGlobal ? "Global" : "Personnel"} - pour 100 {food.servingUnit}</p>
-            </div>
-            <ItemActions item={food} onEdit={onEdit} onDelete={onDelete} />
-          </div>
-        </li>
-      ))}
-    </ul>
+    <div className="space-y-4">
+      <div className="rounded border border-slate-200 bg-white p-3">
+        <input
+          className={inputClass}
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Rechercher nom, marque ou code-barres..."
+        />
+        <p className="mt-2 text-xs text-slate-500">
+          {filteredFoods.length} / {foods.length} aliment(s)
+        </p>
+      </div>
+      {!filteredFoods.length ? (
+        <EmptyState label="Aucun aliment ne correspond a la recherche." />
+      ) : (
+        <ul className="grid gap-3 lg:grid-cols-2">
+          {filteredFoods.map((food) => (
+            <li key={food.id} className={itemCardClass}>
+              <div className="flex h-full flex-col justify-between gap-3">
+                <div>
+                  <p className="font-semibold">{food.name}</p>
+                  <p className="mt-1 text-sm text-slate-600">{food.caloriesKcal} kcal - P {food.proteinGrams} / G {food.carbsGrams} / L {food.fatGrams}</p>
+                  <p className="mt-1 text-xs text-slate-500">{food.isGlobal ? "Global" : "Personnel"} - pour 100 {food.servingUnit}</p>
+                  {food.barcode && (
+                    <p className="mt-1 text-xs font-medium text-slate-500">Code-barres: {food.barcode}</p>
+                  )}
+                </div>
+                <ItemActions item={food} onEdit={onEdit} onDelete={onDelete} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
-function MealsList({ meals, onEdit, onDelete }: { meals: Meal[]; onEdit: (item: Meal) => void; onDelete: (item: Meal) => void }) {
+function NutritionDayPanel({
+  meals,
+  goals,
+}: {
+  meals: Meal[];
+  goals: NutritionGoal[];
+}) {
+  const [selectedDate, setSelectedDate] = useState(toInputDate(new Date().toISOString()));
+  const selectedDateIso = safeDateToIso(selectedDate);
+  const goal = activeNutritionGoalForDate(goals, selectedDateIso);
+  const totals = dayMealTotals(meals, selectedDateIso);
+  const dayMeals = meals.filter((meal) => localDateKey(meal.date) === selectedDate);
+
+  return (
+    <section className="rounded border border-amber-200 bg-amber-50/70 p-4 shadow-sm">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h3 className="font-semibold text-amber-950">Objectif du jour</h3>
+          <p className="mt-1 text-sm text-amber-800/80">
+            {goal
+              ? `Comparaison avec ${goal.name}.`
+              : "Aucun objectif actif sur cette date."}
+          </p>
+        </div>
+        <input
+          className={`${inputClass} max-w-44 bg-white`}
+          type="date"
+          value={selectedDate}
+          onChange={(event) => setSelectedDate(event.target.value)}
+        />
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-4">
+        {[
+          ["Calories", totals.caloriesKcal, goal?.dailyCaloriesKcal ?? null, "kcal"],
+          ["Proteines", totals.proteinGrams, goal?.dailyProteinGrams ?? null, "g"],
+          ["Glucides", totals.carbsGrams, goal?.dailyCarbsGrams ?? null, "g"],
+          ["Lipides", totals.fatGrams, goal?.dailyFatGrams ?? null, "g"],
+        ].map(([label, value, target, unit]) => {
+          const numericValue = value as number;
+          const numericTarget = typeof target === "number" ? target : null;
+          const progress = numericTarget && numericTarget > 0
+            ? Math.min(100, Math.round((numericValue / numericTarget) * 100))
+            : 0;
+          return (
+            <div key={label as string} className="rounded border border-amber-100 bg-white p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">{label}</p>
+              <p className="mt-2 text-xl font-bold text-amber-950">
+                {roundMacro(numericValue)} {unit}
+              </p>
+              <p className="mt-1 text-xs text-amber-700">
+                {numericTarget ? `${macroDeltaLabel(numericValue, numericTarget)} ${unit}` : "Objectif non renseigne"}
+              </p>
+              <progress className="mt-2 h-2 w-full overflow-hidden rounded accent-amber-500" value={progress} max={100} />
+            </div>
+          );
+        })}
+      </div>
+      <p className="mt-3 text-sm text-amber-800">
+        {dayMeals.length
+          ? `${dayMeals.length} repas saisi(s) sur la journee.`
+          : "Aucun repas saisi sur cette journee."}
+      </p>
+    </section>
+  );
+}
+
+function MealsList({
+  meals,
+  onEdit,
+  onDuplicate,
+  onDelete,
+}: {
+  meals: Meal[];
+  onEdit: (item: Meal) => void;
+  onDuplicate: (item: Meal) => void;
+  onDelete: (item: Meal) => void;
+}) {
   if (!meals.length) return <EmptyState label="Aucun repas pour le moment." />;
   return (
     <ul className="space-y-3">
@@ -4012,7 +4332,11 @@ function MealsList({ meals, onEdit, onDelete }: { meals: Meal[]; onEdit: (item: 
               <p className="mt-1 text-sm text-slate-600">{formatDate(meal.date)} - {labelFromOptions(mealTypes, meal.mealType)}</p>
               <p className="mt-1 text-sm text-slate-500">{meal.totals.caloriesKcal} kcal - {meal.items.length} aliment(s)</p>
             </div>
-            <ItemActions item={meal} onEdit={onEdit} onDelete={onDelete} />
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className={secondaryButtonClass} onClick={() => onEdit(meal)}>Modifier</button>
+              <button type="button" className={secondaryButtonClass} onClick={() => onDuplicate(meal)}>Dupliquer</button>
+              <button type="button" className={dangerButtonClass} onClick={() => onDelete(meal)}>Supprimer</button>
+            </div>
           </div>
         </li>
       ))}

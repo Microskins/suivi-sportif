@@ -11,7 +11,7 @@ export type CookieConsent = {
 };
 
 const CONSENT_STORAGE_KEY = "cookie_consent_v1";
-const CONSENT_POLICY_VERSION = "2026-05-12";
+const CONSENT_POLICY_VERSION = "2026-06-01";
 
 type ConsentListener = (consent: CookieConsent | null) => void;
 
@@ -71,10 +71,12 @@ export function getConsent(): CookieConsent | null {
   try {
     const parsed = JSON.parse(raw) as unknown;
     if (!isValidConsent(parsed)) {
+      window.localStorage.removeItem(CONSENT_STORAGE_KEY);
       return null;
     }
     return parsed;
   } catch {
+    window.localStorage.removeItem(CONSENT_STORAGE_KEY);
     return null;
   }
 }

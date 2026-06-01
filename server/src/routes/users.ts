@@ -108,6 +108,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
           properties: {
             email: { type: "string", format: "email" },
             password: { type: "string", minLength: 8 },
+            currentPassword: { type: "string" },
             name: { type: "string" },
             dateOfBirth: { type: ["string", "null"], format: "date-time" },
           },
@@ -251,7 +252,40 @@ export async function usersRoutes(fastify: FastifyInstance) {
     async (request, reply) => {
     try {
       const parsed = updateUserSchema.parse(request.body as object);
-      if (parsed.email) {
+      const currentUser = parsed.email || parsed.password
+        ? await users.getUserById(request.user.id)
+        : null;
+      if ((parsed.email || parsed.password) && !currentUser) {
+        return reply
+          .code(404)
+          .send({ error: "User not found", code: "USER_NOT_FOUND" });
+      }
+
+      const emailChange = Boolean(
+        parsed.email && currentUser && parsed.email !== currentUser.email,
+      );
+      const sensitiveChange = emailChange || Boolean(parsed.password);
+      if (sensitiveChange) {
+        if (!parsed.currentPassword) {
+          return reply.code(400).send({
+            error: "Mot de passe actuel requis",
+            code: "CURRENT_PASSWORD_REQUIRED",
+          });
+        }
+
+        const verified = await users.verifyCredentials(
+          currentUser!.email,
+          parsed.currentPassword,
+        );
+        if (!verified) {
+          return reply.code(401).send({
+            error: "Mot de passe actuel invalide",
+            code: "INVALID_CURRENT_PASSWORD",
+          });
+        }
+      }
+
+      if (emailChange && parsed.email) {
         const existing = await users.getUserByEmail(parsed.email);
         if (existing && existing.id !== request.user.id) {
           return reply
@@ -260,12 +294,27 @@ export async function usersRoutes(fastify: FastifyInstance) {
         }
       }
 
-      const user = await users.updateUser(request.user.id, parsed);
+      const { currentPassword, ...updateData } = parsed;
+      void currentPassword;
+      const user = await users.updateUser(request.user.id, updateData);
 
       if (!user) {
         return reply
           .code(404)
           .send({ error: "User not found", code: "USER_NOT_FOUND" });
+      }
+
+      if (sensitiveChange) {
+        request.log.info(
+          {
+            userId: request.user.id,
+            changedFields: [
+              emailChange ? "email" : null,
+              parsed.password ? "password" : null,
+            ].filter(Boolean),
+          },
+          "Sensitive profile fields updated",
+        );
       }
 
       return reply.code(200).send({ data: user });
