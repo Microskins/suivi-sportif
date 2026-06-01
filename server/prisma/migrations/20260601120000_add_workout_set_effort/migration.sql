@@ -1,0 +1,3 @@
+ALTER TABLE "workout_sets"
+ADD COLUMN "rpe" DECIMAL(3, 1),
+ADD COLUMN "rir" INTEGER;

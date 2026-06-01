@@ -131,6 +131,14 @@
   - les docs sources de verite sont a jour;
   - les idees restantes ont ete replanifiees ou explicitement repoussees.
 
+## Plans d'execution
+
+- [Vague 1 feedback et motivation](./031-vague-1-feedback-motivation.md)
+- [Vague 2 progression sportive](./032-vague-2-progression-sportive.md)
+- [Vague 3 nutrition et saisie rapide](./033-vague-3-nutrition-saisie-rapide.md)
+- [Vague 4 qualite, confiance et securite](./034-vague-4-qualite-confiance-securite.md)
+- [Vague 5 mobile, ops et industrialisation](./035-vague-5-mobile-ops-industrialisation.md)
+
 ## Todo
 
 - [x] Creer ce plan.

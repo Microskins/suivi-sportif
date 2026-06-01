@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { Meal, NutritionGoal, Workout } from "../api/client";
+import type { Meal, NutritionGoal, UserGoal, Workout } from "../api/client";
 
 type PeriodKey = "3d" | "7d" | "30d" | "365d";
 type QuickAction = "workout" | "meal" | "goal";
@@ -20,6 +20,7 @@ type DashboardOverviewProps = {
   workouts: Workout[];
   meals: Meal[];
   nutritionGoals: NutritionGoal[];
+  userGoals: UserGoal[];
   isLoading: boolean;
   onQuickAction: (action: QuickAction) => void;
 };
@@ -133,6 +134,29 @@ function activeGoal(goals: NutritionGoal[]) {
   return goals.find((goal) => goal.isActive) ?? null;
 }
 
+function activeWeeklyWorkoutGoal(goals: UserGoal[]) {
+  return goals.find(
+    (goal) =>
+      goal.isActive &&
+      goal.domain === "SPORT" &&
+      goal.metric === "SPORT_WORKOUTS_PER_WEEK",
+  ) ?? null;
+}
+
+function currentWeekCompletedWorkouts(workouts: Workout[]) {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const day = start.getDay();
+  start.setDate(start.getDate() + (day === 0 ? -6 : 1 - day));
+  const end = new Date(start);
+  end.setDate(start.getDate() + 7);
+
+  return workouts.filter((workout) => {
+    const date = new Date(workout.date);
+    return workout.status === "COMPLETED" && date >= start && date < end;
+  }).length;
+}
+
 function StatCard({
   label,
   value,
@@ -174,6 +198,7 @@ export function DashboardOverview({
   workouts,
   meals,
   nutritionGoals,
+  userGoals,
   isLoading,
   onQuickAction,
 }: DashboardOverviewProps) {
@@ -184,6 +209,12 @@ export function DashboardOverview({
     [meals, selectedPeriod.days, workouts],
   );
   const goal = activeGoal(nutritionGoals);
+  const weeklyWorkoutGoal = activeWeeklyWorkoutGoal(userGoals);
+  const weeklyCompleted = currentWeekCompletedWorkouts(workouts);
+  const weeklyTarget = weeklyWorkoutGoal?.targetValue ?? 0;
+  const weeklyProgress = weeklyTarget > 0
+    ? Math.min(100, Math.round((weeklyCompleted / weeklyTarget) * 100))
+    : 0;
   const totals = summaries.reduce(
     (acc, summary) => ({
       workouts: acc.workouts + summary.workouts,
@@ -265,6 +296,27 @@ export function DashboardOverview({
           tone="neutral"
         />
       </div>
+
+      <section className="rounded border border-emerald-200 bg-emerald-50/80 p-4 shadow-sm">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 className="font-semibold text-emerald-950">Regularite hebdomadaire</h3>
+            <p className="mt-1 text-sm text-emerald-800/80">
+              {weeklyWorkoutGoal
+                ? `${weeklyCompleted} seance(s) realisee(s) sur ${weeklyTarget} cette semaine.`
+                : "Cree un objectif sport de seances par semaine pour suivre ta regularite."}
+            </p>
+          </div>
+          <p className="text-3xl font-bold text-emerald-950">
+            {weeklyWorkoutGoal ? `${weeklyProgress}%` : "-"}
+          </p>
+        </div>
+        <progress
+          className="mt-3 h-2 w-full overflow-hidden rounded accent-emerald-600"
+          value={weeklyProgress}
+          max={100}
+        />
+      </section>
 
       <div className="grid gap-4 xl:grid-cols-2">
         <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">

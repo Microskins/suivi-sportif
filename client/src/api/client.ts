@@ -43,6 +43,8 @@ export type WorkoutSetInput = {
   durationMinutes?: number | null;
   avgKmh?: number | null;
   inclinePercent?: number | null;
+  rpe?: number | null;
+  rir?: number | null;
   rest: number;
 };
 
@@ -85,6 +87,8 @@ export type Workout = {
       durationMinutes?: number | null;
       avgKmh?: number | null;
       inclinePercent?: number | null;
+      rpe?: number | null;
+      rir?: number | null;
       rest: number;
       createdAt: string;
     }>;

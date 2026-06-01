@@ -35,11 +35,13 @@ function buildBypassWorkoutExercises(data: WorkoutInput, now: string) {
     sets: exercise.sets.map((set, setIndex) => ({
       id: `bypass-set-${Date.now()}-${exerciseIndex}-${setIndex}`,
       setNumber: setIndex + 1,
-      reps: set.reps,
-      weight: set.weight,
+      reps: set.reps ?? 0,
+      weight: set.weight ?? 0,
       durationMinutes: set.durationMinutes ?? null,
       avgKmh: set.avgKmh ?? null,
       inclinePercent: set.inclinePercent ?? null,
+      rpe: set.rpe ?? null,
+      rir: set.rir ?? null,
       rest: set.rest,
       createdAt: now,
     })),
@@ -79,10 +81,10 @@ export const useWorkoutsStore = create<WorkoutsState>((set) => ({
         status: data.status ?? inferStatusFromDate(data.date),
         duration: data.duration,
         notes: data.notes ?? null,
-        exercises: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
+      workout.exercises = buildBypassWorkoutExercises(data, workout.createdAt);
       set((state) => ({ workouts: [workout, ...state.workouts], error: null }));
       return;
     }

@@ -67,6 +67,13 @@
 ## Todo
 
 - [x] Creer ce plan.
+- [x] Concevoir les helpers de calcul (tendance, zones, periodes).
+- [x] Ajouter les graphiques corporels.
+- [x] Ajouter l'interpretation corporelle.
+- [x] Ajouter les projections et alertes d'objectifs.
+- [x] Ajouter le score de regularite hebdomadaire.
+- [x] Mettre a jour les docs si le comportement public change.
+- [x] Valider les controles disponibles et documenter les blocages.
 - [ ] Concevoir les helpers de calcul (tendance, zones, periodes).
 - [ ] Ajouter les graphiques corporels.
 - [ ] Ajouter l'interpretation corporelle.
@@ -78,3 +85,8 @@
 ## Notes de verification
 
 - 2026-06-01: plan Vague 1 cree depuis la roadmap `030-roadmap-idees-ia`.
+- 2026-06-01: ajout frontend des tendances corporelles 30j/90j/1 an, interpretation IMC/masse grasse/calories, projections d'objectifs et score hebdo.
+- 2026-06-01: correction du score hebdomadaire calendrier avec une borne de fin de semaine exclusive.
+- 2026-06-01: aucun changement API; pas de doc API a mettre a jour pour cette vague.
+- 2026-06-01: `git diff --check` : OK.
+- 2026-06-01: `npm run typecheck -w client` bloque localement: `npm` absent du PATH PowerShell.

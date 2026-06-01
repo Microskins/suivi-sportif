@@ -182,6 +182,8 @@ Creation:
         {
           "reps": 10,
           "weight": 80,
+          "rpe": 8,
+          "rir": 2,
           "rest": 90
         }
       ]
@@ -205,6 +207,8 @@ Exemple cardio (exercise de type `CARDIO`):
           "durationMinutes": 12.5,
           "avgKmh": 10.8,
           "inclinePercent": 2.5,
+          "rpe": 7.5,
+          "rir": 3,
           "rest": 60
         }
       ]
@@ -217,6 +221,7 @@ Regles metier sur les sets:
 
 - Exercice `CARDIO`: `durationMinutes` et `avgKmh` requis, `inclinePercent` optionnel.
 - Exercice non `CARDIO`: `reps` et `weight` requis.
+- Toutes les series acceptent `rpe` optionnel de 1 a 10 et `rir` optionnel de 0 a 10.
 
 Pour `range`, les dates sont des datetime ISO encodees dans l'URL.
 
