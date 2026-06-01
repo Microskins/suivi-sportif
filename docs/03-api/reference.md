@@ -355,6 +355,7 @@ Creation:
 ```json
 {
   "domain": "BODY",
+  "exerciseId": null,
   "metric": "BODY_WEIGHT_KG",
   "direction": "AT_MOST",
   "name": "Poids cible",
@@ -373,9 +374,14 @@ Metriques disponibles:
 
 - `SPORT_WORKOUTS_PER_WEEK`
 - `SPORT_MINUTES_PER_WEEK`
+- `SPORT_EXERCISE_ONE_REP_MAX_KG`
+- `SPORT_EXERCISE_TEN_REP_MAX_KG`
+- `SPORT_EXERCISE_MAX_REPS`
 - `BODY_WEIGHT_KG`
 - `BODY_BMI`
 - `BODY_FAT_PERCENT`
+
+Les metriques `SPORT_EXERCISE_*` doivent renseigner `exerciseId`.
 
 ## Mensurations
 

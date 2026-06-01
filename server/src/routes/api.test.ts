@@ -232,6 +232,7 @@ const userGoal = {
   id: USER_GOAL_ID,
   userId: USER_ID,
   domain: "BODY",
+  exerciseId: null,
   metric: "BODY_WEIGHT_KG",
   direction: "AT_MOST",
   name: "Poids cible",
@@ -2120,6 +2121,7 @@ describe("API", () => {
     mocks.userGoals.createUserGoal.mockResolvedValue(userGoal);
     const payload = {
       domain: "BODY",
+      exerciseId: null,
       metric: "BODY_WEIGHT_KG",
       direction: "AT_MOST",
       name: "Poids cible",
@@ -2141,6 +2143,63 @@ describe("API", () => {
     expect(response.statusCode).toBe(201);
     expect(body.data).toEqual(userGoal);
     expect(mocks.userGoals.createUserGoal).toHaveBeenCalledWith(USER_ID, payload);
+  });
+
+  it("creates an exercise performance goal for the authenticated user only", async () => {
+    const performanceGoal = {
+      ...userGoal,
+      domain: "SPORT",
+      exerciseId: EXERCISE_ID,
+      metric: "SPORT_EXERCISE_ONE_REP_MAX_KG",
+      direction: "AT_LEAST",
+      name: "Squat 1RM",
+      targetValue: 120,
+    };
+    const payload = {
+      domain: "SPORT",
+      exerciseId: EXERCISE_ID,
+      metric: "SPORT_EXERCISE_ONE_REP_MAX_KG",
+      direction: "AT_LEAST",
+      name: "Squat 1RM",
+      targetValue: 120,
+      startDate: "2026-05-04T00:00:00.000Z",
+      endDate: null,
+      isActive: true,
+      notes: null,
+    };
+    mocks.userGoals.createUserGoal.mockResolvedValue(performanceGoal);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/user-goals",
+      headers: authHeaders(),
+      payload,
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(201);
+    expect(body.data).toEqual(performanceGoal);
+    expect(mocks.userGoals.createUserGoal).toHaveBeenCalledWith(USER_ID, payload);
+  });
+
+  it("rejects exercise performance goals without exercise id", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/user-goals",
+      headers: authHeaders(),
+      payload: {
+        domain: "SPORT",
+        metric: "SPORT_EXERCISE_TEN_REP_MAX_KG",
+        name: "Squat 10RM",
+        targetValue: 90,
+        startDate: "2026-05-04T00:00:00.000Z",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expectValidationError(body);
+    expect(mocks.userGoals.createUserGoal).not.toHaveBeenCalled();
   });
 
   it("rejects a user goal metric that does not match its domain", async () => {

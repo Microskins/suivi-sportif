@@ -139,6 +139,27 @@ const userGoalMetricOptions: Array<{
     defaultDirection: "AT_LEAST",
   },
   {
+    value: "SPORT_EXERCISE_ONE_REP_MAX_KG",
+    label: "1RM estime",
+    domain: "SPORT",
+    unit: "kg",
+    defaultDirection: "AT_LEAST",
+  },
+  {
+    value: "SPORT_EXERCISE_TEN_REP_MAX_KG",
+    label: "10RM",
+    domain: "SPORT",
+    unit: "kg",
+    defaultDirection: "AT_LEAST",
+  },
+  {
+    value: "SPORT_EXERCISE_MAX_REPS",
+    label: "Max reps",
+    domain: "SPORT",
+    unit: "rep(s)",
+    defaultDirection: "AT_LEAST",
+  },
+  {
     value: "BODY_WEIGHT_KG",
     label: "Poids",
     domain: "BODY",
@@ -1558,11 +1579,13 @@ function NutritionGoalForm({
 function UserGoalForm({
   item,
   initialDomain,
+  exercises,
   onSubmit,
   onCancel,
 }: {
   item?: UserGoal;
   initialDomain: UserGoalDomain;
+  exercises: Exercise[];
   onSubmit: (data: UserGoalInput) => Promise<void>;
   onCancel: () => void;
 }) {
@@ -1577,6 +1600,7 @@ function UserGoalForm({
   const [direction, setDirection] = useState<UserGoalDirection>(
     item?.direction ?? initialMetric.defaultDirection,
   );
+  const [exerciseId, setExerciseId] = useState(item?.exerciseId ?? exercises[0]?.id ?? "");
   const [name, setName] = useState(item?.name ?? initialMetric.label);
   const [targetValue, setTargetValue] = useState(
     item?.targetValue === undefined ? "" : String(item.targetValue),
@@ -1593,6 +1617,7 @@ function UserGoalForm({
     if (nextMetric) {
       setMetric(nextMetric.value);
       setDirection(nextMetric.defaultDirection);
+      setExerciseId("");
       setName((current) => (current.trim() ? current : nextMetric.label));
     }
   }
@@ -1610,12 +1635,15 @@ function UserGoalForm({
     }
   }
 
+  const isExerciseMetric = metric.startsWith("SPORT_EXERCISE_");
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSaving(true);
     try {
       await onSubmit({
         domain,
+        exerciseId: isExerciseMetric ? exerciseId : null,
         metric,
         direction,
         name,
@@ -1645,6 +1673,21 @@ function UserGoalForm({
           </select>
         </Field>
       </div>
+      {isExerciseMetric && (
+        <Field label="Exercice">
+          <select
+            className={inputClass}
+            value={exerciseId}
+            onChange={(event) => setExerciseId(event.target.value)}
+            required
+          >
+            <option value="" disabled>Choisir un exercice</option>
+            {exercises.map((exercise) => (
+              <option key={exercise.id} value={exercise.id}>{exercise.name}</option>
+            ))}
+          </select>
+        </Field>
+      )}
       <Field label="Nom">
         <input className={inputClass} value={name} onChange={(event) => setName(event.target.value)} required />
       </Field>
@@ -1920,7 +1963,11 @@ function currentGoalValue(
   workouts: Workout[],
   measurements: BodyMeasurement[],
 ): number | null {
-  if (goal.metric === "SPORT_WORKOUTS_PER_WEEK" || goal.metric === "SPORT_MINUTES_PER_WEEK") {
+  if (
+    goal.metric === "SPORT_WORKOUTS_PER_WEEK" ||
+    goal.metric === "SPORT_MINUTES_PER_WEEK" ||
+    goal.metric.startsWith("SPORT_EXERCISE_")
+  ) {
     const since = new Date();
     since.setDate(since.getDate() - 7);
     const recentCompleted = workouts.filter(
@@ -1930,6 +1977,40 @@ function currentGoalValue(
 
     if (goal.metric === "SPORT_WORKOUTS_PER_WEEK") {
       return recentCompleted.length;
+    }
+
+    if (goal.metric === "SPORT_EXERCISE_ONE_REP_MAX_KG") {
+      if (!goal.exerciseId) return null;
+      const estimates = recentCompleted.flatMap((workout) =>
+        (workout.exercises ?? [])
+          .filter((entry) => entry.exerciseId === goal.exerciseId)
+          .flatMap((entry) =>
+            entry.sets.map((set) => set.weight * (1 + Math.max(set.reps, 1) / 30)),
+          ),
+      );
+      return estimates.length ? Math.max(...estimates) : null;
+    }
+
+    if (goal.metric === "SPORT_EXERCISE_TEN_REP_MAX_KG") {
+      if (!goal.exerciseId) return null;
+      const weights = recentCompleted.flatMap((workout) =>
+        (workout.exercises ?? [])
+          .filter((entry) => entry.exerciseId === goal.exerciseId)
+          .flatMap((entry) =>
+            entry.sets.filter((set) => set.reps >= 10).map((set) => set.weight),
+          ),
+      );
+      return weights.length ? Math.max(...weights) : null;
+    }
+
+    if (goal.metric === "SPORT_EXERCISE_MAX_REPS") {
+      if (!goal.exerciseId) return null;
+      const reps = recentCompleted.flatMap((workout) =>
+        (workout.exercises ?? [])
+          .filter((entry) => entry.exerciseId === goal.exerciseId)
+          .flatMap((entry) => entry.sets.map((set) => set.reps)),
+      );
+      return reps.length ? Math.max(...reps) : null;
     }
 
     return recentCompleted.reduce((total, workout) => total + workout.duration, 0);
@@ -1978,13 +2059,18 @@ function goalStatus(goal: UserGoal, currentValue: number | null) {
 function formatGoalValue(value: number | null, metric: UserGoalMetric) {
   if (value === null || Number.isNaN(value) || !Number.isFinite(value)) return "-";
   const config = metricConfig(metric);
-  const formatted = value.toFixed(metric === "SPORT_WORKOUTS_PER_WEEK" ? 0 : 1);
+  const formatted = value.toFixed(
+    metric === "SPORT_WORKOUTS_PER_WEEK" || metric === "SPORT_EXERCISE_MAX_REPS"
+      ? 0
+      : 1,
+  );
   return config.unit ? `${formatted} ${config.unit}` : formatted;
 }
 
 function UserGoalsPanel({
   domain,
   goals,
+  exercises,
   workouts,
   measurements,
   draft,
@@ -1996,6 +2082,7 @@ function UserGoalsPanel({
 }: {
   domain: UserGoalDomain;
   goals: UserGoal[];
+  exercises: Exercise[];
   workouts: Workout[];
   measurements: BodyMeasurement[];
   draft?: UserGoal;
@@ -2018,6 +2105,7 @@ function UserGoalsPanel({
           <UserGoalForm
             item={draft.id ? draft : undefined}
             initialDomain={domain}
+            exercises={exercises}
             onCancel={onCancel}
             onSubmit={onSubmit}
           />
@@ -2040,6 +2128,7 @@ function UserGoalsPanel({
             const currentValue = currentGoalValue(goal, workouts, measurements);
             const progress = goalProgressPercent(goal, currentValue);
             const config = metricConfig(goal.metric);
+            const exercise = exercises.find((item) => item.id === goal.exerciseId);
             return (
               <li key={goal.id} className={itemCardClass}>
                 <div className="flex h-full flex-col justify-between gap-4">
@@ -2049,6 +2138,9 @@ function UserGoalsPanel({
                       {goal.isActive && <span className="rounded bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700">Actif</span>}
                     </div>
                     <p className="mt-1 text-sm text-slate-600">{config.label}</p>
+                    {exercise && (
+                      <p className="mt-1 text-xs text-slate-500">Exercice: {exercise.name}</p>
+                    )}
                     <div className="mt-3 grid gap-2 sm:grid-cols-2">
                       <p className="rounded bg-slate-50 px-3 py-2 text-sm">
                         <span className="block text-xs font-medium uppercase tracking-wide text-slate-500">Actuel</span>
@@ -2836,6 +2928,7 @@ export function Dashboard({
                 <UserGoalsPanel
                   domain="SPORT"
                   goals={userGoalsStore.userGoals}
+                  exercises={exercisesStore.exercises}
                   workouts={workoutsStore.workouts}
                   measurements={bodyMeasurementsStore.bodyMeasurements}
                   draft={userGoalDraft}
@@ -2931,6 +3024,7 @@ export function Dashboard({
                 <UserGoalsPanel
                   domain="BODY"
                   goals={userGoalsStore.userGoals}
+                  exercises={exercisesStore.exercises}
                   workouts={workoutsStore.workouts}
                   measurements={bodyMeasurementsStore.bodyMeasurements}
                   draft={userGoalDraft}

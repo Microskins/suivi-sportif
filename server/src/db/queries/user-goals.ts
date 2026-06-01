@@ -10,11 +10,15 @@ type UserGoal = {
   direction: "AT_MOST" | "AT_LEAST" | "EXACT";
   domain: "SPORT" | "BODY";
   endDate: Date | null;
+  exerciseId: string | null;
   id: string;
   isActive: boolean;
   metric:
     | "SPORT_WORKOUTS_PER_WEEK"
     | "SPORT_MINUTES_PER_WEEK"
+    | "SPORT_EXERCISE_ONE_REP_MAX_KG"
+    | "SPORT_EXERCISE_TEN_REP_MAX_KG"
+    | "SPORT_EXERCISE_MAX_REPS"
     | "BODY_WEIGHT_KG"
     | "BODY_BMI"
     | "BODY_FAT_PERCENT";
@@ -31,6 +35,7 @@ function formatUserGoal(goal: UserGoal): UserGoalResponse {
     id: goal.id,
     userId: goal.userId,
     domain: goal.domain,
+    exerciseId: goal.exerciseId,
     metric: goal.metric,
     direction: goal.direction,
     name: goal.name,
@@ -47,6 +52,7 @@ function formatUserGoal(goal: UserGoal): UserGoalResponse {
 function userGoalData(data: CreateUserGoalInput | UpdateUserGoalInput) {
   return {
     ...(data.domain !== undefined && { domain: data.domain }),
+    ...(data.exerciseId !== undefined && { exerciseId: data.exerciseId }),
     ...(data.metric !== undefined && { metric: data.metric }),
     ...(data.direction !== undefined && { direction: data.direction }),
     ...(data.name !== undefined && { name: data.name }),
@@ -90,6 +96,7 @@ export async function createUserGoal(
     data: {
       userId,
       domain: data.domain,
+      exerciseId: data.exerciseId ?? null,
       metric: data.metric,
       direction: data.direction,
       name: data.name,

@@ -58,6 +58,7 @@ export const useUserGoalsStore = create<UserGoalsState>((set) => ({
         id: `bypass-user-goal-${Date.now()}`,
         userId: bypassUserId,
         domain: data.domain,
+        exerciseId: data.exerciseId ?? null,
         metric: data.metric,
         direction: data.direction ?? "AT_MOST",
         name: data.name,
