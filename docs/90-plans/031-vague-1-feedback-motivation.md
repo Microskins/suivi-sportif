@@ -74,6 +74,13 @@
 - [x] Ajouter le score de regularite hebdomadaire.
 - [x] Mettre a jour les docs si le comportement public change.
 - [x] Valider les controles disponibles et documenter les blocages.
+- [ ] Concevoir les helpers de calcul (tendance, zones, periodes).
+- [ ] Ajouter les graphiques corporels.
+- [ ] Ajouter l'interpretation corporelle.
+- [ ] Ajouter les projections et alertes d'objectifs.
+- [ ] Ajouter le score de regularite hebdomadaire.
+- [ ] Mettre a jour les docs si le comportement public change.
+- [ ] Valider typecheck/tests/build pertinents.
 
 ## Notes de verification
 
