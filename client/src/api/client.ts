@@ -293,6 +293,43 @@ export type BodyMeasurementInput = {
   notes?: string | null;
 };
 
+export type UserGoalDomain = "SPORT" | "BODY";
+export type UserGoalMetric =
+  | "SPORT_WORKOUTS_PER_WEEK"
+  | "SPORT_MINUTES_PER_WEEK"
+  | "BODY_WEIGHT_KG"
+  | "BODY_BMI"
+  | "BODY_FAT_PERCENT";
+export type UserGoalDirection = "AT_MOST" | "AT_LEAST" | "EXACT";
+
+export type UserGoal = {
+  id: string;
+  userId: string;
+  domain: UserGoalDomain;
+  metric: UserGoalMetric;
+  direction: UserGoalDirection;
+  name: string;
+  targetValue: number;
+  startDate: string;
+  endDate: string | null;
+  isActive: boolean;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UserGoalInput = {
+  domain: UserGoalDomain;
+  metric: UserGoalMetric;
+  direction?: UserGoalDirection;
+  name: string;
+  targetValue: number;
+  startDate: string;
+  endDate?: string | null;
+  isActive?: boolean;
+  notes?: string | null;
+};
+
 class ApiClient {
   private token: string | null = null;
 
@@ -588,6 +625,35 @@ class ApiClient {
 
   async deleteNutritionGoal(id: string) {
     return this.request<void>(`/api/nutrition-goals/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  // User goals
+  async getUserGoals() {
+    return this.request<UserGoal[]>("/api/user-goals");
+  }
+
+  async getUserGoal(id: string) {
+    return this.request<UserGoal>(`/api/user-goals/${id}`);
+  }
+
+  async createUserGoal(data: UserGoalInput) {
+    return this.request<UserGoal>("/api/user-goals", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateUserGoal(id: string, data: Partial<UserGoalInput>) {
+    return this.request<UserGoal>(`/api/user-goals/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteUserGoal(id: string) {
+    return this.request<void>(`/api/user-goals/${id}`, {
       method: "DELETE",
     });
   }

@@ -1,5 +1,34 @@
 # IA Idees
 
+## 2026-06-01 - Objectifs: alertes et projections
+
+## Contexte
+
+- Le chantier objectifs sport/corps ajoute une cible numerique et un suivi de progression.
+- La prochaine valeur viendra de rappels et d'une lecture predictive.
+
+## Proposition
+
+- Ajouter plus tard:
+  - des alertes quand un objectif approche de son echeance;
+  - une projection simple de tendance a partir des dernieres mesures;
+  - des recommandations d'ajustement si l'objectif parait trop rapide ou trop lent.
+
+## Impact
+
+- Rend les objectifs plus actionnables.
+- Aide a eviter les objectifs corporels irrealisables ou mal calibres.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/029-objectifs-sport-corps.md
+
+---
+
 ## 1) Modeles: templates de seances
 
 ## Contexte

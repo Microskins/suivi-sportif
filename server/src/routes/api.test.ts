@@ -66,6 +66,13 @@ const mocks = vi.hoisted(() => ({
     updateNutritionGoal: vi.fn(),
     deleteNutritionGoal: vi.fn(),
   },
+  userGoals: {
+    getUserGoals: vi.fn(),
+    getUserGoalById: vi.fn(),
+    createUserGoal: vi.fn(),
+    updateUserGoal: vi.fn(),
+    deleteUserGoal: vi.fn(),
+  },
   bodyMeasurements: {
     getBodyMeasurements: vi.fn(),
     getLatestBodyMeasurement: vi.fn(),
@@ -83,6 +90,7 @@ vi.mock("../db/queries/workout-templates.js", () => mocks.workoutTemplates);
 vi.mock("../db/queries/foods.js", () => mocks.foods);
 vi.mock("../db/queries/meals.js", () => mocks.meals);
 vi.mock("../db/queries/nutrition-goals.js", () => mocks.nutritionGoals);
+vi.mock("../db/queries/user-goals.js", () => mocks.userGoals);
 vi.mock("../db/queries/body-measurements.js", () => mocks.bodyMeasurements);
 
 const USER_ID = "11111111-1111-4111-8111-111111111111";
@@ -93,6 +101,7 @@ const FOOD_ID = "44444444-4444-4444-8444-444444444444";
 const MEAL_ID = "55555555-5555-4555-8555-555555555555";
 const NUTRITION_GOAL_ID = "66666666-6666-4666-8666-666666666666";
 const BODY_MEASUREMENT_ID = "99999999-9999-4999-8999-999999999999";
+const USER_GOAL_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 
 const user = {
   id: USER_ID,
@@ -219,6 +228,22 @@ const nutritionGoal = {
   updatedAt: "2026-05-04T10:00:00.000Z",
 };
 
+const userGoal = {
+  id: USER_GOAL_ID,
+  userId: USER_ID,
+  domain: "BODY",
+  metric: "BODY_WEIGHT_KG",
+  direction: "AT_MOST",
+  name: "Poids cible",
+  targetValue: 80,
+  startDate: "2026-05-04T00:00:00.000Z",
+  endDate: null,
+  isActive: true,
+  notes: null,
+  createdAt: "2026-05-04T10:00:00.000Z",
+  updatedAt: "2026-05-04T10:00:00.000Z",
+};
+
 const bodyMeasurement = {
   id: BODY_MEASUREMENT_ID,
   userId: USER_ID,
@@ -335,6 +360,8 @@ describe("API", () => {
       "/api/nutrition-goals",
       "/api/nutrition-goals/{id}",
       "/api/nutrition-goals/active",
+      "/api/user-goals",
+      "/api/user-goals/{id}",
       "/api/body-measurements",
       "/api/body-measurements/{id}",
       "/api/body-measurements/latest",
@@ -346,6 +373,9 @@ describe("API", () => {
     expect(openApiPath(paths, "/api/nutrition-goals").get.tags).toContain(
       "nutrition-goals",
     );
+    expect(openApiPath(paths, "/api/user-goals").get.tags).toContain(
+      "user-goals",
+    );
     expect(openApiPath(paths, "/api/body-measurements").get.tags).toContain(
       "body-measurements",
     );
@@ -353,6 +383,9 @@ describe("API", () => {
       { bearerAuth: [] },
     ]);
     expect(openApiPath(paths, "/api/nutrition-goals").post.security).toEqual([
+      { bearerAuth: [] },
+    ]);
+    expect(openApiPath(paths, "/api/user-goals").post.security).toEqual([
       { bearerAuth: [] },
     ]);
     expect(openApiPath(paths, "/api/body-measurements").post.security).toEqual([
@@ -2067,6 +2100,69 @@ describe("API", () => {
     expect(mocks.nutritionGoals.deleteNutritionGoal).not.toHaveBeenCalled();
   });
 
+  it("lists user goals for the authenticated user only", async () => {
+    mocks.userGoals.getUserGoals.mockResolvedValue([userGoal]);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/user-goals",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual([userGoal]);
+    expect(body.meta.total).toBe(1);
+    expect(mocks.userGoals.getUserGoals).toHaveBeenCalledWith(USER_ID);
+  });
+
+  it("creates a body user goal for the authenticated user only", async () => {
+    mocks.userGoals.createUserGoal.mockResolvedValue(userGoal);
+    const payload = {
+      domain: "BODY",
+      metric: "BODY_WEIGHT_KG",
+      direction: "AT_MOST",
+      name: "Poids cible",
+      targetValue: 80,
+      startDate: "2026-05-04T00:00:00.000Z",
+      endDate: null,
+      isActive: true,
+      notes: null,
+    };
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/user-goals",
+      headers: authHeaders(),
+      payload,
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(201);
+    expect(body.data).toEqual(userGoal);
+    expect(mocks.userGoals.createUserGoal).toHaveBeenCalledWith(USER_ID, payload);
+  });
+
+  it("rejects a user goal metric that does not match its domain", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/user-goals",
+      headers: authHeaders(),
+      payload: {
+        domain: "SPORT",
+        metric: "BODY_WEIGHT_KG",
+        name: "Incoherent",
+        targetValue: 80,
+        startDate: "2026-05-04T00:00:00.000Z",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expectValidationError(body);
+    expect(mocks.userGoals.createUserGoal).not.toHaveBeenCalled();
+  });
+
   it("rejects listing body measurements without a token", async () => {
     const response = await app.inject({
       method: "GET",
@@ -2316,6 +2412,12 @@ describe("API", () => {
       method: "GET" as const,
       url: "/api/nutrition-goals",
       mock: mocks.nutritionGoals.getNutritionGoals,
+    },
+    {
+      name: "user goals",
+      method: "GET" as const,
+      url: "/api/user-goals",
+      mock: mocks.userGoals.getUserGoals,
     },
     {
       name: "body measurements",
