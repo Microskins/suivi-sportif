@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import type { Workout, WorkoutStatus } from "../api/client";
+import type { UserGoal, Workout, WorkoutStatus } from "../api/client";
 
 type CalendarMode = "month" | "week";
 
 type WorkoutsCalendarProps = {
   workouts: Workout[];
+  userGoals: UserGoal[];
   isLoading: boolean;
   onPlan: (dateIso: string) => void;
   onAssociate: (workoutId: string, dateIso: string) => Promise<void>;
@@ -52,6 +53,13 @@ function endOfWeek(date: Date): Date {
   const end = new Date(start);
   end.setDate(start.getDate() + 6);
   return end;
+}
+
+function startOfNextWeek(date: Date): Date {
+  const start = startOfWeek(date);
+  const next = new Date(start);
+  next.setDate(start.getDate() + 7);
+  return next;
 }
 
 function buildMonthDays(anchorDate: Date): CalendarDay[] {
@@ -118,8 +126,18 @@ function isTodayKey(key: string): boolean {
   return key === dayKey(new Date());
 }
 
+function activeWeeklyWorkoutGoal(goals: UserGoal[]) {
+  return goals.find(
+    (goal) =>
+      goal.isActive &&
+      goal.domain === "SPORT" &&
+      goal.metric === "SPORT_WORKOUTS_PER_WEEK",
+  ) ?? null;
+}
+
 export function WorkoutsCalendar({
   workouts,
+  userGoals,
   isLoading,
   onPlan,
   onAssociate,
@@ -153,6 +171,17 @@ export function WorkoutsCalendar({
   const selectedDay = days.find((day) => day.key === selectedDayKey) ?? days[0];
   const selectedWorkouts = selectedDay ? workoutsByDay.get(selectedDay.key) ?? [] : [];
   const movableWorkouts = workouts.filter((workout) => dayKey(new Date(workout.date)) !== selectedDay?.key);
+  const weeklyGoal = activeWeeklyWorkoutGoal(userGoals);
+  const weekStart = startOfWeek(anchorDate);
+  const weekEndExclusive = startOfNextWeek(anchorDate);
+  const weeklyCompleted = workouts.filter((workout) => {
+    const workoutDate = new Date(workout.date);
+    return workout.status === "COMPLETED" && workoutDate >= weekStart && workoutDate < weekEndExclusive;
+  }).length;
+  const weeklyTarget = weeklyGoal?.targetValue ?? 0;
+  const weeklyProgress = weeklyTarget > 0
+    ? Math.min(100, Math.round((weeklyCompleted / weeklyTarget) * 100))
+    : 0;
 
   function shiftPeriod(direction: -1 | 1) {
     setAnchorDate((current) => {
@@ -213,6 +242,22 @@ export function WorkoutsCalendar({
 
       <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <section className="min-w-0 overflow-hidden rounded border border-neutral-200 bg-white p-4 shadow-sm">
+          <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-emerald-950">Regularite semaine</p>
+                <p className="mt-1 text-xs text-emerald-800/80">
+                  {weeklyGoal
+                    ? `${weeklyCompleted} / ${weeklyTarget} seance(s) realisee(s)`
+                    : "Aucun objectif hebdo actif"}
+                </p>
+              </div>
+              <p className="text-xl font-bold text-emerald-950">
+                {weeklyGoal ? `${weeklyProgress}%` : "-"}
+              </p>
+            </div>
+            <progress className="mt-2 h-2 w-full overflow-hidden rounded accent-emerald-600" value={weeklyProgress} max={100} />
+          </div>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <button
               type="button"

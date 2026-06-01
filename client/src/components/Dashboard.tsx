@@ -1,4 +1,13 @@
 import { FormEvent, type ReactNode, useEffect, useMemo, useState } from "react";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import type {
   BodyMeasurement,
   BodyMeasurementInput,
@@ -1951,6 +1960,199 @@ function computeDailyEnergyExpenditure(
   return bmr * multiplier;
 }
 
+type BodyTrendPeriod = "30d" | "90d" | "365d";
+
+const bodyTrendPeriods: Array<{ key: BodyTrendPeriod; label: string; days: number }> = [
+  { key: "30d", label: "30j", days: 30 },
+  { key: "90d", label: "90j", days: 90 },
+  { key: "365d", label: "1 an", days: 365 },
+];
+
+function roundOne(value: number) {
+  return Math.round(value * 10) / 10;
+}
+
+function classifyBmi(value: number | null) {
+  if (value === null) return { label: "Non calcule", detail: "Poids et taille requis." };
+  if (value < 18.5) return { label: "Bas", detail: "En dessous de la zone usuelle." };
+  if (value < 25) return { label: "Zone standard", detail: "Dans la zone de reference adulte." };
+  if (value < 30) return { label: "Eleve", detail: "Au-dessus de la zone standard." };
+  return { label: "Tres eleve", detail: "A surveiller avec d'autres indicateurs." };
+}
+
+function classifyBodyFat(value: number | null, silhouette: BodySilhouette) {
+  if (value === null) return { label: "Non calculee", detail: "Taille, cou, taille abdominale et parfois hanches requis." };
+  const standardMax = silhouette === "FEMALE" ? 31 : 24;
+  const athleticMax = silhouette === "FEMALE" ? 24 : 17;
+  if (value <= athleticMax) return { label: "Athletique", detail: "Estimation basse a moderee." };
+  if (value <= standardMax) return { label: "Moderee", detail: "Estimation dans une zone courante." };
+  return { label: "Elevee", detail: "A lire avec les mensurations et l'evolution." };
+}
+
+function calorieGuidance(tdee: number | null) {
+  if (tdee === null) {
+    return {
+      maintenance: "-",
+      deficit: "-",
+      surplus: "-",
+      detail: "Age, poids et taille requis pour estimer une base.",
+    };
+  }
+
+  return {
+    maintenance: `${Math.round(tdee)} kcal`,
+    deficit: `${Math.round(tdee - 300)} kcal`,
+    surplus: `${Math.round(tdee + 250)} kcal`,
+    detail: "Estimations indicatives, a ajuster avec l'evolution reelle.",
+  };
+}
+
+function buildBodyTrendRows(measurements: BodyMeasurement[], days: number) {
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+
+  return [...measurements]
+    .filter((measurement) => new Date(measurement.date).getTime() >= since.getTime())
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .map((measurement) => ({
+      label: new Date(measurement.date).toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "short",
+      }),
+      poids: measurement.weightKg === null ? null : roundOne(measurement.weightKg),
+      imc: roundOne(computeBmi(measurement) ?? NaN),
+      masseGrasse: roundOne(computeUsNavyBodyFat(measurement) ?? NaN),
+      taille: measurement.waistCm === null ? null : roundOne(measurement.waistCm),
+    }))
+    .map((row) => ({
+      ...row,
+      imc: Number.isNaN(row.imc) ? null : row.imc,
+      masseGrasse: Number.isNaN(row.masseGrasse) ? null : row.masseGrasse,
+    }));
+}
+
+function deltaLabel(first: number | null, latest: number | null, unit: string) {
+  if (first === null || latest === null) return "-";
+  const delta = roundOne(latest - first);
+  if (delta === 0) return `stable ${unit}`.trim();
+  return `${delta > 0 ? "+" : ""}${delta} ${unit}`.trim();
+}
+
+function BodyMeasurementTrends({ measurements }: { measurements: BodyMeasurement[] }) {
+  const [period, setPeriod] = useState<BodyTrendPeriod>("90d");
+  const selectedPeriod = bodyTrendPeriods.find((item) => item.key === period) ?? bodyTrendPeriods[1];
+  const rows = buildBodyTrendRows(measurements, selectedPeriod.days);
+  const first = rows[0];
+  const latest = rows[rows.length - 1];
+  const hasTrendData = rows.length >= 2;
+
+  return (
+    <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h3 className="font-semibold text-neutral-950">Tendances corporelles</h3>
+          <p className="mt-1 text-sm text-neutral-500">Poids, IMC, masse grasse et taille abdominale.</p>
+        </div>
+        <div className="flex flex-wrap gap-2 rounded border border-neutral-200 bg-neutral-50 p-1">
+          {bodyTrendPeriods.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => setPeriod(item.key)}
+              className={`rounded border px-3 py-2 text-sm font-medium transition ${
+                period === item.key
+                  ? "border-emerald-700 bg-emerald-700 text-white"
+                  : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {hasTrendData ? (
+        <>
+          <div className="mt-4 h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={rows}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Line type="monotone" dataKey="poids" name="Poids kg" stroke="#047857" strokeWidth={2} dot={false} connectNulls />
+                <Line type="monotone" dataKey="imc" name="IMC" stroke="#111827" strokeWidth={2} dot={false} connectNulls />
+                <Line type="monotone" dataKey="masseGrasse" name="Masse grasse %" stroke="#e11d48" strokeWidth={2} dot={false} connectNulls />
+                <Line type="monotone" dataKey="taille" name="Taille cm" stroke="#f59e0b" strokeWidth={2} dot={false} connectNulls />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-3 grid gap-2 sm:grid-cols-4">
+            <p className="rounded bg-neutral-50 px-3 py-2 text-sm text-neutral-700">Poids: {deltaLabel(first?.poids ?? null, latest?.poids ?? null, "kg")}</p>
+            <p className="rounded bg-neutral-50 px-3 py-2 text-sm text-neutral-700">IMC: {deltaLabel(first?.imc ?? null, latest?.imc ?? null, "")}</p>
+            <p className="rounded bg-neutral-50 px-3 py-2 text-sm text-neutral-700">Masse grasse: {deltaLabel(first?.masseGrasse ?? null, latest?.masseGrasse ?? null, "%")}</p>
+            <p className="rounded bg-neutral-50 px-3 py-2 text-sm text-neutral-700">Taille: {deltaLabel(first?.taille ?? null, latest?.taille ?? null, "cm")}</p>
+          </div>
+        </>
+      ) : (
+        <div className="mt-4 flex h-56 items-center justify-center rounded border border-dashed border-neutral-300 bg-neutral-50 px-4 text-center text-sm text-neutral-500">
+          Deux mesures sur la periode sont necessaires pour afficher une tendance.
+        </div>
+      )}
+    </section>
+  );
+}
+
+function BodyInterpretation({
+  measurement,
+  ageYears,
+}: {
+  measurement: BodyMeasurement;
+  ageYears: number | null;
+}) {
+  const bmi = computeBmi(measurement);
+  const bodyFat = computeUsNavyBodyFat(measurement);
+  const tdee = computeDailyEnergyExpenditure(measurement, ageYears);
+  const bmiInfo = classifyBmi(bmi);
+  const bodyFatInfo = classifyBodyFat(bodyFat, measurement.silhouette);
+  const calories = calorieGuidance(tdee);
+
+  return (
+    <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
+      <div>
+        <h3 className="font-semibold text-neutral-950">Lecture des indicateurs</h3>
+        <p className="mt-1 text-sm text-neutral-500">Repere simple pour transformer les mesures en decisions.</p>
+      </div>
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="rounded border border-slate-200 bg-slate-50 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">IMC</p>
+          <p className="mt-2 text-2xl font-bold text-slate-950">{formatComputedValue(bmi)}</p>
+          <p className="mt-1 text-sm font-medium text-slate-700">{bmiInfo.label}</p>
+          <p className="mt-1 text-xs text-slate-500">{bmiInfo.detail}</p>
+        </div>
+        <div className="rounded border border-rose-100 bg-rose-50 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-rose-700">Masse grasse</p>
+          <p className="mt-2 text-2xl font-bold text-rose-950">
+            {bodyFat === null ? "-" : `${formatComputedValue(bodyFat)} %`}
+          </p>
+          <p className="mt-1 text-sm font-medium text-rose-800">{bodyFatInfo.label}</p>
+          <p className="mt-1 text-xs text-rose-700/80">{bodyFatInfo.detail}</p>
+        </div>
+        <div className="rounded border border-emerald-100 bg-emerald-50 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Calories</p>
+          <p className="mt-2 text-sm text-emerald-950">Maintien: <span className="font-bold">{calories.maintenance}</span></p>
+          <p className="mt-1 text-sm text-emerald-950">Deficit leger: <span className="font-bold">{calories.deficit}</span></p>
+          <p className="mt-1 text-sm text-emerald-950">Surplus leger: <span className="font-bold">{calories.surplus}</span></p>
+          <p className="mt-2 text-xs text-emerald-700/80">{calories.detail}</p>
+        </div>
+      </div>
+      <p className="mt-3 text-xs text-neutral-500">
+        Ces indicateurs sont des estimations de suivi personnel, pas un diagnostic medical.
+      </p>
+    </section>
+  );
+}
+
 function metricConfig(metric: UserGoalMetric) {
   return (
     userGoalMetricOptions.find((option) => option.value === metric) ??
@@ -2067,6 +2269,55 @@ function formatGoalValue(value: number | null, metric: UserGoalMetric) {
   return config.unit ? `${formatted} ${config.unit}` : formatted;
 }
 
+function goalDaysUntilEnd(goal: UserGoal) {
+  if (!goal.endDate) return null;
+  const diff = new Date(goal.endDate).getTime() - Date.now();
+  return Math.ceil(diff / 86400000);
+}
+
+function bodyGoalHistoricalValues(goal: UserGoal, measurements: BodyMeasurement[]) {
+  if (!goal.metric.startsWith("BODY_")) return [];
+
+  return [...measurements]
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .map((measurement) => {
+      if (goal.metric === "BODY_WEIGHT_KG") return { date: measurement.date, value: measurement.weightKg };
+      if (goal.metric === "BODY_BMI") return { date: measurement.date, value: computeBmi(measurement) };
+      if (goal.metric === "BODY_FAT_PERCENT") return { date: measurement.date, value: computeUsNavyBodyFat(measurement) };
+      return { date: measurement.date, value: null };
+    })
+    .filter((entry): entry is { date: string; value: number } => entry.value !== null);
+}
+
+function goalProjectionLabel(goal: UserGoal, measurements: BodyMeasurement[]) {
+  const values = bodyGoalHistoricalValues(goal, measurements);
+  if (values.length < 2) return "Projection disponible apres deux mesures compatibles.";
+
+  const first = values[0];
+  const latest = values[values.length - 1];
+  const days = Math.max(
+    1,
+    (new Date(latest.date).getTime() - new Date(first.date).getTime()) / 86400000,
+  );
+  const dailyDelta = (latest.value - first.value) / days;
+  if (Math.abs(dailyDelta) < 0.01) return "Tendance stable sur les dernieres mesures.";
+
+  const remaining = goal.targetValue - latest.value;
+  const movingTowardTarget =
+    (goal.direction === "AT_MOST" && dailyDelta < 0) ||
+    (goal.direction === "AT_LEAST" && dailyDelta > 0) ||
+    (goal.direction === "EXACT" &&
+      Math.abs(goal.targetValue - latest.value) < Math.abs(goal.targetValue - first.value));
+
+  if (!movingTowardTarget) return "La tendance actuelle s'eloigne de la cible.";
+  const estimatedDays = Math.ceil(Math.abs(remaining / dailyDelta));
+  if (!Number.isFinite(estimatedDays) || estimatedDays < 0) {
+    return "Projection insuffisante avec la tendance actuelle.";
+  }
+
+  return `Projection: cible atteignable dans environ ${estimatedDays} jour(s).`;
+}
+
 function UserGoalsPanel({
   domain,
   goals,
@@ -2129,6 +2380,11 @@ function UserGoalsPanel({
             const progress = goalProgressPercent(goal, currentValue);
             const config = metricConfig(goal.metric);
             const exercise = exercises.find((item) => item.id === goal.exerciseId);
+            const daysUntilEnd = goalDaysUntilEnd(goal);
+            const isDeadlineSoon = daysUntilEnd !== null && daysUntilEnd >= 0 && daysUntilEnd <= 14;
+            const projection = goal.metric.startsWith("BODY_")
+              ? goalProjectionLabel(goal, measurements)
+              : "Projection disponible avec les objectifs corporels historises.";
             return (
               <li key={goal.id} className={itemCardClass}>
                 <div className="flex h-full flex-col justify-between gap-4">
@@ -2161,6 +2417,16 @@ function UserGoalsPanel({
                     <p className="mt-2 text-xs text-slate-500">
                       Depuis {toInputDate(goal.startDate)}{goal.endDate ? ` jusqu'au ${toInputDate(goal.endDate)}` : ""}
                     </p>
+                    <div className={`mt-3 rounded border px-3 py-2 text-sm ${
+                      isDeadlineSoon
+                        ? "border-amber-200 bg-amber-50 text-amber-800"
+                        : "border-slate-200 bg-slate-50 text-slate-600"
+                    }`}>
+                      <p className="font-medium">
+                        {isDeadlineSoon ? `Echeance dans ${daysUntilEnd} jour(s)` : goalStatus(goal, currentValue)}
+                      </p>
+                      <p className="mt-1">{projection}</p>
+                    </div>
                     {goal.notes && <p className="mt-2 text-sm text-slate-500">{goal.notes}</p>}
                   </div>
                   <ItemActions item={goal} onEdit={onEdit} onDelete={onDelete} />
@@ -2386,6 +2652,9 @@ function BodyMeasurementsList({
           </div>
         </div>
       </section>
+
+      <BodyMeasurementTrends measurements={measurements} />
+      <BodyInterpretation measurement={latest} ageYears={computedAge} />
 
       <ul className="space-y-3">
         {measurements.map((measurement) => (
@@ -2836,6 +3105,7 @@ export function Dashboard({
                   workouts={workoutsStore.workouts}
                   meals={mealsStore.meals}
                   nutritionGoals={goalsStore.nutritionGoals}
+                  userGoals={userGoalsStore.userGoals}
                   isLoading={isLoading}
                   onQuickAction={(action) => {
                     if (action === "workout") setModal({ type: "workout" });
@@ -2847,6 +3117,7 @@ export function Dashboard({
               {resource === "calendar" && (
                 <WorkoutsCalendar
                   workouts={workoutsStore.workouts}
+                  userGoals={userGoalsStore.userGoals}
                   isLoading={isLoading}
                   onPlan={(dateIso) => setModal({ type: "workout", presetDate: dateIso })}
                   onAssociate={async (workoutId, dateIso) => {

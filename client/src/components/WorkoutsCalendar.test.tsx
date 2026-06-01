@@ -36,6 +36,7 @@ describe("WorkoutsCalendar", () => {
     render(
       <WorkoutsCalendar
         workouts={workouts}
+        userGoals={[]}
         isLoading={false}
         onPlan={() => {}}
         onAssociate={async () => {}}
@@ -54,6 +55,7 @@ describe("WorkoutsCalendar", () => {
     render(
       <WorkoutsCalendar
         workouts={workouts}
+        userGoals={[]}
         isLoading={false}
         onPlan={onPlan}
         onAssociate={async () => {}}
@@ -74,6 +76,7 @@ describe("WorkoutsCalendar", () => {
     render(
       <WorkoutsCalendar
         workouts={workouts}
+        userGoals={[]}
         isLoading={false}
         onPlan={() => {}}
         onAssociate={onAssociate}
