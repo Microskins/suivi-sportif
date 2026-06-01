@@ -439,6 +439,7 @@ class ApiClient {
   async updateMe(
     data: Partial<Pick<User, "email" | "name" | "dateOfBirth">> & {
       password?: string;
+      currentPassword?: string;
     },
   ) {
     return this.request<User>("/api/users/me", {

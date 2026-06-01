@@ -127,6 +127,16 @@ Protege. Body partiel:
 }
 ```
 
+Pour changer l'email ou le mot de passe, le body doit aussi contenir le mot de
+passe actuel:
+
+```json
+{
+  "email": "new@example.com",
+  "currentPassword": "password123"
+}
+```
+
 ## Exercises
 
 Toutes les routes sont protegees.

@@ -43,6 +43,7 @@ describe("consentManager", () => {
     );
 
     expect(getConsent()).toBeNull();
+    expect(window.localStorage.getItem(getConsentStorageKey())).toBeNull();
     expect(canRun("analytics")).toBe(false);
   });
 

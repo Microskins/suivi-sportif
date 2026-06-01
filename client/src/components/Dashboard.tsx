@@ -3194,17 +3194,21 @@ function ProfileForm({
     email?: string;
     dateOfBirth?: string | null;
     password?: string;
+    currentPassword?: string;
   }) => Promise<void>;
 }) {
   const [email, setEmail] = useState(userEmail);
   const [dateOfBirth, setDateOfBirth] = useState(toInputDate(userDateOfBirth));
   const [password, setPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const sensitiveChange = email.trim() !== userEmail || password.trim().length > 0;
 
   useEffect(() => {
     setEmail(userEmail);
     setDateOfBirth(toInputDate(userDateOfBirth));
     setPassword("");
+    setCurrentPassword("");
   }, [userEmail, userDateOfBirth]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -3213,11 +3217,13 @@ function ProfileForm({
 
     try {
       await onSubmit({
-        email,
+        ...(email.trim() !== userEmail ? { email } : {}),
         dateOfBirth: dateOfBirth ? dateToIso(dateOfBirth) : null,
         ...(password.trim() ? { password } : {}),
+        ...(sensitiveChange ? { currentPassword } : {}),
       });
       setPassword("");
+      setCurrentPassword("");
       setSuccessMessage("Profil mis a jour.");
     } catch {
       return;
@@ -3264,6 +3270,19 @@ function ProfileForm({
         />
       </Field>
 
+      {sensitiveChange && (
+        <Field label="Mot de passe actuel">
+          <input
+            className={inputClass}
+            value={currentPassword}
+            onChange={(event) => setCurrentPassword(event.target.value)}
+            type="password"
+            autoComplete="current-password"
+            required
+          />
+        </Field>
+      )}
+
       {successMessage && (
         <p className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
           {successMessage}
@@ -3295,6 +3314,7 @@ export function Dashboard({
   userDateOfBirth: string | null;
   onUpdateProfile: (data: Partial<Pick<User, "email" | "dateOfBirth">> & {
     password?: string;
+    currentPassword?: string;
   }) => Promise<void>;
   onLogout: () => void;
   isProfileSaving: boolean;

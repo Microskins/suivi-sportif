@@ -40,7 +40,9 @@ export function CookiePolicyPage() {
         <h2 className="mt-6 text-lg font-semibold">4. Duree de conservation</h2>
         <p className="mt-2 text-sm text-slate-700">
           Ton choix de consentement est conserve en local sur ton navigateur jusqu'a
-          changement de politique ou suppression des donnees du navigateur.
+          changement de politique ou suppression des donnees du navigateur. Si la
+          version de politique change, l'ancien consentement est invalide et le
+          panneau est de nouveau affiche.
         </p>
 
         <h2 className="mt-6 text-lg font-semibold">5. Retrait du consentement</h2>
