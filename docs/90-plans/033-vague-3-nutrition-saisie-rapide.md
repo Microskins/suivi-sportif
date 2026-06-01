@@ -69,6 +69,15 @@
 - [x] Mettre a jour docs API/UI.
 - [x] Valider les controles disponibles et documenter les blocages.
 - [x] Pousser la vague avant d'ouvrir la Vague 4.
+- [ ] Auditer l'API meals/foods et les stores.
+- [ ] Prioriser duplication/favoris avant scanner.
+- [ ] Implementer repas rapides.
+- [ ] Ajouter portions frequentes.
+- [ ] Ajouter comparaison aux objectifs nutrition.
+- [ ] Evaluer la source code-barres.
+- [ ] Mettre a jour docs API/UI.
+- [ ] Valider typecheck/tests/build pertinents.
+- [ ] Pousser la vague avant d'ouvrir la Vague 4.
 
 ## Notes de verification
 

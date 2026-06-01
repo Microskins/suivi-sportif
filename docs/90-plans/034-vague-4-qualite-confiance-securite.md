@@ -76,6 +76,15 @@
 - [x] Mettre a jour docs sources de verite.
 - [x] Valider les controles disponibles et documenter les blocages.
 - [x] Pousser la vague avant d'ouvrir la Vague 5.
+- [ ] Definir checklist audit UI.
+- [ ] Auditer les parcours critiques.
+- [ ] Corriger les problemes UI/accessibilite.
+- [ ] Ajouter controle qualite images.
+- [ ] Ajouter securite compte.
+- [ ] Ajouter version de politique cookies.
+- [ ] Mettre a jour docs sources de verite.
+- [ ] Valider typecheck/tests/build pertinents.
+- [ ] Pousser la vague avant d'ouvrir la Vague 5.
 
 ## Notes de verification
 
