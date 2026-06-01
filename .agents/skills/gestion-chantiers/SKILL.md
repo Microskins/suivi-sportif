@@ -18,11 +18,12 @@ Avant tout changement non trivial dans ce depot, appliquer la convention de
    - decisions;
    - todo list;
    - notes de verification.
-4. Ajouter le nouveau plan a l'index de `docs/90-plans/README.md`.
-5. Cocher la todo au fil de l'implementation, pas seulement a la fin.
-6. Ajouter dans les notes de verification les commandes lancees, les resultats
+4. Creer une branche git dediee pour chaque nouveau plan cree.
+5. Ajouter le nouveau plan a l'index de `docs/90-plans/README.md`.
+6. Cocher la todo au fil de l'implementation, pas seulement a la fin.
+7. Ajouter dans les notes de verification les commandes lancees, les resultats
    et les blocages d'environnement.
-7. Si un build genere des artefacts non destines au commit, les supprimer apres
+8. Si un build genere des artefacts non destines au commit, les supprimer apres
    verification.
 
 ## Regles de decision
