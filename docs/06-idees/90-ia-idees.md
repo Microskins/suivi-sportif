@@ -1,5 +1,37 @@
 # IA Idees
 
+## 2026-06-01 - Roadmap: score de priorisation des idees
+
+## Contexte
+
+- Le plan `030-roadmap-idees-ia` regroupe beaucoup d'idees utiles.
+- Sans score de priorisation, les prochaines decisions peuvent redevenir subjectives.
+
+## Proposition
+
+- Ajouter un score simple pour chaque idee candidate:
+  - Impact utilisateur;
+  - Effort;
+  - Risque technique;
+  - Dependances;
+  - Preuve attendue apres livraison.
+- Utiliser ce score avant d'extraire une idee en plan d'implementation.
+
+## Impact
+
+- Choix de chantier plus clair.
+- Moins de dispersion entre features visibles, qualite et dette technique.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/030-roadmap-idees-ia.md
+
+---
+
 ## 2026-06-01 - Objectifs: alertes et projections
 
 ## Contexte

@@ -33,6 +33,8 @@ Index chronologique des chantiers planifies et executes.
 27. [Mensurations corporelles](./027-mensurations-corporelles.md)
 28. [Onglet profil](./028-onglet-profil.md)
 29. [Objectifs sport et corps](./029-objectifs-sport-corps.md)
+30. [Roadmap idees IA](./030-roadmap-idees-ia.md)
+31. [Vague 1 feedback et motivation](./031-vague-1-feedback-motivation.md)
 88. [Remediation securite npm audit](./088-remediation-securite-npm-audit.md)
 89. [Mobile Android/iOS via Capacitor](./089-mobile-capacitor.md)
 90. [Tour qualite UI](./090-tour-qualite-ui.md)
@@ -57,8 +59,6 @@ chantier.
 - Les plans ne remplacent pas `README.md`, `01-getting-started/quick-start.md`,
   `03-api/reference.md` ou `02-architecture/overview.md`; ils expliquent
   l'historique des decisions.
-
-
 
 
 
