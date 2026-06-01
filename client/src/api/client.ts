@@ -297,6 +297,9 @@ export type UserGoalDomain = "SPORT" | "BODY";
 export type UserGoalMetric =
   | "SPORT_WORKOUTS_PER_WEEK"
   | "SPORT_MINUTES_PER_WEEK"
+  | "SPORT_EXERCISE_ONE_REP_MAX_KG"
+  | "SPORT_EXERCISE_TEN_REP_MAX_KG"
+  | "SPORT_EXERCISE_MAX_REPS"
   | "BODY_WEIGHT_KG"
   | "BODY_BMI"
   | "BODY_FAT_PERCENT";
@@ -306,6 +309,7 @@ export type UserGoal = {
   id: string;
   userId: string;
   domain: UserGoalDomain;
+  exerciseId: string | null;
   metric: UserGoalMetric;
   direction: UserGoalDirection;
   name: string;
@@ -320,6 +324,7 @@ export type UserGoal = {
 
 export type UserGoalInput = {
   domain: UserGoalDomain;
+  exerciseId?: string | null;
   metric: UserGoalMetric;
   direction?: UserGoalDirection;
   name: string;

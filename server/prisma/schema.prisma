@@ -54,6 +54,9 @@ enum UserGoalDomain {
 enum UserGoalMetric {
   SPORT_WORKOUTS_PER_WEEK
   SPORT_MINUTES_PER_WEEK
+  SPORT_EXERCISE_ONE_REP_MAX_KG
+  SPORT_EXERCISE_TEN_REP_MAX_KG
+  SPORT_EXERCISE_MAX_REPS
   BODY_WEIGHT_KG
   BODY_BMI
   BODY_FAT_PERCENT
@@ -105,6 +108,7 @@ model Exercise {
   instructions      ExerciseInstruction[]
   media             ExerciseMedia[]
   templateExercises WorkoutTemplateExercise[]
+  userGoals         UserGoal[]
 
   @@index([name])
   @@index([difficulty])
@@ -424,6 +428,7 @@ model NutritionGoal {
 model UserGoal {
   id          String            @id @default(uuid())
   userId      String            @map("user_id")
+  exerciseId  String?           @map("exercise_id")
   domain      UserGoalDomain
   metric      UserGoalMetric
   direction   UserGoalDirection @default(AT_MOST)
@@ -436,9 +441,11 @@ model UserGoal {
   createdAt   DateTime          @default(now()) @map("created_at")
   updatedAt   DateTime          @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise Exercise? @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
 
   @@index([userId, domain, isActive])
+  @@index([exerciseId])
   @@index([userId, metric])
   @@index([userId, startDate])
   @@map("user_goals")

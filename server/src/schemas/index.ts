@@ -336,6 +336,9 @@ export const userGoalDomainSchema = z.enum(["SPORT", "BODY"]);
 export const userGoalMetricSchema = z.enum([
   "SPORT_WORKOUTS_PER_WEEK",
   "SPORT_MINUTES_PER_WEEK",
+  "SPORT_EXERCISE_ONE_REP_MAX_KG",
+  "SPORT_EXERCISE_TEN_REP_MAX_KG",
+  "SPORT_EXERCISE_MAX_REPS",
   "BODY_WEIGHT_KG",
   "BODY_BMI",
   "BODY_FAT_PERCENT",
@@ -344,6 +347,7 @@ export const userGoalDirectionSchema = z.enum(["AT_MOST", "AT_LEAST", "EXACT"]);
 
 const userGoalBaseSchema = z.object({
   domain: userGoalDomainSchema,
+  exerciseId: z.string().uuid().nullable().optional(),
   metric: userGoalMetricSchema,
   direction: userGoalDirectionSchema.default("AT_MOST"),
   name: z.string().min(1, "Nom requis").max(200),
@@ -364,10 +368,25 @@ function isMetricInDomain(goal: {
     : goal.metric.startsWith("BODY_");
 }
 
+function isPerformanceMetric(metric?: z.infer<typeof userGoalMetricSchema>) {
+  return metric?.startsWith("SPORT_EXERCISE_") ?? false;
+}
+
+function hasRequiredExercise(goal: {
+  exerciseId?: string | null;
+  metric?: z.infer<typeof userGoalMetricSchema>;
+}) {
+  return !isPerformanceMetric(goal.metric) || Boolean(goal.exerciseId);
+}
+
 export const createUserGoalSchema = userGoalBaseSchema
   .refine(isMetricInDomain, {
     message: "La metrique doit correspondre au domaine",
     path: ["metric"],
+  })
+  .refine(hasRequiredExercise, {
+    message: "Un exercice est requis pour cet objectif de performance",
+    path: ["exerciseId"],
   })
   .refine(
     (goal) => !goal.endDate || new Date(goal.startDate) <= new Date(goal.endDate),
@@ -382,6 +401,10 @@ export const updateUserGoalSchema = userGoalBaseSchema
   .refine(isMetricInDomain, {
     message: "La metrique doit correspondre au domaine",
     path: ["metric"],
+  })
+  .refine(hasRequiredExercise, {
+    message: "Un exercice est requis pour cet objectif de performance",
+    path: ["exerciseId"],
   })
   .refine(
     (goal) =>
@@ -398,6 +421,7 @@ export const userGoalResponseSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid(),
   domain: userGoalDomainSchema,
+  exerciseId: z.string().uuid().nullable(),
   metric: userGoalMetricSchema,
   direction: userGoalDirectionSchema,
   name: z.string(),
