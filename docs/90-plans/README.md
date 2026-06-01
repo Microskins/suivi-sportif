@@ -35,6 +35,10 @@ Index chronologique des chantiers planifies et executes.
 29. [Objectifs sport et corps](./029-objectifs-sport-corps.md)
 30. [Roadmap idees IA](./030-roadmap-idees-ia.md)
 31. [Vague 1 feedback et motivation](./031-vague-1-feedback-motivation.md)
+32. [Vague 2 progression sportive](./032-vague-2-progression-sportive.md)
+33. [Vague 3 nutrition et saisie rapide](./033-vague-3-nutrition-saisie-rapide.md)
+34. [Vague 4 qualite confiance securite](./034-vague-4-qualite-confiance-securite.md)
+35. [Vague 5 mobile ops industrialisation](./035-vague-5-mobile-ops-industrialisation.md)
 88. [Remediation securite npm audit](./088-remediation-securite-npm-audit.md)
 89. [Mobile Android/iOS via Capacitor](./089-mobile-capacitor.md)
 90. [Tour qualite UI](./090-tour-qualite-ui.md)
@@ -59,6 +63,5 @@ chantier.
 - Les plans ne remplacent pas `README.md`, `01-getting-started/quick-start.md`,
   `03-api/reference.md` ou `02-architecture/overview.md`; ils expliquent
   l'historique des decisions.
-
 
 
