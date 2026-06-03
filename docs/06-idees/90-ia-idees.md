@@ -1,5 +1,33 @@
 # IA Idees
 
+## 2026-06-03 - Securite auth: durcissement session et CORS
+
+## Contexte
+
+- Le point securite du projet a mis en evidence un secret JWT de secours trop faible, un CORS tres permissif et un token conserve cote navigateur.
+- Le chantier `096-durcissement-securite-auth-session-cors` va corriger les risques immediats, mais il reste des ameliorations adjacentes utiles a tracer.
+
+## Proposition
+
+- Ajouter plus tard un durcissement CSP cible autour de `connect-src`, `frame-ancestors` et des scripts tiers pour reduire l'impact d'un eventuel XSS.
+- Prevoir un rate limiting progressif et un backoff sur les routes `login` et `register` pour limiter brute force et enumeration.
+- Valider au demarrage les variables d'environnement critiques (`JWT_SECRET`, allowlist CORS, URL API) avec un message explicite si elles sont absentes.
+- Si le projet migre vers des cookies `HttpOnly` ou des refresh tokens, anticiper une politique de rotation/revocation et un suivi des sessions actives.
+- Ajouter une telemetrie minimale des echecs d'authentification et des refus CORS pour diagnostiquer les incidents de prod.
+
+## Impact
+
+- Reduit la surface d'attaque autour de l'authentification et de la navigation cross-origin.
+- Rend les incidents de securite plus faciles a diagnostiquer sans ouvrir un observabilite trop lourde.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/096-durcissement-securite-auth-session-cors.md
+
 ## 2026-06-03 - Identite app: theme PWA par contexte
 
 ## Contexte

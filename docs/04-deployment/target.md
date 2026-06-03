@@ -59,7 +59,10 @@ Variables attendues:
 
 ```env
 DATABASE_URL="postgresql://USER:PASSWORD@DB_HOST:5432/suivi_sportif_v2"
-JWT_SECRET="secret-long-et-unique"
+JWT_SECRET="secret-production-long-et-unique-32-caracteres-minimum"
+CORS_ORIGINS="https://suivi-sportif.fr,https://www.suivi-sportif.fr"
+AUTH_RATE_LIMIT_MAX="10"
+AUTH_RATE_LIMIT_WINDOW="1 minute"
 NODE_ENV="production"
 ```
 

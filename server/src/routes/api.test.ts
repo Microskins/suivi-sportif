@@ -282,6 +282,7 @@ describe("API", () => {
 
   afterEach(async () => {
     await app.close();
+    vi.unstubAllEnvs();
   });
 
   function authHeaders() {
@@ -319,6 +320,41 @@ describe("API", () => {
     expect(response.statusCode).toBe(200);
     expect(body.data.status).toBe("ok");
     expect(body.data.timestamp).toEqual(expect.any(String));
+  });
+
+  it("allows configured local CORS origins only", async () => {
+    const allowedResponse = await app.inject({
+      method: "GET",
+      url: "/health",
+      headers: { origin: "http://localhost:5173" },
+    });
+    const rejectedResponse = await app.inject({
+      method: "GET",
+      url: "/health",
+      headers: { origin: "https://evil.example" },
+    });
+
+    expect(allowedResponse.headers["access-control-allow-origin"]).toBe(
+      "http://localhost:5173",
+    );
+    expect(
+      rejectedResponse.headers["access-control-allow-origin"],
+    ).toBeUndefined();
+  });
+
+  it("requires an explicit strong JWT secret in production", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("JWT_SECRET", "");
+
+    expect(() => buildApp({ logger: false })).toThrow(
+      "JWT_SECRET is required in production",
+    );
+
+    vi.stubEnv("JWT_SECRET", "short-secret");
+
+    expect(() => buildApp({ logger: false })).toThrow(
+      "JWT_SECRET must be at least 32 characters in production",
+    );
   });
 
   it("serves swagger UI", async () => {
@@ -398,9 +434,9 @@ describe("API", () => {
     expect(
       openApiPath(paths, "/api/workout-templates/{id}").put.security,
     ).toEqual([{ bearerAuth: [] }]);
-    expect(openApiPath(paths, "/api/workout-templates/{id}").put.responses).toHaveProperty(
-      "404",
-    );
+    expect(
+      openApiPath(paths, "/api/workout-templates/{id}").put.responses,
+    ).toHaveProperty("404");
     expect(
       openApiPath(paths, "/api/workout-templates/{id}/instantiate").post
         .responses,
@@ -464,6 +500,68 @@ describe("API", () => {
     expect(response.statusCode).toBe(400);
     expect(body.code).toBe("EMAIL_ALREADY_EXISTS");
     expect(mocks.users.createUser).not.toHaveBeenCalled();
+  });
+
+  it("rate limits repeated public login attempts", async () => {
+    mocks.users.verifyCredentials.mockResolvedValue(null);
+
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      const response = await app.inject({
+        method: "POST",
+        url: "/api/users/login",
+        payload: {
+          email: user.email,
+          password: "wrong-password",
+        },
+      });
+
+      expect(response.statusCode).toBe(401);
+    }
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/users/login",
+      payload: {
+        email: user.email,
+        password: "wrong-password",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(429);
+    expectErrorShape(body, "RATE_LIMIT_EXCEEDED");
+  });
+
+  it("rate limits repeated public register attempts", async () => {
+    mocks.users.getUserByEmail.mockResolvedValue(user);
+
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      const response = await app.inject({
+        method: "POST",
+        url: "/api/users/register",
+        payload: {
+          email: user.email,
+          password: "password123",
+          name: user.name,
+        },
+      });
+
+      expect(response.statusCode).toBe(400);
+    }
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/users/register",
+      payload: {
+        email: user.email,
+        password: "password123",
+        name: user.name,
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(429);
+    expectErrorShape(body, "RATE_LIMIT_EXCEEDED");
   });
 
   it("returns the authenticated user profile", async () => {
@@ -778,7 +876,7 @@ describe("API", () => {
 
   it("accepts any muscle group string (no longer validated by enum)", async () => {
     mocks.exercises.getExercisesByMuscleGroup.mockResolvedValue([]);
-    
+
     const response = await app.inject({
       method: "GET",
       url: "/api/exercises/muscle/invalid-group",
@@ -1241,7 +1339,9 @@ describe("API", () => {
       name: updatedTemplate.name,
       duration: updatedTemplate.duration,
     };
-    mocks.workoutTemplates.updateWorkoutTemplate.mockResolvedValue(updatedTemplate);
+    mocks.workoutTemplates.updateWorkoutTemplate.mockResolvedValue(
+      updatedTemplate,
+    );
 
     const response = await app.inject({
       method: "PUT",
@@ -2214,7 +2314,10 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(201);
     expect(body.data).toEqual(userGoal);
-    expect(mocks.userGoals.createUserGoal).toHaveBeenCalledWith(USER_ID, payload);
+    expect(mocks.userGoals.createUserGoal).toHaveBeenCalledWith(
+      USER_ID,
+      payload,
+    );
   });
 
   it("creates an exercise performance goal for the authenticated user only", async () => {
@@ -2251,7 +2354,10 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(201);
     expect(body.data).toEqual(performanceGoal);
-    expect(mocks.userGoals.createUserGoal).toHaveBeenCalledWith(USER_ID, payload);
+    expect(mocks.userGoals.createUserGoal).toHaveBeenCalledWith(
+      USER_ID,
+      payload,
+    );
   });
 
   it("rejects exercise performance goals without exercise id", async () => {
@@ -2386,9 +2492,9 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(200);
     expect(body.data).toEqual(bodyMeasurement);
-    expect(mocks.bodyMeasurements.getLatestBodyMeasurement).toHaveBeenCalledWith(
-      USER_ID,
-    );
+    expect(
+      mocks.bodyMeasurements.getLatestBodyMeasurement,
+    ).toHaveBeenCalledWith(USER_ID);
   });
 
   it("gets a body measurement by id for the authenticated user only", async () => {
@@ -2466,7 +2572,9 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(400);
     expect(body.code).toBe("VALIDATION_ERROR");
-    expect(mocks.bodyMeasurements.getBodyMeasurementById).not.toHaveBeenCalled();
+    expect(
+      mocks.bodyMeasurements.getBodyMeasurementById,
+    ).not.toHaveBeenCalled();
   });
 
   it("rejects invalid bearer tokens before calling protected queries", async () => {
@@ -2556,18 +2664,21 @@ describe("API", () => {
       url: "/api/body-measurements",
       mock: mocks.bodyMeasurements.getBodyMeasurements,
     },
-  ])("returns a standard 500 response for $name query failures", async (testCase) => {
-    testCase.mock.mockRejectedValueOnce(new Error("database unavailable"));
+  ])(
+    "returns a standard 500 response for $name query failures",
+    async (testCase) => {
+      testCase.mock.mockRejectedValueOnce(new Error("database unavailable"));
 
-    const response = await app.inject({
-      method: testCase.method,
-      url: testCase.url,
-      headers: authHeaders(),
-    });
-    const body = response.json();
+      const response = await app.inject({
+        method: testCase.method,
+        url: testCase.url,
+        headers: authHeaders(),
+      });
+      const body = response.json();
 
-    expect(response.statusCode).toBe(500);
-    expectErrorShape(body, "INTERNAL_SERVER_ERROR");
-    expect(testCase.mock).toHaveBeenCalledTimes(1);
-  });
+      expect(response.statusCode).toBe(500);
+      expectErrorShape(body, "INTERNAL_SERVER_ERROR");
+      expect(testCase.mock).toHaveBeenCalledTimes(1);
+    },
+  );
 });
