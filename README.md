@@ -52,7 +52,8 @@ Creer un fichier `.env` a la racine:
 
 ```env
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/suivi_sportif_v2"
-JWT_SECRET="change-me"
+JWT_SECRET="dev-secret-at-least-32-characters-long"
+CORS_ORIGINS="http://localhost:5173,http://127.0.0.1:5173"
 NODE_ENV="development"
 ```
 

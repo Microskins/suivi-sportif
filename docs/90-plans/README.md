@@ -48,6 +48,8 @@ Index chronologique des chantiers planifies et executes.
 94. [Reload Nginx conditionnel](./094-nginx-reload-conditionnel.md)
 95. [Unites aliments g ou unite](./095-unites-aliments-g-ou-unite.md)
 
+96. [Durcissement securite auth/session/CORS](./096-durcissement-securite-auth-session-cors.md)
+
 ## Convention
 
 Chaque nouveau chantier doit avoir une doc `XXX-nom-du-chantier.md`, avec:

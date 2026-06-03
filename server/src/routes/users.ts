@@ -30,10 +30,18 @@ const userSchema = {
   required: ["id", "email", "name", "dateOfBirth", "createdAt", "updatedAt"],
 };
 
+const authRateLimit = {
+  max: Number(process.env.AUTH_RATE_LIMIT_MAX ?? 10),
+  timeWindow: process.env.AUTH_RATE_LIMIT_WINDOW ?? "1 minute",
+};
+
 export async function usersRoutes(fastify: FastifyInstance) {
   fastify.post(
     "/login",
     {
+      config: {
+        rateLimit: authRateLimit,
+      },
       schema: {
         tags: ["users"],
         summary: "Login",
@@ -67,39 +75,45 @@ export async function usersRoutes(fastify: FastifyInstance) {
       },
     },
     async (request, reply) => {
-    try {
-      const parsed = loginUserSchema.parse(request.body as object);
-      const user = await users.verifyCredentials(parsed.email, parsed.password);
+      try {
+        const parsed = loginUserSchema.parse(request.body as object);
+        const user = await users.verifyCredentials(
+          parsed.email,
+          parsed.password,
+        );
 
-      if (!user) {
-        return reply.code(401).send({
-          error: "Identifiants invalides",
-          code: "INVALID_CREDENTIALS",
+        if (!user) {
+          return reply.code(401).send({
+            error: "Identifiants invalides",
+            code: "INVALID_CREDENTIALS",
+          });
+        }
+
+        const token = generateToken(fastify, user);
+        return reply.code(200).send({ data: { user, token } });
+      } catch (error: any) {
+        if (error.name === "ZodError") {
+          return reply.code(400).send({
+            error: "Validation failed",
+            code: "VALIDATION_ERROR",
+            details: error.errors,
+          });
+        }
+        fastify.log.error(error);
+        return reply.code(500).send({
+          error: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
         });
       }
-
-      const token = generateToken(fastify, user);
-      return reply.code(200).send({ data: { user, token } });
-    } catch (error: any) {
-      if (error.name === "ZodError") {
-        return reply.code(400).send({
-          error: "Validation failed",
-          code: "VALIDATION_ERROR",
-          details: error.errors,
-        });
-      }
-      fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
     },
   );
 
   fastify.post(
     "/register",
     {
+      config: {
+        rateLimit: authRateLimit,
+      },
       schema: {
         tags: ["users"],
         summary: "Register",
@@ -135,33 +149,36 @@ export async function usersRoutes(fastify: FastifyInstance) {
       },
     },
     async (request, reply) => {
-    try {
-      const parsed = createUserSchema.parse(request.body as object);
+      try {
+        const parsed = createUserSchema.parse(request.body as object);
 
-      const existing = await users.getUserByEmail(parsed.email);
-      if (existing) {
-        return reply
-          .code(400)
-          .send({ error: "Email déjà utilisé", code: "EMAIL_ALREADY_EXISTS" });
-      }
+        const existing = await users.getUserByEmail(parsed.email);
+        if (existing) {
+          return reply
+            .code(400)
+            .send({
+              error: "Email déjà utilisé",
+              code: "EMAIL_ALREADY_EXISTS",
+            });
+        }
 
-      const user = await users.createUser(parsed);
-      const token = generateToken(fastify, user);
-      return reply.code(201).send({ data: { user, token } });
-    } catch (error: any) {
-      if (error.name === "ZodError") {
-        return reply.code(400).send({
-          error: "Validation failed",
-          code: "VALIDATION_ERROR",
-          details: error.errors,
+        const user = await users.createUser(parsed);
+        const token = generateToken(fastify, user);
+        return reply.code(201).send({ data: { user, token } });
+      } catch (error: any) {
+        if (error.name === "ZodError") {
+          return reply.code(400).send({
+            error: "Validation failed",
+            code: "VALIDATION_ERROR",
+            details: error.errors,
+          });
+        }
+        fastify.log.error(error);
+        return reply.code(500).send({
+          error: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
         });
       }
-      fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
     },
   );
 
@@ -200,23 +217,23 @@ export async function usersRoutes(fastify: FastifyInstance) {
       },
     },
     async (request, reply) => {
-    try {
-      const user = await users.getUserById(request.user.id);
+      try {
+        const user = await users.getUserById(request.user.id);
 
-      if (!user) {
-        return reply
-          .code(404)
-          .send({ error: "User not found", code: "USER_NOT_FOUND" });
+        if (!user) {
+          return reply
+            .code(404)
+            .send({ error: "User not found", code: "USER_NOT_FOUND" });
+        }
+
+        return reply.code(200).send({ data: user });
+      } catch (error) {
+        fastify.log.error(error);
+        return reply.code(500).send({
+          error: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
       }
-
-      return reply.code(200).send({ data: user });
-    } catch (error) {
-      fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
     },
   );
 
@@ -250,88 +267,92 @@ export async function usersRoutes(fastify: FastifyInstance) {
       },
     },
     async (request, reply) => {
-    try {
-      const parsed = updateUserSchema.parse(request.body as object);
-      const currentUser = parsed.email || parsed.password
-        ? await users.getUserById(request.user.id)
-        : null;
-      if ((parsed.email || parsed.password) && !currentUser) {
-        return reply
-          .code(404)
-          .send({ error: "User not found", code: "USER_NOT_FOUND" });
-      }
-
-      const emailChange = Boolean(
-        parsed.email && currentUser && parsed.email !== currentUser.email,
-      );
-      const sensitiveChange = emailChange || Boolean(parsed.password);
-      if (sensitiveChange) {
-        if (!parsed.currentPassword) {
-          return reply.code(400).send({
-            error: "Mot de passe actuel requis",
-            code: "CURRENT_PASSWORD_REQUIRED",
-          });
-        }
-
-        const verified = await users.verifyCredentials(
-          currentUser!.email,
-          parsed.currentPassword,
-        );
-        if (!verified) {
-          return reply.code(401).send({
-            error: "Mot de passe actuel invalide",
-            code: "INVALID_CURRENT_PASSWORD",
-          });
-        }
-      }
-
-      if (emailChange && parsed.email) {
-        const existing = await users.getUserByEmail(parsed.email);
-        if (existing && existing.id !== request.user.id) {
+      try {
+        const parsed = updateUserSchema.parse(request.body as object);
+        const currentUser =
+          parsed.email || parsed.password
+            ? await users.getUserById(request.user.id)
+            : null;
+        if ((parsed.email || parsed.password) && !currentUser) {
           return reply
-            .code(400)
-            .send({ error: "Email deja utilise", code: "EMAIL_ALREADY_EXISTS" });
+            .code(404)
+            .send({ error: "User not found", code: "USER_NOT_FOUND" });
         }
-      }
 
-      const { currentPassword, ...updateData } = parsed;
-      void currentPassword;
-      const user = await users.updateUser(request.user.id, updateData);
-
-      if (!user) {
-        return reply
-          .code(404)
-          .send({ error: "User not found", code: "USER_NOT_FOUND" });
-      }
-
-      if (sensitiveChange) {
-        request.log.info(
-          {
-            userId: request.user.id,
-            changedFields: [
-              emailChange ? "email" : null,
-              parsed.password ? "password" : null,
-            ].filter(Boolean),
-          },
-          "Sensitive profile fields updated",
+        const emailChange = Boolean(
+          parsed.email && currentUser && parsed.email !== currentUser.email,
         );
-      }
+        const sensitiveChange = emailChange || Boolean(parsed.password);
+        if (sensitiveChange) {
+          if (!parsed.currentPassword) {
+            return reply.code(400).send({
+              error: "Mot de passe actuel requis",
+              code: "CURRENT_PASSWORD_REQUIRED",
+            });
+          }
 
-      return reply.code(200).send({ data: user });
-    } catch (error: any) {
-      if (error.name === "ZodError") {
-        return reply.code(400).send({
-          error: "Validation failed",
-          code: "VALIDATION_ERROR",
-          details: error.errors,
+          const verified = await users.verifyCredentials(
+            currentUser!.email,
+            parsed.currentPassword,
+          );
+          if (!verified) {
+            return reply.code(401).send({
+              error: "Mot de passe actuel invalide",
+              code: "INVALID_CURRENT_PASSWORD",
+            });
+          }
+        }
+
+        if (emailChange && parsed.email) {
+          const existing = await users.getUserByEmail(parsed.email);
+          if (existing && existing.id !== request.user.id) {
+            return reply
+              .code(400)
+              .send({
+                error: "Email deja utilise",
+                code: "EMAIL_ALREADY_EXISTS",
+              });
+          }
+        }
+
+        const { currentPassword, ...updateData } = parsed;
+        void currentPassword;
+        const user = await users.updateUser(request.user.id, updateData);
+
+        if (!user) {
+          return reply
+            .code(404)
+            .send({ error: "User not found", code: "USER_NOT_FOUND" });
+        }
+
+        if (sensitiveChange) {
+          request.log.info(
+            {
+              userId: request.user.id,
+              changedFields: [
+                emailChange ? "email" : null,
+                parsed.password ? "password" : null,
+              ].filter(Boolean),
+            },
+            "Sensitive profile fields updated",
+          );
+        }
+
+        return reply.code(200).send({ data: user });
+      } catch (error: any) {
+        if (error.name === "ZodError") {
+          return reply.code(400).send({
+            error: "Validation failed",
+            code: "VALIDATION_ERROR",
+            details: error.errors,
+          });
+        }
+        fastify.log.error(error);
+        return reply.code(500).send({
+          error: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
         });
       }
-      fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
     },
   );
 
