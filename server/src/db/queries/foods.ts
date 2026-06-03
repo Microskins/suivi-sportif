@@ -33,7 +33,7 @@ function formatFood(food: Food): FoodResponse {
     carbsGrams: Number(food.carbsGrams),
     fatGrams: Number(food.fatGrams),
     fiberGrams: food.fiberGrams === null ? null : Number(food.fiberGrams),
-    servingUnit: food.servingUnit,
+    servingUnit: food.servingUnit as "g" | "unit",
     isGlobal: food.userId === null,
     createdAt: food.createdAt.toISOString(),
     updatedAt: food.updatedAt.toISOString(),
