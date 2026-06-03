@@ -62,6 +62,39 @@
 - Rendre les filtres exercices/aliments plus memorables quand l'utilisateur revient dans la section.
 - Ajouter des messages d'etat vides plus actionnables sur calendrier, repas et objectifs.
 
+## Checklist de validation UI
+
+Parcours a verifier en desktop puis mobile:
+
+1. Dashboard
+   - Les actions rapides ouvrent les bons flux inline.
+   - L'utilisateur comprend la prochaine action sans ouvrir la navigation laterale.
+
+2. Seances
+   - Depuis le calendrier, "Planifier une seance" ouvre le formulaire avec la date attendue.
+   - Le retour liste annule proprement les brouillons.
+   - Le resume du formulaire correspond aux exercices et series visibles.
+
+3. Calendrier
+   - Les statuts `Prevue`, `Realisee`, `Annulee` sont lisibles.
+   - L'etat vide d'un jour renvoie clairement a l'action de planification.
+
+4. Repas
+   - Les filtres aliments restent comprehensibles.
+   - Le recap calories/macros est visible avant validation.
+   - L'etat vide explique quoi faire ensuite.
+
+5. Profil, mensurations et objectifs
+   - Le changement email/mot de passe expose clairement la confirmation.
+   - Les objectifs et mensurations gardent un retour liste/edit lisible.
+
+Points transverses:
+
+- Aucun texte ne deborde sur mobile.
+- Les boutons principaux restent accessibles au clavier.
+- Les etats chargement, erreur et vide sont visibles.
+- Les filtres peuvent etre remis a zero quand ils cachent tout.
+
 ## Todo
 
 - [x] Creer ce plan.
@@ -69,7 +102,7 @@
 - [x] Auditer la navigation, les filtres et les formulaires de ces parcours.
 - [x] Definir les retouches a impact rapide.
 - [ ] Verifier la lisibilite mobile et l'accessibilite de base.
-- [ ] Produire une checklist de validation UI.
+- [x] Produire une checklist de validation UI.
 
 ## Notes de verification
 
@@ -78,3 +111,4 @@
 - 2026-06-03: cinq parcours critiques listes depuis la structure actuelle du dashboard, du calendrier, des repas, des exercices et du profil.
 - 2026-06-03: les modales restantes sont traitees comme decision UX a auditer dans ce plan, pas comme bug fonctionnel.
 - 2026-06-03: retouches rapides appliquees: actions rapides dashboard vers flux inline, libelles de creation contextuels, planification calendrier vers formulaire seance inline, resume du formulaire seance, filtres exercices plus explicites, legende calendrier, etats vides plus actionnables, confirmation profil mieux exposee.
+- 2026-06-03: checklist de validation UI ajoutee; verification visuelle mobile/desktop non cochee car l'outil navigateur n'est pas disponible dans la session courante.
