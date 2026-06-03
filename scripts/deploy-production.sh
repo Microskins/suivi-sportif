@@ -39,7 +39,6 @@ health_check() {
 require_command git
 require_command docker
 require_command curl
-require_command sudo
 
 if [ -z "${GIT_SSH_COMMAND:-}" ]; then
   if [ -z "$DEPLOY_SSH_KEY_PATH" ]; then
@@ -81,8 +80,12 @@ git rev-parse --short HEAD
 if ! git diff --quiet "$PREVIOUS_COMMIT" "$CURRENT_COMMIT" -- client/nginx deploy/nginx; then
   log "Validate and reload Nginx"
   git diff --name-only "$PREVIOUS_COMMIT" "$CURRENT_COMMIT" -- client/nginx deploy/nginx
-  sudo -n nginx -t
-  sudo -n systemctl reload nginx
+  if sudo -n true >/dev/null 2>&1; then
+    sudo -n nginx -t
+    sudo -n systemctl reload nginx
+  else
+    log "Skip Nginx reload (passwordless sudo unavailable)"
+  fi
 else
   log "Skip Nginx reload"
 fi

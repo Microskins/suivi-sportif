@@ -23,3 +23,4 @@
 - 2026-06-03: logique ajoutee dans `scripts/deploy-production.sh` juste apres `git pull`, avec detection sur `client/nginx/` et `deploy/nginx/`.
 - 2026-06-03: `sudo -n nginx -t` puis `sudo -n systemctl reload nginx` s'executent seulement si la conf Nginx a change.
 - 2026-06-03: `git diff --check` passe.
+- 2026-06-03: si `sudo -n true` echoue sur le runner, le deploy continue et le reload Nginx est saute au lieu de faire echouer le job.
