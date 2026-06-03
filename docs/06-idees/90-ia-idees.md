@@ -494,6 +494,66 @@
 
 ---
 
+## 2026-06-03 - UX: filtres persistants et vues rapides pour bibliotheques
+
+## Contexte
+
+- Le chantier de suppression des popups exercices et repas va rendre les catalogues plus visibles et plus centraux.
+- Une fois les sections inline en place, les utilisateurs auront interet a retrouver rapidement leurs filtres frequents.
+
+## Proposition
+
+- Ajouter des vues rapides ou filtres presets memorises pour les exercices et les aliments:
+  - muscle prefere;
+  - marque frequente;
+  - type d'exercice;
+  - filtres recents re-appliques en un clic.
+- Transformer les filtres actifs en chips persistantes plus faciles a relire et a effacer.
+- Proposer un tri rapide par usage recent ou favori si la donnees produit le permet ensuite.
+
+## Impact
+
+- Moins de manipulation repetee pour les actions quotidiennes.
+- Meilleure sensation de controle dans un dashboard deja dense.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/092-suppression-popups-exercices-repas.md
+
+---
+
+## 2026-06-03 - UX: raccourci mobile pour ajout rapide sans modale
+
+## Contexte
+
+- Les popups sont pratiques pour demarrer, mais elles ralentissent souvent les saisies rapides sur mobile.
+- Le nouveau flux inline peut servir de base a des raccourcis de saisie plus directs.
+
+## Proposition
+
+- Ajouter un bouton d'ajout rapide qui ouvre un panneau ancre en bas d'ecran plutot qu'une popup classique.
+- Enregistrer la derniere section ouverte pour permettre un retour instantane au bon endroit.
+- Simplifier la reprise apres creation avec insertion automatique dans la liste visible.
+
+## Impact
+
+- Parcours plus fluide sur petit ecran.
+- Moins de clics pour les usages repetitifs.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/092-suppression-popups-exercices-repas.md
+
+---
+
 ## 2026-05-30 - Mensurations: interpretation des indicateurs corporels
 
 ## Contexte

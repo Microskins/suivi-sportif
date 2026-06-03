@@ -55,11 +55,9 @@ type Resource =
   | "bodyGoals"
   | "profile";
 type ModalState =
-  | { type: "exercise"; item?: Exercise }
   | { type: "workout"; item?: Workout; prefillWorkout?: Workout; presetDate?: string }
   | { type: "workout-template" }
   | { type: "food"; item?: Food }
-  | { type: "meal"; item?: Meal }
   | { type: "goal"; item?: NutritionGoal }
   | null;
 
@@ -1670,7 +1668,32 @@ function MealForm({
         ? [{ foodId: foods[0].id, quantityGrams: "100" }]
         : [],
   );
+  const [foodSearch, setFoodSearch] = useState("");
+  const [foodBrandFilter, setFoodBrandFilter] = useState("ALL");
   const [isSaving, setIsSaving] = useState(false);
+  const foodBrandOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          foods
+            .map((food) => food.brand?.trim())
+            .filter((brand): brand is string => Boolean(brand)),
+        ),
+      ).sort((a, b) => a.localeCompare(b, "fr")),
+    [foods],
+  );
+  const normalizedFoodSearch = foodSearch.trim().toLocaleLowerCase("fr-FR");
+  const filteredFoods = foods.filter((food) => {
+    const matchesSearch =
+      normalizedFoodSearch.length === 0 ||
+      food.name.toLocaleLowerCase("fr-FR").includes(normalizedFoodSearch) ||
+      (food.brand?.toLocaleLowerCase("fr-FR").includes(normalizedFoodSearch) ?? false) ||
+      (food.barcode?.toLocaleLowerCase("fr-FR").includes(normalizedFoodSearch) ?? false);
+    const matchesBrand =
+      foodBrandFilter === "ALL" || (food.brand ?? "") === foodBrandFilter;
+    return matchesSearch && matchesBrand;
+  });
+  const nextFoodToAdd = filteredFoods[0] ?? foods[0] ?? null;
   const previewDateIso = safeDateTimeToIso(date);
   const previewTotals = computeMealFormTotals(items, foods);
   const activeGoal = activeNutritionGoalForDate(nutritionGoals, previewDateIso);
@@ -1714,6 +1737,46 @@ function MealForm({
         </Field>
       </div>
       <Field label="Notes"><textarea className={inputClass} value={notes} onChange={(event) => setNotes(event.target.value)} rows={3} /></Field>
+      <section className="rounded border border-amber-200 bg-amber-50/70 p-3">
+        <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-amber-950">Filtres aliments</p>
+            <p className="mt-1 text-xs text-amber-800/80">
+              {filteredFoods.length} / {foods.length} aliment(s) visible(s).
+            </p>
+          </div>
+          <button
+            type="button"
+            className={secondaryButtonClass}
+            onClick={() => {
+              setFoodSearch("");
+              setFoodBrandFilter("ALL");
+            }}
+          >
+            Reinitialiser
+          </button>
+        </div>
+        <div className="mt-3 grid gap-2 md:grid-cols-2">
+          <input
+            className={inputClass}
+            value={foodSearch}
+            onChange={(event) => setFoodSearch(event.target.value)}
+            placeholder="Nom, marque ou code-barres..."
+          />
+          <select
+            className={inputClass}
+            value={foodBrandFilter}
+            onChange={(event) => setFoodBrandFilter(event.target.value)}
+          >
+            <option value="ALL">Toutes les marques</option>
+            {foodBrandOptions.map((brand) => (
+              <option key={brand} value={brand}>
+                {brand}
+              </option>
+            ))}
+          </select>
+        </div>
+      </section>
       <section className="rounded border border-amber-200 bg-amber-50/80 p-3">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
@@ -1750,16 +1813,49 @@ function MealForm({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-slate-800">Aliments</p>
-          <button type="button" className={secondaryButtonClass} disabled={!foods.length} onClick={() => setItems((current) => [...current, { foodId: foods[0]?.id ?? "", quantityGrams: "100" }])}>
+          <button
+            type="button"
+            className={secondaryButtonClass}
+            disabled={!nextFoodToAdd}
+            onClick={() =>
+              setItems((current) => [
+                ...current,
+                { foodId: nextFoodToAdd?.id ?? "", quantityGrams: "100" },
+              ])
+            }
+          >
             Ajouter
           </button>
         </div>
         {!foods.length && <EmptyState label="Cree un aliment avant de composer un repas." />}
+        {!!foods.length && !filteredFoods.length && (
+          <EmptyState label="Aucun aliment ne correspond aux filtres. Reinitialise pour voir toute la liste." />
+        )}
         {items.map((entry, index) => (
           <div key={index} className="rounded border border-slate-200 bg-white p-3">
             <div className="grid gap-2 md:grid-cols-[1fr_160px_auto]">
-              <select className={inputClass} value={entry.foodId} onChange={(event) => setItems((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, foodId: event.target.value } : row))}>
-                {foods.map((food) => <option key={food.id} value={food.id}>{food.name}</option>)}
+              <select
+                className={inputClass}
+                value={entry.foodId}
+                onChange={(event) =>
+                  setItems((current) =>
+                    current.map((row, rowIndex) =>
+                      rowIndex === index ? { ...row, foodId: event.target.value } : row,
+                    ),
+                  )
+                }
+              >
+                {(() => {
+                  const selectedFood = foods.find((food) => food.id === entry.foodId);
+                  const options = selectedFood && !filteredFoods.some((food) => food.id === selectedFood.id)
+                    ? [selectedFood, ...filteredFoods]
+                    : filteredFoods;
+                  return options.map((food) => (
+                    <option key={food.id} value={food.id}>
+                      {food.name}{food.brand ? ` - ${food.brand}` : ""}
+                    </option>
+                  ));
+                })()}
               </select>
               <input className={inputClass} type="number" min="0.01" step="0.01" value={entry.quantityGrams} onChange={(event) => setItems((current) => current.map((row, rowIndex) => rowIndex === index ? { ...row, quantityGrams: event.target.value } : row))} />
               <button type="button" className={dangerButtonClass} onClick={() => setItems((current) => current.filter((_, rowIndex) => rowIndex !== index))}>Retirer</button>
@@ -3329,6 +3425,8 @@ export function Dashboard({
   const [userGoalDraft, setUserGoalDraft] = useState<UserGoal | undefined>(undefined);
   const [workoutDraft, setWorkoutDraft] = useState<Workout | undefined>(undefined);
   const [workoutPrefillDraft, setWorkoutPrefillDraft] = useState<Workout | undefined>(undefined);
+  const [mealsView, setMealsView] = useState<"list" | "create">("list");
+  const [mealDraft, setMealDraft] = useState<Meal | undefined>(undefined);
   const bodyMeasurementsStore = useBodyMeasurementsStore();
   const exercisesStore = useExercisesStore();
   const workoutsStore = useWorkoutsStore();
@@ -3587,6 +3685,11 @@ export function Dashboard({
                     setBodyMeasurementDraft({} as BodyMeasurement);
                     return;
                   }
+                  if (resource === "meals") {
+                    setMealDraft(undefined);
+                    setMealsView("create");
+                    return;
+                  }
                   if (resource === "sportGoals" || resource === "bodyGoals") {
                     setUserGoalDraft({} as UserGoal);
                     return;
@@ -3612,7 +3715,11 @@ export function Dashboard({
                   isLoading={isLoading}
                   onQuickAction={(action) => {
                     if (action === "workout") setModal({ type: "workout" });
-                    if (action === "meal") setModal({ type: "meal" });
+                    if (action === "meal") {
+                      setResource("meals");
+                      setMealDraft(undefined);
+                      setMealsView("create");
+                    }
                     if (action === "goal") setModal({ type: "goal" });
                   }}
                 />
@@ -3765,17 +3872,62 @@ export function Dashboard({
                     meals={mealsStore.meals}
                     goals={goalsStore.nutritionGoals}
                   />
-                  <MealsList
-                    meals={mealsStore.meals}
-                    onEdit={(item) => setModal({ type: "meal", item })}
-                    onDuplicate={(item) => {
-                      const copy = duplicateMealInput(item);
-                      if (copy) {
-                        void mealsStore.createMeal(copy, foodsStore.foods);
-                      }
-                    }}
-                    onDelete={(item) => confirmDelete(item.name, () => mealsStore.deleteMeal(item.id))}
-                  />
+                  <div className="flex flex-wrap gap-2 rounded border border-amber-200 bg-amber-50/60 p-2">
+                    <button
+                      type="button"
+                      className={mealsView === "list" ? activeViewButtonClass : inactiveViewButtonClass}
+                      onClick={() => {
+                        setMealsView("list");
+                        setMealDraft(undefined);
+                      }}
+                    >
+                      Liste
+                    </button>
+                    <button
+                      type="button"
+                      className={mealsView === "create" ? activeViewButtonClass : inactiveViewButtonClass}
+                      onClick={() => {
+                        setMealsView("create");
+                        setMealDraft(undefined);
+                      }}
+                    >
+                      Creer un repas
+                    </button>
+                  </div>
+                  {mealsView === "create" ? (
+                    <div className="rounded border border-amber-200 bg-white p-4">
+                      <MealForm
+                        item={mealDraft}
+                        foods={foodsStore.foods}
+                        meals={mealsStore.meals}
+                        nutritionGoals={goalsStore.nutritionGoals}
+                        onCancel={() => {
+                          setMealDraft(undefined);
+                          setMealsView("list");
+                        }}
+                        onSubmit={(data) =>
+                          mealDraft
+                            ? mealsStore.updateMeal(mealDraft.id, data, foodsStore.foods)
+                            : mealsStore.createMeal(data, foodsStore.foods)
+                        }
+                      />
+                    </div>
+                  ) : (
+                    <MealsList
+                      meals={mealsStore.meals}
+                      onEdit={(item) => {
+                        setMealDraft(item);
+                        setMealsView("create");
+                      }}
+                      onDuplicate={(item) => {
+                        const copy = duplicateMealInput(item);
+                        if (copy) {
+                          void mealsStore.createMeal(copy, foodsStore.foods);
+                        }
+                      }}
+                      onDelete={(item) => confirmDelete(item.name, () => mealsStore.deleteMeal(item.id))}
+                    />
+                  )}
                 </div>
               )}
               {resource === "goals" && (
@@ -3849,13 +4001,6 @@ export function Dashboard({
 
       {modal && (
         <Modal title={modalTitle(modal)} onClose={() => setModal(null)}>
-          {modal.type === "exercise" && (
-            <ExerciseForm
-              item={modal.item}
-              onCancel={() => setModal(null)}
-              onSubmit={(data) => modal.item ? exercisesStore.updateExercise(modal.item.id, data) : exercisesStore.createExercise(data)}
-            />
-          )}
           {modal.type === "workout" && (
             <WorkoutForm
               item={modal.item}
@@ -3888,16 +4033,6 @@ export function Dashboard({
               item={modal.item}
               onCancel={() => setModal(null)}
               onSubmit={(data) => modal.item ? foodsStore.updateFood(modal.item.id, data) : foodsStore.createFood(data)}
-            />
-          )}
-          {modal.type === "meal" && (
-            <MealForm
-              item={modal.item}
-              foods={foodsStore.foods}
-              meals={mealsStore.meals}
-              nutritionGoals={goalsStore.nutritionGoals}
-              onCancel={() => setModal(null)}
-              onSubmit={(data) => modal.item ? mealsStore.updateMeal(modal.item.id, data, foodsStore.foods) : mealsStore.createMeal(data, foodsStore.foods)}
             />
           )}
           {modal.type === "goal" && (
@@ -3962,9 +4097,7 @@ function ResourceHeader({
 
 function openCreate(resource: Resource, setModal: (modal: ModalState) => void) {
   if (resource === "workouts") setModal({ type: "workout" });
-  if (resource === "exercises") setModal({ type: "exercise" });
   if (resource === "foods") setModal({ type: "food" });
-  if (resource === "meals") setModal({ type: "meal" });
   if (resource === "goals") setModal({ type: "goal" });
 }
 
@@ -3975,10 +4108,8 @@ function modalTitle(modal: Exclude<ModalState, null>) {
 
   const prefix = modal.item ? "Modifier" : "Creer";
   const names = {
-    exercise: "un exercice",
     workout: "une seance",
     food: "un aliment",
-    meal: "un repas",
     goal: "un objectif",
   };
   return `${prefix} ${names[modal.type]}`;
@@ -4083,6 +4214,10 @@ function ExercisesList({
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"ALL" | "STRENGTH" | "CARDIO" | "MOBILITY">("ALL");
   const [difficultyFilter, setDifficultyFilter] = useState<"ALL" | "BEGINNER" | "INTERMEDIATE" | "ADVANCED">("ALL");
+  const [bodyPartFilter, setBodyPartFilter] = useState("ALL");
+  const bodyPartOptions = Array.from(
+    new Set(exercises.flatMap((exercise) => exercise.bodyParts ?? [])),
+  ).sort((a, b) => a.localeCompare(b, "fr"));
 
   if (!exercises.length) return <EmptyState label="Aucun exercice disponible." />;
 
@@ -4095,14 +4230,16 @@ function ExercisesList({
     const matchesType = typeFilter === "ALL" || exercise.exerciseType === typeFilter;
     const matchesDifficulty =
       difficultyFilter === "ALL" || exercise.difficulty === difficultyFilter;
+    const matchesBodyPart =
+      bodyPartFilter === "ALL" || (exercise.bodyParts ?? []).includes(bodyPartFilter);
 
-    return matchesSearch && matchesType && matchesDifficulty;
+    return matchesSearch && matchesType && matchesDifficulty && matchesBodyPart;
   });
 
   return (
     <div className="space-y-4">
       <div className="rounded border border-slate-200 bg-white p-3">
-        <div className="grid gap-3 md:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-5">
           <input
             className={inputClass}
             value={search}
@@ -4141,6 +4278,18 @@ function ExercisesList({
               </option>
             ))}
           </select>
+          <select
+            className={inputClass}
+            value={bodyPartFilter}
+            onChange={(event) => setBodyPartFilter(event.target.value)}
+          >
+            <option value="ALL">Toutes zones</option>
+            {bodyPartOptions.map((bodyPart) => (
+              <option key={bodyPart} value={bodyPart}>
+                {bodyPart}
+              </option>
+            ))}
+          </select>
           <button
             type="button"
             className={secondaryButtonClass}
@@ -4148,6 +4297,7 @@ function ExercisesList({
               setSearch("");
               setTypeFilter("ALL");
               setDifficultyFilter("ALL");
+              setBodyPartFilter("ALL");
             }}
           >
             Reinitialiser
