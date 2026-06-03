@@ -42,6 +42,7 @@ Index chronologique des chantiers planifies et executes.
 88. [Remediation securite npm audit](./088-remediation-securite-npm-audit.md)
 89. [Mobile Android/iOS via Capacitor](./089-mobile-capacitor.md)
 90. [Tour qualite UI](./090-tour-qualite-ui.md)
+91. [Assets identite app](./091-assets-identite-app.md)
 
 ## Convention
 
@@ -63,6 +64,5 @@ chantier.
 - Les plans ne remplacent pas `README.md`, `01-getting-started/quick-start.md`,
   `03-api/reference.md` ou `02-architecture/overview.md`; ils expliquent
   l'historique des decisions.
-
 
 
