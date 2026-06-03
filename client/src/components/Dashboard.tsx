@@ -32,6 +32,22 @@ import type {
   User,
 } from "../api/client";
 import { DashboardOverview } from "./DashboardOverview";
+import { ProfileForm } from "./dashboard/ProfileForm";
+import {
+  activeViewButtonClass,
+  buttonClass,
+  dangerButtonClass,
+  dragHandleButtonClass,
+  EmptyState,
+  ErrorBox,
+  Field,
+  FormActions,
+  iconButtonClass,
+  inactiveViewButtonClass,
+  inputClass,
+  itemCardClass,
+  secondaryButtonClass,
+} from "./dashboard/shared";
 import { WorkoutsCalendar } from "./WorkoutsCalendar";
 import { useBodyMeasurementsStore } from "../stores/bodyMeasurementsStore";
 import { useExercisesStore } from "../stores/exercisesStore";
@@ -306,26 +322,6 @@ function labelFromOptions<T extends string>(
   return options.find(([key]) => key === value)?.[1] ?? value;
 }
 
-function ErrorBox({ message }: { message: string | null }) {
-  if (!message) {
-    return null;
-  }
-
-  return (
-    <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-      {message}
-    </p>
-  );
-}
-
-function EmptyState({ label }: { label: string }) {
-  return (
-    <div className="rounded border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-600">
-      {label}
-    </div>
-  );
-}
-
 function ExerciseImagePreview({
   imageUrl,
   label,
@@ -389,42 +385,6 @@ function Modal({
     </div>
   );
 }
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
-  return (
-    <label className="block text-sm font-medium text-slate-700">
-      {label}
-      <span className="mt-1 block">{children}</span>
-    </label>
-  );
-}
-
-const inputClass =
-  "block w-full rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-950 outline-none focus:border-emerald-700";
-const buttonClass =
-  "inline-flex min-h-10 items-center justify-center rounded bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:opacity-60";
-const secondaryButtonClass =
-  "inline-flex min-h-10 items-center justify-center rounded border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 disabled:cursor-not-allowed disabled:opacity-60";
-const dangerButtonClass =
-  "inline-flex min-h-10 items-center justify-center rounded border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600";
-const iconButtonClass =
-  "inline-flex h-9 w-9 items-center justify-center rounded border border-neutral-300 bg-white text-sm font-semibold text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50";
-const dragHandleButtonClass =
-  "inline-flex h-9 w-9 cursor-grab items-center justify-center rounded border border-dashed border-slate-400 bg-slate-50 text-slate-700 hover:bg-slate-100 active:cursor-grabbing";
-const viewButtonClass =
-  "inline-flex min-h-10 items-center justify-center rounded border px-3 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:opacity-60";
-const activeViewButtonClass =
-  `${viewButtonClass} border-emerald-700 bg-emerald-700 text-white shadow-sm`;
-const inactiveViewButtonClass =
-  `${viewButtonClass} border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50`;
-const itemCardClass =
-  "rounded border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300 hover:shadow";
 
 function ExerciseForm({
   item,
@@ -3316,145 +3276,6 @@ function BodyMeasurementsList({
         ))}
       </ul>
     </div>
-  );
-}
-
-function FormActions({ isSaving, onCancel }: { isSaving: boolean; onCancel: () => void }) {
-  return (
-    <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
-      <button type="button" className={secondaryButtonClass} onClick={onCancel}>Annuler</button>
-      <button type="submit" disabled={isSaving} className={buttonClass}>{isSaving ? "Enregistrement..." : "Enregistrer"}</button>
-    </div>
-  );
-}
-
-function ProfileForm({
-  userName,
-  userEmail,
-  userDateOfBirth,
-  isSaving,
-  error,
-  onSubmit,
-}: {
-  userName: string;
-  userEmail: string;
-  userDateOfBirth: string | null;
-  isSaving: boolean;
-  error: string | null;
-  onSubmit: (data: {
-    email?: string;
-    dateOfBirth?: string | null;
-    password?: string;
-    currentPassword?: string;
-  }) => Promise<void>;
-}) {
-  const [email, setEmail] = useState(userEmail);
-  const [dateOfBirth, setDateOfBirth] = useState(toInputDate(userDateOfBirth));
-  const [password, setPassword] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const sensitiveChange = email.trim() !== userEmail || password.trim().length > 0;
-
-  useEffect(() => {
-    setEmail(userEmail);
-    setDateOfBirth(toInputDate(userDateOfBirth));
-    setPassword("");
-    setCurrentPassword("");
-  }, [userEmail, userDateOfBirth]);
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSuccessMessage(null);
-
-    try {
-      await onSubmit({
-        ...(email.trim() !== userEmail ? { email } : {}),
-        dateOfBirth: dateOfBirth ? dateToIso(dateOfBirth) : null,
-        ...(password.trim() ? { password } : {}),
-        ...(sensitiveChange ? { currentPassword } : {}),
-      });
-      setPassword("");
-      setCurrentPassword("");
-      setSuccessMessage("Profil mis a jour.");
-    } catch {
-      return;
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <h2 className="text-xl font-semibold text-slate-950">Profil</h2>
-        <p className="mt-1 text-sm text-slate-600">{userName}</p>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <Field label="Email">
-          <input
-            className={inputClass}
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            type="email"
-            autoComplete="email"
-            required
-          />
-        </Field>
-        <Field label="Date de naissance">
-          <input
-            className={inputClass}
-            value={dateOfBirth}
-            onChange={(event) => setDateOfBirth(event.target.value)}
-            type="date"
-          />
-        </Field>
-      </div>
-
-      <Field label="Nouveau mot de passe">
-        <input
-          className={inputClass}
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          type="password"
-          autoComplete="new-password"
-          minLength={8}
-          placeholder="Laisser vide pour ne pas changer"
-        />
-      </Field>
-
-      {sensitiveChange && (
-        <div className="rounded border border-amber-200 bg-amber-50/80 p-3">
-          <p className="text-sm font-semibold text-amber-950">Confirmation requise</p>
-          <p className="mt-1 text-xs text-amber-800/80">
-            Le mot de passe actuel est demande pour changer l'email ou definir un nouveau mot de passe.
-          </p>
-          <div className="mt-3">
-            <Field label="Mot de passe actuel">
-              <input
-                className={`${inputClass} bg-white`}
-                value={currentPassword}
-                onChange={(event) => setCurrentPassword(event.target.value)}
-                type="password"
-                autoComplete="current-password"
-                required
-              />
-            </Field>
-          </div>
-        </div>
-      )}
-
-      {successMessage && (
-        <p className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          {successMessage}
-        </p>
-      )}
-      <ErrorBox message={error} />
-
-      <div className="flex justify-end border-t border-slate-200 pt-4">
-        <button type="submit" disabled={isSaving} className={buttonClass}>
-          {isSaving ? "Enregistrement..." : "Enregistrer le profil"}
-        </button>
-      </div>
-    </form>
   );
 }
 

@@ -13,6 +13,7 @@
 - Ne pas changer le metier tant que la structure n'est pas plus lisible.
 - S'appuyer sur les tests existants pour securiser chaque etape.
 - Extraire par domaines UI deja visibles plutot que par types techniques generiques.
+- Adopter une cible de 500 lignes maximum par fichier, sauf fichier genere, config volumineuse ou exception documentee dans ce plan.
 
 ## Cartographie des hotspots
 
@@ -20,7 +21,10 @@
 | --- | ---: | --- | --- |
 | `client/src/components/Dashboard.tsx` | 4410 lignes | Couplage UX, formulaires, helpers, listes et dashboard dans un seul fichier | Hotspot prioritaire |
 | `server/src/routes/api.test.ts` | 2286 lignes | Tests API tres longs, difficiles a cibler rapidement | A decouper apres stabilisation frontend |
+| `server/prisma/prod-seed.mjs` | 1226 lignes | Donnees de seed volumineuses dans un script executable | A isoler en donnees plus tard |
+| `server/prisma/seed.ts` | 1085 lignes | Donnees de seed developpement volumineuses | A isoler en donnees plus tard |
 | `client/src/api/client.ts` | 622 lignes | Contrat API centralise, acceptable mais a surveiller | Pas prioritaire |
+| `client/src/stores/bypassMockData.ts` | 610 lignes | Donnees mockees volumineuses | A separer par domaine si besoin |
 | `client/src/components/DashboardOverview.tsx` | composant dedie | Deja extrait | Bon modele local |
 | `client/src/components/WorkoutsCalendar.tsx` | composant dedie | Deja extrait | Bon modele local |
 
@@ -55,6 +59,8 @@ Ordre conseille:
 - Garder les props explicites; ne pas introduire de store global supplementaire.
 - Lancer au minimum `tsc`, lint client et tests client apres chaque extraction frontend.
 - Pour les helpers metier derives, ajouter ou conserver un test si le calcul devient isolable.
+- Viser 500 lignes maximum par fichier de code ou doc maintenue a la main.
+- Exceptions temporaires autorisees: fichiers generes, seeds volumineux, donnees statiques, ou tests historiques; chaque exception doit etre notee ici avec un plan de sortie.
 
 ## Todo
 
@@ -72,3 +78,6 @@ Ordre conseille:
 - 2026-06-03: ecarts corriges: script `setup` manquant, script racine `dev` fragile, versions README Fastify/Vite/Node, mention Swagger, structure d'architecture, CORS production et `JWT_SECRET` production.
 - 2026-06-03: validations lancees via binaires locaux: typecheck server/client/mcp, tests server/client, lint server/client.
 - 2026-06-03: cartographie ajoutee: `Dashboard.tsx` est le hotspot prioritaire, suivi de `api.test.ts`; ordre d'extraction recommande par formulaires, listes, domaines calcules, shared UI puis tests API.
+- 2026-06-03: premiere extraction lancee: `ProfileForm` sorti vers `client/src/components/dashboard/ProfileForm.tsx`, puis helpers UI sortis vers `client/src/components/dashboard/shared.tsx`; `Dashboard.tsx` passe de 4410 a 4247 lignes.
+- 2026-06-03: regle projet adoptee: 500 lignes max par fichier, sauf exception documentee. Exceptions temporaires identifiees: seeds Prisma, `api.test.ts`, `client.ts`, `bypassMockData.ts`.
+- 2026-06-03: validations apres extraction `ProfileForm` et `shared.tsx`: `tsc --noEmit -p client\tsconfig.json`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
