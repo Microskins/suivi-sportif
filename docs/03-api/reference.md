@@ -295,6 +295,8 @@ Creation:
 }
 ```
 
+`servingUnit` vaut `g` ou `unit`.
+
 Les valeurs nutritionnelles sont stockees pour 100 g.
 
 ### Meals

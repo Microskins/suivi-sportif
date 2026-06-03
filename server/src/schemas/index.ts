@@ -214,7 +214,7 @@ export const createFoodSchema = z.object({
   carbsGrams: macroValueSchema,
   fatGrams: macroValueSchema,
   fiberGrams: macroValueSchema.nullable().optional(),
-  servingUnit: z.string().min(1).max(20).default("g"),
+  servingUnit: z.enum(["g", "unit"]).default("g"),
 });
 
 export const updateFoodSchema = createFoodSchema.partial();
@@ -230,7 +230,7 @@ export const foodResponseSchema = z.object({
   carbsGrams: z.number(),
   fatGrams: z.number(),
   fiberGrams: z.number().nullable(),
-  servingUnit: z.string(),
+  servingUnit: z.enum(["g", "unit"]),
   isGlobal: z.boolean(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
@@ -547,5 +547,4 @@ export type UpdateBodyMeasurementInput = z.infer<
 export type BodyMeasurementResponse = z.infer<
   typeof bodyMeasurementResponseSchema
 >;
-
 

@@ -50,7 +50,12 @@ describe("food queries", () => {
   it("lists personal and global foods available to a user", async () => {
     mocks.prisma.food.findMany.mockResolvedValue([
       foodRecord,
-      { ...foodRecord, id: "55555555-5555-4555-8555-555555555555", userId: null },
+      {
+        ...foodRecord,
+        id: "55555555-5555-4555-8555-555555555555",
+        userId: null,
+        servingUnit: "unit",
+      },
     ]);
 
     const result = await getFoods(USER_ID);
@@ -61,7 +66,11 @@ describe("food queries", () => {
     });
     expect(result).toEqual([
       expect.objectContaining({ id: FOOD_ID, userId: USER_ID, isGlobal: false }),
-      expect.objectContaining({ userId: null, isGlobal: true }),
+      expect.objectContaining({
+        userId: null,
+        isGlobal: true,
+        servingUnit: "unit",
+      }),
     ]);
   });
 

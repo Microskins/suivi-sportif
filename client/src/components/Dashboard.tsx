@@ -1511,7 +1511,12 @@ function FoodForm({
         <Field label="Nom"><input className={inputClass} value={name} onChange={(event) => setName(event.target.value)} required /></Field>
         <Field label="Marque"><input className={inputClass} value={brand} onChange={(event) => setBrand(event.target.value)} /></Field>
         <Field label="Code-barres"><input className={inputClass} value={barcode} onChange={(event) => setBarcode(event.target.value)} /></Field>
-        <Field label="Unite"><input className={inputClass} value={servingUnit} onChange={(event) => setServingUnit(event.target.value)} required /></Field>
+        <Field label="Unite">
+          <select className={inputClass} value={servingUnit} onChange={(event) => setServingUnit(event.target.value as "g" | "unit")} required>
+            <option value="g">g</option>
+            <option value="unit">unit</option>
+          </select>
+        </Field>
       </div>
       <div className="grid gap-4 md:grid-cols-5">
         <MacroInput label="Calories" value={caloriesKcal} onChange={setCaloriesKcal} />

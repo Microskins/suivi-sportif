@@ -46,6 +46,7 @@ Index chronologique des chantiers planifies et executes.
 92. [Suppression des popups exercices et repas](./092-suppression-popups-exercices-repas.md)
 93. [Nginx proxy Home Assistant](./093-nginx-proxy-home-assistant.md)
 94. [Reload Nginx conditionnel](./094-nginx-reload-conditionnel.md)
+95. [Unites aliments g ou unite](./095-unites-aliments-g-ou-unite.md)
 
 ## Convention
 
