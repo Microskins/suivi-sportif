@@ -16,6 +16,7 @@ Creer `.env` a la racine:
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/suivi_sportif_v2"
 JWT_SECRET="change-me"
 NODE_ENV="development"
+CORS_ORIGIN="http://localhost:5173"
 ```
 
 Option frontend sans API locale, dans `client/.env`:
@@ -44,6 +45,12 @@ npm run db:migrate -w server
 ```
 
 ## 4. Lancer en developpement
+
+API + client dans le meme terminal:
+
+```bash
+npm run dev
+```
 
 Terminal 1:
 

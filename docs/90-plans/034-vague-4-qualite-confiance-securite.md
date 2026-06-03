@@ -76,15 +76,6 @@
 - [x] Mettre a jour docs sources de verite.
 - [x] Valider les controles disponibles et documenter les blocages.
 - [x] Pousser la vague avant d'ouvrir la Vague 5.
-- [ ] Definir checklist audit UI.
-- [ ] Auditer les parcours critiques.
-- [ ] Corriger les problemes UI/accessibilite.
-- [ ] Ajouter controle qualite images.
-- [ ] Ajouter securite compte.
-- [ ] Ajouter version de politique cookies.
-- [ ] Mettre a jour docs sources de verite.
-- [ ] Valider typecheck/tests/build pertinents.
-- [ ] Pousser la vague avant d'ouvrir la Vague 5.
 
 ## Notes de verification
 
@@ -101,3 +92,4 @@
 - 2026-06-01: `npm run typecheck -w client` bloque localement: `npm` absent du PATH PowerShell.
 - 2026-06-01: `npm run test -w server -- --run` bloque localement: `npm` absent du PATH PowerShell.
 - 2026-06-01: `npm run test -w client -- --run` bloque localement: `npm` absent du PATH PowerShell.
+- 2026-06-03: nettoyage de suivi: retrait des todos doublonnes non coches qui contredisaient les items deja livres et valides avec blocage documente.

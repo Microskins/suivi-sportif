@@ -8,8 +8,8 @@ authentification, exercices, seances, nutrition, persistance PostgreSQL et tests
 
 ## Stack
 
-- Backend: Fastify 4, TypeScript, Prisma 5, PostgreSQL, Zod, JWT, bcrypt, Vitest.
-- Frontend: React 18, Vite 5, TypeScript, Zustand, Recharts.
+- Backend: Fastify 5, TypeScript, Prisma 5, PostgreSQL, Zod, JWT, bcrypt, Vitest.
+- Frontend: React 18, Vite 8, TypeScript, Zustand, Recharts.
 - Debug/outillage: workspace `mcp/`, Docker Compose, Nginx.
 
 ## Etat actuel
@@ -31,14 +31,14 @@ A faire:
 
 - Completer les ecrans frontend de creation/edition.
 - Elargir les tests API: erreurs, ownership multi-utilisateurs, update/delete.
-- Ajouter une documentation OpenAPI/Swagger exploitable.
+- Completer les schemas OpenAPI/Swagger pour couvrir toutes les routes metier.
 - Stabiliser les migrations Prisma au fil des prochaines features.
 
 ## Installation locale
 
 Prerequis:
 
-- Node.js 18+
+- Node.js 20.19+ ou 22.12+
 - npm
 - PostgreSQL
 
@@ -54,6 +54,7 @@ Creer un fichier `.env` a la racine:
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/suivi_sportif_v2"
 JWT_SECRET="change-me"
 NODE_ENV="development"
+CORS_ORIGIN="http://localhost:5173"
 ```
 
 Preparer Prisma:
@@ -73,6 +74,12 @@ VITE_BYPASS_AUTH="true"
 Cette variable se place dans `client/.env` et charge des donnees mockees.
 
 ## Developpement
+
+API + client:
+
+```bash
+npm run dev
+```
 
 Backend:
 

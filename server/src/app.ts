@@ -14,12 +14,35 @@ import { workoutsRoutes } from "./routes/workouts.js";
 import { workoutTemplatesRoutes } from "./routes/workout-templates.js";
 import { authPlugin } from "./plugins/auth.js";
 
+function getJwtSecret() {
+  const secret = process.env.JWT_SECRET;
+  const isProduction = process.env.NODE_ENV === "production";
+
+  if (isProduction && (!secret || secret === "default-secret-change-me")) {
+    throw new Error("JWT_SECRET must be configured in production");
+  }
+
+  return secret || "default-secret-change-me";
+}
+
+function getCorsOrigin() {
+  const configuredOrigins = process.env.CORS_ORIGIN?.split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  if (configuredOrigins?.length) {
+    return configuredOrigins;
+  }
+
+  return process.env.NODE_ENV === "production" ? false : true;
+}
+
 export function buildApp(options: FastifyServerOptions = { logger: true }) {
   const fastify = Fastify(options);
 
-  fastify.register(cors, { origin: true });
+  fastify.register(cors, { origin: getCorsOrigin() });
   fastify.register(fjwt, {
-    secret: process.env.JWT_SECRET || "default-secret-change-me",
+    secret: getJwtSecret(),
   });
   fastify.register(authPlugin);
   fastify.setErrorHandler((error: any, request, reply) => {

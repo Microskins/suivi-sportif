@@ -1,0 +1,79 @@
+# Plan - Angle produit et UX: parcours critiques
+
+## Objectif
+
+- Clarifier les parcours les plus frequents.
+- Rendre l'interface plus lisible sur desktop et mobile.
+- Rechercher moins de friction sur la navigation, les filtres, les formulaires et les etats.
+
+## Decisions
+
+- Prioriser les ecrans a usage quotidien: dashboard, calendrier, exercices, repas, profil.
+- Traiter en premier les etats vide, chargement et erreur, ainsi que les actions repetitives.
+- Conserver la base visuelle actuelle; pas de refonte branding.
+- Valider les changements sur les parcours reels avant de generaliser.
+- Commencer par un audit guide avant toute retouche visuelle.
+
+## Parcours critiques
+
+1. Se connecter puis comprendre le tableau de bord
+   - Entrer dans l'application.
+   - Lire les indicateurs utiles du jour.
+   - Identifier l'action principale suivante.
+
+2. Planifier, creer ou dupliquer une seance
+   - Passer du calendrier a la creation.
+   - Ajouter des exercices et des series.
+   - Reordonner et sauvegarder sans perte de contexte.
+
+3. Suivre une semaine d'entrainement
+   - Lire le calendrier.
+   - Comprendre planifie, realise et annule.
+   - Relier le score hebdomadaire a l'objectif sportif.
+
+4. Creer un repas rapidement
+   - Trouver un aliment.
+   - Reutiliser une portion recente.
+   - Comprendre les ecarts calories/macros avant validation.
+
+5. Mettre a jour son profil, ses mensurations et ses objectifs
+   - Modifier les informations sensibles avec confirmation claire.
+   - Ajouter une mesure corporelle.
+   - Lire la tendance et le lien avec les objectifs actifs.
+
+## Checklist d'audit
+
+| Point | Question |
+| --- | --- |
+| Entree du parcours | L'action de depart est-elle visible sans chercher ? |
+| Charge cognitive | Le formulaire expose-t-il trop de champs en meme temps ? |
+| Retour utilisateur | Les etats sauvegarde, erreur, vide et chargement sont-ils explicites ? |
+| Navigation | Peut-on revenir a la liste ou au calendrier sans perdre le contexte ? |
+| Mobile | Les boutons, filtres et tableaux restent-ils utilisables en largeur etroite ? |
+| Accessibilite | Focus, labels, contrastes et ordre clavier sont-ils acceptables ? |
+| Action repetitive | L'utilisateur peut-il refaire vite une action frequente ? |
+
+## Retouches candidates
+
+- Ajouter des points d'entree plus directs depuis le dashboard vers les actions quotidiennes.
+- Auditer les modales restantes pour seances, aliments et objectifs avant de choisir inline, panneau lateral ou modale conservee.
+- Reduire la densite du formulaire de seance par regroupement visuel des series et filtres.
+- Clarifier les boutons de retour entre liste, creation et calendrier.
+- Rendre les filtres exercices/aliments plus memorables quand l'utilisateur revient dans la section.
+- Ajouter des messages d'etat vides plus actionnables sur calendrier, repas et objectifs.
+
+## Todo
+
+- [x] Creer ce plan.
+- [x] Lister les 5 parcours UX les plus sensibles.
+- [ ] Auditer la navigation, les filtres et les formulaires de ces parcours.
+- [ ] Definir les retouches a impact rapide.
+- [ ] Verifier la lisibilite mobile et l'accessibilite de base.
+- [ ] Produire une checklist de validation UI.
+
+## Notes de verification
+
+- 2026-06-03: plan cree a partir du constat que le frontend est dense et que plusieurs ecrans cles restent a clarifier.
+- 2026-06-03: aucune verification de rendu n'a encore ete lancee; le cadrage est en cours.
+- 2026-06-03: cinq parcours critiques listes depuis la structure actuelle du dashboard, du calendrier, des repas, des exercices et du profil.
+- 2026-06-03: les modales restantes sont traitees comme decision UX a auditer dans ce plan, pas comme bug fonctionnel.

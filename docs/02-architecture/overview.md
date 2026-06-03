@@ -8,6 +8,12 @@ Le projet est un monorepo npm avec trois workspaces:
 - `client`: application React/Vite en TypeScript.
 - `mcp`: serveur MCP de debug et d'automatisation.
 
+Versions principales actuelles:
+
+- Fastify 5.
+- Vite 8.
+- React 18.
+
 La source de verite metier est cote API. Le frontend appelle l'API et ne parle
 jamais directement a PostgreSQL.
 
@@ -52,22 +58,28 @@ server/src/
 |-- db/
 |   |-- index.ts
 |   `-- queries/
+|       |-- body-measurements.ts
 |       |-- exercises.ts
 |       |-- foods.ts
 |       |-- meals.ts
 |       |-- nutrition-goals.ts
+|       |-- user-goals.ts
 |       |-- users.ts
-|       `-- workouts.ts
+|       |-- workouts.ts
+|       `-- workout-templates.ts
 |-- plugins/
 |   `-- auth.ts
 |-- routes/
 |   |-- api.test.ts
+|   |-- body-measurements.ts
 |   |-- exercises.ts
 |   |-- foods.ts
 |   |-- meals.ts
 |   |-- nutrition-goals.ts
+|   |-- user-goals.ts
 |   |-- users.ts
-|   `-- workouts.ts
+|   |-- workouts.ts
+|   `-- workout-templates.ts
 `-- schemas/
     `-- index.ts
 ```
@@ -103,9 +115,12 @@ Routes protegees:
 - `PUT /api/users/me`
 - CRUD exercices
 - CRUD seances
+- CRUD modeles de seances
 - CRUD aliments
 - CRUD repas
 - CRUD objectifs nutritionnels
+- CRUD objectifs sport/corps
+- CRUD mensurations corporelles
 
 Les mots de passe sont hashes avec `bcrypt`. Les ressources utilisateur utilisent
 `request.user.id`, issu du token JWT.

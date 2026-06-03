@@ -1,5 +1,126 @@
 # IA Idees
 
+## 2026-06-03 - Technique: cartographie des hotspots de maintenance
+
+## Contexte
+
+- Le bilan du projet montre des zones tres denses, en particulier le dashboard frontend et les gros fichiers de tests API.
+- Avant de lancer des refactors, il est utile de savoir ou se concentre le cout de maintenance.
+
+## Proposition
+
+- Ajouter plus tard une cartographie simple des hotspots techniques:
+  - taille des fichiers;
+  - nombre de responsabilites par module;
+  - zones les plus couteuses a tester;
+  - points de couplage visibles dans les routes et stores.
+
+## Impact
+
+- Aide a choisir les refactors qui rapportent vraiment.
+- Rend les futures decisions techniques moins intuitives.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/036-angle-technique-dette-maintenance.md
+
+---
+
+## 2026-06-03 - UX: parcours critiques et baselines de rendu
+
+## Contexte
+
+- Le frontend couvre deja beaucoup de cas, mais plusieurs ecrans importants restent tres denses.
+- Sans repere de rendu ou de parcours critique, les ajustements UX se prennent facilement au feeling.
+
+## Proposition
+
+- Ajouter plus tard un petit kit de baselines UX:
+  - liste des parcours critiques a verifier;
+  - captures de reference desktop/mobile;
+  - checklist pour navigation, filtres, chargements et erreurs;
+  - etats vides et variations de densite.
+
+## Impact
+
+- Permet de voir les regressions plus vite.
+- Ameliore la coherence des futures retouches UI.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/037-angle-produit-ux-parcours-critiques.md
+
+---
+
+## 2026-06-03 - Pilotage: score de priorisation des chantiers
+
+## Contexte
+
+- Le portefeuille de chantiers est deja large et melange produit, ops, UX et dette technique.
+- Un score pour les chantiers eux-memes serait complementaire au score des idees.
+
+## Proposition
+
+- Ajouter plus tard une grille de priorisation legere pour les chantiers:
+  - impact utilisateur;
+  - effort;
+  - risque;
+  - dependances;
+  - evidence attendue apres livraison.
+
+## Impact
+
+- Facilite l'arbitrage entre plusieurs sujets concurrents.
+- Aide a garder une feuille de route lisible sans ajouter de lourdeur.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/038-angle-priorisation-chantiers-impact.md
+
+---
+
+## 2026-06-03 - Pilotage: revue courte des plans ouverts
+
+## Contexte
+
+- La priorisation marche mieux si les plans ouverts ont un statut fiable.
+- Plusieurs plans peuvent etre presque termines mais rester ouverts faute de verification ou de nettoyage de todo.
+
+## Proposition
+
+- Ajouter plus tard une revue courte des plans ouverts:
+  - lister les plans avec todos non coches;
+  - separer "travail restant" et "verification bloquee";
+  - noter une decision: fermer, reprendre, reporter, fusionner;
+  - garder une trace de la date de revue.
+
+## Impact
+
+- Reduit le bruit dans la roadmap.
+- Evite de relancer un chantier deja quasi termine.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/038-angle-priorisation-chantiers-impact.md
+
+---
+
 ## 2026-06-03 - Identite app: theme PWA par contexte
 
 ## Contexte

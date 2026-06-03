@@ -271,6 +271,74 @@ const bodyMeasurement = {
   updatedAt: "2026-05-04T08:00:00.000Z",
 };
 
+describe("buildApp configuration", () => {
+  const originalEnv = {
+    CORS_ORIGIN: process.env.CORS_ORIGIN,
+    JWT_SECRET: process.env.JWT_SECRET,
+    NODE_ENV: process.env.NODE_ENV,
+  };
+
+  afterEach(() => {
+    if (originalEnv.CORS_ORIGIN === undefined) delete process.env.CORS_ORIGIN;
+    else process.env.CORS_ORIGIN = originalEnv.CORS_ORIGIN;
+
+    if (originalEnv.JWT_SECRET === undefined) delete process.env.JWT_SECRET;
+    else process.env.JWT_SECRET = originalEnv.JWT_SECRET;
+
+    if (originalEnv.NODE_ENV === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = originalEnv.NODE_ENV;
+  });
+
+  it("requires JWT_SECRET in production", () => {
+    process.env.NODE_ENV = "production";
+    delete process.env.JWT_SECRET;
+
+    expect(() => buildApp({ logger: false })).toThrow(
+      "JWT_SECRET must be configured in production",
+    );
+  });
+
+  it("does not allow arbitrary CORS origins in production", async () => {
+    process.env.NODE_ENV = "production";
+    process.env.JWT_SECRET = "test-production-secret";
+    delete process.env.CORS_ORIGIN;
+
+    const app = buildApp({ logger: false });
+    await app.ready();
+
+    const response = await app.inject({
+      headers: { origin: "https://example.com" },
+      method: "GET",
+      url: "/health",
+    });
+
+    expect(response.headers["access-control-allow-origin"]).toBeUndefined();
+
+    await app.close();
+  });
+
+  it("allows configured CORS origins in production", async () => {
+    process.env.NODE_ENV = "production";
+    process.env.JWT_SECRET = "test-production-secret";
+    process.env.CORS_ORIGIN = "https://suivi-sportif.fr";
+
+    const app = buildApp({ logger: false });
+    await app.ready();
+
+    const response = await app.inject({
+      headers: { origin: "https://suivi-sportif.fr" },
+      method: "GET",
+      url: "/health",
+    });
+
+    expect(response.headers["access-control-allow-origin"]).toBe(
+      "https://suivi-sportif.fr",
+    );
+
+    await app.close();
+  });
+});
+
 describe("API", () => {
   let app: FastifyInstance;
 
