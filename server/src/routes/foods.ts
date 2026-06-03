@@ -46,7 +46,7 @@ const foodBodySchema = {
     carbsGrams: { type: "number" },
     fatGrams: { type: "number" },
     fiberGrams: { type: ["number", "null"] },
-    servingUnit: { type: "string" },
+    servingUnit: { type: "string", enum: ["g", "unit"] },
   },
   required: [
     "name",
@@ -70,7 +70,7 @@ const foodSchema = {
     carbsGrams: { type: "number" },
     fatGrams: { type: "number" },
     fiberGrams: { type: ["number", "null"] },
-    servingUnit: { type: "string" },
+    servingUnit: { type: "string", enum: ["g", "unit"] },
     isGlobal: { type: "boolean" },
     createdAt: { type: "string", format: "date-time" },
     updatedAt: { type: "string", format: "date-time" },

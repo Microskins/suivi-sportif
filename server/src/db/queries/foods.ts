@@ -16,7 +16,7 @@ type Food = {
   id: string;
   name: string;
   proteinGrams: unknown;
-  servingUnit: string;
+  servingUnit: "g" | "unit";
   updatedAt: Date;
   userId: string | null;
 };

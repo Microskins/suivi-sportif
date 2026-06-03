@@ -156,7 +156,7 @@ export type Food = {
   carbsGrams: number;
   fatGrams: number;
   fiberGrams: number | null;
-  servingUnit: string;
+  servingUnit: "g" | "unit";
   isGlobal: boolean;
   createdAt: string;
   updatedAt: string;
@@ -171,7 +171,7 @@ export type FoodInput = {
   carbsGrams: number;
   fatGrams: number;
   fiberGrams?: number | null;
-  servingUnit?: string;
+  servingUnit?: "g" | "unit";
 };
 
 export type MealType = "breakfast" | "lunch" | "dinner" | "snack" | "other";
