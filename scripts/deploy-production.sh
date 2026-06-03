@@ -39,6 +39,7 @@ health_check() {
 require_command git
 require_command docker
 require_command curl
+require_command sudo
 
 if [ -z "${GIT_SSH_COMMAND:-}" ]; then
   if [ -z "$DEPLOY_SSH_KEY_PATH" ]; then
@@ -61,6 +62,8 @@ log "Enter project"
 cd "$PROJECT_DIR"
 pwd
 
+PREVIOUS_COMMIT="$(git rev-parse HEAD)"
+
 log "Check repository state"
 if [ -n "$(git status --porcelain)" ]; then
   git status --short
@@ -72,7 +75,17 @@ log "Fetch and update"
 git fetch "$REMOTE_NAME" "$BRANCH_NAME"
 git checkout "$BRANCH_NAME"
 git pull --ff-only "$REMOTE_NAME" "$BRANCH_NAME"
+CURRENT_COMMIT="$(git rev-parse HEAD)"
 git rev-parse --short HEAD
+
+if ! git diff --quiet "$PREVIOUS_COMMIT" "$CURRENT_COMMIT" -- client/nginx deploy/nginx; then
+  log "Validate and reload Nginx"
+  git diff --name-only "$PREVIOUS_COMMIT" "$CURRENT_COMMIT" -- client/nginx deploy/nginx
+  sudo -n nginx -t
+  sudo -n systemctl reload nginx
+else
+  log "Skip Nginx reload"
+fi
 
 log "Build images"
 docker compose build
