@@ -83,3 +83,5 @@ Ordre conseille:
 - 2026-06-03: validations apres extraction `ProfileForm` et `shared.tsx`: `tsc --noEmit -p client\tsconfig.json`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
 - 2026-06-03: deuxieme extraction: `FoodForm` sorti vers `client/src/components/dashboard/FoodForm.tsx`; `MacroInput` deplace dans `shared.tsx`; `Dashboard.tsx` passe de 4247 a 4168 lignes.
 - 2026-06-03: validations apres extraction `FoodForm`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-03: troisieme extraction: `NutritionGoalForm` sorti vers `client/src/components/dashboard/NutritionGoalForm.tsx`; `Dashboard.tsx` passe de 4168 a 4110 lignes.
+- 2026-06-03: validations apres extraction `NutritionGoalForm`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
