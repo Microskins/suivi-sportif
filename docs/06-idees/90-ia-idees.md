@@ -1,5 +1,35 @@
 # IA Idees
 
+## 2026-06-03 - Identite app: theme PWA par contexte
+
+## Contexte
+
+- Le plan `091-assets-identite-app` ajoute les premiers assets d'identite et les metadonnees HTML.
+- L'application a plusieurs contextes visuels utiles: sport, nutrition, mensurations, calendrier.
+
+## Proposition
+
+- Ajouter plus tard une strategie de theme PWA plus fine:
+  - couleur `theme-color` adaptee au mode clair/sombre;
+  - icone de masque verifiee sur Android/iOS;
+  - image sociale dediee aux pages publiques si elles apparaissent;
+  - checklist de rendu favicon sur desktop, mobile et onglets epingles.
+
+## Impact
+
+- Meilleure finition percue sur mobile et dans les partages.
+- Moins de regressions visuelles quand l'application devient installable.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/091-assets-identite-app.md
+
+---
+
 ## 2026-06-01 - Roadmap: score de priorisation des idees
 
 ## Contexte
