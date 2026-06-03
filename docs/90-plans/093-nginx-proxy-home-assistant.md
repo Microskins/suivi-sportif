@@ -26,3 +26,4 @@
 - 2026-06-03: bloc Home Assistant remplace par `proxy_pass http://192.168.1.49:8123` et `map $http_upgrade $connection_upgrade` ajoute en tete du fichier pour les WebSockets.
 - 2026-06-03: mise a jour de l'upstream Home Assistant vers `http://192.168.1.5:8123`.
 - 2026-06-03: ajout d'un second bloc Home Assistant en `443 ssl` avec les headers `X-Forwarded-Proto https` et `X-Forwarded-Host` demandés.
+- 2026-06-03: rollback du bloc `443 ssl` dans `client/nginx/default.conf` pour eviter de casser le conteneur client en l'absence de certificats locaux configures.
