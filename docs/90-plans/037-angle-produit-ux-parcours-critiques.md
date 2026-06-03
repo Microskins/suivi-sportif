@@ -66,8 +66,8 @@
 
 - [x] Creer ce plan.
 - [x] Lister les 5 parcours UX les plus sensibles.
-- [ ] Auditer la navigation, les filtres et les formulaires de ces parcours.
-- [ ] Definir les retouches a impact rapide.
+- [x] Auditer la navigation, les filtres et les formulaires de ces parcours.
+- [x] Definir les retouches a impact rapide.
 - [ ] Verifier la lisibilite mobile et l'accessibilite de base.
 - [ ] Produire une checklist de validation UI.
 
@@ -77,3 +77,4 @@
 - 2026-06-03: aucune verification de rendu n'a encore ete lancee; le cadrage est en cours.
 - 2026-06-03: cinq parcours critiques listes depuis la structure actuelle du dashboard, du calendrier, des repas, des exercices et du profil.
 - 2026-06-03: les modales restantes sont traitees comme decision UX a auditer dans ce plan, pas comme bug fonctionnel.
+- 2026-06-03: retouches rapides appliquees: actions rapides dashboard vers flux inline, libelles de creation contextuels, planification calendrier vers formulaire seance inline, resume du formulaire seance, filtres exercices plus explicites, legende calendrier, etats vides plus actionnables, confirmation profil mieux exposee.

@@ -258,6 +258,13 @@ export function WorkoutsCalendar({
             </div>
             <progress className="mt-2 h-2 w-full overflow-hidden rounded accent-emerald-600" value={weeklyProgress} max={100} />
           </div>
+          <div className="mb-4 flex flex-wrap gap-2 text-xs">
+            {(["PLANNED", "COMPLETED", "CANCELED"] as Workout["status"][]).map((status) => (
+              <span key={status} className={`rounded px-2 py-1 font-medium ${statusTone[status]}`}>
+                {statusLabel[status]}
+              </span>
+            ))}
+          </div>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <button
               type="button"
@@ -393,7 +400,7 @@ export function WorkoutsCalendar({
               ))
             ) : (
               <p className="rounded border border-dashed border-neutral-300 bg-neutral-50 px-3 py-5 text-sm text-neutral-600">
-                Aucune seance sur ce jour.
+                Aucune seance sur ce jour. Utilise "Planifier une seance" pour reserver ce creneau.
               </p>
             )}
           </div>

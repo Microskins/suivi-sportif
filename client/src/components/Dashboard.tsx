@@ -649,6 +649,9 @@ function WorkoutForm({
 
     return matchesSearch && matchesType && matchesDifficulty && matchesBodyPart;
   });
+  const totalSets = rows.reduce((total, row) => total + row.sets.length, 0);
+  const isEditingWorkout = Boolean(item?.id);
+  const isDuplicatingWorkout = Boolean(prefillWorkout?.id && !item?.id);
 
   function updateRow(index: number, nextRow: WorkoutExerciseFormRow) {
     setRows((current) => current.map((row, rowIndex) => (rowIndex === index ? nextRow : row)));
@@ -686,6 +689,25 @@ function WorkoutForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <section className="rounded border border-emerald-200 bg-emerald-50/70 p-3">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-emerald-950">
+              {isEditingWorkout
+                ? "Modification de seance"
+                : isDuplicatingWorkout
+                  ? "Duplication de seance"
+                  : "Nouvelle seance"}
+            </p>
+            <p className="mt-1 text-xs text-emerald-800/80">
+              {rows.length} exercice(s), {totalSets} serie(s). Les filtres servent a trouver vite le prochain exercice a ajouter.
+            </p>
+          </div>
+          <button type="button" className={secondaryButtonClass} onClick={onCancel}>
+            Retour liste
+          </button>
+        </div>
+      </section>
       <div className="grid gap-4 md:grid-cols-3">
         <Field label="Nom">
           <input className={inputClass} value={name} onChange={(event) => setName(event.target.value)} required />
@@ -716,8 +738,27 @@ function WorkoutForm({
         <textarea className={inputClass} value={notes} onChange={(event) => setNotes(event.target.value)} rows={3} />
       </Field>
       <div className="space-y-3">
-        <div className="rounded border border-slate-200 p-3">
-          <p className="mb-2 text-sm font-semibold text-slate-800">Filtres exercices</p>
+        <div className="rounded border border-slate-200 bg-slate-50/70 p-3">
+          <div className="mb-2 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Filtres exercices</p>
+              <p className="mt-1 text-xs text-slate-500">
+                {filteredExercises.length} / {exercises.length} exercice(s) visible(s)
+              </p>
+            </div>
+            <button
+              type="button"
+              className={secondaryButtonClass}
+              onClick={() => {
+                setExerciseSearch("");
+                setExerciseTypeFilter("ALL");
+                setExerciseDifficultyFilter("ALL");
+                setExerciseBodyPartFilter("ALL");
+              }}
+            >
+              Reinitialiser
+            </button>
+          </div>
           <div className="grid gap-2 md:grid-cols-4">
             <input
               className={inputClass}
@@ -770,7 +811,12 @@ function WorkoutForm({
           </div>
         </div>
         <div className="flex items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-slate-800">Exercices et series</p>
+          <div>
+            <p className="text-sm font-semibold text-slate-800">Exercices et series</p>
+            <p className="mt-1 text-xs text-slate-500">
+              Ajoute, reordonne et ajuste les series sans quitter le formulaire.
+            </p>
+          </div>
           <button
             type="button"
             className={secondaryButtonClass}
@@ -3376,16 +3422,24 @@ function ProfileForm({
       </Field>
 
       {sensitiveChange && (
-        <Field label="Mot de passe actuel">
-          <input
-            className={inputClass}
-            value={currentPassword}
-            onChange={(event) => setCurrentPassword(event.target.value)}
-            type="password"
-            autoComplete="current-password"
-            required
-          />
-        </Field>
+        <div className="rounded border border-amber-200 bg-amber-50/80 p-3">
+          <p className="text-sm font-semibold text-amber-950">Confirmation requise</p>
+          <p className="mt-1 text-xs text-amber-800/80">
+            Le mot de passe actuel est demande pour changer l'email ou definir un nouveau mot de passe.
+          </p>
+          <div className="mt-3">
+            <Field label="Mot de passe actuel">
+              <input
+                className={`${inputClass} bg-white`}
+                value={currentPassword}
+                onChange={(event) => setCurrentPassword(event.target.value)}
+                type="password"
+                autoComplete="current-password"
+                required
+              />
+            </Field>
+          </div>
+        </div>
       )}
 
       {successMessage && (
@@ -3434,6 +3488,7 @@ export function Dashboard({
   const [userGoalDraft, setUserGoalDraft] = useState<UserGoal | undefined>(undefined);
   const [workoutDraft, setWorkoutDraft] = useState<Workout | undefined>(undefined);
   const [workoutPrefillDraft, setWorkoutPrefillDraft] = useState<Workout | undefined>(undefined);
+  const [workoutPresetDate, setWorkoutPresetDate] = useState<string | undefined>(undefined);
   const [mealsView, setMealsView] = useState<"list" | "create">("list");
   const [mealDraft, setMealDraft] = useState<Meal | undefined>(undefined);
   const bodyMeasurementsStore = useBodyMeasurementsStore();
@@ -3684,6 +3739,7 @@ export function Dashboard({
                     setWorkoutsView("create");
                     setWorkoutDraft(undefined);
                     setWorkoutPrefillDraft(undefined);
+                    setWorkoutPresetDate(undefined);
                     return;
                   }
                   if (resource === "exercises") {
@@ -3707,7 +3763,12 @@ export function Dashboard({
                 }}
                 onCreateFromTemplate={
                   resource === "workouts"
-                    ? () => setWorkoutsView("from-template")
+                    ? () => {
+                        setWorkoutDraft(undefined);
+                        setWorkoutPrefillDraft(undefined);
+                        setWorkoutPresetDate(undefined);
+                        setWorkoutsView("from-template");
+                      }
                     : undefined
                 }
                 isLoading={isLoading}
@@ -3723,13 +3784,22 @@ export function Dashboard({
                   userGoals={userGoalsStore.userGoals}
                   isLoading={isLoading}
                   onQuickAction={(action) => {
-                    if (action === "workout") setModal({ type: "workout" });
+                    if (action === "workout") {
+                      setResource("workouts");
+                      setWorkoutDraft(undefined);
+                      setWorkoutPrefillDraft(undefined);
+                      setWorkoutPresetDate(undefined);
+                      setWorkoutsView("create");
+                    }
                     if (action === "meal") {
                       setResource("meals");
                       setMealDraft(undefined);
                       setMealsView("create");
                     }
-                    if (action === "goal") setModal({ type: "goal" });
+                    if (action === "goal") {
+                      setResource("sportGoals");
+                      setUserGoalDraft({} as UserGoal);
+                    }
                   }}
                 />
               )}
@@ -3738,7 +3808,13 @@ export function Dashboard({
                   workouts={workoutsStore.workouts}
                   userGoals={userGoalsStore.userGoals}
                   isLoading={isLoading}
-                  onPlan={(dateIso) => setModal({ type: "workout", presetDate: dateIso })}
+                  onPlan={(dateIso) => {
+                    setResource("workouts");
+                    setWorkoutDraft(undefined);
+                    setWorkoutPrefillDraft(undefined);
+                    setWorkoutPresetDate(dateIso);
+                    setWorkoutsView("create");
+                  }}
                   onAssociate={async (workoutId, dateIso) => {
                     await workoutsStore.updateWorkout(workoutId, { date: dateIso });
                   }}
@@ -3754,9 +3830,9 @@ export function Dashboard({
               {resource === "workouts" && (
                 <div className="space-y-4">
                   <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
-                    <button type="button" className={workoutsView === "list" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => { setWorkoutsView("list"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); }}>Liste</button>
-                    <button type="button" className={workoutsView === "create" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => { setWorkoutsView("create"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); }}>Creer une seance</button>
-                    <button type="button" className={workoutsView === "from-template" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setWorkoutsView("from-template")}>Depuis un modele</button>
+                    <button type="button" className={workoutsView === "list" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => { setWorkoutsView("list"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); setWorkoutPresetDate(undefined); }}>Liste</button>
+                    <button type="button" className={workoutsView === "create" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => { setWorkoutsView("create"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); setWorkoutPresetDate(undefined); }}>Creer une seance</button>
+                    <button type="button" className={workoutsView === "from-template" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => { setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); setWorkoutPresetDate(undefined); setWorkoutsView("from-template"); }}>Depuis un modele</button>
                   </div>
                   {workoutsView === "list" && (
                     <WorkoutsList
@@ -3764,11 +3840,13 @@ export function Dashboard({
                       onEdit={(item) => {
                         setWorkoutDraft(item);
                         setWorkoutPrefillDraft(undefined);
+                        setWorkoutPresetDate(undefined);
                         setWorkoutsView("create");
                       }}
                       onDuplicate={(item) => {
                         setWorkoutDraft(undefined);
                         setWorkoutPrefillDraft(item);
+                        setWorkoutPresetDate(undefined);
                         setWorkoutsView("create");
                       }}
                       onDelete={(item) => confirmDelete(item.name, () => workoutsStore.deleteWorkout(item.id))}
@@ -3779,11 +3857,13 @@ export function Dashboard({
                       <WorkoutForm
                         item={workoutDraft}
                         prefillWorkout={workoutPrefillDraft}
+                        initialDate={workoutPresetDate}
                         exercises={exercisesStore.exercises}
                         getExerciseImageUrl={getExerciseImageUrl}
                         onCancel={() => {
                           setWorkoutDraft(undefined);
                           setWorkoutPrefillDraft(undefined);
+                          setWorkoutPresetDate(undefined);
                           setWorkoutsView("list");
                         }}
                         onSubmit={(data) =>
@@ -4081,6 +4161,16 @@ function ResourceHeader({
     bodyGoals: "Objectifs corps",
     profile: "Profil",
   };
+  const createLabels: Partial<Record<Resource, string>> = {
+    bodyGoals: "Ajouter un objectif",
+    exercises: "Creer un exercice",
+    foods: "Creer un aliment",
+    goals: "Creer un objectif",
+    meals: "Creer un repas",
+    measurements: "Ajouter une mesure",
+    sportGoals: "Ajouter un objectif",
+    workouts: "Creer une seance",
+  };
 
   return (
     <div className="flex flex-col gap-3 border-b border-slate-200 pb-4 md:flex-row md:items-center md:justify-between">
@@ -4098,7 +4188,9 @@ function ResourceHeader({
             Depuis un modele
           </button>
         )}
-        <button type="button" className={buttonClass} onClick={onCreate}>Creer</button>
+        <button type="button" className={buttonClass} onClick={onCreate}>
+          {createLabels[resource] ?? "Creer"}
+        </button>
       </div>
     </div>
   );
@@ -4150,7 +4242,9 @@ function WorkoutsList({
   onDuplicate: (item: Workout) => void;
   onDelete: (item: Workout) => void;
 }) {
-  if (!workouts.length) return <EmptyState label="Aucune seance pour le moment." />;
+  if (!workouts.length) {
+    return <EmptyState label="Aucune seance pour le moment. Commence par creer ou planifier ta premiere seance." />;
+  }
   return (
     <ul className="space-y-3">
       {workouts.map((workout) => (
@@ -4228,7 +4322,9 @@ function ExercisesList({
     new Set(exercises.flatMap((exercise) => exercise.bodyParts ?? [])),
   ).sort((a, b) => a.localeCompare(b, "fr"));
 
-  if (!exercises.length) return <EmptyState label="Aucun exercice disponible." />;
+  if (!exercises.length) {
+    return <EmptyState label="Aucun exercice disponible. Cree un exercice pour composer tes seances." />;
+  }
 
   const normalizedSearch = search.trim().toLocaleLowerCase("fr-FR");
   const filteredExercises = exercises.filter((exercise) => {
@@ -4363,7 +4459,9 @@ function FoodsList({ foods, onEdit, onDelete }: { foods: Food[]; onEdit: (item: 
     );
   });
 
-  if (!foods.length) return <EmptyState label="Aucun aliment disponible." />;
+  if (!foods.length) {
+    return <EmptyState label="Aucun aliment disponible. Cree un aliment pour composer tes repas." />;
+  }
 
   return (
     <div className="space-y-4">
@@ -4480,7 +4578,9 @@ function MealsList({
   onDuplicate: (item: Meal) => void;
   onDelete: (item: Meal) => void;
 }) {
-  if (!meals.length) return <EmptyState label="Aucun repas pour le moment." />;
+  if (!meals.length) {
+    return <EmptyState label="Aucun repas pour le moment. Saisis un repas pour comparer tes apports a tes objectifs." />;
+  }
   return (
     <ul className="space-y-3">
       {meals.map((meal) => (
@@ -4504,7 +4604,9 @@ function MealsList({
 }
 
 function NutritionGoalsList({ goals, onEdit, onDelete }: { goals: NutritionGoal[]; onEdit: (item: NutritionGoal) => void; onDelete: (item: NutritionGoal) => void }) {
-  if (!goals.length) return <EmptyState label="Aucun objectif nutrition." />;
+  if (!goals.length) {
+    return <EmptyState label="Aucun objectif nutrition. Ajoute une cible pour lire les ecarts calories et macros." />;
+  }
   return (
     <ul className="grid gap-3 lg:grid-cols-2">
       {goals.map((goal) => (
