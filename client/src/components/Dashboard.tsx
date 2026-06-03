@@ -268,6 +268,10 @@ function numberOrNull(value: string) {
   return value === "" ? null : Number(value);
 }
 
+function servingUnitLabel(servingUnit: string) {
+  return servingUnit === "unit" ? "1 unit" : "100 g";
+}
+
 function moveItem<T>(items: T[], fromIndex: number, toIndex: number): T[] {
   if (toIndex < 0 || toIndex >= items.length || fromIndex === toIndex) {
     return items;
@@ -4384,7 +4388,7 @@ function FoodsList({ foods, onEdit, onDelete }: { foods: Food[]; onEdit: (item: 
                 <div>
                   <p className="font-semibold">{food.name}</p>
                   <p className="mt-1 text-sm text-slate-600">{food.caloriesKcal} kcal - P {food.proteinGrams} / G {food.carbsGrams} / L {food.fatGrams}</p>
-                  <p className="mt-1 text-xs text-slate-500">{food.isGlobal ? "Global" : "Personnel"} - pour 100 {food.servingUnit}</p>
+                  <p className="mt-1 text-xs text-slate-500">{food.isGlobal ? "Global" : "Personnel"} - pour {servingUnitLabel(food.servingUnit)}</p>
                   {food.barcode && (
                     <p className="mt-1 text-xs font-medium text-slate-500">Code-barres: {food.barcode}</p>
                   )}

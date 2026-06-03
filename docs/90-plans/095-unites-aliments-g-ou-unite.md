@@ -24,3 +24,4 @@
 - A completer pendant l'implementation.
 - 2026-06-03: contrainte appliquee via Zod, schema Prisma et migration SQL `foods_serving_unit_check`.
 - 2026-06-03: verification locale bloquee, `npm` n'est pas disponible dans le PATH PowerShell de l'environnement.
+- 2026-06-03: affichage aliments ajuste pour montrer `pour 1 unit` quand l'unite vaut `unit`, et `pour 100 g` sinon.
