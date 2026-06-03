@@ -56,6 +56,32 @@ export function Field({
   );
 }
 
+export function MacroInput({
+  label,
+  value,
+  onChange,
+  required = true,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  required?: boolean;
+}) {
+  return (
+    <Field label={label}>
+      <input
+        className={inputClass}
+        type="number"
+        min="0"
+        step="0.01"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        required={required}
+      />
+    </Field>
+  );
+}
+
 export function FormActions({
   isSaving,
   onCancel,

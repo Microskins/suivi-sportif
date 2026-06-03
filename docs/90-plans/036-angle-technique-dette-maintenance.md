@@ -81,3 +81,5 @@ Ordre conseille:
 - 2026-06-03: premiere extraction lancee: `ProfileForm` sorti vers `client/src/components/dashboard/ProfileForm.tsx`, puis helpers UI sortis vers `client/src/components/dashboard/shared.tsx`; `Dashboard.tsx` passe de 4410 a 4247 lignes.
 - 2026-06-03: regle projet adoptee: 500 lignes max par fichier, sauf exception documentee. Exceptions temporaires identifiees: seeds Prisma, `api.test.ts`, `client.ts`, `bypassMockData.ts`.
 - 2026-06-03: validations apres extraction `ProfileForm` et `shared.tsx`: `tsc --noEmit -p client\tsconfig.json`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-03: deuxieme extraction: `FoodForm` sorti vers `client/src/components/dashboard/FoodForm.tsx`; `MacroInput` deplace dans `shared.tsx`; `Dashboard.tsx` passe de 4247 a 4168 lignes.
+- 2026-06-03: validations apres extraction `FoodForm`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
