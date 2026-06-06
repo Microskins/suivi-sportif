@@ -7,33 +7,14 @@ import type {
   Workout,
   User,
 } from "../api/client";
-import { DashboardOverview } from "./DashboardOverview";
-import { DashboardMeasurementsSection } from "./dashboard/DashboardMeasurementsSection";
+import { DashboardMainContent } from "./dashboard/DashboardMainContent";
 import { DashboardModalContent } from "./dashboard/DashboardModalContent";
-import { DashboardWorkoutsSection } from "./dashboard/DashboardWorkoutsSection";
-import { DashboardExercisesSection } from "./dashboard/DashboardExercisesSection";
-import { DashboardGoalsSection } from "./dashboard/DashboardGoalsSection";
-import { FoodsList } from "./dashboard/FoodsList";
-import { DashboardMealsSection } from "./dashboard/DashboardMealsSection";
-import { duplicateMealInput } from "./dashboard/MealForm";
 import { Modal } from "./dashboard/Modal";
-import { modalTitle, type ModalState, openCreate } from "./dashboard/modalState";
-import { NutritionGoalsList } from "./dashboard/NutritionGoalsList";
-import { ProfileForm } from "./dashboard/ProfileForm";
+import { modalTitle, type ModalState } from "./dashboard/modalState";
 import { DashboardNav } from "./dashboard/DashboardNav";
 import { DashboardTopBar } from "./dashboard/DashboardTopBar";
-import { ResourceHeader, type DashboardResource } from "./dashboard/ResourceHeader";
+import type { DashboardResource } from "./dashboard/ResourceHeader";
 import { labelFromOptions } from "./dashboard/workoutFormUtils";
-import {
-  activeViewButtonClass,
-  EmptyState,
-  ErrorBox,
-  Field,
-  inactiveViewButtonClass,
-  inputClass,
-  secondaryButtonClass,
-} from "./dashboard/shared";
-import { WorkoutsCalendar } from "./WorkoutsCalendar";
 import { useBodyMeasurementsStore } from "../stores/bodyMeasurementsStore";
 import { useExercisesStore } from "../stores/exercisesStore";
 import { useFoodsStore } from "../stores/foodsStore";
@@ -259,302 +240,48 @@ export function Dashboard({
             }}
           />
 
-          <div className={contentClass}>
-            {resource !== "dashboard" && resource !== "calendar" && resource !== "profile" && (
-              <ResourceHeader
-                resource={resource}
-                onCreate={() => {
-                  if (resource === "workouts") {
-                    setWorkoutsView("create");
-                    setWorkoutDraft(undefined);
-                    setWorkoutPrefillDraft(undefined);
-                    setWorkoutPresetDate(undefined);
-                    return;
-                  }
-                  if (resource === "exercises") {
-                    setExerciseDraft({} as Exercise);
-                    return;
-                  }
-                  if (resource === "measurements") {
-                    setBodyMeasurementDraft({} as BodyMeasurement);
-                    return;
-                  }
-                  if (resource === "meals") {
-                    setMealDraft(undefined);
-                    setMealsView("create");
-                    return;
-                  }
-                  if (resource === "sportGoals" || resource === "bodyGoals") {
-                    setUserGoalDraft({} as UserGoal);
-                    return;
-                  }
-                  openCreate(resource, setModal);
-                }}
-                onCreateFromTemplate={
-                  resource === "workouts"
-                    ? () => {
-                        setWorkoutDraft(undefined);
-                        setWorkoutPrefillDraft(undefined);
-                        setWorkoutPresetDate(undefined);
-                        setWorkoutsView("from-template");
-                      }
-                    : undefined
-                }
-                isLoading={isLoading}
-              />
-            )}
-            <div className={resource === "dashboard" ? "space-y-4" : "mt-4 space-y-4"}>
-              <ErrorBox message={activeError} />
-              {resource === "dashboard" && (
-                <DashboardOverview
-                  workouts={workoutsStore.workouts}
-                  meals={mealsStore.meals}
-                  nutritionGoals={goalsStore.nutritionGoals}
-                  userGoals={userGoalsStore.userGoals}
-                  isLoading={isLoading}
-                  onQuickAction={(action) => {
-                    if (action === "workout") {
-                      setResource("workouts");
-                      setWorkoutDraft(undefined);
-                      setWorkoutPrefillDraft(undefined);
-                      setWorkoutPresetDate(undefined);
-                      setWorkoutsView("create");
-                    }
-                    if (action === "meal") {
-                      setResource("meals");
-                      setMealDraft(undefined);
-                      setMealsView("create");
-                    }
-                    if (action === "goal") {
-                      setResource("sportGoals");
-                      setUserGoalDraft({} as UserGoal);
-                    }
-                  }}
-                />
-              )}
-              {resource === "calendar" && (
-                <WorkoutsCalendar
-                  workouts={workoutsStore.workouts}
-                  userGoals={userGoalsStore.userGoals}
-                  isLoading={isLoading}
-                  onPlan={(dateIso) => {
-                    setResource("workouts");
-                    setWorkoutDraft(undefined);
-                    setWorkoutPrefillDraft(undefined);
-                    setWorkoutPresetDate(dateIso);
-                    setWorkoutsView("create");
-                  }}
-                  onAssociate={async (workoutId, dateIso) => {
-                    await workoutsStore.updateWorkout(workoutId, { date: dateIso });
-                  }}
-                  onEdit={(workout) => setModal({ type: "workout", item: workout })}
-                  onDuplicate={(workout) =>
-                    setModal({
-                      type: "workout",
-                      prefillWorkout: workout,
-                    })
-                  }
-                />
-              )}
-              {resource === "workouts" && (
-                <DashboardWorkoutsSection
-                  workoutsView={workoutsView}
-                  workouts={workoutsStore.workouts}
-                  workoutTemplates={workoutTemplatesStore.workoutTemplates}
-                  exercises={exercisesStore.exercises}
-                  workoutDraft={workoutDraft}
-                  workoutPrefillDraft={workoutPrefillDraft}
-                  workoutPresetDate={workoutPresetDate}
-                  getExerciseImageUrl={getExerciseImageUrl}
-                  onShowList={() => {
-                    setWorkoutsView("list");
-                    setWorkoutDraft(undefined);
-                    setWorkoutPrefillDraft(undefined);
-                    setWorkoutPresetDate(undefined);
-                  }}
-                  onShowCreate={() => {
-                    setWorkoutsView("create");
-                    setWorkoutDraft(undefined);
-                    setWorkoutPrefillDraft(undefined);
-                    setWorkoutPresetDate(undefined);
-                  }}
-                  onShowFromTemplate={() => {
-                    setWorkoutDraft(undefined);
-                    setWorkoutPrefillDraft(undefined);
-                    setWorkoutPresetDate(undefined);
-                    setWorkoutsView("from-template");
-                  }}
-                  onEditWorkout={(item) => {
-                    setWorkoutDraft(item);
-                    setWorkoutPrefillDraft(undefined);
-                    setWorkoutPresetDate(undefined);
-                    setWorkoutsView("create");
-                  }}
-                  onDuplicateWorkout={(item) => {
-                    setWorkoutDraft(undefined);
-                    setWorkoutPrefillDraft(item);
-                    setWorkoutPresetDate(undefined);
-                    setWorkoutsView("create");
-                  }}
-                  onDeleteWorkout={(item) => confirmDelete(item.name, () => workoutsStore.deleteWorkout(item.id))}
-                  onCancelWorkoutForm={() => {
-                    setWorkoutDraft(undefined);
-                    setWorkoutPrefillDraft(undefined);
-                    setWorkoutPresetDate(undefined);
-                    setWorkoutsView("list");
-                  }}
-                  onSubmitWorkout={(data) =>
-                    workoutDraft
-                      ? workoutsStore.updateWorkout(workoutDraft.id, data)
-                      : workoutsStore.createWorkout(data)
-                  }
-                  onInstantiateWorkoutTemplate={(id, date) =>
-                    workoutTemplatesStore.instantiateWorkoutTemplate(id, date)
-                  }
-                  onCreateWorkoutTemplate={(data) =>
-                    workoutTemplatesStore.createWorkoutTemplate(data)
-                  }
-                  onUpdateWorkoutTemplate={(id, data) =>
-                    workoutTemplatesStore.updateWorkoutTemplate(id, data)
-                  }
-                />
-              )}
-              {resource === "sportGoals" && (
-                <DashboardGoalsSection
-                  domain="SPORT"
-                  goals={userGoalsStore.userGoals}
-                  exercises={exercisesStore.exercises}
-                  workouts={workoutsStore.workouts}
-                  measurements={bodyMeasurementsStore.bodyMeasurements}
-                  draft={userGoalDraft}
-                  onCreate={() => setUserGoalDraft({} as UserGoal)}
-                  onEdit={(goal) => setUserGoalDraft(goal)}
-                  onCancel={() => setUserGoalDraft(undefined)}
-                  onSubmit={(data) =>
-                    userGoalDraft?.id
-                      ? userGoalsStore.updateUserGoal(userGoalDraft.id, data)
-                      : userGoalsStore.createUserGoal(data)
-                  }
-                  onDelete={(goal) => confirmDelete(goal.name, () => userGoalsStore.deleteUserGoal(goal.id))}
-                />
-              )}
-              {resource === "exercises" && (
-                <DashboardExercisesSection
-                  exerciseDraft={exerciseDraft}
-                  exercises={exercisesStore.exercises}
-                  getExerciseImageUrl={getExerciseImageUrl}
-                  onShowList={() => setExerciseDraft(undefined)}
-                  onShowCreate={() => setExerciseDraft({} as Exercise)}
-                  onEditExercise={(item) => setExerciseDraft(item)}
-                  onDeleteExercise={(item) => confirmDelete(item.name, () => exercisesStore.deleteExercise(item.id))}
-                  onCancelExerciseForm={() => setExerciseDraft(undefined)}
-                  onSubmitExercise={(data) =>
-                    exerciseDraft?.id
-                      ? exercisesStore.updateExercise(exerciseDraft.id, data)
-                      : exercisesStore.createExercise(data)
-                  }
-                />
-              )}
-              {resource === "foods" && (
-                <FoodsList
-                  foods={foodsStore.foods}
-                  onEdit={(item) => setModal({ type: "food", item })}
-                  onDelete={(item) => confirmDelete(item.name, () => foodsStore.deleteFood(item.id))}
-                />
-              )}
-              {resource === "meals" && (
-                <DashboardMealsSection
-                  mealsView={mealsView}
-                  mealDraft={mealDraft}
-                  meals={mealsStore.meals}
-                  foods={foodsStore.foods}
-                  nutritionGoals={goalsStore.nutritionGoals}
-                  onShowList={() => {
-                    setMealsView("list");
-                    setMealDraft(undefined);
-                  }}
-                  onShowCreate={() => {
-                    setMealsView("create");
-                    setMealDraft(undefined);
-                  }}
-                  onEditMeal={(item) => {
-                    setMealDraft(item);
-                    setMealsView("create");
-                  }}
-                  onDuplicateMeal={(item) => {
-                    const copy = duplicateMealInput(item);
-                    if (copy) {
-                      void mealsStore.createMeal(copy, foodsStore.foods);
-                    }
-                  }}
-                  onDeleteMeal={(item) => confirmDelete(item.name, () => mealsStore.deleteMeal(item.id))}
-                  onCancelMealForm={() => {
-                    setMealDraft(undefined);
-                    setMealsView("list");
-                  }}
-                  onSubmitMeal={(data) =>
-                    mealDraft
-                      ? mealsStore.updateMeal(mealDraft.id, data, foodsStore.foods)
-                      : mealsStore.createMeal(data, foodsStore.foods)
-                  }
-                />
-              )}
-              {resource === "goals" && (
-                <NutritionGoalsList
-                  goals={goalsStore.nutritionGoals}
-                  onEdit={(item) => setModal({ type: "goal", item })}
-                  onDelete={(item) => confirmDelete(item.name, () => goalsStore.deleteNutritionGoal(item.id))}
-                />
-              )}
-              {resource === "measurements" && (
-                <DashboardMeasurementsSection
-                  bodyMeasurementDraft={bodyMeasurementDraft}
-                  measurements={bodyMeasurementsStore.bodyMeasurements}
-                  userDateOfBirth={userDateOfBirth}
-                  formatDate={formatDate}
-                  onShowHistory={() => setBodyMeasurementDraft(undefined)}
-                  onShowCreate={() => setBodyMeasurementDraft({} as BodyMeasurement)}
-                  onEditMeasurement={(item) => setBodyMeasurementDraft(item)}
-                  onDeleteMeasurement={(item) => confirmDelete(formatDate(item.date), () => bodyMeasurementsStore.deleteBodyMeasurement(item.id))}
-                  onCancelMeasurementForm={() => setBodyMeasurementDraft(undefined)}
-                  onSubmitMeasurement={(data) =>
-                    bodyMeasurementDraft?.id
-                      ? bodyMeasurementsStore.updateBodyMeasurement(bodyMeasurementDraft.id, data)
-                      : bodyMeasurementsStore.createBodyMeasurement(data)
-                  }
-                />
-              )}
-              {resource === "bodyGoals" && (
-                <DashboardGoalsSection
-                  domain="BODY"
-                  goals={userGoalsStore.userGoals}
-                  exercises={exercisesStore.exercises}
-                  workouts={workoutsStore.workouts}
-                  measurements={bodyMeasurementsStore.bodyMeasurements}
-                  draft={userGoalDraft}
-                  onCreate={() => setUserGoalDraft({} as UserGoal)}
-                  onEdit={(goal) => setUserGoalDraft(goal)}
-                  onCancel={() => setUserGoalDraft(undefined)}
-                  onSubmit={(data) =>
-                    userGoalDraft?.id
-                      ? userGoalsStore.updateUserGoal(userGoalDraft.id, data)
-                      : userGoalsStore.createUserGoal(data)
-                  }
-                  onDelete={(goal) => confirmDelete(goal.name, () => userGoalsStore.deleteUserGoal(goal.id))}
-                />
-              )}
-              {resource === "profile" && (
-                <ProfileForm
-                  userName={userName}
-                  userEmail={userEmail}
-                  userDateOfBirth={userDateOfBirth}
-                  isSaving={isProfileSaving}
-                  error={profileError}
-                  onSubmit={onUpdateProfile}
-                />
-              )}
-            </div>
-          </div>
+          <DashboardMainContent
+            activeError={activeError}
+            bodyMeasurementDraft={bodyMeasurementDraft}
+            bodyMeasurementsStore={bodyMeasurementsStore}
+            contentClass={contentClass}
+            exerciseDraft={exerciseDraft}
+            exercisesStore={exercisesStore}
+            foodsStore={foodsStore}
+            formatDate={formatDate}
+            getExerciseImageUrl={getExerciseImageUrl}
+            goalsStore={goalsStore}
+            isLoading={isLoading}
+            isProfileSaving={isProfileSaving}
+            mealDraft={mealDraft}
+            mealsStore={mealsStore}
+            mealsView={mealsView}
+            onUpdateProfile={onUpdateProfile}
+            profileError={profileError}
+            resource={resource}
+            setBodyMeasurementDraft={setBodyMeasurementDraft}
+            setExerciseDraft={setExerciseDraft}
+            setMealDraft={setMealDraft}
+            setMealsView={setMealsView}
+            setModal={setModal}
+            setResource={setResource}
+            setUserGoalDraft={setUserGoalDraft}
+            setWorkoutDraft={setWorkoutDraft}
+            setWorkoutPrefillDraft={setWorkoutPrefillDraft}
+            setWorkoutPresetDate={setWorkoutPresetDate}
+            setWorkoutsView={setWorkoutsView}
+            userDateOfBirth={userDateOfBirth}
+            userEmail={userEmail}
+            userGoalDraft={userGoalDraft}
+            userGoalsStore={userGoalsStore}
+            userName={userName}
+            workoutDraft={workoutDraft}
+            workoutPrefillDraft={workoutPrefillDraft}
+            workoutPresetDate={workoutPresetDate}
+            workoutsStore={workoutsStore}
+            workoutsView={workoutsView}
+            workoutTemplatesStore={workoutTemplatesStore}
+          />
         </div>
       </section>
 
@@ -586,10 +313,4 @@ export function Dashboard({
       )}
     </main>
   );
-}
-
-function confirmDelete(label: string, action: () => Promise<void>) {
-  if (window.confirm(`Supprimer "${label}" ?`)) {
-    void action();
-  }
 }

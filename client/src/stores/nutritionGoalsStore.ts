@@ -8,7 +8,7 @@ import { bypassNutritionGoals } from "./bypassMockData";
 
 const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
 
-type NutritionGoalsState = {
+export type NutritionGoalsState = {
   nutritionGoals: NutritionGoal[];
   isLoading: boolean;
   error: string | null;

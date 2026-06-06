@@ -587,6 +587,34 @@
 
 ---
 
+## 2026-06-06 - DX: controle automatique des fichiers trop longs
+
+## Contexte
+
+- Le plan dette et maintenance adopte une limite de 500 lignes par fichier maintenu a la main.
+- Le split de `Dashboard.tsx` rend la regle atteignable, mais le controle reste manuel.
+
+## Proposition
+
+- Ajouter un script de verification qui liste les fichiers de code ou docs au-dessus de 500 lignes.
+- Exclure explicitement les fichiers generes, configs volumineuses et exceptions documentees.
+- Brancher ce script dans une commande de qualite locale ou CI quand la liste d'exceptions sera stabilisee.
+
+## Impact
+
+- Evite les regressions discretes vers des fichiers monolithiques.
+- Rend la regle plus simple a appliquer sans inspection manuelle.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/036-angle-technique-dette-maintenance.md
+
+---
+
 ## 2026-05-31 - Profil: securite compte et confirmation email
 
 ## Contexte

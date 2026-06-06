@@ -6,7 +6,7 @@ import { useWorkoutsStore } from "./workoutsStore";
 const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
 const bypassUserId = "00000000-0000-4000-8000-000000000000";
 
-type WorkoutTemplatesState = {
+export type WorkoutTemplatesState = {
   workoutTemplates: WorkoutTemplate[];
   isLoading: boolean;
   error: string | null;

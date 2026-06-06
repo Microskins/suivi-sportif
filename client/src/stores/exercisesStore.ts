@@ -4,7 +4,7 @@ import { bypassExercises } from "./bypassMockData";
 
 const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
 
-type ExercisesState = {
+export type ExercisesState = {
   exercises: Exercise[];
   isLoading: boolean;
   error: string | null;

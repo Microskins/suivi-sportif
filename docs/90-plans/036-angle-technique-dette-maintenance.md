@@ -153,3 +153,6 @@ Ordre conseille:
 - 2026-06-06: validations apres extraction `DashboardExercisesSection`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
 - 2026-06-06: trente-septieme extraction: section objectifs sport/corps sortie vers `client/src/components/dashboard/DashboardGoalsSection.tsx`; `Dashboard.tsx` passe de 582 a 574 lignes.
 - 2026-06-06: validations apres extraction `DashboardGoalsSection`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-06: trente-huitieme extraction: contenu principal dashboard sorti vers `client/src/components/dashboard/DashboardMainContent.tsx`; types d'etat Zustand exportes pour garder des props explicites; `Dashboard.tsx` passe de 574 a 316 lignes et `DashboardMainContent.tsx` reste a 418 lignes.
+- 2026-06-06: validations apres extraction `DashboardMainContent`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-06: idee complementaire ajoutee dans `docs/06-idees/90-ia-idees.md` pour automatiser le controle des fichiers depassant la limite de 500 lignes.
