@@ -41,6 +41,7 @@ import { MealsList } from "./dashboard/MealsList";
 import { NutritionGoalForm } from "./dashboard/NutritionGoalForm";
 import { NutritionGoalsList } from "./dashboard/NutritionGoalsList";
 import { ProfileForm } from "./dashboard/ProfileForm";
+import { ResourceHeader, type DashboardResource } from "./dashboard/ResourceHeader";
 import { UserGoalForm } from "./dashboard/UserGoalForm";
 import { userGoalMetricOptions } from "./dashboard/userGoals";
 import { WorkoutsList } from "./dashboard/WorkoutsList";
@@ -71,18 +72,7 @@ import { useUserGoalsStore } from "../stores/userGoalsStore";
 import { useWorkoutTemplatesStore } from "../stores/workoutTemplatesStore";
 import { useWorkoutsStore } from "../stores/workoutsStore";
 
-type Resource =
-  | "dashboard"
-  | "calendar"
-  | "workouts"
-  | "sportGoals"
-  | "exercises"
-  | "foods"
-  | "meals"
-  | "goals"
-  | "measurements"
-  | "bodyGoals"
-  | "profile";
+type Resource = DashboardResource;
 type ModalState =
   | { type: "workout"; item?: Workout; prefillWorkout?: Workout; presetDate?: string }
   | { type: "workout-template" }
@@ -3408,65 +3398,6 @@ export function Dashboard({
         </Modal>
       )}
     </main>
-  );
-}
-
-function ResourceHeader({
-  resource,
-  onCreate,
-  onCreateFromTemplate,
-  isLoading,
-}: {
-  resource: Resource;
-  onCreate: () => void;
-  onCreateFromTemplate?: () => void;
-  isLoading: boolean;
-}) {
-  const titles: Record<Resource, string> = {
-    dashboard: "Synthese",
-    calendar: "Calendrier",
-    workouts: "Seances",
-    sportGoals: "Objectifs sport",
-    exercises: "Exercices",
-    foods: "Aliments",
-    meals: "Repas",
-    goals: "Objectifs nutrition",
-    measurements: "Mensurations",
-    bodyGoals: "Objectifs corps",
-    profile: "Profil",
-  };
-  const createLabels: Partial<Record<Resource, string>> = {
-    bodyGoals: "Ajouter un objectif",
-    exercises: "Creer un exercice",
-    foods: "Creer un aliment",
-    goals: "Creer un objectif",
-    meals: "Creer un repas",
-    measurements: "Ajouter une mesure",
-    sportGoals: "Ajouter un objectif",
-    workouts: "Creer une seance",
-  };
-
-  return (
-    <div className="flex flex-col gap-3 border-b border-slate-200 pb-4 md:flex-row md:items-center md:justify-between">
-      <div>
-        <h2 className="text-xl font-semibold text-slate-950">{titles[resource]}</h2>
-        {isLoading && <p className="mt-1 text-sm text-slate-500">Chargement...</p>}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {onCreateFromTemplate && (
-          <button
-            type="button"
-            className={secondaryButtonClass}
-            onClick={onCreateFromTemplate}
-          >
-            Depuis un modele
-          </button>
-        )}
-        <button type="button" className={buttonClass} onClick={onCreate}>
-          {createLabels[resource] ?? "Creer"}
-        </button>
-      </div>
-    </div>
   );
 }
 
