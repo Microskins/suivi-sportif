@@ -39,6 +39,7 @@ import { FoodForm } from "./dashboard/FoodForm";
 import { FoodsList } from "./dashboard/FoodsList";
 import { MealsList } from "./dashboard/MealsList";
 import { Modal } from "./dashboard/Modal";
+import { modalTitle, type ModalState, openCreate } from "./dashboard/modalState";
 import { NutritionGoalForm } from "./dashboard/NutritionGoalForm";
 import { NutritionGoalsList } from "./dashboard/NutritionGoalsList";
 import { ProfileForm } from "./dashboard/ProfileForm";
@@ -74,12 +75,6 @@ import { useWorkoutTemplatesStore } from "../stores/workoutTemplatesStore";
 import { useWorkoutsStore } from "../stores/workoutsStore";
 
 type Resource = DashboardResource;
-type ModalState =
-  | { type: "workout"; item?: Workout; prefillWorkout?: Workout; presetDate?: string }
-  | { type: "workout-template" }
-  | { type: "food"; item?: Food }
-  | { type: "goal"; item?: NutritionGoal }
-  | null;
 
 const difficultyOptions = [
   ["BEGINNER", "Debutant"],
@@ -3372,26 +3367,6 @@ export function Dashboard({
       )}
     </main>
   );
-}
-
-function openCreate(resource: Resource, setModal: (modal: ModalState) => void) {
-  if (resource === "workouts") setModal({ type: "workout" });
-  if (resource === "foods") setModal({ type: "food" });
-  if (resource === "goals") setModal({ type: "goal" });
-}
-
-function modalTitle(modal: Exclude<ModalState, null>) {
-  if (modal.type === "workout-template") {
-    return "Creer depuis un modele";
-  }
-
-  const prefix = modal.item ? "Modifier" : "Creer";
-  const names = {
-    workout: "une seance",
-    food: "un aliment",
-    goal: "un objectif",
-  };
-  return `${prefix} ${names[modal.type]}`;
 }
 
 function confirmDelete(label: string, action: () => Promise<void>) {
