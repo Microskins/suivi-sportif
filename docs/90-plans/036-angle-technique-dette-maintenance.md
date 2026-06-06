@@ -105,3 +105,5 @@ Ordre conseille:
 - 2026-06-06: validations apres extraction `Modal`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
 - 2026-06-06: treizieme extraction: `ModalState`, `openCreate` et `modalTitle` sortis vers `client/src/components/dashboard/modalState.ts`; `Dashboard.tsx` passe de 3309 a 3287 lignes.
 - 2026-06-06: validations apres extraction helpers modale: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-06: quatorzieme extraction: `ExerciseForm` sorti vers `client/src/components/dashboard/ExerciseForm.tsx`; `Dashboard.tsx` passe de 3287 a 3186 lignes.
+- 2026-06-06: validations apres extraction `ExerciseForm`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `git diff --check`.
