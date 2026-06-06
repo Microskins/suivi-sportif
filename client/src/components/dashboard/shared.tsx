@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 export const inputClass =
   "block w-full rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-950 outline-none focus:border-emerald-700";
@@ -38,6 +38,42 @@ export function EmptyState({ label }: { label: string }) {
     <div className="rounded border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-600">
       {label}
     </div>
+  );
+}
+
+export function ExerciseImagePreview({
+  imageUrl,
+  label,
+  className = "h-28 w-28",
+}: {
+  imageUrl: string | null;
+  label: string;
+  className?: string;
+}) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [imageUrl]);
+
+  if (!imageUrl || imageFailed) {
+    return (
+      <div
+        className={`flex items-center justify-center rounded border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500 ${className}`}
+      >
+        {imageUrl ? "Image indisponible" : "Aucune image"}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={imageUrl}
+      alt={`Illustration de ${label}`}
+      className={`rounded border border-slate-200 object-cover object-[center_56%] ${className}`}
+      loading="lazy"
+      onError={() => setImageFailed(true)}
+    />
   );
 }
 
