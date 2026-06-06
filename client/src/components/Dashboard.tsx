@@ -22,6 +22,7 @@ import { NutritionDayPanel } from "./dashboard/NutritionDayPanel";
 import { NutritionGoalForm } from "./dashboard/NutritionGoalForm";
 import { NutritionGoalsList } from "./dashboard/NutritionGoalsList";
 import { ProfileForm } from "./dashboard/ProfileForm";
+import { DashboardNav } from "./dashboard/DashboardNav";
 import { ResourceHeader, type DashboardResource } from "./dashboard/ResourceHeader";
 import { SportProgressionPanel } from "./dashboard/SportProgressionPanel";
 import { UserGoalsPanel } from "./dashboard/UserGoalsPanel";
@@ -263,108 +264,15 @@ export function Dashboard({
         </div>
 
         <div className="mt-5 grid gap-5 md:grid-cols-[230px_1fr]">
-          <nav className="h-fit rounded border border-neutral-200 bg-white/95 p-2 shadow-sm backdrop-blur md:sticky md:top-6">
-            <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-              Accueil
-            </p>
-            <button
-              type="button"
-              onClick={() => setResource("dashboard")}
-              className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
-                resource === "dashboard" ? "border-emerald-700 bg-emerald-700 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
-              }`}
-            >
-              Synthese
-            </button>
-            <button
-              type="button"
-              onClick={() => setResource("calendar")}
-              className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
-                resource === "calendar"
-                  ? "border-emerald-700 bg-emerald-700 text-white shadow-sm"
-                  : "border-transparent text-neutral-700 hover:bg-neutral-100"
-              }`}
-            >
-              Calendrier
-            </button>
-            <p className="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-              Sport
-            </p>
-            {[
-              ["workouts", "Seances"],
-              ["sportGoals", "Objectifs"],
-              ["exercises", "Exercices"],
-            ].map(([key, label]) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => {
-                  setUserGoalDraft(undefined);
-                  setResource(key as Resource);
-                }}
-                className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
-                  resource === key ? "border-neutral-950 bg-neutral-950 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-            <p className="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-              Nutrition
-            </p>
-            {[
-              ["foods", "Aliments"],
-              ["meals", "Repas"],
-              ["goals", "Objectifs"],
-            ].map(([key, label]) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setResource(key as Resource)}
-                className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
-                  resource === key ? "border-amber-600 bg-amber-600 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-            <p className="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-              Corps
-            </p>
-            <button
-              type="button"
-              onClick={() => setResource("measurements")}
-              className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
-                resource === "measurements" ? "border-rose-600 bg-rose-600 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
-              }`}
-            >
-              Mensurations
-            </button>
-            <button
-              type="button"
-              onClick={() => {
+          <DashboardNav
+            resource={resource}
+            onSelect={(nextResource) => {
+              if (nextResource === "sportGoals" || nextResource === "bodyGoals") {
                 setUserGoalDraft(undefined);
-                setResource("bodyGoals");
-              }}
-              className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
-                resource === "bodyGoals" ? "border-rose-600 bg-rose-600 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
-              }`}
-            >
-              Objectifs
-            </button>
-            <p className="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-              Compte
-            </p>
-            <button
-              type="button"
-              onClick={() => setResource("profile")}
-              className={`mb-1 block w-full rounded border px-3 py-2 text-left text-sm font-medium transition ${
-                resource === "profile" ? "border-sky-700 bg-sky-700 text-white shadow-sm" : "border-transparent text-neutral-700 hover:bg-neutral-100"
-              }`}
-            >
-              Profil
-            </button>
-          </nav>
+              }
+              setResource(nextResource);
+            }}
+          />
 
           <div className={contentClass}>
             {resource !== "dashboard" && resource !== "calendar" && resource !== "profile" && (
