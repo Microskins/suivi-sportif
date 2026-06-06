@@ -11,8 +11,7 @@ import { DashboardOverview } from "./DashboardOverview";
 import { DashboardMeasurementsSection } from "./dashboard/DashboardMeasurementsSection";
 import { DashboardModalContent } from "./dashboard/DashboardModalContent";
 import { DashboardWorkoutsSection } from "./dashboard/DashboardWorkoutsSection";
-import { ExerciseForm } from "./dashboard/ExerciseForm";
-import { ExercisesList } from "./dashboard/ExercisesList";
+import { DashboardExercisesSection } from "./dashboard/DashboardExercisesSection";
 import { FoodsList } from "./dashboard/FoodsList";
 import { DashboardMealsSection } from "./dashboard/DashboardMealsSection";
 import { duplicateMealInput } from "./dashboard/MealForm";
@@ -448,32 +447,21 @@ export function Dashboard({
                 </div>
               )}
               {resource === "exercises" && (
-                <div className="space-y-4">
-                  <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
-                    <button type="button" className={exerciseDraft === undefined ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setExerciseDraft(undefined)}>Liste</button>
-                    <button type="button" className={exerciseDraft !== undefined && !exerciseDraft.id ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setExerciseDraft({} as Exercise)}>Creer un exercice</button>
-                  </div>
-                  {exerciseDraft !== undefined ? (
-                    <div className="rounded border border-slate-200 bg-white p-4">
-                      <ExerciseForm
-                        item={exerciseDraft.id ? exerciseDraft : undefined}
-                        onCancel={() => setExerciseDraft(undefined)}
-                        onSubmit={(data) =>
-                          exerciseDraft.id
-                            ? exercisesStore.updateExercise(exerciseDraft.id, data)
-                            : exercisesStore.createExercise(data)
-                        }
-                      />
-                    </div>
-                  ) : (
-                    <ExercisesList
-                      exercises={exercisesStore.exercises}
-                      getExerciseImageUrl={getExerciseImageUrl}
-                      onEdit={(item) => setExerciseDraft(item)}
-                      onDelete={(item) => confirmDelete(item.name, () => exercisesStore.deleteExercise(item.id))}
-                    />
-                  )}
-                </div>
+                <DashboardExercisesSection
+                  exerciseDraft={exerciseDraft}
+                  exercises={exercisesStore.exercises}
+                  getExerciseImageUrl={getExerciseImageUrl}
+                  onShowList={() => setExerciseDraft(undefined)}
+                  onShowCreate={() => setExerciseDraft({} as Exercise)}
+                  onEditExercise={(item) => setExerciseDraft(item)}
+                  onDeleteExercise={(item) => confirmDelete(item.name, () => exercisesStore.deleteExercise(item.id))}
+                  onCancelExerciseForm={() => setExerciseDraft(undefined)}
+                  onSubmitExercise={(data) =>
+                    exerciseDraft?.id
+                      ? exercisesStore.updateExercise(exerciseDraft.id, data)
+                      : exercisesStore.createExercise(data)
+                  }
+                />
               )}
               {resource === "foods" && (
                 <FoodsList
