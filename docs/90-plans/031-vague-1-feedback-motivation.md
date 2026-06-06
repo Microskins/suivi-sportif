@@ -74,13 +74,6 @@
 - [x] Ajouter le score de regularite hebdomadaire.
 - [x] Mettre a jour les docs si le comportement public change.
 - [x] Valider les controles disponibles et documenter les blocages.
-- [ ] Concevoir les helpers de calcul (tendance, zones, periodes).
-- [ ] Ajouter les graphiques corporels.
-- [ ] Ajouter l'interpretation corporelle.
-- [ ] Ajouter les projections et alertes d'objectifs.
-- [ ] Ajouter le score de regularite hebdomadaire.
-- [ ] Mettre a jour les docs si le comportement public change.
-- [ ] Valider typecheck/tests/build pertinents.
 
 ## Notes de verification
 
@@ -90,3 +83,4 @@
 - 2026-06-01: aucun changement API; pas de doc API a mettre a jour pour cette vague.
 - 2026-06-01: `git diff --check` : OK.
 - 2026-06-01: `npm run typecheck -w client` bloque localement: `npm` absent du PATH PowerShell.
+- 2026-06-03: nettoyage de suivi: retrait des todos doublonnes non coches qui contredisaient les items deja livres et valides avec blocage documente.

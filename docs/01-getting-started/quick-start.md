@@ -17,6 +17,7 @@ DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/suivi_sportif_v2"
 JWT_SECRET="dev-secret-at-least-32-characters-long"
 CORS_ORIGINS="http://localhost:5173,http://127.0.0.1:5173"
 NODE_ENV="development"
+CORS_ORIGIN="http://localhost:5173"
 ```
 
 Option frontend sans API locale, dans `client/.env`:
@@ -45,6 +46,12 @@ npm run db:migrate -w server
 ```
 
 ## 4. Lancer en developpement
+
+API + client dans le meme terminal:
+
+```bash
+npm run dev
+```
 
 Terminal 1:
 

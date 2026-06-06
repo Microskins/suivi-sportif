@@ -4,7 +4,7 @@ import { bypassMeals } from "./bypassMockData";
 
 const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
 
-type MealsState = {
+export type MealsState = {
   meals: Meal[];
   isLoading: boolean;
   error: string | null;

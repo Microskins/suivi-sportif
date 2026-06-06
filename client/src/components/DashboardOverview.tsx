@@ -414,27 +414,30 @@ export function DashboardOverview({
 
         <section className="rounded border border-neutral-200 bg-neutral-950 p-4 text-white shadow-sm">
           <h3 className="font-semibold">Actions rapides</h3>
+          <p className="mt-1 text-xs text-white/60">
+            Raccourcis vers les trois saisies les plus frequentes.
+          </p>
           <div className="mt-3 grid gap-2">
             <button
               type="button"
               onClick={() => onQuickAction("workout")}
               className="rounded bg-emerald-500 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-400"
             >
-              Creer une seance
+              Planifier une seance
             </button>
             <button
               type="button"
               onClick={() => onQuickAction("meal")}
               className="rounded border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/10"
             >
-              Creer un repas
+              Saisir un repas
             </button>
             <button
               type="button"
               onClick={() => onQuickAction("goal")}
               className="rounded border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/10"
             >
-              Creer un objectif
+              Ajouter un objectif sport
             </button>
           </div>
         </section>

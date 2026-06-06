@@ -21,7 +21,7 @@
 - [x] Refaire le flux de creation des exercices sans popup.
 - [x] Refaire le flux de creation des repas sans popup.
 - [x] Repasser sur l'application pour lister les popups restantes et trier celles qui doivent rester.
-- [ ] Lancer les tests front pertinents et noter le resultat.
+- [x] Lancer les tests front pertinents et noter le resultat.
 
 ## Notes de verification
 
@@ -29,3 +29,5 @@
 - 2026-06-03: audit code source: il reste des popups de type `Modal` pour les seances, les aliments et les objectifs, plus les confirmations natives `window.confirm` pour les suppressions.
 - 2026-06-03: verification locale bloquee pour `npm run typecheck -w client` car `npm` n'est pas disponible dans l'environnement courant.
 - 2026-06-03: `git diff --check` lance avec succes.
+- 2026-06-03: `.\node_modules\.bin\tsc --noEmit -p client\tsconfig.json` lance via PowerShell : OK.
+- 2026-06-03: `.\node_modules\.bin\vitest --run client\src\components\CookieConsentLayer.test.tsx client\src\components\WorkoutsCalendar.test.tsx client\src\consent\consentManager.test.ts` lance via PowerShell : OK.

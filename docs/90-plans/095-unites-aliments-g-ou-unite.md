@@ -17,7 +17,7 @@
 - [x] Auditer les usages de `servingUnit` dans le schema, les routes et les tests.
 - [x] Introduire une contrainte forte sur `servingUnit` dans Prisma et Zod.
 - [x] Mettre a jour les tests concernes.
-- [ ] Verifier le typecheck ou les tests du serveur si disponibles.
+- [x] Verifier le typecheck ou les tests du serveur si disponibles.
 
 ## Notes de verification
 
@@ -25,3 +25,5 @@
 - 2026-06-03: contrainte appliquee via Zod, schema Prisma et migration SQL `foods_serving_unit_check`.
 - 2026-06-03: verification locale bloquee, `npm` n'est pas disponible dans le PATH PowerShell de l'environnement.
 - 2026-06-03: affichage aliments ajuste pour montrer `pour 1 unit` quand l'unite vaut `unit`, et `pour 100 g` sinon.
+- 2026-06-03: `.\node_modules\.bin\tsc --noEmit -p server\tsconfig.json` lance via PowerShell : OK.
+- 2026-06-03: `.\node_modules\.bin\vitest --run server\src\db\queries\foods.test.ts server\src\routes\api.test.ts` lance via PowerShell : OK.

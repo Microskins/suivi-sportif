@@ -69,15 +69,6 @@
 - [x] Mettre a jour docs API/UI.
 - [x] Valider les controles disponibles et documenter les blocages.
 - [x] Pousser la vague avant d'ouvrir la Vague 4.
-- [ ] Auditer l'API meals/foods et les stores.
-- [ ] Prioriser duplication/favoris avant scanner.
-- [ ] Implementer repas rapides.
-- [ ] Ajouter portions frequentes.
-- [ ] Ajouter comparaison aux objectifs nutrition.
-- [ ] Evaluer la source code-barres.
-- [ ] Mettre a jour docs API/UI.
-- [ ] Valider typecheck/tests/build pertinents.
-- [ ] Pousser la vague avant d'ouvrir la Vague 4.
 
 ## Notes de verification
 
@@ -93,3 +84,4 @@
 - 2026-06-01: aucun changement API; la reference API ne change pas pour cette vague.
 - 2026-06-01: `git diff --check` : OK.
 - 2026-06-01: `npm run typecheck -w client` bloque localement: `npm` absent du PATH PowerShell.
+- 2026-06-03: nettoyage de suivi: retrait des todos doublonnes non coches qui contredisaient les items deja livres et valides avec blocage documente.

@@ -5,7 +5,7 @@ import { bypassUserGoals } from "./bypassMockData";
 const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
 const bypassUserId = "00000000-0000-4000-8000-000000000000";
 
-type UserGoalsState = {
+export type UserGoalsState = {
   userGoals: UserGoal[];
   isLoading: boolean;
   error: string | null;
