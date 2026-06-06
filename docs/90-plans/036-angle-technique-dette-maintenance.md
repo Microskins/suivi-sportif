@@ -115,3 +115,5 @@ Ordre conseille:
 - 2026-06-06: validations apres extraction `UserGoalsPanel`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
 - 2026-06-06: dix-huitieme extraction: `SportProgressionPanel` et ses helpers sportifs sortis vers `client/src/components/dashboard/SportProgressionPanel.tsx`; `Dashboard.tsx` passe de 2482 a 2309 lignes.
 - 2026-06-06: validations apres extraction `SportProgressionPanel`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-06: dix-neuvieme extraction: `BodyMeasurementDiagram` sorti vers `client/src/components/dashboard/BodyMeasurementDiagram.tsx`; `Dashboard.tsx` passe de 2309 a 2202 lignes.
+- 2026-06-06: validations apres extraction `BodyMeasurementDiagram`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
