@@ -40,6 +40,15 @@ import { FoodsList } from "./dashboard/FoodsList";
 import { MealsList } from "./dashboard/MealsList";
 import { Modal } from "./dashboard/Modal";
 import { modalTitle, type ModalState, openCreate } from "./dashboard/modalState";
+import {
+  activeNutritionGoalForDate,
+  dayMealTotals,
+  emptyMacroTotals,
+  macroDeltaLabel,
+  roundMacro,
+  type MacroTotals,
+} from "./dashboard/nutrition";
+import { NutritionDayPanel } from "./dashboard/NutritionDayPanel";
 import { NutritionGoalForm } from "./dashboard/NutritionGoalForm";
 import { NutritionGoalsList } from "./dashboard/NutritionGoalsList";
 import { ProfileForm } from "./dashboard/ProfileForm";
@@ -167,11 +176,6 @@ function dateToIso(value: string) {
   return new Date(`${value}T00:00:00`).toISOString();
 }
 
-function safeDateToIso(value: string) {
-  const date = new Date(`${value}T00:00:00`);
-  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
-}
-
 function emptyToNull(value: string) {
   const trimmed = value.trim();
   return trimmed ? trimmed : null;
@@ -199,13 +203,6 @@ function formatDate(value: string) {
     hour: "2-digit",
     minute: "2-digit",
   });
-}
-
-function localDateKey(value: string | Date) {
-  const date = typeof value === "string" ? new Date(value) : value;
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
-    .toISOString()
-    .slice(0, 10);
 }
 
 function labelFromOptions<T extends string>(
@@ -1203,21 +1200,6 @@ type MealItemFormRow = {
   quantityGrams: string;
 };
 
-type MacroTotals = {
-  caloriesKcal: number;
-  proteinGrams: number;
-  carbsGrams: number;
-  fatGrams: number;
-};
-
-function emptyMacroTotals(): MacroTotals {
-  return { caloriesKcal: 0, proteinGrams: 0, carbsGrams: 0, fatGrams: 0 };
-}
-
-function roundMacro(value: number) {
-  return Math.round(value * 10) / 10;
-}
-
 function computeMealFormTotals(items: MealItemFormRow[], foods: Food[]): MacroTotals {
   return items.reduce((totals, item) => {
     const food = foods.find((candidate) => candidate.id === item.foodId);
@@ -1247,28 +1229,6 @@ function recentFoodPortions(foodId: string, meals: Meal[]) {
   return Array.from(new Set(portions)).slice(0, 3);
 }
 
-function activeNutritionGoalForDate(goals: NutritionGoal[], dateIso: string) {
-  const day = new Date(dateIso).getTime();
-  return goals.find((goal) => {
-    if (!goal.isActive) return false;
-    const start = new Date(goal.startDate).getTime();
-    const end = goal.endDate ? new Date(goal.endDate).getTime() : Number.POSITIVE_INFINITY;
-    return day >= start && day <= end;
-  }) ?? goals.find((goal) => goal.isActive) ?? null;
-}
-
-function dayMealTotals(meals: Meal[], dateIso: string) {
-  const key = localDateKey(dateIso);
-  return meals
-    .filter((meal) => localDateKey(meal.date) === key)
-    .reduce((totals, meal) => ({
-      caloriesKcal: totals.caloriesKcal + meal.totals.caloriesKcal,
-      proteinGrams: totals.proteinGrams + meal.totals.proteinGrams,
-      carbsGrams: totals.carbsGrams + meal.totals.carbsGrams,
-      fatGrams: totals.fatGrams + meal.totals.fatGrams,
-    }), emptyMacroTotals());
-}
-
 function duplicateMealInput(meal: Meal): MealInput | null {
   const items = meal.items
     .filter((mealItem) => mealItem.foodId)
@@ -1286,13 +1246,6 @@ function duplicateMealInput(meal: Meal): MealInput | null {
     notes: meal.notes,
     items,
   };
-}
-
-function macroDeltaLabel(current: number, target: number | null) {
-  if (target === null || target <= 0) return "Objectif non renseigne";
-  const delta = roundMacro(current - target);
-  if (delta === 0) return "pile sur cible";
-  return delta > 0 ? `+${delta}` : `${delta}`;
 }
 
 function MealForm({
@@ -3268,70 +3221,4 @@ function confirmDelete(label: string, action: () => Promise<void>) {
   if (window.confirm(`Supprimer "${label}" ?`)) {
     void action();
   }
-}
-
-function NutritionDayPanel({
-  meals,
-  goals,
-}: {
-  meals: Meal[];
-  goals: NutritionGoal[];
-}) {
-  const [selectedDate, setSelectedDate] = useState(toInputDate(new Date().toISOString()));
-  const selectedDateIso = safeDateToIso(selectedDate);
-  const goal = activeNutritionGoalForDate(goals, selectedDateIso);
-  const totals = dayMealTotals(meals, selectedDateIso);
-  const dayMeals = meals.filter((meal) => localDateKey(meal.date) === selectedDate);
-
-  return (
-    <section className="rounded border border-amber-200 bg-amber-50/70 p-4 shadow-sm">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h3 className="font-semibold text-amber-950">Objectif du jour</h3>
-          <p className="mt-1 text-sm text-amber-800/80">
-            {goal
-              ? `Comparaison avec ${goal.name}.`
-              : "Aucun objectif actif sur cette date."}
-          </p>
-        </div>
-        <input
-          className={`${inputClass} max-w-44 bg-white`}
-          type="date"
-          value={selectedDate}
-          onChange={(event) => setSelectedDate(event.target.value)}
-        />
-      </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-4">
-        {[
-          ["Calories", totals.caloriesKcal, goal?.dailyCaloriesKcal ?? null, "kcal"],
-          ["Proteines", totals.proteinGrams, goal?.dailyProteinGrams ?? null, "g"],
-          ["Glucides", totals.carbsGrams, goal?.dailyCarbsGrams ?? null, "g"],
-          ["Lipides", totals.fatGrams, goal?.dailyFatGrams ?? null, "g"],
-        ].map(([label, value, target, unit]) => {
-          const numericValue = value as number;
-          const numericTarget = typeof target === "number" ? target : null;
-          const progress = numericTarget && numericTarget > 0
-            ? Math.min(100, Math.round((numericValue / numericTarget) * 100))
-            : 0;
-          return (
-            <div key={label as string} className="rounded border border-amber-100 bg-white p-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">{label}</p>
-              <p className="mt-2 text-xl font-bold text-amber-950">
-                {roundMacro(numericValue)} {unit}
-              </p>
-              <p className="mt-1 text-xs text-amber-700">
-                {numericTarget ? `${macroDeltaLabel(numericValue, numericTarget)} ${unit}` : "Objectif non renseigne"}
-              </p>
-              <progress className="mt-2 h-2 w-full overflow-hidden rounded accent-amber-500" value={progress} max={100} />
-            </div>
-          );
-        })}
-      </div>
-      <p className="mt-3 text-sm text-amber-800">
-        {dayMeals.length
-          ? `${dayMeals.length} repas saisi(s) sur la journee.`
-          : "Aucun repas saisi sur cette journee."}
-      </p>
-    </section>
-  );
 }
