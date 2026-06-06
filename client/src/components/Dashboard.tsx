@@ -10,16 +10,15 @@ import type {
 import { DashboardOverview } from "./DashboardOverview";
 import { BodyMeasurementForm } from "./dashboard/BodyMeasurementForm";
 import { BodyMeasurementsList } from "./dashboard/BodyMeasurementsList";
+import { DashboardModalContent } from "./dashboard/DashboardModalContent";
 import { ExerciseForm } from "./dashboard/ExerciseForm";
 import { ExercisesList } from "./dashboard/ExercisesList";
-import { FoodForm } from "./dashboard/FoodForm";
 import { FoodsList } from "./dashboard/FoodsList";
 import { duplicateMealInput, MealForm } from "./dashboard/MealForm";
 import { MealsList } from "./dashboard/MealsList";
 import { Modal } from "./dashboard/Modal";
 import { modalTitle, type ModalState, openCreate } from "./dashboard/modalState";
 import { NutritionDayPanel } from "./dashboard/NutritionDayPanel";
-import { NutritionGoalForm } from "./dashboard/NutritionGoalForm";
 import { NutritionGoalsList } from "./dashboard/NutritionGoalsList";
 import { ProfileForm } from "./dashboard/ProfileForm";
 import { DashboardNav } from "./dashboard/DashboardNav";
@@ -627,47 +626,28 @@ export function Dashboard({
 
       {modal && (
         <Modal title={modalTitle(modal)} onClose={() => setModal(null)}>
-          {modal.type === "workout" && (
-            <WorkoutForm
-              item={modal.item}
-              prefillWorkout={modal.prefillWorkout}
-              initialDate={modal.presetDate}
-              exercises={exercisesStore.exercises}
-              getExerciseImageUrl={getExerciseImageUrl}
-              onCancel={() => setModal(null)}
-              onSubmit={(data) => modal.item ? workoutsStore.updateWorkout(modal.item.id, data) : workoutsStore.createWorkout(data)}
-            />
-          )}
-          {modal.type === "workout-template" && (
-            <WorkoutTemplatePicker
-              templates={workoutTemplatesStore.workoutTemplates}
-              exercises={exercisesStore.exercises}
-              onCancel={() => setModal(null)}
-              onInstantiate={(id, date) =>
-                workoutTemplatesStore.instantiateWorkoutTemplate(id, date)
-              }
-              onCreateTemplate={(data) =>
-                workoutTemplatesStore.createWorkoutTemplate(data)
-              }
-              onUpdateTemplate={(id, data) =>
-                workoutTemplatesStore.updateWorkoutTemplate(id, data)
-              }
-            />
-          )}
-          {modal.type === "food" && (
-            <FoodForm
-              item={modal.item}
-              onCancel={() => setModal(null)}
-              onSubmit={(data) => modal.item ? foodsStore.updateFood(modal.item.id, data) : foodsStore.createFood(data)}
-            />
-          )}
-          {modal.type === "goal" && (
-            <NutritionGoalForm
-              item={modal.item}
-              onCancel={() => setModal(null)}
-              onSubmit={(data) => modal.item ? goalsStore.updateNutritionGoal(modal.item.id, data) : goalsStore.createNutritionGoal(data)}
-            />
-          )}
+          <DashboardModalContent
+            modal={modal}
+            exercises={exercisesStore.exercises}
+            workoutTemplates={workoutTemplatesStore.workoutTemplates}
+            getExerciseImageUrl={getExerciseImageUrl}
+            onClose={() => setModal(null)}
+            onCreateWorkout={(data) => workoutsStore.createWorkout(data)}
+            onUpdateWorkout={(item, data) => workoutsStore.updateWorkout(item.id, data)}
+            onInstantiateWorkoutTemplate={(id, date) =>
+              workoutTemplatesStore.instantiateWorkoutTemplate(id, date)
+            }
+            onCreateWorkoutTemplate={(data) =>
+              workoutTemplatesStore.createWorkoutTemplate(data)
+            }
+            onUpdateWorkoutTemplate={(id, data) =>
+              workoutTemplatesStore.updateWorkoutTemplate(id, data)
+            }
+            onCreateFood={(data) => foodsStore.createFood(data)}
+            onUpdateFood={(item, data) => foodsStore.updateFood(item.id, data)}
+            onCreateNutritionGoal={(data) => goalsStore.createNutritionGoal(data)}
+            onUpdateNutritionGoal={(item, data) => goalsStore.updateNutritionGoal(item.id, data)}
+          />
         </Modal>
       )}
     </main>
