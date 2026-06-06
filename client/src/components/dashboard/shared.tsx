@@ -100,3 +100,24 @@ export function FormActions({
     </div>
   );
 }
+
+export function ItemActions<T>({
+  item,
+  onEdit,
+  onDelete,
+}: {
+  item: T;
+  onEdit: (item: T) => void;
+  onDelete: (item: T) => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <button type="button" className={secondaryButtonClass} onClick={() => onEdit(item)}>
+        Modifier
+      </button>
+      <button type="button" className={dangerButtonClass} onClick={() => onDelete(item)}>
+        Supprimer
+      </button>
+    </div>
+  );
+}
