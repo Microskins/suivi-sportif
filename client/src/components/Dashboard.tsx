@@ -15,11 +15,10 @@ import { DashboardWorkoutsSection } from "./dashboard/DashboardWorkoutsSection";
 import { ExerciseForm } from "./dashboard/ExerciseForm";
 import { ExercisesList } from "./dashboard/ExercisesList";
 import { FoodsList } from "./dashboard/FoodsList";
-import { duplicateMealInput, MealForm } from "./dashboard/MealForm";
-import { MealsList } from "./dashboard/MealsList";
+import { DashboardMealsSection } from "./dashboard/DashboardMealsSection";
+import { duplicateMealInput } from "./dashboard/MealForm";
 import { Modal } from "./dashboard/Modal";
 import { modalTitle, type ModalState, openCreate } from "./dashboard/modalState";
-import { NutritionDayPanel } from "./dashboard/NutritionDayPanel";
 import { NutritionGoalsList } from "./dashboard/NutritionGoalsList";
 import { ProfileForm } from "./dashboard/ProfileForm";
 import { DashboardNav } from "./dashboard/DashboardNav";
@@ -485,68 +484,41 @@ export function Dashboard({
                 />
               )}
               {resource === "meals" && (
-                <div className="space-y-4">
-                  <NutritionDayPanel
-                    meals={mealsStore.meals}
-                    goals={goalsStore.nutritionGoals}
-                  />
-                  <div className="flex flex-wrap gap-2 rounded border border-amber-200 bg-amber-50/60 p-2">
-                    <button
-                      type="button"
-                      className={mealsView === "list" ? activeViewButtonClass : inactiveViewButtonClass}
-                      onClick={() => {
-                        setMealsView("list");
-                        setMealDraft(undefined);
-                      }}
-                    >
-                      Liste
-                    </button>
-                    <button
-                      type="button"
-                      className={mealsView === "create" ? activeViewButtonClass : inactiveViewButtonClass}
-                      onClick={() => {
-                        setMealsView("create");
-                        setMealDraft(undefined);
-                      }}
-                    >
-                      Creer un repas
-                    </button>
-                  </div>
-                  {mealsView === "create" ? (
-                    <div className="rounded border border-amber-200 bg-white p-4">
-                      <MealForm
-                        item={mealDraft}
-                        foods={foodsStore.foods}
-                        meals={mealsStore.meals}
-                        nutritionGoals={goalsStore.nutritionGoals}
-                        onCancel={() => {
-                          setMealDraft(undefined);
-                          setMealsView("list");
-                        }}
-                        onSubmit={(data) =>
-                          mealDraft
-                            ? mealsStore.updateMeal(mealDraft.id, data, foodsStore.foods)
-                            : mealsStore.createMeal(data, foodsStore.foods)
-                        }
-                      />
-                    </div>
-                  ) : (
-                    <MealsList
-                      meals={mealsStore.meals}
-                      onEdit={(item) => {
-                        setMealDraft(item);
-                        setMealsView("create");
-                      }}
-                      onDuplicate={(item) => {
-                        const copy = duplicateMealInput(item);
-                        if (copy) {
-                          void mealsStore.createMeal(copy, foodsStore.foods);
-                        }
-                      }}
-                      onDelete={(item) => confirmDelete(item.name, () => mealsStore.deleteMeal(item.id))}
-                    />
-                  )}
-                </div>
+                <DashboardMealsSection
+                  mealsView={mealsView}
+                  mealDraft={mealDraft}
+                  meals={mealsStore.meals}
+                  foods={foodsStore.foods}
+                  nutritionGoals={goalsStore.nutritionGoals}
+                  onShowList={() => {
+                    setMealsView("list");
+                    setMealDraft(undefined);
+                  }}
+                  onShowCreate={() => {
+                    setMealsView("create");
+                    setMealDraft(undefined);
+                  }}
+                  onEditMeal={(item) => {
+                    setMealDraft(item);
+                    setMealsView("create");
+                  }}
+                  onDuplicateMeal={(item) => {
+                    const copy = duplicateMealInput(item);
+                    if (copy) {
+                      void mealsStore.createMeal(copy, foodsStore.foods);
+                    }
+                  }}
+                  onDeleteMeal={(item) => confirmDelete(item.name, () => mealsStore.deleteMeal(item.id))}
+                  onCancelMealForm={() => {
+                    setMealDraft(undefined);
+                    setMealsView("list");
+                  }}
+                  onSubmitMeal={(data) =>
+                    mealDraft
+                      ? mealsStore.updateMeal(mealDraft.id, data, foodsStore.foods)
+                      : mealsStore.createMeal(data, foodsStore.foods)
+                  }
+                />
               )}
               {resource === "goals" && (
                 <NutritionGoalsList
