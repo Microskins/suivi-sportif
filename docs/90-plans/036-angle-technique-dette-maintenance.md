@@ -129,3 +129,5 @@ Ordre conseille:
 - 2026-06-06: validations apres extraction `WorkoutExerciseFilters`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
 - 2026-06-06: vingt-cinquieme extraction: `WorkoutExerciseRows` sorti vers `client/src/components/dashboard/WorkoutExerciseRows.tsx`; `Dashboard.tsx` passe de 1649 a 1448 lignes.
 - 2026-06-06: validations apres extraction `WorkoutExerciseRows`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-06: vingt-sixieme extraction: `WorkoutForm` sorti vers `client/src/components/dashboard/WorkoutForm.tsx`; `Dashboard.tsx` passe de 1448 a 1222 lignes.
+- 2026-06-06: validations apres extraction `WorkoutForm`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
