@@ -30,6 +30,20 @@ import { SportProgressionPanel } from "./dashboard/SportProgressionPanel";
 import { UserGoalsPanel } from "./dashboard/UserGoalsPanel";
 import { WorkoutsList } from "./dashboard/WorkoutsList";
 import {
+  dateTimeToIso,
+  difficultyOptions,
+  emptyToNull,
+  exerciseTypeOptions,
+  inferWorkoutStatusFromDate,
+  labelFromOptions,
+  moveItem,
+  numberOrNull,
+  toInputDateTime,
+  updateSet,
+  type WorkoutExerciseFormRow,
+  workoutStatusOptions,
+} from "./dashboard/workoutFormUtils";
+import {
   activeViewButtonClass,
   buttonClass,
   dangerButtonClass,
@@ -55,24 +69,6 @@ import { useWorkoutTemplatesStore } from "../stores/workoutTemplatesStore";
 import { useWorkoutsStore } from "../stores/workoutsStore";
 
 type Resource = DashboardResource;
-
-const difficultyOptions = [
-  ["BEGINNER", "Debutant"],
-  ["INTERMEDIATE", "Intermediaire"],
-  ["ADVANCED", "Avance"],
-] as const;
-
-const exerciseTypeOptions = [
-  ["STRENGTH", "Musculation"],
-  ["CARDIO", "Cardio"],
-  ["MOBILITY", "Mobilite"],
-] as const;
-
-const workoutStatusOptions: Array<[WorkoutStatus, string]> = [
-  ["PLANNED", "Prevue"],
-  ["COMPLETED", "Realisee"],
-  ["CANCELED", "Annulee"],
-];
 
 type ExerciseCatalogEntry = {
   nom: string;
@@ -108,56 +104,6 @@ function buildExerciseImageUrl(path?: string | null) {
   return `/exercices-assets/images/${sanitized}`;
 }
 
-function toInputDateTime(value?: string) {
-  const date = value ? new Date(value) : new Date();
-  const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-  return offsetDate.toISOString().slice(0, 16);
-}
-
-function toInputDate(value?: string | null) {
-  if (!value) {
-    return "";
-  }
-
-  return value.slice(0, 10);
-}
-
-function dateTimeToIso(value: string) {
-  return new Date(value).toISOString();
-}
-
-function safeDateTimeToIso(value: string) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
-}
-
-function inferWorkoutStatusFromDate(value: string): WorkoutStatus {
-  return new Date(value).getTime() > Date.now() ? "PLANNED" : "COMPLETED";
-}
-
-function dateToIso(value: string) {
-  return new Date(`${value}T00:00:00`).toISOString();
-}
-
-function emptyToNull(value: string) {
-  const trimmed = value.trim();
-  return trimmed ? trimmed : null;
-}
-
-function numberOrNull(value: string) {
-  return value === "" ? null : Number(value);
-}
-
-function moveItem<T>(items: T[], fromIndex: number, toIndex: number): T[] {
-  if (toIndex < 0 || toIndex >= items.length || fromIndex === toIndex) {
-    return items;
-  }
-  const next = [...items];
-  const [moved] = next.splice(fromIndex, 1);
-  next.splice(toIndex, 0, moved);
-  return next;
-}
-
 function formatDate(value: string) {
   return new Date(value).toLocaleString("fr-FR", {
     day: "2-digit",
@@ -167,27 +113,6 @@ function formatDate(value: string) {
     minute: "2-digit",
   });
 }
-
-function labelFromOptions<T extends string>(
-  options: readonly (readonly [T, string])[],
-  value: string,
-) {
-  return options.find(([key]) => key === value)?.[1] ?? value;
-}
-
-type WorkoutExerciseFormRow = {
-  exerciseId: string;
-  sets: Array<{
-    reps: string;
-    weight: string;
-    rest: string;
-    durationMinutes: string;
-    avgKmh: string;
-    inclinePercent: string;
-    rpe: string;
-    rir: string;
-  }>;
-};
 
 function WorkoutForm({
   item,
@@ -671,28 +596,6 @@ function WorkoutForm({
       <FormActions isSaving={isSaving} onCancel={onCancel} />
     </form>
   );
-}
-
-function updateSet(
-  row: WorkoutExerciseFormRow,
-  rowIndex: number,
-  setIndex: number,
-  key:
-    | "reps"
-    | "weight"
-    | "rest"
-    | "durationMinutes"
-    | "avgKmh"
-    | "inclinePercent"
-    | "rpe"
-    | "rir",
-  value: string,
-  updateRow: (index: number, nextRow: WorkoutExerciseFormRow) => void,
-) {
-  updateRow(rowIndex, {
-    ...row,
-    sets: row.sets.map((set, index) => (index === setIndex ? { ...set, [key]: value } : set)),
-  });
 }
 
 function WorkoutTemplatePicker({
