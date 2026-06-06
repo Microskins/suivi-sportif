@@ -111,3 +111,5 @@ Ordre conseille:
 - 2026-06-06: validations apres extraction `NutritionDayPanel`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
 - 2026-06-06: seizieme extraction: `MealForm` et `duplicateMealInput` sortis vers `client/src/components/dashboard/MealForm.tsx`; `Dashboard.tsx` passe de 3082 a 2774 lignes.
 - 2026-06-06: validations apres extraction `MealForm`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-06: dix-septieme extraction: `UserGoalsPanel` et ses helpers d'affichage sortis vers `client/src/components/dashboard/UserGoalsPanel.tsx`; `Dashboard.tsx` passe de 2774 a 2482 lignes.
+- 2026-06-06: validations apres extraction `UserGoalsPanel`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
