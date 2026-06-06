@@ -23,6 +23,7 @@ import { NutritionGoalForm } from "./dashboard/NutritionGoalForm";
 import { NutritionGoalsList } from "./dashboard/NutritionGoalsList";
 import { ProfileForm } from "./dashboard/ProfileForm";
 import { DashboardNav } from "./dashboard/DashboardNav";
+import { DashboardTopBar } from "./dashboard/DashboardTopBar";
 import { ResourceHeader, type DashboardResource } from "./dashboard/ResourceHeader";
 import { SportProgressionPanel } from "./dashboard/SportProgressionPanel";
 import { UserGoalsPanel } from "./dashboard/UserGoalsPanel";
@@ -247,21 +248,12 @@ export function Dashboard({
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#f7f8f5_0%,#edf4ef_48%,#f6f7f4_100%)] text-neutral-950">
       <section className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
-        <div className="rounded border border-neutral-200 bg-white/95 p-5 shadow-sm backdrop-blur">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Suivi Sportif</p>
-              <h1 className="mt-1 text-3xl font-bold text-neutral-950">{userName}</h1>
-              <p className="mt-1 text-sm text-neutral-600">{userEmail}</p>
-              {isAuthBypassEnabled && (
-                <p className="mt-2 inline-flex rounded border border-amber-200 bg-amber-50 px-2 py-1 text-xs text-amber-700">
-                  Mode bypass actif
-                </p>
-              )}
-            </div>
-            <button type="button" onClick={onLogout} className={secondaryButtonClass}>Se deconnecter</button>
-          </div>
-        </div>
+        <DashboardTopBar
+          userName={userName}
+          userEmail={userEmail}
+          isAuthBypassEnabled={isAuthBypassEnabled}
+          onLogout={onLogout}
+        />
 
         <div className="mt-5 grid gap-5 md:grid-cols-[230px_1fr]">
           <DashboardNav
