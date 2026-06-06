@@ -12,6 +12,7 @@ import { DashboardMeasurementsSection } from "./dashboard/DashboardMeasurementsS
 import { DashboardModalContent } from "./dashboard/DashboardModalContent";
 import { DashboardWorkoutsSection } from "./dashboard/DashboardWorkoutsSection";
 import { DashboardExercisesSection } from "./dashboard/DashboardExercisesSection";
+import { DashboardGoalsSection } from "./dashboard/DashboardGoalsSection";
 import { FoodsList } from "./dashboard/FoodsList";
 import { DashboardMealsSection } from "./dashboard/DashboardMealsSection";
 import { duplicateMealInput } from "./dashboard/MealForm";
@@ -22,8 +23,6 @@ import { ProfileForm } from "./dashboard/ProfileForm";
 import { DashboardNav } from "./dashboard/DashboardNav";
 import { DashboardTopBar } from "./dashboard/DashboardTopBar";
 import { ResourceHeader, type DashboardResource } from "./dashboard/ResourceHeader";
-import { SportProgressionPanel } from "./dashboard/SportProgressionPanel";
-import { UserGoalsPanel } from "./dashboard/UserGoalsPanel";
 import { labelFromOptions } from "./dashboard/workoutFormUtils";
 import {
   activeViewButtonClass,
@@ -421,30 +420,23 @@ export function Dashboard({
                 />
               )}
               {resource === "sportGoals" && (
-                <div className="space-y-4">
-                  <SportProgressionPanel
-                    exercises={exercisesStore.exercises}
-                    workouts={workoutsStore.workouts}
-                    goals={userGoalsStore.userGoals}
-                  />
-                  <UserGoalsPanel
-                    domain="SPORT"
-                    goals={userGoalsStore.userGoals}
-                    exercises={exercisesStore.exercises}
-                    workouts={workoutsStore.workouts}
-                    measurements={bodyMeasurementsStore.bodyMeasurements}
-                    draft={userGoalDraft}
-                    onCreate={() => setUserGoalDraft({} as UserGoal)}
-                    onEdit={(goal) => setUserGoalDraft(goal)}
-                    onCancel={() => setUserGoalDraft(undefined)}
-                    onSubmit={(data) =>
-                      userGoalDraft?.id
-                        ? userGoalsStore.updateUserGoal(userGoalDraft.id, data)
-                        : userGoalsStore.createUserGoal(data)
-                    }
-                    onDelete={(goal) => confirmDelete(goal.name, () => userGoalsStore.deleteUserGoal(goal.id))}
-                  />
-                </div>
+                <DashboardGoalsSection
+                  domain="SPORT"
+                  goals={userGoalsStore.userGoals}
+                  exercises={exercisesStore.exercises}
+                  workouts={workoutsStore.workouts}
+                  measurements={bodyMeasurementsStore.bodyMeasurements}
+                  draft={userGoalDraft}
+                  onCreate={() => setUserGoalDraft({} as UserGoal)}
+                  onEdit={(goal) => setUserGoalDraft(goal)}
+                  onCancel={() => setUserGoalDraft(undefined)}
+                  onSubmit={(data) =>
+                    userGoalDraft?.id
+                      ? userGoalsStore.updateUserGoal(userGoalDraft.id, data)
+                      : userGoalsStore.createUserGoal(data)
+                  }
+                  onDelete={(goal) => confirmDelete(goal.name, () => userGoalsStore.deleteUserGoal(goal.id))}
+                />
               )}
               {resource === "exercises" && (
                 <DashboardExercisesSection
@@ -533,7 +525,7 @@ export function Dashboard({
                 />
               )}
               {resource === "bodyGoals" && (
-                <UserGoalsPanel
+                <DashboardGoalsSection
                   domain="BODY"
                   goals={userGoalsStore.userGoals}
                   exercises={exercisesStore.exercises}
