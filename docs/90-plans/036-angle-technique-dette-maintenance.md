@@ -121,3 +121,5 @@ Ordre conseille:
 - 2026-06-06: validations apres extraction `BodyMeasurementTrends` et `bodyMetrics`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
 - 2026-06-06: vingt-et-unieme extraction: `BodyInterpretation` sorti vers `client/src/components/dashboard/BodyInterpretation.tsx`; `Dashboard.tsx` passe de 1983 a 1933 lignes.
 - 2026-06-06: validations apres extraction `BodyInterpretation`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-06: vingt-deuxieme extraction: `BodyMeasurementsList` sorti vers `client/src/components/dashboard/BodyMeasurementsList.tsx`; `Dashboard.tsx` passe de 1933 a 1790 lignes.
+- 2026-06-06: validations apres extraction `BodyMeasurementsList`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
