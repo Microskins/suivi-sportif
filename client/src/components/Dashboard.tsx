@@ -28,12 +28,11 @@ import { ProfileForm } from "./dashboard/ProfileForm";
 import { ResourceHeader, type DashboardResource } from "./dashboard/ResourceHeader";
 import { SportProgressionPanel } from "./dashboard/SportProgressionPanel";
 import { UserGoalsPanel } from "./dashboard/UserGoalsPanel";
+import { WorkoutExerciseFilters } from "./dashboard/WorkoutExerciseFilters";
 import { WorkoutsList } from "./dashboard/WorkoutsList";
 import {
   dateTimeToIso,
-  difficultyOptions,
   emptyToNull,
-  exerciseTypeOptions,
   inferWorkoutStatusFromDate,
   labelFromOptions,
   moveItem,
@@ -307,78 +306,19 @@ function WorkoutForm({
         <textarea className={inputClass} value={notes} onChange={(event) => setNotes(event.target.value)} rows={3} />
       </Field>
       <div className="space-y-3">
-        <div className="rounded border border-slate-200 bg-slate-50/70 p-3">
-          <div className="mb-2 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-sm font-semibold text-slate-800">Filtres exercices</p>
-              <p className="mt-1 text-xs text-slate-500">
-                {filteredExercises.length} / {exercises.length} exercice(s) visible(s)
-              </p>
-            </div>
-            <button
-              type="button"
-              className={secondaryButtonClass}
-              onClick={() => {
-                setExerciseSearch("");
-                setExerciseTypeFilter("ALL");
-                setExerciseDifficultyFilter("ALL");
-                setExerciseBodyPartFilter("ALL");
-              }}
-            >
-              Reinitialiser
-            </button>
-          </div>
-          <div className="grid gap-2 md:grid-cols-4">
-            <input
-              className={inputClass}
-              value={exerciseSearch}
-              onChange={(event) => setExerciseSearch(event.target.value)}
-              placeholder="Rechercher..."
-            />
-            <select
-              className={inputClass}
-              value={exerciseTypeFilter}
-              onChange={(event) =>
-                setExerciseTypeFilter(
-                  event.target.value as "ALL" | "STRENGTH" | "CARDIO" | "MOBILITY",
-                )
-              }
-            >
-              <option value="ALL">Tous les types</option>
-              {exerciseTypeOptions.map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
-            <select
-              className={inputClass}
-              value={exerciseDifficultyFilter}
-              onChange={(event) =>
-                setExerciseDifficultyFilter(
-                  event.target.value as
-                    | "ALL"
-                    | "BEGINNER"
-                    | "INTERMEDIATE"
-                    | "ADVANCED",
-                )
-              }
-            >
-              <option value="ALL">Toutes difficultes</option>
-              {difficultyOptions.map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
-            <select
-              className={inputClass}
-              value={exerciseBodyPartFilter}
-              onChange={(event) => setExerciseBodyPartFilter(event.target.value)}
-            >
-              <option value="ALL">Toutes parties</option>
-              {bodyPartOptions.map((part) => (
-                <option key={part} value={part}>{part}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <WorkoutExerciseFilters
+          exercises={exercises}
+          filteredExercisesCount={filteredExercises.length}
+          exerciseSearch={exerciseSearch}
+          exerciseTypeFilter={exerciseTypeFilter}
+          exerciseDifficultyFilter={exerciseDifficultyFilter}
+          exerciseBodyPartFilter={exerciseBodyPartFilter}
+          bodyPartOptions={bodyPartOptions}
+          onExerciseSearchChange={setExerciseSearch}
+          onExerciseTypeFilterChange={setExerciseTypeFilter}
+          onExerciseDifficultyFilterChange={setExerciseDifficultyFilter}
+          onExerciseBodyPartFilterChange={setExerciseBodyPartFilter}
+        />
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-slate-800">Exercices et series</p>
