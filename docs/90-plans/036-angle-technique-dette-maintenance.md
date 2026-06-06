@@ -101,3 +101,5 @@ Ordre conseille:
 - 2026-06-06: validations apres extraction `ExercisesList`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
 - 2026-06-06: onzieme extraction: `ResourceHeader` sorti vers `client/src/components/dashboard/ResourceHeader.tsx`; `Dashboard.tsx` passe de 3402 a 3335 lignes.
 - 2026-06-06: validations apres extraction `ResourceHeader`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-06: douzieme extraction: `Modal` sorti vers `client/src/components/dashboard/Modal.tsx`; `Dashboard.tsx` passe de 3335 a 3309 lignes.
+- 2026-06-06: validations apres extraction `Modal`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
