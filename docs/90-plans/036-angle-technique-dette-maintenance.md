@@ -147,3 +147,5 @@ Ordre conseille:
 - 2026-06-06: validations apres extraction `DashboardWorkoutsSection`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
 - 2026-06-06: trente-quatrieme extraction: section repas sortie vers `client/src/components/dashboard/DashboardMealsSection.tsx`; `Dashboard.tsx` passe de 634 a 606 lignes.
 - 2026-06-06: validations apres extraction `DashboardMealsSection`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-06: trente-cinquieme extraction: section mensurations sortie vers `client/src/components/dashboard/DashboardMeasurementsSection.tsx`; `Dashboard.tsx` passe de 606 a 594 lignes.
+- 2026-06-06: validations apres extraction `DashboardMeasurementsSection`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.

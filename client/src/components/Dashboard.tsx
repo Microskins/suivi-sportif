@@ -8,8 +8,7 @@ import type {
   User,
 } from "../api/client";
 import { DashboardOverview } from "./DashboardOverview";
-import { BodyMeasurementForm } from "./dashboard/BodyMeasurementForm";
-import { BodyMeasurementsList } from "./dashboard/BodyMeasurementsList";
+import { DashboardMeasurementsSection } from "./dashboard/DashboardMeasurementsSection";
 import { DashboardModalContent } from "./dashboard/DashboardModalContent";
 import { DashboardWorkoutsSection } from "./dashboard/DashboardWorkoutsSection";
 import { ExerciseForm } from "./dashboard/ExerciseForm";
@@ -528,33 +527,22 @@ export function Dashboard({
                 />
               )}
               {resource === "measurements" && (
-                <div className="space-y-4">
-                  <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
-                    <button type="button" className={bodyMeasurementDraft === undefined ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setBodyMeasurementDraft(undefined)}>Historique</button>
-                    <button type="button" className={bodyMeasurementDraft !== undefined && !bodyMeasurementDraft.id ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setBodyMeasurementDraft({} as BodyMeasurement)}>Ajouter une mesure</button>
-                  </div>
-                  {bodyMeasurementDraft !== undefined ? (
-                    <div className="rounded border border-slate-200 bg-white p-4">
-                      <BodyMeasurementForm
-                        item={bodyMeasurementDraft.id ? bodyMeasurementDraft : undefined}
-                        onCancel={() => setBodyMeasurementDraft(undefined)}
-                        onSubmit={(data) =>
-                          bodyMeasurementDraft.id
-                            ? bodyMeasurementsStore.updateBodyMeasurement(bodyMeasurementDraft.id, data)
-                            : bodyMeasurementsStore.createBodyMeasurement(data)
-                        }
-                      />
-                    </div>
-                  ) : (
-                    <BodyMeasurementsList
-                      measurements={bodyMeasurementsStore.bodyMeasurements}
-                      userDateOfBirth={userDateOfBirth}
-                      formatDate={formatDate}
-                      onEdit={(item) => setBodyMeasurementDraft(item)}
-                      onDelete={(item) => confirmDelete(formatDate(item.date), () => bodyMeasurementsStore.deleteBodyMeasurement(item.id))}
-                    />
-                  )}
-                </div>
+                <DashboardMeasurementsSection
+                  bodyMeasurementDraft={bodyMeasurementDraft}
+                  measurements={bodyMeasurementsStore.bodyMeasurements}
+                  userDateOfBirth={userDateOfBirth}
+                  formatDate={formatDate}
+                  onShowHistory={() => setBodyMeasurementDraft(undefined)}
+                  onShowCreate={() => setBodyMeasurementDraft({} as BodyMeasurement)}
+                  onEditMeasurement={(item) => setBodyMeasurementDraft(item)}
+                  onDeleteMeasurement={(item) => confirmDelete(formatDate(item.date), () => bodyMeasurementsStore.deleteBodyMeasurement(item.id))}
+                  onCancelMeasurementForm={() => setBodyMeasurementDraft(undefined)}
+                  onSubmitMeasurement={(data) =>
+                    bodyMeasurementDraft?.id
+                      ? bodyMeasurementsStore.updateBodyMeasurement(bodyMeasurementDraft.id, data)
+                      : bodyMeasurementsStore.createBodyMeasurement(data)
+                  }
+                />
               )}
               {resource === "bodyGoals" && (
                 <UserGoalsPanel
