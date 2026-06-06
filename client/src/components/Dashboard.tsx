@@ -27,6 +27,7 @@ import { ResourceHeader, type DashboardResource } from "./dashboard/ResourceHead
 import { SportProgressionPanel } from "./dashboard/SportProgressionPanel";
 import { UserGoalsPanel } from "./dashboard/UserGoalsPanel";
 import { WorkoutForm } from "./dashboard/WorkoutForm";
+import { WorkoutTemplateFilters } from "./dashboard/WorkoutTemplateFilters";
 import { WorkoutsList } from "./dashboard/WorkoutsList";
 import {
   dateTimeToIso,
@@ -336,37 +337,16 @@ function WorkoutTemplatePicker({
           </Field>
           {!templates.length && <EmptyState label="Aucun modele de seance disponible." />}
           {templates.length > 0 && (
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">
-              <p className="mb-2 text-sm font-semibold text-slate-800">Filtres modeles</p>
-              <div className="grid gap-2 md:grid-cols-3">
-                <input
-                  className={inputClass}
-                  value={templateSearch}
-                  onChange={(event) => setTemplateSearch(event.target.value)}
-                  placeholder="Rechercher..."
-                />
-                <select
-                  className={inputClass}
-                  value={templateCategoryFilter}
-                  onChange={(event) => setTemplateCategoryFilter(event.target.value)}
-                >
-                  <option value="ALL">Toutes categories</option>
-                  {templateCategories.map((category) => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-                <select
-                  className={inputClass}
-                  value={templateLevelFilter}
-                  onChange={(event) => setTemplateLevelFilter(event.target.value)}
-                >
-                  <option value="ALL">Tous niveaux</option>
-                  {templateLevels.map((level) => (
-                    <option key={level} value={level}>{level}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            <WorkoutTemplateFilters
+              templateSearch={templateSearch}
+              templateCategoryFilter={templateCategoryFilter}
+              templateLevelFilter={templateLevelFilter}
+              templateCategories={templateCategories}
+              templateLevels={templateLevels}
+              onTemplateSearchChange={setTemplateSearch}
+              onTemplateCategoryFilterChange={setTemplateCategoryFilter}
+              onTemplateLevelFilterChange={setTemplateLevelFilter}
+            />
           )}
           {templates.length > 0 && !filteredTemplates.length && (
             <EmptyState label="Aucun modele ne correspond aux filtres." />
