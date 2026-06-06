@@ -11,6 +11,7 @@ import { DashboardOverview } from "./DashboardOverview";
 import { BodyMeasurementForm } from "./dashboard/BodyMeasurementForm";
 import { BodyMeasurementsList } from "./dashboard/BodyMeasurementsList";
 import { DashboardModalContent } from "./dashboard/DashboardModalContent";
+import { DashboardWorkoutsSection } from "./dashboard/DashboardWorkoutsSection";
 import { ExerciseForm } from "./dashboard/ExerciseForm";
 import { ExercisesList } from "./dashboard/ExercisesList";
 import { FoodsList } from "./dashboard/FoodsList";
@@ -26,9 +27,6 @@ import { DashboardTopBar } from "./dashboard/DashboardTopBar";
 import { ResourceHeader, type DashboardResource } from "./dashboard/ResourceHeader";
 import { SportProgressionPanel } from "./dashboard/SportProgressionPanel";
 import { UserGoalsPanel } from "./dashboard/UserGoalsPanel";
-import { WorkoutForm } from "./dashboard/WorkoutForm";
-import { WorkoutTemplatePicker } from "./dashboard/WorkoutTemplatePicker";
-import { WorkoutsList } from "./dashboard/WorkoutsList";
 import { labelFromOptions } from "./dashboard/workoutFormUtils";
 import {
   activeViewButtonClass,
@@ -363,71 +361,67 @@ export function Dashboard({
                 />
               )}
               {resource === "workouts" && (
-                <div className="space-y-4">
-                  <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
-                    <button type="button" className={workoutsView === "list" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => { setWorkoutsView("list"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); setWorkoutPresetDate(undefined); }}>Liste</button>
-                    <button type="button" className={workoutsView === "create" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => { setWorkoutsView("create"); setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); setWorkoutPresetDate(undefined); }}>Creer une seance</button>
-                    <button type="button" className={workoutsView === "from-template" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => { setWorkoutDraft(undefined); setWorkoutPrefillDraft(undefined); setWorkoutPresetDate(undefined); setWorkoutsView("from-template"); }}>Depuis un modele</button>
-                  </div>
-                  {workoutsView === "list" && (
-                    <WorkoutsList
-                      workouts={workoutsStore.workouts}
-                      onEdit={(item) => {
-                        setWorkoutDraft(item);
-                        setWorkoutPrefillDraft(undefined);
-                        setWorkoutPresetDate(undefined);
-                        setWorkoutsView("create");
-                      }}
-                      onDuplicate={(item) => {
-                        setWorkoutDraft(undefined);
-                        setWorkoutPrefillDraft(item);
-                        setWorkoutPresetDate(undefined);
-                        setWorkoutsView("create");
-                      }}
-                      onDelete={(item) => confirmDelete(item.name, () => workoutsStore.deleteWorkout(item.id))}
-                    />
-                  )}
-                  {workoutsView === "create" && (
-                    <div className="rounded border border-slate-200 bg-white p-4">
-                      <WorkoutForm
-                        item={workoutDraft}
-                        prefillWorkout={workoutPrefillDraft}
-                        initialDate={workoutPresetDate}
-                        exercises={exercisesStore.exercises}
-                        getExerciseImageUrl={getExerciseImageUrl}
-                        onCancel={() => {
-                          setWorkoutDraft(undefined);
-                          setWorkoutPrefillDraft(undefined);
-                          setWorkoutPresetDate(undefined);
-                          setWorkoutsView("list");
-                        }}
-                        onSubmit={(data) =>
-                          workoutDraft
-                            ? workoutsStore.updateWorkout(workoutDraft.id, data)
-                            : workoutsStore.createWorkout(data)
-                        }
-                      />
-                    </div>
-                  )}
-                  {workoutsView === "from-template" && (
-                    <div className="rounded border border-slate-200 bg-white p-4">
-                      <WorkoutTemplatePicker
-                        templates={workoutTemplatesStore.workoutTemplates}
-                        exercises={exercisesStore.exercises}
-                        onCancel={() => setWorkoutsView("list")}
-                        onInstantiate={(id, date) =>
-                          workoutTemplatesStore.instantiateWorkoutTemplate(id, date)
-                        }
-                        onCreateTemplate={(data) =>
-                          workoutTemplatesStore.createWorkoutTemplate(data)
-                        }
-                        onUpdateTemplate={(id, data) =>
-                          workoutTemplatesStore.updateWorkoutTemplate(id, data)
-                        }
-                      />
-                    </div>
-                  )}
-                </div>
+                <DashboardWorkoutsSection
+                  workoutsView={workoutsView}
+                  workouts={workoutsStore.workouts}
+                  workoutTemplates={workoutTemplatesStore.workoutTemplates}
+                  exercises={exercisesStore.exercises}
+                  workoutDraft={workoutDraft}
+                  workoutPrefillDraft={workoutPrefillDraft}
+                  workoutPresetDate={workoutPresetDate}
+                  getExerciseImageUrl={getExerciseImageUrl}
+                  onShowList={() => {
+                    setWorkoutsView("list");
+                    setWorkoutDraft(undefined);
+                    setWorkoutPrefillDraft(undefined);
+                    setWorkoutPresetDate(undefined);
+                  }}
+                  onShowCreate={() => {
+                    setWorkoutsView("create");
+                    setWorkoutDraft(undefined);
+                    setWorkoutPrefillDraft(undefined);
+                    setWorkoutPresetDate(undefined);
+                  }}
+                  onShowFromTemplate={() => {
+                    setWorkoutDraft(undefined);
+                    setWorkoutPrefillDraft(undefined);
+                    setWorkoutPresetDate(undefined);
+                    setWorkoutsView("from-template");
+                  }}
+                  onEditWorkout={(item) => {
+                    setWorkoutDraft(item);
+                    setWorkoutPrefillDraft(undefined);
+                    setWorkoutPresetDate(undefined);
+                    setWorkoutsView("create");
+                  }}
+                  onDuplicateWorkout={(item) => {
+                    setWorkoutDraft(undefined);
+                    setWorkoutPrefillDraft(item);
+                    setWorkoutPresetDate(undefined);
+                    setWorkoutsView("create");
+                  }}
+                  onDeleteWorkout={(item) => confirmDelete(item.name, () => workoutsStore.deleteWorkout(item.id))}
+                  onCancelWorkoutForm={() => {
+                    setWorkoutDraft(undefined);
+                    setWorkoutPrefillDraft(undefined);
+                    setWorkoutPresetDate(undefined);
+                    setWorkoutsView("list");
+                  }}
+                  onSubmitWorkout={(data) =>
+                    workoutDraft
+                      ? workoutsStore.updateWorkout(workoutDraft.id, data)
+                      : workoutsStore.createWorkout(data)
+                  }
+                  onInstantiateWorkoutTemplate={(id, date) =>
+                    workoutTemplatesStore.instantiateWorkoutTemplate(id, date)
+                  }
+                  onCreateWorkoutTemplate={(data) =>
+                    workoutTemplatesStore.createWorkoutTemplate(data)
+                  }
+                  onUpdateWorkoutTemplate={(id, data) =>
+                    workoutTemplatesStore.updateWorkoutTemplate(id, data)
+                  }
+                />
               )}
               {resource === "sportGoals" && (
                 <div className="space-y-4">
