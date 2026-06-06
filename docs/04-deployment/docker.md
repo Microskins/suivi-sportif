@@ -8,7 +8,8 @@ le meme point d'entree Nginx.
 - Docker Engine et le plugin Docker Compose installes sur l'hote.
 - Un fichier `.env` valide a la racine du depot avec au minimum:
   - `DATABASE_URL`
-  - `JWT_SECRET`
+  - `JWT_SECRET` (32 caracteres minimum en production)
+  - `CORS_ORIGINS` (ex: `https://suivi-sportif.fr,https://www.suivi-sportif.fr`)
   - `API_PUBLIC_BASE_URL` (recommande: `https://suivi-sportif.fr`)
   - `MCP_AUTH_TOKEN`
 - Nginx installe sur la machine hote.
