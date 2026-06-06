@@ -1,14 +1,6 @@
 import type { BodyMeasurement } from "../../api/client";
 import type { BodyMeasurementField } from "./bodyMeasurements";
-
-function measurementValue(
-  measurement: BodyMeasurement,
-  key: BodyMeasurementField,
-  unit: string,
-) {
-  const value = measurement[key];
-  return value === null ? "-" : `${value} ${unit}`;
-}
+import { measurementValue } from "./bodyMetrics";
 
 export function BodyMeasurementDiagram({ measurement }: { measurement: BodyMeasurement }) {
   const silhouetteSrc =
