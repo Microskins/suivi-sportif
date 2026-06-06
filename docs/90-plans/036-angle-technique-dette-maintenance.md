@@ -91,3 +91,5 @@ Ordre conseille:
 - 2026-06-06: validations apres extraction `UserGoalForm`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
 - 2026-06-06: sixieme extraction: `FoodsList` sorti vers `client/src/components/dashboard/FoodsList.tsx`; `ItemActions` deplace dans `shared.tsx`; `Dashboard.tsx` passe de 3757 a 3697 lignes.
 - 2026-06-06: validations apres extraction `FoodsList`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
+- 2026-06-06: septieme extraction: `NutritionGoalsList` sorti vers `client/src/components/dashboard/NutritionGoalsList.tsx`; `Dashboard.tsx` passe de 3697 a 3674 lignes.
+- 2026-06-06: validations apres extraction `NutritionGoalsList`: typecheck client via Node runtime Codex + `node_modules/typescript/bin/tsc`, `eslint client\src --ext .ts,.tsx`, `vitest --run client`, `git diff --check`.
