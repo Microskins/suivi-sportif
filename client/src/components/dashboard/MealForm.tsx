@@ -1,3 +1,4 @@
+import type { DragEvent } from "react";
 import { FormEvent, useMemo, useState } from "react";
 import type { Food, Meal, MealInput, MealType, NutritionGoal } from "../../api/client";
 import {
@@ -22,6 +23,14 @@ type MealItemFormRow = {
   quantityGrams: string;
 };
 
+type MealTemplate = {
+  id: string;
+  name: string;
+  mealType: MealType;
+  notes: string | null;
+  items: MealItemFormRow[];
+};
+
 type MealFormProps = {
   item?: Meal;
   foods: Food[];
@@ -30,6 +39,9 @@ type MealFormProps = {
   onSubmit: (data: MealInput) => Promise<void>;
   onCancel: () => void;
 };
+
+const foodDragDataType = "application/x-suivi-sportif-food-id";
+const mealTemplatesStorageKey = "suivi-sportif-meal-templates-v1";
 
 const mealTypes: Array<[MealType, string]> = [
   ["breakfast", "Petit-dejeuner"],
@@ -88,6 +100,43 @@ function recentFoodPortions(foodId: string, meals: Meal[]) {
   return Array.from(new Set(portions)).slice(0, 3);
 }
 
+function defaultMealItemRow(food: Food | null): MealItemFormRow {
+  return { foodId: food?.id ?? "", quantityGrams: "100" };
+}
+
+function insertMealItemRow(
+  items: MealItemFormRow[],
+  food: Food,
+  insertIndex: number,
+) {
+  const next = [...items];
+  const boundedIndex = Math.max(0, Math.min(insertIndex, next.length));
+  next.splice(boundedIndex, 0, defaultMealItemRow(food));
+  return next;
+}
+
+function readMealTemplates() {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const raw = window.localStorage.getItem(mealTemplatesStorageKey);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((template): template is MealTemplate =>
+      typeof template.id === "string" &&
+      typeof template.name === "string" &&
+      Array.isArray(template.items),
+    );
+  } catch {
+    return [];
+  }
+}
+
+function writeMealTemplates(templates: MealTemplate[]) {
+  window.localStorage.setItem(mealTemplatesStorageKey, JSON.stringify(templates));
+}
+
 export function duplicateMealInput(meal: Meal): MealInput | null {
   const items = meal.items
     .filter((mealItem) => mealItem.foodId)
@@ -130,6 +179,7 @@ export function MealForm({
   );
   const [foodSearch, setFoodSearch] = useState("");
   const [foodBrandFilter, setFoodBrandFilter] = useState("ALL");
+  const [mealTemplates, setMealTemplates] = useState<MealTemplate[]>(readMealTemplates);
   const [isSaving, setIsSaving] = useState(false);
   const foodBrandOptions = useMemo(
     () =>
@@ -165,6 +215,43 @@ export function MealForm({
     fatGrams: existingDayTotals.fatGrams + previewTotals.fatGrams,
   };
 
+  function addFoodFromLibrary(food: Food, insertIndex = items.length) {
+    setItems((current) => insertMealItemRow(current, food, insertIndex));
+  }
+
+  function foodFromDrag(event: DragEvent) {
+    const foodId = event.dataTransfer.getData(foodDragDataType);
+    return foods.find((food) => food.id === foodId);
+  }
+
+  function saveMealTemplate() {
+    if (!items.length) return;
+
+    const template: MealTemplate = {
+      id: `meal-template-${Date.now()}`,
+      name: name.trim() || "Modele de repas",
+      mealType,
+      notes: emptyToNull(notes),
+      items,
+    };
+    const nextTemplates = [template, ...mealTemplates].slice(0, 8);
+    writeMealTemplates(nextTemplates);
+    setMealTemplates(nextTemplates);
+  }
+
+  function applyMealTemplate(template: MealTemplate) {
+    setName(template.name);
+    setMealType(template.mealType);
+    setNotes(template.notes ?? "");
+    setItems(template.items);
+  }
+
+  function deleteMealTemplate(templateId: string) {
+    const nextTemplates = mealTemplates.filter((template) => template.id !== templateId);
+    writeMealTemplates(nextTemplates);
+    setMealTemplates(nextTemplates);
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSaving(true);
@@ -197,6 +284,51 @@ export function MealForm({
         </Field>
       </div>
       <Field label="Notes"><textarea className={inputClass} value={notes} onChange={(event) => setNotes(event.target.value)} rows={3} /></Field>
+      <section className="rounded border border-amber-200 bg-white p-3">
+        <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-amber-950">Modeles de repas</p>
+            <p className="mt-1 text-xs text-amber-800/80">
+              Sauvegarde une combinaison d'aliments pour la reutiliser plus tard.
+            </p>
+          </div>
+          <button
+            type="button"
+            className={secondaryButtonClass}
+            disabled={!items.length}
+            onClick={saveMealTemplate}
+          >
+            Sauvegarder ce repas
+          </button>
+        </div>
+        {!!mealTemplates.length && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {mealTemplates.map((template) => (
+              <div
+                key={template.id}
+                className="flex items-center gap-2 rounded border border-amber-100 bg-amber-50 px-2 py-1"
+              >
+                <button
+                  type="button"
+                  className="text-xs font-semibold text-amber-900 hover:underline"
+                  onClick={() => applyMealTemplate(template)}
+                >
+                  {template.name}
+                </button>
+                <button
+                  type="button"
+                  className="text-xs font-bold text-amber-700 hover:text-amber-950"
+                  onClick={() => deleteMealTemplate(template.id)}
+                  aria-label={`Supprimer le modele ${template.name}`}
+                  title="Supprimer ce modele"
+                >
+                  x
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
       <section className="rounded border border-amber-200 bg-amber-50/70 p-3">
         <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
           <div>
@@ -237,6 +369,59 @@ export function MealForm({
           </select>
         </div>
       </section>
+      {!!filteredFoods.length && (
+        <section className="rounded border border-slate-200 bg-slate-50 p-3">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
+            <div
+              className="flex min-h-24 flex-1 items-center justify-center rounded border border-dashed border-amber-300 bg-white px-3 py-4 text-center text-sm font-medium text-amber-800"
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={(event) => {
+                event.preventDefault();
+                const food = foodFromDrag(event);
+                if (food) {
+                  addFoodFromLibrary(food);
+                }
+              }}
+            >
+              Depose un aliment ici pour l'ajouter au repas.
+            </div>
+            <div className="min-w-0 flex-[2]">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <p className="text-sm font-semibold text-slate-800">
+                  Bibliotheque filtree
+                </p>
+                <p className="text-xs text-slate-500">
+                  {filteredFoods.length} aliment(s)
+                </p>
+              </div>
+              <div className="flex max-h-36 flex-wrap gap-2 overflow-y-auto pr-1">
+                {filteredFoods.map((food) => (
+                  <button
+                    key={food.id}
+                    type="button"
+                    draggable
+                    onDragStart={(event) => {
+                      event.dataTransfer.effectAllowed = "copy";
+                      event.dataTransfer.setData(foodDragDataType, food.id);
+                    }}
+                    onClick={() => addFoodFromLibrary(food)}
+                    className="rounded border border-slate-200 bg-white px-3 py-2 text-left text-xs text-slate-700 shadow-sm transition hover:border-amber-300 hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    title="Cliquer ou glisser pour ajouter"
+                  >
+                    <span className="block font-semibold text-slate-900">
+                      {food.name}
+                    </span>
+                    <span className="mt-1 block text-slate-500">
+                      {food.brand ? `${food.brand} / ` : ""}
+                      {food.caloriesKcal} kcal / 100 g
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
       <section className="rounded border border-amber-200 bg-amber-50/80 p-3">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
@@ -280,7 +465,7 @@ export function MealForm({
             onClick={() =>
               setItems((current) => [
                 ...current,
-                { foodId: nextFoodToAdd?.id ?? "", quantityGrams: "100" },
+                defaultMealItemRow(nextFoodToAdd),
               ])
             }
           >
@@ -292,7 +477,18 @@ export function MealForm({
           <EmptyState label="Aucun aliment ne correspond aux filtres. Reinitialise pour voir toute la liste." />
         )}
         {items.map((entry, index) => (
-          <div key={index} className="rounded border border-slate-200 bg-white p-3">
+          <div
+            key={index}
+            className="rounded border border-slate-200 bg-white p-3"
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={(event) => {
+              event.preventDefault();
+              const food = foodFromDrag(event);
+              if (food) {
+                setItems((current) => insertMealItemRow(current, food, index + 1));
+              }
+            }}
+          >
             <div className="grid gap-2 md:grid-cols-[1fr_160px_auto]">
               <select
                 className={inputClass}

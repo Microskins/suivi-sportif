@@ -1,5 +1,37 @@
 # IA Idees
 
+## 2026-06-07 - Builder seances: profils de repos personnalisables
+
+## Contexte
+
+- Les repos conseilles automatiques couvrent maintenant un cas simple par type, difficulte et zone corporelle.
+- Certains utilisateurs voudront ajuster ces valeurs selon leur niveau, objectif ou phase d'entrainement.
+
+## Proposition
+
+- Ajouter plus tard des profils de repos configurables:
+  - force;
+  - hypertrophie;
+  - cardio;
+  - reprise;
+  - personnalise.
+- Permettre de choisir un profil par seance ou modele, sans rendre obligatoire le parametrage.
+
+## Impact
+
+- Recommandations plus proches des usages reels.
+- Meilleure transition vers des blocs Tabata ou echauffement.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/098-repos-conseilles-builder.md
+
+---
+
 ## 2026-06-07 - Builders: decouper les restes en micro-chantiers
 
 ## Contexte
@@ -9,13 +41,8 @@
 
 ## Proposition
 
-- Transformer plus tard les restes en micro-chantiers separes:
-  - tutoriels exercices;
-  - repos conseilles automatiques;
-  - blocs echauffement / Tabata;
-  - drag-and-drop depuis bibliotheque;
-  - modeles ou favoris de repas;
-  - source externe code-barres.
+- Transformer plus tard les restes volumineux en micro-chantiers separes quand une idee melange UX, data et integration externe.
+- Cette proposition a ete appliquee aux builders de seances et de repas.
 
 ## Impact
 
@@ -29,6 +56,8 @@
 ## Liens
 
 - Plan: docs/90-plans/097-tri-idees-builder.md
+- Plan: docs/90-plans/102-modeles-favoris-repas.md
+- Plan: docs/90-plans/103-lookup-code-barres-aliments.md
 
 ---
 

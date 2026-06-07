@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import type { Food, FoodInput } from "../../api/client";
+import { api, type Food, type FoodInput } from "../../api/client";
 import { Field, FormActions, inputClass, MacroInput } from "./shared";
 
 type FoodFormProps = {
@@ -29,7 +29,40 @@ export function FoodForm({ item, onSubmit, onCancel }: FoodFormProps) {
     item?.fiberGrams === null || item?.fiberGrams === undefined ? "" : String(item.fiberGrams),
   );
   const [servingUnit, setServingUnit] = useState(item?.servingUnit ?? "g");
+  const [barcodeLookupError, setBarcodeLookupError] = useState<string | null>(null);
+  const [isLookingUpBarcode, setIsLookingUpBarcode] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  async function handleBarcodeLookup() {
+    const trimmedBarcode = barcode.trim();
+    if (!trimmedBarcode) {
+      setBarcodeLookupError("Renseigne un code-barres avant l'import.");
+      return;
+    }
+
+    setIsLookingUpBarcode(true);
+    setBarcodeLookupError(null);
+    try {
+      const lookup = await api.lookupFoodByBarcode(trimmedBarcode);
+      setName(lookup.name);
+      setBrand(lookup.brand ?? "");
+      setBarcode(lookup.barcode ?? trimmedBarcode);
+      setCaloriesKcal(String(lookup.caloriesKcal));
+      setProteinGrams(String(lookup.proteinGrams));
+      setCarbsGrams(String(lookup.carbsGrams));
+      setFatGrams(String(lookup.fatGrams));
+      setFiberGrams(lookup.fiberGrams === null ? "" : String(lookup.fiberGrams));
+      setServingUnit(lookup.servingUnit);
+    } catch (error) {
+      setBarcodeLookupError(
+        error instanceof Error
+          ? error.message
+          : "Import code-barres impossible pour le moment.",
+      );
+    } finally {
+      setIsLookingUpBarcode(false);
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -71,11 +104,27 @@ export function FoodForm({ item, onSubmit, onCancel }: FoodFormProps) {
           />
         </Field>
         <Field label="Code-barres">
-          <input
-            className={inputClass}
-            value={barcode}
-            onChange={(event) => setBarcode(event.target.value)}
-          />
+          <div className="flex gap-2">
+            <input
+              className={inputClass}
+              value={barcode}
+              onChange={(event) => setBarcode(event.target.value)}
+            />
+            <button
+              type="button"
+              className="rounded bg-slate-800 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isLookingUpBarcode}
+              onClick={handleBarcodeLookup}
+            >
+              {isLookingUpBarcode ? "Import..." : "Importer"}
+            </button>
+          </div>
+          {barcodeLookupError && (
+            <p className="mt-1 text-xs text-red-700">{barcodeLookupError}</p>
+          )}
+          <p className="mt-1 text-xs text-slate-500">
+            Import Open Food Facts, a verifier avant sauvegarde.
+          </p>
         </Field>
         <Field label="Unite">
           <select

@@ -15,21 +15,18 @@
 - Modeles de seances preconstruits et instanciables.
 - Edition des modeles de seances.
 - Reordonnancement des exercices dans une seance et dans un modele, avec drag-and-drop natif.
+- Ajout d'exercice au builder depuis la bibliotheque filtree, au clic ou par drag-and-drop.
+- Raccourci tutoriel YouTube depuis chaque exercice du builder.
+- Ajout rapide d'un bloc d'echauffement.
+- Ajout rapide d'un bloc Tabata cardio.
 - Champs de repos par serie dans les seances et modeles.
+- Repos conseilles pre-remplis selon le type, la difficulte et les zones de l'exercice.
 - Filtres/recherche pour trouver plus vite un exercice dans le formulaire de seance.
 - Images d'exercices affichees dans l'UI quand l'asset existe.
 
 ## Reste a faire
 
-- Dans l'editeur de seance:
-  - permettre le drag and drop d'un exercice depuis une bibliotheque/listing vers la seance;
-- Sur la fiche exercice:
-  - ajouter un ou plusieurs liens YouTube (ou autres) vers des tutoriels;
-  - afficher un bouton "ouvrir le tuto" depuis l'editeur de seance.
-- Dans la structure d'une seance:
-  - pre-remplir un temps de repos conseille selon le type d'exercice;
-  - ajouter des blocs d'echauffement;
-  - proposer un mode Tabata pour les seances ou blocs chronometres.
+- Aucun reste actionnable identifie pour le builder de seances dans cette idee.
 
 ## Regles de repos par defaut
 
@@ -59,3 +56,6 @@
 - Plan: docs/90-plans/022-reordonner-exercices-seances-modeles.md
 - Plan: docs/90-plans/026-images-exercices-ui.md
 - Plan: docs/90-plans/097-tri-idees-builder.md
+- Plan: docs/90-plans/098-repos-conseilles-builder.md
+- Plan: docs/90-plans/099-drag-bibliotheque-builder-seances.md
+- Plan: docs/90-plans/101-tutoriels-echauffement-tabata-builder.md

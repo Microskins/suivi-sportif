@@ -1,4 +1,4 @@
-import type { WorkoutStatus } from "../../api/client";
+import type { Exercise, WorkoutStatus } from "../../api/client";
 
 export const difficultyOptions = [
   ["BEGINNER", "Debutant"],
@@ -31,6 +31,34 @@ export type WorkoutExerciseFormRow = {
     rir: string;
   }>;
 };
+
+export function recommendedRestSecondsForExercise(exercise: Exercise | undefined) {
+  if (!exercise) return 60;
+
+  if (exercise.exerciseType === "CARDIO") return 60;
+  if (exercise.exerciseType === "MOBILITY") return 45;
+
+  const bodyParts = exercise.bodyParts.map((part) => part.toLocaleLowerCase("fr-FR"));
+  const isCoreExercise = bodyParts.some((part) =>
+    part.includes("abdo") || part.includes("gainage"),
+  );
+  if (isCoreExercise) return 45;
+
+  if (exercise.difficulty === "ADVANCED") return 120;
+  if (exercise.difficulty === "INTERMEDIATE") return 90;
+  return 60;
+}
+
+export function recommendedRestLabel(seconds: number) {
+  return `${seconds} sec conseillees`;
+}
+
+export function tutorialSearchUrl(exercise: Exercise | undefined) {
+  const query = exercise
+    ? `${exercise.name} exercice tutoriel`
+    : "exercice tutoriel";
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+}
 
 export function toInputDateTime(value?: string) {
   const date = value ? new Date(value) : new Date();

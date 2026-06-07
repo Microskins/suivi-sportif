@@ -12,6 +12,7 @@ import {
   emptyToNull,
   inferWorkoutStatusFromDate,
   numberOrNull,
+  recommendedRestSecondsForExercise,
   toInputDateTime,
   type WorkoutExerciseFormRow,
   workoutStatusOptions,
@@ -87,7 +88,7 @@ export function WorkoutForm({
             sets: [{
               reps: "10",
               weight: "0",
-              rest: "60",
+              rest: String(recommendedRestSecondsForExercise(exercises[0])),
               durationMinutes: "",
               avgKmh: "",
               inclinePercent: "",
