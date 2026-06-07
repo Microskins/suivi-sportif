@@ -37,9 +37,9 @@
 ## Liens
 
 - Plan: docs/90-plans/033-vague-3-nutrition-saisie-rapide.md
-- Plan: docs/90-plans/092-suppression-popups-exercices-repas.md
-- Plan: docs/90-plans/095-unites-aliments-g-ou-unite.md
-- Plan: docs/90-plans/097-tri-idees-builder.md
-- Plan: docs/90-plans/100-drag-bibliotheque-builder-repas.md
-- Plan: docs/90-plans/102-modeles-favoris-repas.md
-- Plan: docs/90-plans/103-lookup-code-barres-aliments.md
+- Plan: docs/90-plans/043-suppression-popups-exercices-repas.md
+- Plan: docs/90-plans/046-unites-aliments-g-ou-unite.md
+- Plan: docs/90-plans/048-tri-idees-builder.md
+- Plan: docs/90-plans/051-drag-bibliotheque-builder-repas.md
+- Plan: docs/90-plans/053-modeles-favoris-repas.md
+- Plan: docs/90-plans/054-lookup-code-barres-aliments.md

@@ -28,7 +28,7 @@
 
 ## Liens
 
-- Plan: docs/90-plans/098-repos-conseilles-builder.md
+- Plan: docs/90-plans/049-repos-conseilles-builder.md
 
 ---
 
@@ -55,9 +55,9 @@
 
 ## Liens
 
-- Plan: docs/90-plans/097-tri-idees-builder.md
-- Plan: docs/90-plans/102-modeles-favoris-repas.md
-- Plan: docs/90-plans/103-lookup-code-barres-aliments.md
+- Plan: docs/90-plans/048-tri-idees-builder.md
+- Plan: docs/90-plans/053-modeles-favoris-repas.md
+- Plan: docs/90-plans/054-lookup-code-barres-aliments.md
 
 ---
 
@@ -85,7 +85,7 @@
 ## Contexte
 
 - Le point securite du projet a mis en evidence un secret JWT de secours trop faible, un CORS tres permissif et un token conserve cote navigateur.
-- Le chantier `096-durcissement-securite-auth-session-cors` va corriger les risques immediats, mais il reste des ameliorations adjacentes utiles a tracer.
+- Le chantier `047-durcissement-securite-auth-session-cors` va corriger les risques immediats, mais il reste des ameliorations adjacentes utiles a tracer.
 
 ## Proposition
 
@@ -200,13 +200,13 @@
 - Plan: docs/90-plans/038-angle-priorisation-chantiers-impact.md
 
 ---
-- Plan: docs/90-plans/096-durcissement-securite-auth-session-cors.md
+- Plan: docs/90-plans/047-durcissement-securite-auth-session-cors.md
 
 ## 2026-06-03 - Identite app: theme PWA par contexte
 
 ## Contexte
 
-- Le plan `091-assets-identite-app` ajoute les premiers assets d'identite et les metadonnees HTML.
+- Le plan `042-assets-identite-app` ajoute les premiers assets d'identite et les metadonnees HTML.
 - L'application a plusieurs contextes visuels utiles: sport, nutrition, mensurations, calendrier.
 
 ## Proposition
@@ -228,7 +228,7 @@
 
 ## Liens
 
-- Plan: docs/90-plans/091-assets-identite-app.md
+- Plan: docs/90-plans/042-assets-identite-app.md
 
 ---
 
@@ -348,7 +348,7 @@
 
 ## Liens
 
-- Plan: docs/90-plans/089-mobile-capacitor.md
+- Plan: docs/90-plans/040-mobile-capacitor.md
 
 ---
 
@@ -578,7 +578,7 @@
 
 ## Liens
 
-- Plan: docs/90-plans/090-tour-qualite-ui.md
+- Plan: docs/90-plans/041-tour-qualite-ui.md
 
 ---
 
@@ -696,7 +696,7 @@
 ## Liens
 
 - Plan: docs/90-plans/007-dashboard-suivi-frontend.md
-- Plan: docs/90-plans/091-assets-identite-app.md
+- Plan: docs/90-plans/042-assets-identite-app.md
 
 ---
 
@@ -755,7 +755,7 @@
 
 ## Liens
 
-- Plan: docs/90-plans/104-archive-idees-realisees.md
+- Plan: docs/90-plans/055-archive-idees-realisees.md
 
 ---
 
@@ -787,7 +787,7 @@
 
 ## Liens
 
-- Plan: docs/90-plans/092-suppression-popups-exercices-repas.md
+- Plan: docs/90-plans/043-suppression-popups-exercices-repas.md
 
 ---
 
@@ -815,7 +815,7 @@
 
 ## Liens
 
-- Plan: docs/90-plans/092-suppression-popups-exercices-repas.md
+- Plan: docs/90-plans/043-suppression-popups-exercices-repas.md
 
 ---
 

@@ -55,17 +55,17 @@ Lecture rapide:
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 | `038` Priorisation chantiers | 3 | 3 | 3 | 1 | 0 | 8 | A finir tout de suite pour guider la suite |
 | `037` Produit/UX parcours critiques | 4 | 4 | 2 | 2 | 1 | 7 | Fort gain visible, bon prochain candidat |
-| `092` Suppression popups exercices et repas | 3 | 4 | 2 | 1 | 0 | 8 | Presque termine, a fermer par verification |
-| `095` Unites aliments g ou unite | 3 | 2 | 4 | 1 | 0 | 8 | Presque termine, a fermer par verification serveur |
+| `043` Suppression popups exercices et repas | 3 | 4 | 2 | 1 | 0 | 8 | Presque termine, a fermer par verification |
+| `046` Unites aliments g ou unite | 3 | 2 | 4 | 1 | 0 | 8 | Presque termine, a fermer par verification serveur |
 | `036` Dette et maintenance | 3 | 2 | 4 | 3 | 1 | 5 | Important, a cadrer avant gros refactor |
 | `034` Qualite, confiance et securite | 3 | 3 | 4 | 2 | 1 | 7 | Semble livre mais demande nettoyage de statut |
-| `089` Mobile Capacitor | 4 | 5 | 3 | 5 | 4 | 3 | Gros impact, mais trop dependant pour maintenant |
-| `035` Mobile ops industrialisation | 3 | 2 | 4 | 4 | 3 | 2 | A rattacher au mobile quand `089` reprend |
+| `040` Mobile Capacitor | 4 | 5 | 3 | 5 | 4 | 3 | Gros impact, mais trop dependant pour maintenant |
+| `035` Mobile ops industrialisation | 3 | 2 | 4 | 4 | 3 | 2 | A rattacher au mobile quand `040` reprend |
 
 ## Candidats court terme
 
 1. Fermer `038` pour figer la methode de priorisation.
-2. Fermer les plans presque termines: `092` et `095`, avec verification ou blocage documente. Fait le 2026-06-03.
+2. Fermer les plans presque termines: `043` et `046`, avec verification ou blocage documente. Fait le 2026-06-03.
 3. Nettoyer le statut des plans deja livres mais incoherents: `031`, `033`, `034`. Fait le 2026-06-03.
 4. Lancer `037` pour convertir le diagnostic UX en parcours critiques concrets. Lance le 2026-06-03.
 5. Cadrer `036` juste assez pour savoir quels refactors debloquent les prochaines features. Cadrage scripts/docs/config fait le 2026-06-03.
@@ -94,5 +94,5 @@ Lecture rapide:
 - 2026-06-03: plan cree a partir du besoin de mieux prioriser les chantiers du projet.
 - 2026-06-03: aucune execution de verification; le travail consiste a cadrer la methode.
 - 2026-06-03: grille de priorisation ajoutee avec score indicatif, regle d'arbitrage, echantillon de 8 plans et candidats court terme.
-- 2026-06-03: priorite appliquee: `092` et `095` fermes apres verification locale via binaires `node_modules`; `031`, `033` et `034` nettoyes pour retirer des todos doublonnes.
+- 2026-06-03: priorite appliquee: `043` et `046` fermes apres verification locale via binaires `node_modules`; `031`, `033` et `034` nettoyes pour retirer des todos doublonnes.
 - 2026-06-03: incoherences code/config traitees ensuite: scripts racine, docs de versions, docs d'architecture, CORS et JWT production.

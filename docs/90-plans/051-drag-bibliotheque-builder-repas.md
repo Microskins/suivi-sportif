@@ -11,7 +11,7 @@
 - Reutiliser les filtres aliments deja presents dans `MealForm`.
 - Ajouter un aliment au clic pour couvrir les usages mobiles.
 - Permettre le drag depuis la bibliotheque vers une zone de depot ou une ligne existante.
-- Pre-remplir la quantite a `100` pour rester coherent avec le comportement actuel.
+- Pre-remplir la quantite a `051` pour rester coherent avec le comportement actuel.
 
 ## Todo
 

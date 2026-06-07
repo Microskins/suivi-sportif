@@ -7,12 +7,12 @@ plans livres.
 
 1. [Builder de seances](./02-builder-seances.md)
    - Archivee le 2026-06-07.
-   - Couverte par les plans `014`, `015`, `020`, `022`, `026`, `097`,
-     `098`, `099` et `101`.
+   - Couverte par les plans `014`, `015`, `020`, `022`, `026`, `048`,
+     `049`, `050` et `052`.
 2. [Builder de repas](./03-builder-repas.md)
    - Archivee le 2026-06-07.
-   - Couverte par les plans `033`, `092`, `095`, `097`, `100`, `102`
-     et `103`.
+   - Couverte par les plans `033`, `043`, `046`, `048`, `051`, `053`
+     et `054`.
 3. [Bibliotheque d'exercices par defaut](./04-bibliotheque-exercices.md)
    - Archivee le 2026-06-07.
    - Couverte par `docs/90-plans/019-integration-bibliotheque-exos.md`.

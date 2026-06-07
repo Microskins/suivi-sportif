@@ -54,7 +54,7 @@
 - Plan: docs/90-plans/020-edition-modeles-seances.md
 - Plan: docs/90-plans/022-reordonner-exercices-seances-modeles.md
 - Plan: docs/90-plans/026-images-exercices-ui.md
-- Plan: docs/90-plans/097-tri-idees-builder.md
-- Plan: docs/90-plans/098-repos-conseilles-builder.md
-- Plan: docs/90-plans/099-drag-bibliotheque-builder-seances.md
-- Plan: docs/90-plans/101-tutoriels-echauffement-tabata-builder.md
+- Plan: docs/90-plans/048-tri-idees-builder.md
+- Plan: docs/90-plans/049-repos-conseilles-builder.md
+- Plan: docs/90-plans/050-drag-bibliotheque-builder-seances.md
+- Plan: docs/90-plans/052-tutoriels-echauffement-tabata-builder.md

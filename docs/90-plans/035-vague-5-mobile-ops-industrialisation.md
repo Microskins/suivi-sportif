@@ -38,7 +38,7 @@
 ## Decisions
 
 - Reporter l'execution de cette vague au moment ou le chantier
-  `089-mobile-capacitor` sera repris.
+  `040-mobile-capacitor` sera repris.
 - Prioriser les checks simples et automatisables.
 - Ne pas introduire une stack ops lourde sans signal production concret.
 - Rendre les erreurs comprehensibles avant de multiplier les alertes.
@@ -69,7 +69,7 @@
 ## Todo
 
 - [x] Creer ce plan.
-- [ ] Reprendre cette vague avec le plan `089-mobile-capacitor`.
+- [ ] Reprendre cette vague avec le plan `040-mobile-capacitor`.
 - [ ] Auditer la cible mobile actuelle.
 - [ ] Ajouter checklist Capacitor.
 - [ ] Ajouter checks docs/plans.
@@ -84,4 +84,4 @@
 - 2026-06-01: plan cree depuis la roadmap `030-roadmap-idees-ia`.
 - 2026-06-01: cette vague doit attendre la fin de la Vague 4.
 - 2026-06-01: decision utilisateur: ne pas lancer la Vague 5 maintenant;
-  elle sera executee quand le chantier `089-mobile-capacitor` sera repris.
+  elle sera executee quand le chantier `040-mobile-capacitor` sera repris.

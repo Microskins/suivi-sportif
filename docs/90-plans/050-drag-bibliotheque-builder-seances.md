@@ -26,7 +26,7 @@
 - 2026-06-07: chantier ouvert depuis le reste a faire `drag and drop d'un exercice depuis une bibliotheque/listing vers la seance`.
 - 2026-06-07: ajout d'une bibliotheque filtree dans `WorkoutExerciseRows.tsx`, avec ajout au clic pour mobile et drag-and-drop vers une zone de depot.
 - 2026-06-07: depot d'un exercice sur une ligne existante ajoute la nouvelle ligne juste apres la ligne cible.
-- 2026-06-07: les lignes ajoutees depuis la bibliotheque reutilisent le repos conseille du plan `098`.
+- 2026-06-07: les lignes ajoutees depuis la bibliotheque reutilisent le repos conseille du plan `049`.
 - 2026-06-07: `npm run typecheck -w client` via WSL Node 22.12.0: OK.
 - 2026-06-07: `npm run test -w client -- --run` via WSL Node 22.12.0: OK, 3 fichiers, 12 tests passes.
 - 2026-06-07: `npm run build -w client` via WSL Node 22.12.0: OK; avertissement Vite attendu sur chunk JS > 500 kB; `client/dist/` genere puis supprime apres verification.
