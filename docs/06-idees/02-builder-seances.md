@@ -2,8 +2,7 @@
 
 ## Statut
 
-- Partielle: plusieurs fondations sont livrees, mais l'idee contient encore des
-  prolongements utiles.
+- Archive: les restes actionnables de cette idee sont couverts.
 
 ## Contexte
 
