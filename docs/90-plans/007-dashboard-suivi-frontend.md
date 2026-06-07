@@ -22,9 +22,13 @@
 - [x] Ajouter la vue dashboard avec graphiques.
 - [x] Brancher la navigation et les actions rapides.
 - [x] Ameliorer le style du dashboard.
-- [ ] Verifier typecheck/build client.
+- [x] Verifier typecheck/build client.
 
 ## Notes de verification
 
 - `git diff --check`: OK, aucun whitespace error; avertissements CRLF attendus.
 - `Get-Command node,npm`: aucun executable trouve dans ce shell local.
+- 2026-06-07: `npm run typecheck -w client` via WSL Node 22.12.0: OK.
+- 2026-06-07: `npm run build -w client` via WSL Node 22.12.0: OK; avertissement Vite attendu sur chunk JS > 500 kB.
+- 2026-06-07: `client/dist/` genere par le build puis supprime apres verification.
+- 2026-06-07: idee complementaire ajoutee dans `docs/06-idees/90-ia-idees.md` pour traiter plus tard le fractionnement du bundle client.

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { CookieConsentLayer } from "./CookieConsentLayer";
 import { getConsentStorageKey } from "../consent/consentManager";
 import { useCookieConsentStore } from "../stores/cookieConsentStore";
@@ -13,6 +13,10 @@ describe("CookieConsentLayer", () => {
       isBannerVisible: false,
       isPreferencesOpen: false,
     });
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it("shows the banner on first load", () => {

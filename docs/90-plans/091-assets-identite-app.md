@@ -16,7 +16,7 @@
 - [x] Creer ce plan.
 - [x] Ajouter les assets d'identite dans `client/public`.
 - [x] Declarer les favicons, manifest et balises sociales dans `client/index.html`.
-- [ ] Verifier le build frontend.
+- [x] Verifier le build frontend.
 
 ## Notes de verification
 
@@ -34,3 +34,6 @@
 - References de `client/index.html` vers les assets publics verifiees: tous les fichiers existent.
 - `client/public/site.webmanifest` parse correctement avec `ConvertFrom-Json`.
 - `npm run build -w client` non lance: `npm` et `node` absents du PATH dans ce shell.
+- 2026-06-07: `npm run typecheck -w client` via WSL Node 22.12.0: OK.
+- 2026-06-07: `npm run build -w client` via WSL Node 22.12.0: OK; avertissement Vite attendu sur chunk JS > 500 kB.
+- 2026-06-07: `client/dist/` genere par le build puis supprime apres verification.

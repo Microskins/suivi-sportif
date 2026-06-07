@@ -20,4 +20,8 @@ Permettre la duplication d'une seance directement depuis la vue calendrier, pour
 ## Verification
 
 - [x] `npm run typecheck -w client` passe.
-- [ ] `vitest` client local bloque par version Node/Vitest (`node:util styleText`).
+- [x] `vitest` client local bloque par version Node/Vitest (`node:util styleText`).
+- [x] 2026-06-07: blocage leve via WSL Node 22.12.0; `npm run test -w client -- --run WorkoutsCalendar.test.tsx`: OK, 1 fichier, 3 tests passes.
+- [x] 2026-06-07: `npm run test -w client -- --run`: OK apres correction du nettoyage DOM des tests CMP, 3 fichiers, 12 tests passes.
+- [x] 2026-06-07: `npm run typecheck -w client`: OK.
+- [x] 2026-06-07: `npm run build -w client`: OK; avertissement Vite attendu sur chunk JS > 500 kB; `client/dist/` genere puis supprime apres verification.

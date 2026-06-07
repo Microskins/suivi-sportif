@@ -30,3 +30,5 @@
   - `npm run test -w client -- --run src/consent/consentManager.test.ts src/components/CookieConsentLayer.test.tsx`
 - Resultat: non executees dans cet environnement local car `npm` est indisponible dans le shell courant (`CommandNotFoundException`).
 - Verification manuelle de coherence: le flux CMP couvre banniere initiale, accept/refuse/personnaliser, reouverture des preferences et page politique cookies.
+- 2026-06-07: correction de robustesse test: `CookieConsentLayer.test.tsx` nettoie le DOM apres chaque cas pour eviter les rendus empiles entre tests.
+- 2026-06-07: `npm run test -w client -- --run` via WSL Node 22.12.0: OK, 3 fichiers, 12 tests passes.

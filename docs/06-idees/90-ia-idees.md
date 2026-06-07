@@ -663,6 +663,66 @@
 
 ---
 
+## 2026-06-07 - Frontend: fractionner le bundle principal
+
+## Contexte
+
+- La fermeture des plans dashboard et assets confirme que le build client passe.
+- Vite signale encore un chunk JavaScript principal superieur a 500 kB apres minification.
+
+## Proposition
+
+- Introduire du chargement dynamique sur les zones lourdes du dashboard:
+  - graphiques;
+  - calendrier;
+  - formulaires ou sections rarement ouvertes;
+  - vues mobiles futures si Capacitor reutilise le meme bundle.
+- Mesurer avant/apres avec le rapport Vite pour eviter un fractionnement artificiel.
+
+## Impact
+
+- Chargement initial plus leger, surtout mobile.
+- Meilleure marge pour le futur chantier Capacitor.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/007-dashboard-suivi-frontend.md
+- Plan: docs/90-plans/091-assets-identite-app.md
+
+---
+
+## 2026-06-07 - Tests frontend: setup Vitest partage pour le nettoyage DOM
+
+## Contexte
+
+- La fermeture du plan duplication calendrier a revele que les tests CMP empilaient plusieurs rendus React dans le DOM jsdom.
+- Le correctif local ajoute `cleanup()` dans le fichier concerne, mais cette discipline peut etre centralisee.
+
+## Proposition
+
+- Ajouter un fichier de setup Vitest client qui importe `@testing-library/jest-dom` et lance `cleanup()` automatiquement apres chaque test composant.
+- Configurer Vitest pour utiliser ce setup afin de reduire les oublis dans les futurs tests React.
+
+## Impact
+
+- Tests composants plus fiables.
+- Moins de bruit lors des validations globales.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/024-duplication-seances-calendrier.md
+- Plan: docs/90-plans/017-cmp-cookies-frontend.md
+
+---
+
 ## 2026-06-03 - UX: filtres persistants et vues rapides pour bibliotheques
 
 ## Contexte
