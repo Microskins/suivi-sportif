@@ -1,5 +1,9 @@
 import type { Exercise } from "../../api/client";
-import { moveItem } from "./workoutFormUtils";
+import {
+  moveItem,
+  recommendedRestLabel,
+  recommendedRestSecondsForExercise,
+} from "./workoutFormUtils";
 import {
   dangerButtonClass,
   dragHandleButtonClass,
@@ -16,12 +20,12 @@ export type WorkoutTemplateRow = {
   weight: string;
 };
 
-function defaultTemplateRow(exerciseId: string): WorkoutTemplateRow {
+function defaultTemplateRow(exercise: Exercise | undefined): WorkoutTemplateRow {
   return {
-    exerciseId,
+    exerciseId: exercise?.id ?? "",
     sets: "3",
     reps: "10",
-    rest: "60",
+    rest: String(recommendedRestSecondsForExercise(exercise)),
     weight: "0",
   };
 }
@@ -45,47 +49,51 @@ export function WorkoutTemplateRows({
 }) {
   return (
     <>
-      {rows.map((row, index) => (
-        <div
-          key={index}
-          className={`rounded border p-2 transition ${
-            dragOverTemplateRowIndex === index
-              ? "border-emerald-500 bg-emerald-50/60"
-              : "border-transparent"
-          }`}
-          onDragOver={(event) => {
-            event.preventDefault();
-            setDragOverTemplateRowIndex(index);
-          }}
-          onDragEnter={() => setDragOverTemplateRowIndex(index)}
-          onDragLeave={() => {
-            if (dragOverTemplateRowIndex === index) {
+      {rows.map((row, index) => {
+        const selectedExercise = exercises.find((exercise) => exercise.id === row.exerciseId);
+        const recommendedRest = recommendedRestSecondsForExercise(selectedExercise);
+
+        return (
+          <div
+            key={index}
+            className={`rounded border p-2 transition ${
+              dragOverTemplateRowIndex === index
+                ? "border-emerald-500 bg-emerald-50/60"
+                : "border-transparent"
+            }`}
+            onDragOver={(event) => {
+              event.preventDefault();
+              setDragOverTemplateRowIndex(index);
+            }}
+            onDragEnter={() => setDragOverTemplateRowIndex(index)}
+            onDragLeave={() => {
+              if (dragOverTemplateRowIndex === index) {
+                setDragOverTemplateRowIndex(null);
+              }
+            }}
+            onDrop={(event) => {
+              event.preventDefault();
+              const draggedIndexFromTransfer = Number(
+                event.dataTransfer.getData("text/plain"),
+              );
+              const sourceIndex =
+                Number.isFinite(draggedIndexFromTransfer) &&
+                draggedIndexFromTransfer >= 0
+                  ? draggedIndexFromTransfer
+                  : draggedTemplateRowIndex;
+              if (sourceIndex === null) {
+                return;
+              }
+              setRows((current) => moveItem(current, sourceIndex, index));
+              setDraggedTemplateRowIndex(null);
               setDragOverTemplateRowIndex(null);
-            }
-          }}
-          onDrop={(event) => {
-            event.preventDefault();
-            const draggedIndexFromTransfer = Number(
-              event.dataTransfer.getData("text/plain"),
-            );
-            const sourceIndex =
-              Number.isFinite(draggedIndexFromTransfer) &&
-              draggedIndexFromTransfer >= 0
-                ? draggedIndexFromTransfer
-                : draggedTemplateRowIndex;
-            if (sourceIndex === null) {
-              return;
-            }
-            setRows((current) => moveItem(current, sourceIndex, index));
-            setDraggedTemplateRowIndex(null);
-            setDragOverTemplateRowIndex(null);
-          }}
-          onDragEnd={() => {
-            setDraggedTemplateRowIndex(null);
-            setDragOverTemplateRowIndex(null);
-          }}
-        >
-          <div className="flex w-full items-center gap-2 overflow-x-auto pb-1">
+            }}
+            onDragEnd={() => {
+              setDraggedTemplateRowIndex(null);
+              setDragOverTemplateRowIndex(null);
+            }}
+          >
+            <div className="flex w-full items-center gap-2 overflow-x-auto pb-1">
             <button
               type="button"
               className={dragHandleButtonClass}
@@ -110,6 +118,22 @@ export function WorkoutTemplateRows({
             <input className={`${inputClass} w-24 min-w-24`} type="number" min="0" value={row.rest} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, rest: event.target.value } : entry))} />
             <input className={`${inputClass} w-24 min-w-24`} type="number" min="0" value={row.weight} onChange={(event) => setRows((current) => current.map((entry, rowIndex) => rowIndex === index ? { ...entry, weight: event.target.value } : entry))} />
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className={secondaryButtonClass}
+                onClick={() =>
+                  setRows((current) =>
+                    current.map((entry, rowIndex) =>
+                      rowIndex === index
+                        ? { ...entry, rest: String(recommendedRest) }
+                        : entry,
+                    ),
+                  )
+                }
+                title={`Repos conseille: ${recommendedRestLabel(recommendedRest)}`}
+              >
+                {recommendedRest}s
+              </button>
               <button
                 type="button"
                 className={iconButtonClass}
@@ -138,11 +162,12 @@ export function WorkoutTemplateRows({
             </div>
           </div>
         </div>
-      ))}
+        );
+      })}
       <button
         type="button"
         className={secondaryButtonClass}
-        onClick={() => setRows((current) => [...current, defaultTemplateRow(exercises[0]?.id ?? "")])}
+        onClick={() => setRows((current) => [...current, defaultTemplateRow(exercises[0])])}
         disabled={!exercises.length}
       >
         Ajouter un exercice

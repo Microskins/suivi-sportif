@@ -219,6 +219,10 @@ export const createFoodSchema = z.object({
 
 export const updateFoodSchema = createFoodSchema.partial();
 
+export const barcodeParamSchema = z.object({
+  barcode: z.string().trim().min(3, "Code-barres requis").max(100),
+});
+
 export const foodResponseSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid().nullable(),
@@ -523,6 +527,7 @@ export type WorkoutTemplateResponse = z.infer<
 export type CreateFoodInput = z.infer<typeof createFoodSchema>;
 export type UpdateFoodInput = z.infer<typeof updateFoodSchema>;
 export type FoodResponse = z.infer<typeof foodResponseSchema>;
+export type BarcodeParamInput = z.infer<typeof barcodeParamSchema>;
 export type CreateMealInput = z.infer<typeof createMealSchema>;
 export type UpdateMealInput = z.infer<typeof updateMealSchema>;
 export type MealResponse = z.infer<typeof mealResponseSchema>;
@@ -547,4 +552,3 @@ export type UpdateBodyMeasurementInput = z.infer<
 export type BodyMeasurementResponse = z.infer<
   typeof bodyMeasurementResponseSchema
 >;
-

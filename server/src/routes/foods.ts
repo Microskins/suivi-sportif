@@ -1,10 +1,12 @@
 import { FastifyInstance } from "fastify";
 import * as foods from "../db/queries/foods.js";
 import {
+  barcodeParamSchema,
   createFoodSchema,
   idParamSchema,
   updateFoodSchema,
 } from "../schemas/index.js";
+import { lookupFoodByBarcode } from "../services/open-food-facts.js";
 
 const errorResponseSchema = {
   type: "object",
@@ -108,6 +110,38 @@ const foodResponseSchema = {
   required: ["data"],
 };
 
+const foodLookupSchema = {
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    brand: { type: ["string", "null"] },
+    barcode: { type: ["string", "null"] },
+    caloriesKcal: { type: "number" },
+    proteinGrams: { type: "number" },
+    carbsGrams: { type: "number" },
+    fatGrams: { type: "number" },
+    fiberGrams: { type: ["number", "null"] },
+    servingUnit: { type: "string", enum: ["g", "unit"] },
+  },
+  required: [
+    "name",
+    "brand",
+    "barcode",
+    "caloriesKcal",
+    "proteinGrams",
+    "carbsGrams",
+    "fatGrams",
+    "fiberGrams",
+    "servingUnit",
+  ],
+};
+
+const foodLookupResponseSchema = {
+  type: "object",
+  properties: { data: foodLookupSchema },
+  required: ["data"],
+};
+
 export async function foodsRoutes(fastify: FastifyInstance) {
   fastify.addHook("preHandler", async (request, reply) => {
     try {
@@ -141,6 +175,55 @@ export async function foodsRoutes(fastify: FastifyInstance) {
           meta: { total: result.length, page: 1, limit: result.length },
         });
       } catch (error) {
+        fastify.log.error(error);
+        return reply.code(500).send({
+          error: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  );
+
+  fastify.get(
+    "/barcode/:barcode/lookup",
+    {
+      schema: {
+        tags: ["foods"],
+        summary: "Lookup food data by barcode",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: { barcode: { type: "string", minLength: 3 } },
+          required: ["barcode"],
+        },
+        response: {
+          200: foodLookupResponseSchema,
+          400: validationErrorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      try {
+        const { barcode } = barcodeParamSchema.parse(request.params);
+        const food = await lookupFoodByBarcode(barcode);
+        if (!food) {
+          return reply
+            .code(404)
+            .send({ error: "Food not found", code: "FOOD_NOT_FOUND" });
+        }
+
+        return reply.code(200).send({ data: food });
+      } catch (error: any) {
+        if (error.name === "ZodError") {
+          return reply.code(400).send({
+            error: "Validation failed",
+            code: "VALIDATION_ERROR",
+            details: error.errors,
+          });
+        }
         fastify.log.error(error);
         return reply.code(500).send({
           error: "Internal Server Error",

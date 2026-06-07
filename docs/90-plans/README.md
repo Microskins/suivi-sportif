@@ -53,6 +53,12 @@ Index chronologique des chantiers planifies et executes.
 
 96. [Durcissement securite auth/session/CORS](./096-durcissement-securite-auth-session-cors.md)
 97. [Tri des idees builder](./097-tri-idees-builder.md)
+98. [Repos conseilles builder](./098-repos-conseilles-builder.md)
+99. [Drag bibliotheque builder seances](./099-drag-bibliotheque-builder-seances.md)
+100. [Drag bibliotheque builder repas](./100-drag-bibliotheque-builder-repas.md)
+101. [Tutoriels echauffement Tabata builder](./101-tutoriels-echauffement-tabata-builder.md)
+102. [Modeles favoris repas](./102-modeles-favoris-repas.md)
+103. [Lookup code-barres aliments](./103-lookup-code-barres-aliments.md)
 104. [Archive des idees realisees](./104-archive-idees-realisees.md)
 
 ## Convention

@@ -174,6 +174,8 @@ export type FoodInput = {
   servingUnit?: "g" | "unit";
 };
 
+export type FoodBarcodeLookup = Required<FoodInput>;
+
 export type MealType = "breakfast" | "lunch" | "dinner" | "snack" | "other";
 
 export type MealItemInput = {
@@ -549,6 +551,12 @@ class ApiClient {
 
   async getFood(id: string) {
     return this.request<Food>(`/api/foods/${id}`);
+  }
+
+  async lookupFoodByBarcode(barcode: string) {
+    return this.request<FoodBarcodeLookup>(
+      `/api/foods/barcode/${encodeURIComponent(barcode)}/lookup`,
+    );
   }
 
   async createFood(data: FoodInput) {

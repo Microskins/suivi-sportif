@@ -2,8 +2,7 @@
 
 ## Statut
 
-- Partielle: la saisie rapide est largement couverte, mais le vrai builder
-  drag-and-drop reste une piste future.
+- Archive: les restes actionnables de cette idee sont couverts.
 
 ## Contexte
 
@@ -13,18 +12,18 @@
 
 - Bibliotheque d'aliments visible dans le formulaire repas.
 - Recherche locale par nom, marque ou code-barres.
+- Ajout d'aliment au builder depuis la bibliotheque filtree, au clic ou par drag-and-drop.
 - Reutilisation des aliments et quantites.
 - Portions recentes par aliment.
+- Modeles locaux de repas avec sauvegarde, application et suppression.
+- Import d'aliment par code-barres via Open Food Facts depuis le formulaire aliment.
 - Recap calories/macros avant validation.
 - Duplication de repas existants.
 - Comparaison journaliere aux objectifs nutrition actifs.
 
 ## Reste a faire
 
-- Dans l'editeur de repas:
-  - permettre de glisser/deposer un aliment dans le repas;
-  - formaliser de vrais modeles/favoris de repas si le besoin revient;
-  - connecter une source externe de code-barres apres decision juridique et technique.
+- Aucun reste actionnable identifie pour le builder de repas dans cette idee.
 
 ## Impact
 
@@ -41,3 +40,6 @@
 - Plan: docs/90-plans/092-suppression-popups-exercices-repas.md
 - Plan: docs/90-plans/095-unites-aliments-g-ou-unite.md
 - Plan: docs/90-plans/097-tri-idees-builder.md
+- Plan: docs/90-plans/100-drag-bibliotheque-builder-repas.md
+- Plan: docs/90-plans/102-modeles-favoris-repas.md
+- Plan: docs/90-plans/103-lookup-code-barres-aliments.md

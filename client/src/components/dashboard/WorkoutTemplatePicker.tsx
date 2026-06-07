@@ -5,6 +5,7 @@ import { WorkoutTemplateRows, type WorkoutTemplateRow } from "./WorkoutTemplateR
 import {
   dateTimeToIso,
   emptyToNull,
+  recommendedRestSecondsForExercise,
   toInputDateTime,
 } from "./workoutFormUtils";
 import {
@@ -62,7 +63,13 @@ export function WorkoutTemplatePicker({
   const [description, setDescription] = useState("");
   const [rows, setRows] = useState<WorkoutTemplateRow[]>(
     exercises[0]
-      ? [{ exerciseId: exercises[0].id, sets: "3", reps: "10", rest: "60", weight: "0" }]
+      ? [{
+          exerciseId: exercises[0].id,
+          sets: "3",
+          reps: "10",
+          rest: String(recommendedRestSecondsForExercise(exercises[0])),
+          weight: "0",
+        }]
       : [],
   );
   const [isSaving, setIsSaving] = useState(false);
@@ -95,7 +102,13 @@ export function WorkoutTemplatePicker({
     setDescription("");
     setRows(
       exercises[0]
-        ? [{ exerciseId: exercises[0].id, sets: "3", reps: "10", rest: "60", weight: "0" }]
+        ? [{
+            exerciseId: exercises[0].id,
+            sets: "3",
+            reps: "10",
+            rest: String(recommendedRestSecondsForExercise(exercises[0])),
+            weight: "0",
+          }]
         : [],
     );
   }

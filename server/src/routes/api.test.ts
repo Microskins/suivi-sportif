@@ -50,6 +50,9 @@ const mocks = vi.hoisted(() => ({
     updateFood: vi.fn(),
     deleteFood: vi.fn(),
   },
+  openFoodFacts: {
+    lookupFoodByBarcode: vi.fn(),
+  },
   meals: {
     getMeals: vi.fn(),
     getMealById: vi.fn(),
@@ -88,6 +91,7 @@ vi.mock("../db/queries/exercises.js", () => mocks.exercises);
 vi.mock("../db/queries/workouts.js", () => mocks.workouts);
 vi.mock("../db/queries/workout-templates.js", () => mocks.workoutTemplates);
 vi.mock("../db/queries/foods.js", () => mocks.foods);
+vi.mock("../services/open-food-facts.js", () => mocks.openFoodFacts);
 vi.mock("../db/queries/meals.js", () => mocks.meals);
 vi.mock("../db/queries/nutrition-goals.js", () => mocks.nutritionGoals);
 vi.mock("../db/queries/user-goals.js", () => mocks.userGoals);
@@ -1620,6 +1624,63 @@ describe("API", () => {
     expect(body.data).toEqual([food]);
     expect(body.meta.total).toBe(1);
     expect(mocks.foods.getFoods).toHaveBeenCalledWith(USER_ID);
+  });
+
+  it("rejects barcode lookup without a token", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/foods/barcode/3017620422003/lookup",
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expect(body.code).toBe("UNAUTHORIZED");
+    expect(mocks.openFoodFacts.lookupFoodByBarcode).not.toHaveBeenCalled();
+  });
+
+  it("looks up food data by barcode for the authenticated user", async () => {
+    const lookup = {
+      name: "Pate a tartiner",
+      brand: "Exemple",
+      barcode: "3017620422003",
+      caloriesKcal: 539,
+      proteinGrams: 6.3,
+      carbsGrams: 57.5,
+      fatGrams: 30.9,
+      fiberGrams: 3.4,
+      servingUnit: "g",
+    };
+    mocks.openFoodFacts.lookupFoodByBarcode.mockResolvedValue(lookup);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/foods/barcode/3017620422003/lookup",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(lookup);
+    expect(mocks.openFoodFacts.lookupFoodByBarcode).toHaveBeenCalledWith(
+      "3017620422003",
+    );
+  });
+
+  it("returns 404 when barcode lookup has no result", async () => {
+    mocks.openFoodFacts.lookupFoodByBarcode.mockResolvedValue(null);
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/foods/barcode/0000000000000/lookup",
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("FOOD_NOT_FOUND");
+    expect(mocks.openFoodFacts.lookupFoodByBarcode).toHaveBeenCalledWith(
+      "0000000000000",
+    );
   });
 
   it("creates a custom food for the authenticated user", async () => {

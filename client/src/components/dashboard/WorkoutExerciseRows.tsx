@@ -1,6 +1,13 @@
+import type { DragEvent } from "react";
 import type { Exercise } from "../../api/client";
 import {
+  difficultyOptions,
+  exerciseTypeOptions,
+  labelFromOptions,
   moveItem,
+  recommendedRestLabel,
+  recommendedRestSecondsForExercise,
+  tutorialSearchUrl,
   updateSet,
   type WorkoutExerciseFormRow,
 } from "./workoutFormUtils";
@@ -14,19 +21,65 @@ import {
   secondaryButtonClass,
 } from "./shared";
 
-function defaultWorkoutExerciseRow(exerciseId: string): WorkoutExerciseFormRow {
+const exerciseDragDataType = "application/x-suivi-sportif-exercise-id";
+
+function defaultWorkoutExerciseRow(exercise: Exercise | undefined): WorkoutExerciseFormRow {
+  const rest = String(recommendedRestSecondsForExercise(exercise));
   return {
-    exerciseId,
+    exerciseId: exercise?.id ?? "",
     sets: [{
       reps: "10",
       weight: "0",
-      rest: "60",
+      rest,
       durationMinutes: "",
       avgKmh: "",
       inclinePercent: "",
       rpe: "",
       rir: "",
     }],
+  };
+}
+
+function insertExerciseRow(
+  rows: WorkoutExerciseFormRow[],
+  exercise: Exercise,
+  insertIndex: number,
+) {
+  const next = [...rows];
+  const boundedIndex = Math.max(0, Math.min(insertIndex, next.length));
+  next.splice(boundedIndex, 0, defaultWorkoutExerciseRow(exercise));
+  return next;
+}
+
+function warmupRow(exercise: Exercise | undefined): WorkoutExerciseFormRow {
+  return {
+    exerciseId: exercise?.id ?? "",
+    sets: [{
+      reps: exercise?.exerciseType === "CARDIO" ? "" : "12",
+      weight: "0",
+      rest: "30",
+      durationMinutes: exercise?.exerciseType === "CARDIO" ? "5" : "",
+      avgKmh: "",
+      inclinePercent: "",
+      rpe: "3",
+      rir: "",
+    }],
+  };
+}
+
+function tabataRow(exercise: Exercise): WorkoutExerciseFormRow {
+  return {
+    exerciseId: exercise.id,
+    sets: Array.from({ length: 8 }, () => ({
+      reps: "",
+      weight: "0",
+      rest: "10",
+      durationMinutes: "0.33",
+      avgKmh: "",
+      inclinePercent: "",
+      rpe: "8",
+      rir: "",
+    })),
   };
 }
 
@@ -53,6 +106,26 @@ export function WorkoutExerciseRows({
   setDragOverRowIndex: (value: number | null) => void;
   updateRow: (index: number, nextRow: WorkoutExerciseFormRow) => void;
 }) {
+  function addExerciseFromLibrary(exercise: Exercise, insertIndex = rows.length) {
+    setRows((current) => insertExerciseRow(current, exercise, insertIndex));
+  }
+
+  function exerciseFromDrag(event: DragEvent) {
+    const exerciseId = event.dataTransfer.getData(exerciseDragDataType);
+    return exercises.find((exercise) => exercise.id === exerciseId);
+  }
+
+  const warmupExercise =
+    filteredExercises.find((exercise) => exercise.exerciseType === "MOBILITY") ??
+    exercises.find((exercise) => exercise.exerciseType === "MOBILITY") ??
+    filteredExercises.find((exercise) => exercise.exerciseType === "CARDIO") ??
+    exercises.find((exercise) => exercise.exerciseType === "CARDIO") ??
+    filteredExercises[0] ??
+    exercises[0];
+  const tabataExercise =
+    filteredExercises.find((exercise) => exercise.exerciseType === "CARDIO") ??
+    exercises.find((exercise) => exercise.exerciseType === "CARDIO");
+
   return (
     <>
       <div className="flex items-center justify-between gap-3">
@@ -69,16 +142,105 @@ export function WorkoutExerciseRows({
           onClick={() =>
             setRows((current) => [
               ...current,
-              defaultWorkoutExerciseRow(exercises[0]?.id ?? ""),
+              defaultWorkoutExerciseRow(exercises[0]),
             ])
           }
         >
           Ajouter
         </button>
       </div>
+      <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-white p-2">
+        <button
+          type="button"
+          className={secondaryButtonClass}
+          disabled={!warmupExercise}
+          onClick={() =>
+            setRows((current) => [...current, warmupRow(warmupExercise)])
+          }
+        >
+          Ajouter echauffement
+        </button>
+        <button
+          type="button"
+          className={secondaryButtonClass}
+          disabled={!tabataExercise}
+          onClick={() =>
+            tabataExercise &&
+            setRows((current) => [...current, tabataRow(tabataExercise)])
+          }
+          title={
+            tabataExercise
+              ? "Ajoute 8 intervalles de 20 secondes avec 10 secondes de repos"
+              : "Ajoute d'abord un exercice cardio"
+          }
+        >
+          Ajouter Tabata
+        </button>
+      </div>
+      {!!filteredExercises.length && (
+        <section className="rounded border border-slate-200 bg-slate-50 p-3">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
+            <div
+              className="flex min-h-24 flex-1 items-center justify-center rounded border border-dashed border-emerald-300 bg-white px-3 py-4 text-center text-sm font-medium text-emerald-800"
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={(event) => {
+                event.preventDefault();
+                const exercise = exerciseFromDrag(event);
+                if (exercise) {
+                  addExerciseFromLibrary(exercise);
+                }
+              }}
+            >
+              Depose un exercice ici pour l'ajouter a la seance.
+            </div>
+            <div className="min-w-0 flex-[2]">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <p className="text-sm font-semibold text-slate-800">
+                  Bibliotheque filtree
+                </p>
+                <p className="text-xs text-slate-500">
+                  {filteredExercises.length} exercice(s)
+                </p>
+              </div>
+              <div className="flex max-h-36 flex-wrap gap-2 overflow-y-auto pr-1">
+                {filteredExercises.map((exercise) => {
+                  const recommendedRest = recommendedRestSecondsForExercise(exercise);
+
+                  return (
+                    <button
+                      key={exercise.id}
+                      type="button"
+                      draggable
+                      onDragStart={(event) => {
+                        event.dataTransfer.effectAllowed = "copy";
+                        event.dataTransfer.setData(exerciseDragDataType, exercise.id);
+                      }}
+                      onClick={() => addExerciseFromLibrary(exercise)}
+                      className="rounded border border-slate-200 bg-white px-3 py-2 text-left text-xs text-slate-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      title="Cliquer ou glisser pour ajouter"
+                    >
+                      <span className="block font-semibold text-slate-900">
+                        {exercise.name}
+                      </span>
+                      <span className="mt-1 block text-slate-500">
+                        {labelFromOptions(exerciseTypeOptions, exercise.exerciseType)}
+                        {" / "}
+                        {labelFromOptions(difficultyOptions, exercise.difficulty)}
+                        {" / "}
+                        {recommendedRest}s
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
       {!exercises.length && <EmptyState label="Cree un exercice avant de composer une seance." />}
       {rows.map((row, rowIndex) => {
         const selectedExercise = exercises.find((exercise) => exercise.id === row.exerciseId);
+        const recommendedRest = recommendedRestSecondsForExercise(selectedExercise);
         const selectExercises =
           filteredExercises.length === 0 ||
           filteredExercises.some((exercise) => exercise.id === row.exerciseId)
@@ -109,6 +271,16 @@ export function WorkoutExerciseRows({
             }}
             onDrop={(event) => {
               event.preventDefault();
+              const droppedExercise = exerciseFromDrag(event);
+              if (droppedExercise) {
+                setRows((current) =>
+                  insertExerciseRow(current, droppedExercise, rowIndex + 1),
+                );
+                setDraggedRowIndex(null);
+                setDragOverRowIndex(null);
+                return;
+              }
+
               const draggedIndexFromTransfer = Number(
                 event.dataTransfer.getData("text/plain"),
               );
@@ -166,6 +338,16 @@ export function WorkoutExerciseRows({
                 </select>
               </div>
               <div className="flex items-center gap-1">
+                <a
+                  className={iconButtonClass}
+                  href={tutorialSearchUrl(selectedExercise)}
+                  target="_blank"
+                  rel="noreferrer"
+                  title="Ouvrir un tuto"
+                  aria-label="Ouvrir un tuto"
+                >
+                  ?
+                </a>
                 <button
                   type="button"
                   className={iconButtonClass}
@@ -196,6 +378,26 @@ export function WorkoutExerciseRows({
               </button>
             </div>
             <div className="mt-3 space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded border border-emerald-100 bg-emerald-50/70 px-3 py-2 text-xs text-emerald-900">
+                <span className="font-medium">
+                  Repos conseille: {recommendedRestLabel(recommendedRest)}
+                </span>
+                <button
+                  type="button"
+                  className={secondaryButtonClass}
+                  onClick={() =>
+                    updateRow(rowIndex, {
+                      ...row,
+                      sets: row.sets.map((set) => ({
+                        ...set,
+                        rest: String(recommendedRest),
+                      })),
+                    })
+                  }
+                >
+                  Appliquer aux series
+                </button>
+              </div>
               {row.sets.map((set, setIndex) => (
                 <div
                   key={setIndex}
@@ -239,7 +441,7 @@ export function WorkoutExerciseRows({
                       {
                         reps: "10",
                         weight: "0",
-                        rest: "60",
+                        rest: String(recommendedRest),
                         durationMinutes: "",
                         avgKmh: "",
                         inclinePercent: "",
