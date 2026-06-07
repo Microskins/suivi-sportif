@@ -463,62 +463,6 @@
 
 ---
 
-## 2026-05-12 - Conformite cookies: mode policy-version
-
-## Contexte
-
-- Une CMP frontend peut devenir obsol�te quand la politique legale evolue.
-- Sans versionning explicite, le consentement stocke est difficile a invalider proprement.
-
-## Proposition
-
-- Versionner la politique cookies (ex: date ISO) dans l'objet de consentement.
-- Re-afficher la banniere automatiquement quand la version change.
-- Garder un journal minimal des changements de version dans la doc legale.
-
-## Impact
-
-- Conformite plus robuste dans le temps.
-- Moins de risques d'utiliser un ancien consentement sur de nouvelles finalites.
-
-## Complexite
-
-- S
-
-## Liens
-
-- Plan: docs/90-plans/017-cmp-cookies-frontend.md
-
----
-
-## 2026-05-12 - Calendrier: score de regularite hebdo
-
-## Contexte
-
-- Le calendrier montre les seances, mais la progression de regularite n'est pas explicite.
-
-## Proposition
-
-- Ajouter un score hebdomadaire simple dans la vue calendrier:
-  - nombre de seances realisees / objectif cible;
-  - jauge visuelle sur la semaine courante.
-- Conserver la logique de statut (`PLANNED`, `COMPLETED`, `CANCELED`) comme source de verite.
-
-## Impact
-
-- Feedback motivant immediat sur la constance.
-- Facilite la lecture "planifie vs realise" sans ouvrir chaque jour.
-
-## Complexite
-
-- S
-
-## Liens
-
-- Plan: docs/90-plans/018-calendrier-suivi-statut-seances.md
-
----
-
 ## 2026-05-13 - Modeles: historique des revisions
 
 ## Contexte
@@ -752,6 +696,37 @@
 
 - Plan: docs/90-plans/024-duplication-seances-calendrier.md
 - Plan: docs/90-plans/017-cmp-cookies-frontend.md
+
+---
+
+## 2026-06-07 - Idees: statut explicite active/archive/reportee
+
+## Contexte
+
+- La passe d'archive de `docs/06-idees` repose aujourd'hui sur l'emplacement du fichier.
+- Une idee peut etre partiellement realisee, reportee ou archivee, ce qui n'est pas toujours visible sans lire les plans lies.
+
+## Proposition
+
+- Ajouter plus tard un champ court de statut dans les idees:
+  - `active`;
+  - `partielle`;
+  - `archivee`;
+  - `reportee`.
+- Utiliser ce statut dans l'index pour accelerer les futures passes de tri.
+
+## Impact
+
+- Moins d'ambiguite quand une idee contient plusieurs sous-parties.
+- Meilleure lecture des idees encore actionnables.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/104-archive-idees-realisees.md
 
 ---
 
