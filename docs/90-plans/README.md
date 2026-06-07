@@ -52,6 +52,7 @@ Index chronologique des chantiers planifies et executes.
 95. [Unites aliments g ou unite](./095-unites-aliments-g-ou-unite.md)
 
 96. [Durcissement securite auth/session/CORS](./096-durcissement-securite-auth-session-cors.md)
+97. [Tri des idees builder](./097-tri-idees-builder.md)
 
 ## Convention
 

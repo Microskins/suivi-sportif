@@ -1,24 +1,35 @@
 # Builder de seances
 
+## Statut
+
+- Partielle: plusieurs fondations sont livrees, mais l'idee contient encore des
+  prolongements utiles.
+
 ## Contexte
 
 - Construire une seance peut etre repetitif si on doit recreer la liste d'exercices a chaque fois.
 - Pour certains exercices, un rappel visuel (video) aide a garder une bonne execution.
 
-## Proposition
+## Deja fait
+
+- Modeles de seances preconstruits et instanciables.
+- Edition des modeles de seances.
+- Reordonnancement des exercices dans une seance et dans un modele, avec drag-and-drop natif.
+- Champs de repos par serie dans les seances et modeles.
+- Filtres/recherche pour trouver plus vite un exercice dans le formulaire de seance.
+- Images d'exercices affichees dans l'UI quand l'asset existe.
+
+## Reste a faire
 
 - Dans l'editeur de seance:
   - permettre le drag and drop d'un exercice depuis une bibliotheque/listing vers la seance;
-  - permettre le re-ordonnancement des exercices par drag and drop.
 - Sur la fiche exercice:
   - ajouter un ou plusieurs liens YouTube (ou autres) vers des tutoriels;
   - afficher un bouton "ouvrir le tuto" depuis l'editeur de seance.
 - Dans la structure d'une seance:
-  - ajouter les temps de repos entre les exercices ou les series;
   - pre-remplir un temps de repos conseille selon le type d'exercice;
   - ajouter des blocs d'echauffement;
-  - proposer un mode Tabata pour les seances ou blocs chronometres;
-  - proposer des seances preconstruites pour demarrer plus vite.
+  - proposer un mode Tabata pour les seances ou blocs chronometres.
 
 ## Regles de repos par defaut
 
@@ -43,3 +54,8 @@
 ## Liens
 
 - Plan: docs/90-plans/014-fusion-idees-seances.md
+- Plan: docs/90-plans/015-modeles-seances-defaut.md
+- Plan: docs/90-plans/020-edition-modeles-seances.md
+- Plan: docs/90-plans/022-reordonner-exercices-seances-modeles.md
+- Plan: docs/90-plans/026-images-exercices-ui.md
+- Plan: docs/90-plans/097-tri-idees-builder.md

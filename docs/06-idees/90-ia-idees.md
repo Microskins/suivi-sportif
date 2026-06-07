@@ -1,5 +1,37 @@
 # IA Idees
 
+## 2026-06-07 - Builders: decouper les restes en micro-chantiers
+
+## Contexte
+
+- Les idees builder de seances et de repas melangent des fondations deja livrees avec des prolongements encore ouverts.
+- Les garder comme gros blocs rend la priorisation moins lisible.
+
+## Proposition
+
+- Transformer plus tard les restes en micro-chantiers separes:
+  - tutoriels exercices;
+  - repos conseilles automatiques;
+  - blocs echauffement / Tabata;
+  - drag-and-drop depuis bibliotheque;
+  - modeles ou favoris de repas;
+  - source externe code-barres.
+
+## Impact
+
+- Chantiers plus petits et plus faciles a valider.
+- Moins de risque de melanger UX, data et integration externe.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/097-tri-idees-builder.md
+
+---
+
 ## 2026-06-03 - Technique: cartographie des hotspots de maintenance
 
 ## Contexte
