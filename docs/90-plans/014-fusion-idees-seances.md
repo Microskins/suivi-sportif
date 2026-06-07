@@ -8,7 +8,8 @@
 
 ## Decisions
 
-- Conserver l'idee de seances dans `docs/06-idees/02-builder-seances.md`.
+- Conserver l'idee de seances dans le fichier canonique `02-builder-seances.md`
+  (archive actuelle: `docs/06-idees/archive/02-builder-seances.md`).
 - Integrer les idees brutes de l'ancien doublon de seances dans le fichier canonique.
 - Supprimer le fichier doublon une fois le contenu fusionne.
 - Renommer les idees avec une numerotation continue et des noms plus explicites.
@@ -31,3 +32,4 @@
 - Verification par `git diff -- docs/06-idees docs/90-plans` et `git status --short`.
 - Renommage final des idees: `01-calendrier-suivi`, `02-builder-seances`, `03-builder-repas`, `04-bibliotheque-exercices`, `05-modeles-seances`.
 - Verification des anciens noms, anciennes fautes et anciens chemins: aucune reference active restante hors notes de chantier.
+- 2026-06-07: l'idee `02-builder-seances.md` a ensuite ete archivee dans `docs/06-idees/archive/02-builder-seances.md` apres fermeture des restes actionnables.

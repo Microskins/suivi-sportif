@@ -25,7 +25,8 @@
 
 - 2026-06-07: chantier ouvert pour nettoyer les idees actives sans supprimer l'historique.
 - 2026-06-07: idees archivees: `04-bibliotheque-exercices.md` et `05-modeles-seances.md`.
+- 2026-06-07: idees archivees apres fermeture des restes builder: `02-builder-seances.md` et `03-builder-repas.md`.
 - 2026-06-07: idees IA archivees: `Conformite cookies: mode policy-version` et `Calendrier: score de regularite hebdo`.
-- 2026-06-07: idees conservees actives: `01-calendrier-suivi.md` car le poids journalier reste reporte; `02-builder-seances.md` car plusieurs points restent ouverts; `03-builder-repas.md` et `06- chatbox-ia.md` car non realisees.
+- 2026-06-07: idees conservees actives: `01-calendrier-suivi.md` car le poids journalier reste reporte; `06- chatbox-ia.md` car non realisee.
 - 2026-06-07: controle des liens markdown de `docs/06-idees/README.md` et `docs/06-idees/archive/README.md`: OK, aucune cible manquante.
 - 2026-06-07: `git diff --check`: OK.

@@ -6,11 +6,9 @@ pourraient etre integrees au projet.
 ## Index
 
 1. [Calendrier: seances et poids](./01-calendrier-suivi.md)
-2. [Builder de seances](./02-builder-seances.md) - archive
-3. [Builder de repas](./03-builder-repas.md) - archive
-4. [Chatbox IA](./06-%20chatbox-ia.md)
-5. [IA Idees](./90-ia-idees.md)
-6. [Archive des idees realisees](./archive/README.md)
+2. [Chatbox IA](./06-%20chatbox-ia.md)
+3. [IA Idees](./90-ia-idees.md)
+4. [Archive des idees realisees](./archive/README.md)
 
 > [!NOTE]
 > ## IA Idees
