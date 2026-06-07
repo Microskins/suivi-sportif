@@ -273,14 +273,14 @@ const bodyMeasurement = {
 
 describe("buildApp configuration", () => {
   const originalEnv = {
-    CORS_ORIGIN: process.env.CORS_ORIGIN,
+    CORS_ORIGINS: process.env.CORS_ORIGINS,
     JWT_SECRET: process.env.JWT_SECRET,
     NODE_ENV: process.env.NODE_ENV,
   };
 
   afterEach(() => {
-    if (originalEnv.CORS_ORIGIN === undefined) delete process.env.CORS_ORIGIN;
-    else process.env.CORS_ORIGIN = originalEnv.CORS_ORIGIN;
+    if (originalEnv.CORS_ORIGINS === undefined) delete process.env.CORS_ORIGINS;
+    else process.env.CORS_ORIGINS = originalEnv.CORS_ORIGINS;
 
     if (originalEnv.JWT_SECRET === undefined) delete process.env.JWT_SECRET;
     else process.env.JWT_SECRET = originalEnv.JWT_SECRET;
@@ -294,14 +294,14 @@ describe("buildApp configuration", () => {
     delete process.env.JWT_SECRET;
 
     expect(() => buildApp({ logger: false })).toThrow(
-      "JWT_SECRET must be configured in production",
+      "JWT_SECRET is required in production",
     );
   });
 
   it("does not allow arbitrary CORS origins in production", async () => {
     process.env.NODE_ENV = "production";
-    process.env.JWT_SECRET = "test-production-secret";
-    delete process.env.CORS_ORIGIN;
+    process.env.JWT_SECRET = "test-production-secret-at-least-32-chars";
+    delete process.env.CORS_ORIGINS;
 
     const app = buildApp({ logger: false });
     await app.ready();
@@ -319,8 +319,8 @@ describe("buildApp configuration", () => {
 
   it("allows configured CORS origins in production", async () => {
     process.env.NODE_ENV = "production";
-    process.env.JWT_SECRET = "test-production-secret";
-    process.env.CORS_ORIGIN = "https://suivi-sportif.fr";
+    process.env.JWT_SECRET = "test-production-secret-at-least-32-chars";
+    process.env.CORS_ORIGINS = "https://suivi-sportif.fr";
 
     const app = buildApp({ logger: false });
     await app.ready();

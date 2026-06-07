@@ -15,27 +15,6 @@ import { workoutsRoutes } from "./routes/workouts.js";
 import { workoutTemplatesRoutes } from "./routes/workout-templates.js";
 import { authPlugin } from "./plugins/auth.js";
 
-function getJwtSecret() {
-  const secret = process.env.JWT_SECRET;
-  const isProduction = process.env.NODE_ENV === "production";
-
-  if (isProduction && (!secret || secret === "default-secret-change-me")) {
-    throw new Error("JWT_SECRET must be configured in production");
-  }
-
-  return secret || "default-secret-change-me";
-}
-
-function getCorsOrigin() {
-  const configuredOrigins = process.env.CORS_ORIGIN?.split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-
-  if (configuredOrigins?.length) {
-    return configuredOrigins;
-  }
-
-  return process.env.NODE_ENV === "production" ? false : true;
 const DEVELOPMENT_JWT_SECRET = "development-only-secret-at-least-32-characters";
 const MIN_JWT_SECRET_LENGTH = 32;
 const DEFAULT_DEV_CORS_ORIGINS = [
@@ -91,9 +70,6 @@ export function buildApp(options: FastifyServerOptions = { logger: true }) {
         return;
       }
 
-  fastify.register(cors, { origin: getCorsOrigin() });
-  fastify.register(fjwt, {
-    secret: getJwtSecret(),
       callback(null, false);
     },
   });

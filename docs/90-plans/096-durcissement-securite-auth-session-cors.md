@@ -38,3 +38,6 @@
 - 2026-06-03: `npm run typecheck -w server` via WSL: OK.
 - 2026-06-03: `npm run test -w server -- --run` via WSL + Node 24.15.0: OK, 5 fichiers, 164 tests passes.
 - 2026-06-03: `git diff --check`: OK; avertissement Git seulement sur normalisation CRLF -> LF pour `deploy/nginx/suivi-sportif.fr.conf`.
+- 2026-06-07: correction post-merge sur `main`: restauration du bloc durci JWT/CORS dans `server/src/app.ts`, suppression des restes `CORS_ORIGIN`/JWT dupliques, alignement des tests sur `CORS_ORIGINS` et secret prod >= 32 caracteres.
+- 2026-06-07: validations apres correction CI: typecheck serveur via Node runtime Codex + `node_modules/typescript/bin/tsc --noEmit`: OK; tests serveur via WSL `npm run test -w server -- --run`: OK, 5 fichiers, 167 tests passes; build serveur via Node runtime Codex + `tsc`: OK; typecheck client via Node runtime Codex + `tsc --noEmit`: OK; build client via WSL `npm run build -w client`: OK avec avertissement chunk > 500 kB; `git diff --check`: OK.
+- 2026-06-07: note environnement local: `npm` n'est pas disponible dans PowerShell et le build/test Vite/Vitest Windows bloque sur la dependance optionnelle manquante `@rolldown/binding-win32-x64-msvc`; les validations dependantes de Rolldown ont donc ete lancees via WSL.
