@@ -1,5 +1,34 @@
 # IA Idees
 
+## 2026-06-08 - Chatbox IA profil: diff, raccourcis et trace
+
+## Contexte
+
+- La chatbox profil va permettre de piloter le compte en langage naturel.
+- Plus l'IA touche au profil, plus il faut de la visibilite sur ce qui va changer et sur ce qui a change.
+
+## Proposition
+
+- Ajouter plus tard un apercu du diff avant application, surtout pour l'email et la date de naissance.
+- Proposer des raccourcis de commandes courantes dans l'UI pour accelerer les demandes repetitives.
+- Conserver un journal leger des actions IA sur le profil pour le support et la confiance.
+
+## Impact
+
+- Reduit le risque d'action involontaire.
+- Rend la chatbox plus rapide et plus rassurante au quotidien.
+- Facilite le diagnostic si une demande est mal interpretee.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/058-chatbox-ia.md
+
+---
+
 ## 2026-06-08 - Synthese corporelle: poids, anciennete et raccourci objectif
 
 ## Contexte

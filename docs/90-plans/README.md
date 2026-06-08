@@ -61,6 +61,7 @@ Index chronologique des chantiers planifies et executes.
 55. [Archive des idees realisees](./055-archive-idees-realisees.md)
 56. [Renumerotation continue des plans](./056-renumerotation-continue-plans.md)
 57. [Synthese poids corporel](./057-synthese-poids-corps.md)
+58. [Chatbox IA profil](./058-chatbox-ia.md)
 
 ## Convention
 
