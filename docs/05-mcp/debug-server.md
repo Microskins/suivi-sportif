@@ -113,7 +113,10 @@ La reponse doit etre `401 Unauthorized`.
 - `docker_status`, `docker_logs`: inspectent Docker Compose.
 - `db_summary`: compteurs Prisma et derniers elements rediges.
 - `maintenance_prisma`, `docker_restart_service`: bloques par defaut.
-- CRUD aliments, repas et objectifs nutritionnels via l'API.
+- Profil utilisateur: lecture et modification de `/api/users/me`.
+- Catalogue exercices: lecture pour retrouver les ids avant creation de seance.
+- CRUD aliments, repas, seances, objectifs nutritionnels, objectifs sport/corps
+  et mensurations via l'API.
 
 Les outils metier appellent l'API Fastify et exigent un `jwtToken` utilisateur
 dans l'input. Ils ne lisent pas Prisma directement.

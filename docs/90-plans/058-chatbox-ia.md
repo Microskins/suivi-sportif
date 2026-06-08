@@ -35,8 +35,8 @@
 - [x] Recrire l'idee 06 avec le nouveau cadrage.
 - [x] Ajouter le plan a l'index.
 - [x] Elargir le cadrage de la chatbox au-dela du profil.
-- [ ] Inventorier les outils MCP existants et manquants par domaine.
-- [ ] Ajouter ou adapter les outils MCP profil, seances, mensurations et objectifs via l'API.
+- [x] Inventorier les outils MCP existants et manquants par domaine.
+- [x] Ajouter ou adapter les outils MCP profil, seances, mensurations et objectifs via l'API.
 - [ ] Definir le contrat backend de l'assistant, l'appel MCP et la validation de sortie.
 - [ ] Ajouter le branchement IA cote serveur avec cle d'environnement.
 - [ ] Ajouter la chatbox dans le dashboard cote frontend.
@@ -51,3 +51,8 @@
 - 2026-06-08: `git diff --check` OK; `docs/90-plans/README.md` reference bien `058-chatbox-ia.md`; les chemins d'idee et de plan existent.
 - 2026-06-08: decision ajoutee apres revue du workspace `mcp/`: le MCP peut porter les outils IA profil, mais les mutations passent toujours par l'API Fastify.
 - 2026-06-08: cadrage elargi: la chatbox devient un assistant IA MCP multi-domaines, avec repas/aliments/objectifs nutrition deja proches des outils MCP existants et seances/mensurations/profil a completer.
+- 2026-06-08: premiere tranche dev MCP ajoutee: outils profil, exercices, seances, objectifs utilisateur et mensurations, tous branches via l'API Fastify.
+- 2026-06-08: `npm` indisponible dans PowerShell local; validations lancees via WSL.
+- 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run mcp:typecheck"` OK.
+- 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w mcp"` OK, 7 fichiers et 20 tests passes.
+- 2026-06-08: outils MCP metier separes dans `domain-tools.ts` et `domain-tool-schemas.ts` pour garder `mcp-server.ts` sous la limite de maintenance.
