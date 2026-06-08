@@ -10,7 +10,8 @@
 
 - Ajouter une chatbox dans l'onglet Profil du dashboard.
 - Laisser l'IA transformer le message utilisateur en modifications structurees du profil connecte.
-- Reutiliser le flux d'update deja existant pour valider et enregistrer les changements.
+- Utiliser le MCP existant comme couche d'outils si l'assistant doit lire ou modifier le profil.
+- Reutiliser le flux d'update API deja existant pour valider et enregistrer les changements.
 - Conserver les confirmations requises pour les champs sensibles comme l'email ou le mot de passe.
 
 ## Impact
