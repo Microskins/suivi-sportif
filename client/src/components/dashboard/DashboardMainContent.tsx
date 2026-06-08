@@ -166,6 +166,7 @@ export function DashboardMainContent({
         <ErrorBox message={activeError} />
         {resource === "dashboard" && (
           <DashboardOverview
+            bodyMeasurements={bodyMeasurementsStore.bodyMeasurements}
             workouts={workoutsStore.workouts}
             meals={mealsStore.meals}
             nutritionGoals={goalsStore.nutritionGoals}
@@ -187,6 +188,10 @@ export function DashboardMainContent({
               if (action === "goal") {
                 setResource("sportGoals");
                 setUserGoalDraft({} as UserGoal);
+              }
+              if (action === "measurement") {
+                setResource("measurements");
+                setBodyMeasurementDraft({} as BodyMeasurement);
               }
             }}
           />

@@ -1,5 +1,34 @@
 # IA Idees
 
+## 2026-06-08 - Synthese corporelle: poids, anciennete et raccourci objectif
+
+## Contexte
+
+- Le dashboard a deja des donnees corporelles dans l'onglet Mensurations, mais la synthese reste centree sur le sport et la nutrition.
+- Une lecture rapide du poids corporel dans la synthese aiderait a voir l'evolution sans changer d'onglet.
+
+## Proposition
+
+- Ajouter plus tard des signaux adjacents a la carte poids de corps de la synthese:
+  - anciennete de la derniere pesee;
+  - comparaison a un objectif corps actif s'il existe;
+  - raccourci contextuel vers la saisie d'une mesure quand les donnees deviennent trop anciennes.
+
+## Impact
+
+- Rend la lecture du poids plus actionable au quotidien.
+- Aide a relier la synthese du dashboard et l'onglet Mensurations sans dupliquer le contenu.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/057-synthese-poids-corps.md
+
+---
+
 ## 2026-06-07 - Builder seances: profils de repos personnalisables
 
 ## Contexte

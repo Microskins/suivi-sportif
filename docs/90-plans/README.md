@@ -60,6 +60,7 @@ Index chronologique des chantiers planifies et executes.
 54. [Lookup code-barres aliments](./054-lookup-code-barres-aliments.md)
 55. [Archive des idees realisees](./055-archive-idees-realisees.md)
 56. [Renumerotation continue des plans](./056-renumerotation-continue-plans.md)
+57. [Synthese poids corporel](./057-synthese-poids-corps.md)
 
 ## Convention
 

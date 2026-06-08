@@ -11,12 +11,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { Meal, NutritionGoal, UserGoal, Workout } from "../api/client";
+import type { BodyMeasurement, Meal, NutritionGoal, UserGoal, Workout } from "../api/client";
 
 type PeriodKey = "3d" | "7d" | "30d" | "365d";
-type QuickAction = "workout" | "meal" | "goal";
+type QuickAction = "workout" | "meal" | "goal" | "measurement";
 
 type DashboardOverviewProps = {
+  bodyMeasurements: BodyMeasurement[];
   workouts: Workout[];
   meals: Meal[];
   nutritionGoals: NutritionGoal[];
@@ -88,6 +89,20 @@ function round(value: number) {
 
 function formatNumber(value: number) {
   return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format(value);
+}
+
+function formatMeasurementDate(value: string) {
+  return new Date(value).toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+function weightMeasurements(measurements: BodyMeasurement[]) {
+  return [...measurements]
+    .filter((measurement) => measurement.weightKg != null)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 function computeSummaries(workouts: Workout[], meals: Meal[], days: number) {
@@ -166,12 +181,13 @@ function StatCard({
   label: string;
   value: string;
   detail: string;
-  tone: "sport" | "nutrition" | "goal" | "neutral";
+  tone: "sport" | "nutrition" | "goal" | "body" | "neutral";
 }) {
   const accents = {
     sport: "border-l-emerald-500 bg-emerald-50/70",
     nutrition: "border-l-amber-500 bg-amber-50/70",
     goal: "border-l-rose-500 bg-rose-50/70",
+    body: "border-l-sky-500 bg-sky-50/70",
     neutral: "border-l-neutral-900 bg-white",
   };
 
@@ -195,6 +211,7 @@ function EmptyChart({ label }: { label: string }) {
 }
 
 export function DashboardOverview({
+  bodyMeasurements,
   workouts,
   meals,
   nutritionGoals,
@@ -215,6 +232,23 @@ export function DashboardOverview({
   const weeklyProgress = weeklyTarget > 0
     ? Math.min(100, Math.round((weeklyCompleted / weeklyTarget) * 100))
     : 0;
+  const bodyWeightMeasurements = useMemo(() => weightMeasurements(bodyMeasurements), [bodyMeasurements]);
+  const latestBodyWeight = bodyWeightMeasurements[0] ?? null;
+  const previousBodyWeight = bodyWeightMeasurements[1] ?? null;
+  const bodyWeightDelta =
+    latestBodyWeight && previousBodyWeight
+      ? round(latestBodyWeight.weightKg - previousBodyWeight.weightKg)
+      : null;
+  const bodyWeightValue = latestBodyWeight === null ? "-" : `${formatNumber(latestBodyWeight.weightKg)} kg`;
+  const bodyWeightDetail = latestBodyWeight === null
+    ? "Aucune pesee enregistree"
+    : previousBodyWeight === null
+      ? `Premiere pesee le ${formatMeasurementDate(latestBodyWeight.date)}`
+      : `${formatMeasurementDate(latestBodyWeight.date)} | ${
+          bodyWeightDelta === 0
+            ? "stable vs precedente"
+            : `${bodyWeightDelta > 0 ? "+" : "-"}${formatNumber(Math.abs(bodyWeightDelta))} kg vs precedente`
+        }`;
   const totals = summaries.reduce(
     (acc, summary) => ({
       workouts: acc.workouts + summary.workouts,
@@ -270,7 +304,7 @@ export function DashboardOverview({
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
         <StatCard
           label="Seances"
           value={formatNumber(totals.workouts)}
@@ -294,6 +328,12 @@ export function DashboardOverview({
           value={goal?.name ?? "Aucun"}
           detail={goal ? `${goal.dailyCaloriesKcal} kcal par jour` : "Cree un objectif nutrition"}
           tone="neutral"
+        />
+        <StatCard
+          label="Poids corporel"
+          value={bodyWeightValue}
+          detail={bodyWeightDetail}
+          tone="body"
         />
       </div>
 
@@ -438,6 +478,13 @@ export function DashboardOverview({
               className="rounded border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/10"
             >
               Ajouter un objectif sport
+            </button>
+            <button
+              type="button"
+              onClick={() => onQuickAction("measurement")}
+              className="rounded border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/10"
+            >
+              Prendre une pesee
             </button>
           </div>
         </section>
