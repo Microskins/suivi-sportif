@@ -1,24 +1,30 @@
-# Chatbox IA
+# Assistant IA MCP
 
 ## Contexte
 
 - Le profil connecte contient deja les champs de base, mais les modifications restent manuelles.
-- Une chatbox permettrait de demander a l'IA d'interpreter une intention simple et de remplir le profil a la place de l'utilisateur.
-- Le besoin est surtout utile pour des changements rapides comme le nom, l'email ou la date de naissance, sans perdre les regles de securite du compte.
+- Les saisies frequentes restent dispersees entre repas, seances, mensurations, objectifs et profil.
+- Une chatbox permettrait de demander a l'IA d'interpreter une intention simple et de preparer l'action correspondante.
+- Le MCP existant peut servir de couche d'outils controlee entre l'IA et les API metier.
 
 ## Proposition
 
-- Ajouter une chatbox dans l'onglet Profil du dashboard.
-- Laisser l'IA transformer le message utilisateur en modifications structurees du profil connecte.
-- Utiliser le MCP existant comme couche d'outils si l'assistant doit lire ou modifier le profil.
-- Reutiliser le flux d'update API deja existant pour valider et enregistrer les changements.
-- Conserver les confirmations requises pour les champs sensibles comme l'email ou le mot de passe.
+- Ajouter une chatbox dans le dashboard.
+- Laisser l'IA transformer le message utilisateur en brouillon d'action structure.
+- Utiliser le MCP existant comme couche d'outils pour lire ou modifier les donnees via l'API.
+- Couvrir progressivement les demandes comme:
+  - ajouter un repas;
+  - creer une seance;
+  - enregistrer une pesee ou mensuration;
+  - modifier le profil;
+  - creer un objectif.
+- Demander confirmation avant chaque creation, modification ou suppression.
 
 ## Impact
 
-- Saisie plus rapide pour les petites modifications de compte.
+- Saisie plus rapide pour les actions quotidiennes.
 - UX plus naturelle pour les utilisateurs qui preferent ecrire une demande plutot que remplir un formulaire.
-- Base reutilisable pour d'autres assistants IA plus tard.
+- Base reutilisable pour d'autres assistants IA plus tard, sans exposer directement les cles ou la base au navigateur.
 
 ## Complexite
 

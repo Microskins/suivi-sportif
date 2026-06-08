@@ -1,17 +1,17 @@
 # IA Idees
 
-## 2026-06-08 - Chatbox IA profil: diff, raccourcis et trace
+## 2026-06-08 - Assistant IA MCP: diff, raccourcis et trace
 
 ## Contexte
 
-- La chatbox profil va permettre de piloter le compte en langage naturel.
-- Plus l'IA touche au profil, plus il faut de la visibilite sur ce qui va changer et sur ce qui a change.
+- L'assistant IA MCP va permettre de piloter des actions metier en langage naturel.
+- Plus l'IA touche aux repas, seances, mensurations, objectifs ou au profil, plus il faut de la visibilite sur ce qui va changer et sur ce qui a change.
 
 ## Proposition
 
-- Ajouter plus tard un apercu du diff avant application, surtout pour l'email et la date de naissance.
+- Ajouter plus tard un apercu du diff avant application, surtout pour les champs sensibles et les creations complexes.
 - Proposer des raccourcis de commandes courantes dans l'UI pour accelerer les demandes repetitives.
-- Conserver un journal leger des actions IA sur le profil pour le support et la confiance.
+- Conserver un journal leger des actions IA pour le support et la confiance.
 
 ## Impact
 
