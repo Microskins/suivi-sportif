@@ -152,6 +152,12 @@ pour produire le brouillon structure. Si la cle est absente, si l'appel echoue
 ou si la sortie ne respecte pas le contrat attendu, l'API retombe sur le
 brouillon local deterministe.
 
+Avant de repondre, l'orchestrateur peut enrichir le brouillon en lecture seule:
+les aliments nommes peuvent etre relies a des `foodId` existants et les
+exercices nommes a des `exerciseId` existants. Les champs qui demandent encore
+un choix utilisateur, comme les quantites ou les series, restent dans
+`missingFields`.
+
 Body:
 
 ```json

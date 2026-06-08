@@ -347,7 +347,7 @@ describe("API", () => {
   let app: FastifyInstance;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     vi.stubEnv("ANTHROPIC_API_KEY", "");
     app = buildApp({ logger: false });
     await app.ready();
@@ -2789,6 +2789,42 @@ describe("API", () => {
     expect(mocks.meals.createMeal).not.toHaveBeenCalled();
   });
 
+  it("enriches a meal draft with known food ids before confirmation", async () => {
+    mocks.foods.getFoods.mockResolvedValue([
+      { ...food, id: FOOD_ID, name: "Riz" },
+      {
+        ...food,
+        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        name: "Poulet",
+      },
+    ]);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        message: "Tu peux rajouter mon repas de ce midi ? Riz, poulet.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_meal");
+    expect(body.data.missingFields).toEqual(["quantities"]);
+    expect(body.data.payload.items).toEqual([
+      { foodId: FOOD_ID, name: "Riz", resolvedName: "Riz" },
+      {
+        foodId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        name: "poulet",
+        resolvedName: "Poulet",
+      },
+    ]);
+    expect(mocks.foods.getFoods).toHaveBeenCalledWith(USER_ID);
+    expect(mocks.meals.createMeal).not.toHaveBeenCalled();
+  });
+
   it("creates a confirmable body measurement draft from a weight request", async () => {
     const response = await app.inject({
       method: "POST",
@@ -2827,6 +2863,51 @@ describe("API", () => {
     expect(body.data.payload.status).toBe("PLANNED");
     expect(body.data.missingFields).toEqual(["exerciseIds", "sets"]);
     expect(body.data.requiresConfirmation).toBe(true);
+    expect(mocks.workouts.createWorkout).not.toHaveBeenCalled();
+  });
+
+  it("enriches a workout draft with known exercise ids before confirmation", async () => {
+    mocks.exercises.getExercises.mockResolvedValue([
+      {
+        ...exercise,
+        id: EXERCISE_ID,
+        name: "Developpe couche",
+      },
+      {
+        ...exercise,
+        id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        name: "Dips",
+      },
+    ]);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "workouts",
+        message:
+          "Planifie une seance push demain a 18h avec developpe couche et dips.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_workout");
+    expect(body.data.missingFields).toEqual(["sets"]);
+    expect(body.data.payload.exercises).toEqual([
+      {
+        exerciseId: EXERCISE_ID,
+        name: "developpe couche",
+        resolvedName: "Developpe couche",
+      },
+      {
+        exerciseId: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        name: "dips",
+        resolvedName: "Dips",
+      },
+    ]);
+    expect(mocks.exercises.getExercises).toHaveBeenCalled();
     expect(mocks.workouts.createWorkout).not.toHaveBeenCalled();
   });
 
