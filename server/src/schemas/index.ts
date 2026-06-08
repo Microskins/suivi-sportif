@@ -14,6 +14,39 @@ export const dateRangeParamSchema = z
     path: ["end"],
   });
 
+// ============== Assistant Schemas ==============
+export const assistantDraftRequestSchema = z.object({
+  context: z
+    .enum([
+      "dashboard",
+      "profile",
+      "meals",
+      "workouts",
+      "measurements",
+      "goals",
+    ])
+    .optional(),
+  message: z.string().min(3, "Message requis").max(2000),
+});
+
+export const assistantDraftActionSchema = z.enum([
+  "create_meal",
+  "create_body_measurement",
+  "create_workout",
+  "create_user_goal",
+  "update_profile",
+  "unknown",
+]);
+
+export const assistantDraftResponseSchema = z.object({
+  action: assistantDraftActionSchema,
+  confidence: z.enum(["low", "medium", "high"]),
+  missingFields: z.array(z.string()),
+  payload: z.record(z.unknown()),
+  requiresConfirmation: z.boolean(),
+  summary: z.string(),
+});
+
 // ============== User Schemas ==============
 export const createUserSchema = z.object({
   email: z.string().email("Email invalide"),
@@ -499,6 +532,12 @@ export const bodyMeasurementResponseSchema = z.object({
 });
 
 // ============== Type Exports ==============
+export type AssistantDraftRequestInput = z.infer<
+  typeof assistantDraftRequestSchema
+>;
+export type AssistantDraftResponse = z.infer<
+  typeof assistantDraftResponseSchema
+>;
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type LoginUserInput = z.infer<typeof loginUserSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;

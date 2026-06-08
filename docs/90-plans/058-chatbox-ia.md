@@ -37,7 +37,8 @@
 - [x] Elargir le cadrage de la chatbox au-dela du profil.
 - [x] Inventorier les outils MCP existants et manquants par domaine.
 - [x] Ajouter ou adapter les outils MCP profil, seances, mensurations et objectifs via l'API.
-- [ ] Definir le contrat backend de l'assistant, l'appel MCP et la validation de sortie.
+- [x] Definir le contrat backend de brouillon assistant et la validation de sortie.
+- [ ] Brancher l'orchestration IA/MCP pour produire les brouillons depuis les outils.
 - [ ] Ajouter le branchement IA cote serveur avec cle d'environnement.
 - [ ] Ajouter la chatbox dans le dashboard cote frontend.
 - [ ] Reutiliser les stores existants pour appliquer ou rafraichir les changements confirmes.
@@ -56,3 +57,7 @@
 - 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run mcp:typecheck"` OK.
 - 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w mcp"` OK, 7 fichiers et 20 tests passes.
 - 2026-06-08: outils MCP metier separes dans `domain-tools.ts` et `domain-tool-schemas.ts` pour garder `mcp-server.ts` sous la limite de maintenance.
+- 2026-06-08: endpoint protege `POST /api/assistant/draft` ajoute pour produire des brouillons confirmables sans mutation immediate.
+- 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run typecheck -w server"` OK.
+- 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w server -- --run src/routes/api.test.ts"` OK, 142 tests passes.
+- 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run build -w server"` OK; `server/dist/` supprime apres verification.

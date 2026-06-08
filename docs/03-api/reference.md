@@ -137,6 +137,56 @@ passe actuel:
 }
 ```
 
+## Assistant IA
+
+Toutes les routes sont protegees et utilisent l'utilisateur du JWT.
+
+### `POST /api/assistant/draft`
+
+Prepare un brouillon d'action a partir d'une demande libre. Cette route ne
+modifie aucune donnee: le client doit afficher le brouillon puis demander une
+confirmation explicite avant d'appeler les endpoints metier.
+
+Body:
+
+```json
+{
+  "context": "meals",
+  "message": "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane."
+}
+```
+
+`context` est optionnel et vaut `dashboard`, `profile`, `meals`, `workouts`,
+`measurements` ou `goals`.
+
+Reponse `200`:
+
+```json
+{
+  "data": {
+    "action": "create_meal",
+    "confidence": "medium",
+    "missingFields": ["foodIds", "quantities"],
+    "payload": {
+      "name": "Dejeuner",
+      "mealType": "lunch",
+      "items": [{ "name": "Riz" }, { "name": "poulet" }]
+    },
+    "requiresConfirmation": true,
+    "summary": "Preparer un repas lunch avec 2 element(s)."
+  }
+}
+```
+
+Actions possibles:
+
+- `create_meal`
+- `create_body_measurement`
+- `create_workout`
+- `create_user_goal`
+- `update_profile`
+- `unknown`
+
 ## Exercises
 
 Toutes les routes sont protegees.

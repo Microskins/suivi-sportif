@@ -353,6 +353,7 @@ describe("API", () => {
   }, 30000);
 
   afterEach(async () => {
+    vi.useRealTimers();
     await app.close();
     vi.unstubAllEnvs();
   });
@@ -474,6 +475,7 @@ describe("API", () => {
       "/api/body-measurements",
       "/api/body-measurements/{id}",
       "/api/body-measurements/latest",
+      "/api/assistant/draft",
     ]) {
       expect(openApiPath(paths, path), path).toBeDefined();
     }
@@ -503,6 +505,12 @@ describe("API", () => {
     expect(openApiPath(paths, "/api/workout-templates").get.security).toEqual([
       { bearerAuth: [] },
     ]);
+    expect(openApiPath(paths, "/api/assistant/draft").post.security).toEqual([
+      { bearerAuth: [] },
+    ]);
+    expect(
+      openApiPath(paths, "/api/assistant/draft").post.responses,
+    ).toHaveProperty("200");
     expect(
       openApiPath(paths, "/api/workout-templates/{id}").put.security,
     ).toEqual([{ bearerAuth: [] }]);
@@ -2717,6 +2725,107 @@ describe("API", () => {
     expect(response.statusCode).toBe(401);
     expectErrorShape(body, "UNAUTHORIZED");
     expect(mocks.meals.getMeals).not.toHaveBeenCalled();
+  });
+
+  it("rejects assistant draft requests without a token", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      payload: {
+        message: "Ajoute mon repas de ce midi",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expectErrorShape(body, "UNAUTHORIZED");
+  });
+
+  it("rejects invalid assistant draft payloads", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        message: "ok",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expectValidationError(body);
+  });
+
+  it("creates a confirmable meal draft from a free text request", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        message: "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual({
+      action: "create_meal",
+      confidence: "medium",
+      missingFields: ["foodIds", "quantities"],
+      payload: {
+        date: expect.any(String),
+        items: [{ name: "Riz" }, { name: "poulet" }, { name: "banane" }],
+        mealType: "lunch",
+        name: "Dejeuner",
+        notes: "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane.",
+      },
+      requiresConfirmation: true,
+      summary: "Preparer un repas lunch avec 3 element(s).",
+    });
+    expect(mocks.meals.createMeal).not.toHaveBeenCalled();
+  });
+
+  it("creates a confirmable body measurement draft from a weight request", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "measurements",
+        message: "Ajoute ma pesee du jour a 82,4 kg.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_body_measurement");
+    expect(body.data.payload.weightKg).toBe(82.4);
+    expect(body.data.requiresConfirmation).toBe(true);
+    expect(body.data.missingFields).toEqual([]);
+    expect(mocks.bodyMeasurements.createBodyMeasurement).not.toHaveBeenCalled();
+  });
+
+  it("creates a confirmable workout draft from a planning request", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "workouts",
+        message: "Planifie une seance push demain a 18h",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_workout");
+    expect(body.data.payload.name).toBe("push");
+    expect(body.data.payload.status).toBe("PLANNED");
+    expect(body.data.missingFields).toEqual(["exerciseIds", "sets"]);
+    expect(body.data.requiresConfirmation).toBe(true);
+    expect(mocks.workouts.createWorkout).not.toHaveBeenCalled();
   });
 
   it("returns validation details and skips queries for invalid payloads", async () => {
