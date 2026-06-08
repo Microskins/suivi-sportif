@@ -13,6 +13,7 @@ import { Modal } from "./dashboard/Modal";
 import { modalTitle, type ModalState } from "./dashboard/modalState";
 import { DashboardNav } from "./dashboard/DashboardNav";
 import { DashboardTopBar } from "./dashboard/DashboardTopBar";
+import { AssistantChatbox } from "./dashboard/AssistantChatbox";
 import type { DashboardResource } from "./dashboard/ResourceHeader";
 import { labelFromOptions } from "./dashboard/workoutFormUtils";
 import { useBodyMeasurementsStore } from "../stores/bodyMeasurementsStore";
@@ -311,6 +312,10 @@ export function Dashboard({
           />
         </Modal>
       )}
+      <AssistantChatbox
+        isAuthBypassEnabled={isAuthBypassEnabled}
+        resource={resource}
+      />
     </main>
   );
 }

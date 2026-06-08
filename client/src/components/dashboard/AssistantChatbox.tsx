@@ -1,0 +1,185 @@
+import { FormEvent, useState } from "react";
+import { api, type AssistantDraft, type AssistantDraftContext } from "../../api/client";
+import type { DashboardResource } from "./ResourceHeader";
+
+type AssistantChatboxProps = {
+  isAuthBypassEnabled: boolean;
+  resource: DashboardResource;
+};
+
+const contextByResource: Record<DashboardResource, AssistantDraftContext> = {
+  bodyGoals: "goals",
+  calendar: "workouts",
+  dashboard: "dashboard",
+  exercises: "workouts",
+  foods: "meals",
+  goals: "goals",
+  meals: "meals",
+  measurements: "measurements",
+  profile: "profile",
+  sportGoals: "goals",
+  workouts: "workouts",
+};
+
+const examples = [
+  "Ajoute ma pesee du jour a 82,4 kg.",
+  "Tu peux rajouter mon repas de ce midi ? Riz, poulet.",
+  "Planifie une seance push demain a 18h avec developpe couche et dips.",
+];
+
+const actionLabels: Record<AssistantDraft["action"], string> = {
+  create_body_measurement: "Nouvelle mensuration",
+  create_meal: "Nouveau repas",
+  create_user_goal: "Nouvel objectif",
+  create_workout: "Nouvelle seance",
+  unknown: "A preciser",
+  update_profile: "Modification profil",
+};
+
+function formatPayload(payload: Record<string, unknown>) {
+  return JSON.stringify(payload, null, 2);
+}
+
+export function AssistantChatbox({
+  isAuthBypassEnabled,
+  resource,
+}: AssistantChatboxProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [draft, setDraft] = useState<AssistantDraft | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function submit(event?: FormEvent<HTMLFormElement>) {
+    event?.preventDefault();
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage || isAuthBypassEnabled) return;
+
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await api.createAssistantDraft({
+        context: contextByResource[resource],
+        message: trimmedMessage,
+      });
+      setDraft(result);
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Impossible de preparer le brouillon assistant",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <aside className="fixed bottom-4 right-4 z-40 w-[calc(100vw-2rem)] max-w-md md:bottom-6 md:right-6">
+      {isOpen && (
+        <div className="mb-3 overflow-hidden rounded-3xl border border-slate-900/10 bg-[#111812] text-stone-50 shadow-2xl shadow-emerald-950/30">
+          <div className="relative isolate overflow-hidden p-4">
+            <div className="absolute -right-12 -top-16 h-40 w-40 rounded-full bg-emerald-400/25 blur-3xl" />
+            <div className="absolute -bottom-20 left-10 h-36 w-36 rounded-full bg-lime-200/15 blur-3xl" />
+            <div className="relative">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-emerald-200">
+                    Assistant IA
+                  </p>
+                  <h2 className="mt-1 text-lg font-semibold text-white">
+                    Brouillon avant action
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-full border border-white/15 px-3 py-1 text-xs text-stone-200 transition hover:bg-white/10"
+                >
+                  Fermer
+                </button>
+              </div>
+
+              <form className="mt-4 space-y-3" onSubmit={submit}>
+                <textarea
+                  className="min-h-24 w-full resize-none rounded-2xl border border-white/10 bg-white/95 px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:ring-4 focus:ring-emerald-300/20"
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
+                  placeholder="Ex: ajoute mon repas de ce midi..."
+                  disabled={isAuthBypassEnabled || isLoading}
+                />
+                <div className="flex flex-wrap gap-2">
+                  {examples.map((example) => (
+                    <button
+                      key={example}
+                      type="button"
+                      onClick={() => setMessage(example)}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-left text-[0.7rem] text-stone-200 transition hover:bg-white/10"
+                    >
+                      {example}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="submit"
+                  disabled={isAuthBypassEnabled || isLoading || message.trim().length < 3}
+                  className="w-full rounded-2xl bg-emerald-300 px-4 py-3 text-sm font-bold text-emerald-950 shadow-lg shadow-emerald-950/30 transition hover:bg-lime-200 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isLoading ? "Preparation du brouillon..." : "Preparer le brouillon"}
+                </button>
+              </form>
+
+              {isAuthBypassEnabled && (
+                <p className="mt-3 rounded-2xl border border-amber-200/30 bg-amber-200/10 px-3 py-2 text-xs text-amber-100">
+                  Le mode bypass est actif: connecte-toi avec un JWT pour utiliser l'assistant.
+                </p>
+              )}
+
+              {error && (
+                <p className="mt-3 rounded-2xl border border-red-300/30 bg-red-300/10 px-3 py-2 text-xs text-red-100">
+                  {error}
+                </p>
+              )}
+
+              {draft && (
+                <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.06] p-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-emerald-200 px-2 py-1 text-xs font-semibold text-emerald-950">
+                      {actionLabels[draft.action]}
+                    </span>
+                    <span className="rounded-full border border-white/10 px-2 py-1 text-xs text-stone-200">
+                      Confiance {draft.confidence}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm text-stone-100">{draft.summary}</p>
+                  {draft.missingFields.length > 0 && (
+                    <p className="mt-2 text-xs text-amber-100">
+                      A completer: {draft.missingFields.join(", ")}
+                    </p>
+                  )}
+                  <pre className="mt-3 max-h-48 overflow-auto rounded-xl bg-black/35 p-3 text-xs leading-relaxed text-emerald-50">
+                    {formatPayload(draft.payload)}
+                  </pre>
+                  <p className="mt-3 text-xs text-stone-300">
+                    Confirmation et application via les stores: prochaine tranche.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={() => setIsOpen((value) => !value)}
+        className="ml-auto flex min-h-14 items-center gap-3 rounded-full border border-emerald-900/10 bg-emerald-700 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-emerald-950/25 transition hover:-translate-y-0.5 hover:bg-emerald-800"
+      >
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-lime-200 text-emerald-950">
+          IA
+        </span>
+        Assistant
+      </button>
+    </aside>
+  );
+}
