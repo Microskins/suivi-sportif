@@ -348,6 +348,7 @@ describe("API", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    vi.stubEnv("ANTHROPIC_API_KEY", "");
     app = buildApp({ logger: false });
     await app.ready();
   }, 30000);
@@ -355,6 +356,7 @@ describe("API", () => {
   afterEach(async () => {
     vi.useRealTimers();
     await app.close();
+    vi.unstubAllGlobals();
     vi.unstubAllEnvs();
   });
 
@@ -2826,6 +2828,61 @@ describe("API", () => {
     expect(body.data.missingFields).toEqual(["exerciseIds", "sets"]);
     expect(body.data.requiresConfirmation).toBe(true);
     expect(mocks.workouts.createWorkout).not.toHaveBeenCalled();
+  });
+
+  it("uses a valid Anthropic assistant draft when the provider is configured", async () => {
+    const providerDraft = {
+      action: "create_meal",
+      confidence: "high",
+      missingFields: ["foodIds", "quantities"],
+      payload: {
+        items: [{ name: "riz" }, { name: "poulet" }],
+        mealType: "lunch",
+        name: "Dejeuner IA",
+      },
+      requiresConfirmation: true,
+      summary: "Brouillon IA pret a confirmer.",
+    };
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue({
+        content: [
+          {
+            text: JSON.stringify(providerDraft),
+            type: "text",
+          },
+        ],
+        stop_reason: "end_turn",
+      }),
+      ok: true,
+    });
+    vi.stubEnv("ANTHROPIC_API_KEY", "test-key");
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        message: "Ajoute mon dejeuner riz poulet",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(providerDraft);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.anthropic.com/v1/messages",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+          "x-api-key": "test-key",
+        }),
+        method: "POST",
+      }),
+    );
+    expect(mocks.meals.createMeal).not.toHaveBeenCalled();
   });
 
   it("returns validation details and skips queries for invalid payloads", async () => {

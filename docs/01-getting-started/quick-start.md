@@ -19,6 +19,16 @@ CORS_ORIGINS="http://localhost:5173,http://127.0.0.1:5173"
 NODE_ENV="development"
 ```
 
+Option assistant IA avec Anthropic:
+
+```env
+ANTHROPIC_API_KEY="sk-ant-..."
+ANTHROPIC_MODEL="claude-sonnet-4-5-20250929"
+```
+
+Si `ANTHROPIC_API_KEY` est absent, l'assistant garde son brouillon local
+deterministe.
+
 Option frontend sans API locale, dans `client/.env`:
 
 ```env

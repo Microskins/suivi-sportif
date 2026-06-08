@@ -147,6 +147,11 @@ Prepare un brouillon d'action a partir d'une demande libre. Cette route ne
 modifie aucune donnee: le client doit afficher le brouillon puis demander une
 confirmation explicite avant d'appeler les endpoints metier.
 
+Si `ANTHROPIC_API_KEY` est configure cote serveur, l'assistant utilise Claude
+pour produire le brouillon structure. Si la cle est absente, si l'appel echoue
+ou si la sortie ne respecte pas le contrat attendu, l'API retombe sur le
+brouillon local deterministe.
+
 Body:
 
 ```json

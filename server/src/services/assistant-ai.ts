@@ -1,0 +1,163 @@
+import { z } from "zod";
+import {
+  assistantDraftRequestSchema,
+  assistantDraftResponseSchema,
+} from "../schemas/index.js";
+import {
+  AssistantDraft,
+  createAssistantDraft,
+} from "./assistant-drafts.js";
+
+const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
+const ANTHROPIC_VERSION = "2023-06-01";
+const DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-5-20250929";
+
+const anthropicTextBlockSchema = z.object({
+  text: z.string(),
+  type: z.literal("text"),
+});
+
+const anthropicMessageSchema = z.object({
+  content: z.array(z.unknown()),
+  stop_reason: z.string().nullable().optional(),
+});
+
+type AssistantDraftRequest = z.infer<typeof assistantDraftRequestSchema>;
+
+type AssistantAiOptions = {
+  fetchImpl?: typeof fetch;
+  logger?: {
+    warn: (message: string) => void;
+  };
+  now?: Date;
+};
+
+const assistantDraftJsonSchema = {
+  type: "object",
+  properties: {
+    action: {
+      type: "string",
+      enum: [
+        "create_meal",
+        "create_body_measurement",
+        "create_workout",
+        "create_user_goal",
+        "update_profile",
+        "unknown",
+      ],
+    },
+    confidence: { type: "string", enum: ["low", "medium", "high"] },
+    missingFields: { type: "array", items: { type: "string" } },
+    payload: { type: "object", additionalProperties: true },
+    requiresConfirmation: { type: "boolean" },
+    summary: { type: "string" },
+  },
+  required: [
+    "action",
+    "confidence",
+    "missingFields",
+    "payload",
+    "requiresConfirmation",
+    "summary",
+  ],
+  additionalProperties: false,
+};
+
+function anthropicModel() {
+  return process.env.ANTHROPIC_MODEL?.trim() || DEFAULT_ANTHROPIC_MODEL;
+}
+
+function anthropicApiKey() {
+  return process.env.ANTHROPIC_API_KEY?.trim() || null;
+}
+
+function buildPrompt(input: AssistantDraftRequest, fallbackDraft: AssistantDraft) {
+  return [
+    "Tu transformes une demande utilisateur en brouillon d'action pour une app de suivi sportif.",
+    "Tu dois repondre uniquement avec un JSON valide conforme au schema.",
+    "Ne cree, modifie ou supprime aucune donnee: ce brouillon sera confirme par l'utilisateur avant application.",
+    "Actions disponibles: create_meal, create_body_measurement, create_workout, create_user_goal, update_profile, unknown.",
+    "Conserve les champs incomplets dans missingFields plutot que d'inventer des identifiants, quantites ou mots de passe.",
+    "Pour les repas, si les aliments sont nommes mais pas lies a des foodIds, ajoute foodIds et quantities dans missingFields.",
+    "Pour une seance, ajoute exerciseIds et sets dans missingFields si la demande donne seulement les noms d'exercices.",
+    "Pour un changement d'email ou mot de passe, currentPassword doit rester dans missingFields.",
+    `Contexte: ${input.context ?? "dashboard"}.`,
+    `Message utilisateur: ${input.message}`,
+    `Brouillon local de secours: ${JSON.stringify(fallbackDraft)}`,
+  ].join("\n");
+}
+
+async function createAnthropicDraft(
+  input: AssistantDraftRequest,
+  fallbackDraft: AssistantDraft,
+  options: AssistantAiOptions,
+) {
+  const apiKey = anthropicApiKey();
+  if (!apiKey) return null;
+
+  const fetchImpl = options.fetchImpl ?? fetch;
+  const response = await fetchImpl(ANTHROPIC_API_URL, {
+    body: JSON.stringify({
+      max_tokens: 700,
+      messages: [
+        {
+          content: buildPrompt(input, fallbackDraft),
+          role: "user",
+        },
+      ],
+      model: anthropicModel(),
+      output_config: {
+        format: {
+          schema: assistantDraftJsonSchema,
+          type: "json_schema",
+        },
+      },
+    }),
+    headers: {
+      "anthropic-version": ANTHROPIC_VERSION,
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+    },
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    options.logger?.warn("Assistant Anthropic request failed");
+    return null;
+  }
+
+  const rawPayload = await response.json();
+  const payload = anthropicMessageSchema.parse(rawPayload);
+  if (payload.stop_reason === "refusal" || payload.stop_reason === "max_tokens") {
+    options.logger?.warn("Assistant Anthropic response was incomplete");
+    return null;
+  }
+
+  const textBlock = payload.content
+    .map((block) => anthropicTextBlockSchema.safeParse(block))
+    .find((block) => block.success);
+
+  if (!textBlock?.success) return null;
+
+  const parsedDraft = assistantDraftResponseSchema.safeParse(
+    JSON.parse(textBlock.data.text),
+  );
+
+  return parsedDraft.success ? parsedDraft.data : null;
+}
+
+export async function createAssistantDraftWithAi(
+  input: AssistantDraftRequest,
+  options: AssistantAiOptions = {},
+): Promise<AssistantDraft> {
+  const fallbackDraft = createAssistantDraft(input, options.now);
+
+  try {
+    return (
+      (await createAnthropicDraft(input, fallbackDraft, options)) ?? fallbackDraft
+    );
+  } catch {
+    options.logger?.warn("Assistant AI draft validation failed");
+    return fallbackDraft;
+  }
+}

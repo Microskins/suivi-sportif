@@ -38,8 +38,8 @@
 - [x] Inventorier les outils MCP existants et manquants par domaine.
 - [x] Ajouter ou adapter les outils MCP profil, seances, mensurations et objectifs via l'API.
 - [x] Definir le contrat backend de brouillon assistant et la validation de sortie.
-- [ ] Brancher l'orchestration IA/MCP pour produire les brouillons depuis les outils.
-- [ ] Ajouter le branchement IA cote serveur avec cle d'environnement.
+- [ ] Brancher l'orchestration MCP pour enrichir les brouillons depuis les outils.
+- [x] Ajouter le branchement IA cote serveur avec cle d'environnement.
 - [ ] Ajouter la chatbox dans le dashboard cote frontend.
 - [ ] Reutiliser les stores existants pour appliquer ou rafraichir les changements confirmes.
 - [ ] Ajouter les tests API, composants et validations utiles.
@@ -60,4 +60,8 @@
 - 2026-06-08: endpoint protege `POST /api/assistant/draft` ajoute pour produire des brouillons confirmables sans mutation immediate.
 - 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run typecheck -w server"` OK.
 - 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w server -- --run src/routes/api.test.ts"` OK, 142 tests passes.
+- 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run build -w server"` OK; `server/dist/` supprime apres verification.
+- 2026-06-08: provider Anthropic optionnel ajoute via `ANTHROPIC_API_KEY` et `ANTHROPIC_MODEL`; fallback local conserve si la cle manque, l'appel echoue ou la sortie IA est invalide.
+- 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run typecheck -w server"` OK apres branchement Anthropic.
+- 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w server -- --run src/routes/api.test.ts"` OK, 143 tests passes.
 - 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run build -w server"` OK; `server/dist/` supprime apres verification.

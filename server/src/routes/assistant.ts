@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { assistantDraftRequestSchema } from "../schemas/index.js";
-import { createAssistantDraft } from "../services/assistant-drafts.js";
+import { createAssistantDraftWithAi } from "../services/assistant-ai.js";
 
 const errorResponseSchema = {
   type: "object",
@@ -112,7 +112,9 @@ export async function assistantRoutes(fastify: FastifyInstance) {
     async (request, reply) => {
       try {
         const parsed = assistantDraftRequestSchema.parse(request.body);
-        const draft = createAssistantDraft(parsed);
+        const draft = await createAssistantDraftWithAi(parsed, {
+          logger: fastify.log,
+        });
         return reply.code(200).send({ data: draft });
       } catch (error: any) {
         if (error.name === "ZodError") return validationError(reply, error);
