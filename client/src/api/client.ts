@@ -341,6 +341,46 @@ export type UserGoalInput = {
   notes?: string | null;
 };
 
+export type AssistantDraftContext =
+  | "dashboard"
+  | "profile"
+  | "meals"
+  | "workouts"
+  | "measurements"
+  | "goals";
+
+export type AssistantDraftAction =
+  | "create_meal"
+  | "update_meal"
+  | "delete_meal"
+  | "create_body_measurement"
+  | "update_body_measurement"
+  | "delete_body_measurement"
+  | "create_workout"
+  | "update_workout"
+  | "delete_workout"
+  | "create_user_goal"
+  | "update_profile"
+  | "unknown";
+
+export type AssistantDraft = {
+  action: AssistantDraftAction;
+  confidence: "low" | "medium" | "high";
+  missingFields: string[];
+  payload: Record<string, unknown>;
+  requiresConfirmation: boolean;
+  summary: string;
+};
+
+export type AssistantDraftRequest = {
+  context?: AssistantDraftContext;
+  history?: Array<{
+    content: string;
+    role: "user" | "assistant";
+  }>;
+  message: string;
+};
+
 class ApiClient {
   private token: string | null = null;
 
@@ -709,6 +749,14 @@ class ApiClient {
   async deleteBodyMeasurement(id: string) {
     return this.request<void>(`/api/body-measurements/${id}`, {
       method: "DELETE",
+    });
+  }
+
+  // Assistant
+  async createAssistantDraft(data: AssistantDraftRequest) {
+    return this.request<AssistantDraft>("/api/assistant/draft", {
+      method: "POST",
+      body: JSON.stringify(data),
     });
   }
 }

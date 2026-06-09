@@ -11,6 +11,7 @@ import { mealsRoutes } from "./routes/meals.js";
 import { nutritionGoalsRoutes } from "./routes/nutrition-goals.js";
 import { userGoalsRoutes } from "./routes/user-goals.js";
 import { bodyMeasurementsRoutes } from "./routes/body-measurements.js";
+import { assistantRoutes } from "./routes/assistant.js";
 import { workoutsRoutes } from "./routes/workouts.js";
 import { workoutTemplatesRoutes } from "./routes/workout-templates.js";
 import { authPlugin } from "./plugins/auth.js";
@@ -173,6 +174,7 @@ export function buildApp(options: FastifyServerOptions = { logger: true }) {
   fastify.register(bodyMeasurementsRoutes, {
     prefix: "/api/body-measurements",
   });
+  fastify.register(assistantRoutes, { prefix: "/api/assistant" });
   fastify.register(swaggerUi, {
     routePrefix: "/docs",
     uiConfig: {

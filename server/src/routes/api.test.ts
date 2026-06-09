@@ -347,13 +347,16 @@ describe("API", () => {
   let app: FastifyInstance;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
+    vi.stubEnv("ANTHROPIC_API_KEY", "");
     app = buildApp({ logger: false });
     await app.ready();
   }, 30000);
 
   afterEach(async () => {
+    vi.useRealTimers();
     await app.close();
+    vi.unstubAllGlobals();
     vi.unstubAllEnvs();
   });
 
@@ -474,6 +477,7 @@ describe("API", () => {
       "/api/body-measurements",
       "/api/body-measurements/{id}",
       "/api/body-measurements/latest",
+      "/api/assistant/draft",
     ]) {
       expect(openApiPath(paths, path), path).toBeDefined();
     }
@@ -503,6 +507,12 @@ describe("API", () => {
     expect(openApiPath(paths, "/api/workout-templates").get.security).toEqual([
       { bearerAuth: [] },
     ]);
+    expect(openApiPath(paths, "/api/assistant/draft").post.security).toEqual([
+      { bearerAuth: [] },
+    ]);
+    expect(
+      openApiPath(paths, "/api/assistant/draft").post.responses,
+    ).toHaveProperty("200");
     expect(
       openApiPath(paths, "/api/workout-templates/{id}").put.security,
     ).toEqual([{ bearerAuth: [] }]);
@@ -2717,6 +2727,282 @@ describe("API", () => {
     expect(response.statusCode).toBe(401);
     expectErrorShape(body, "UNAUTHORIZED");
     expect(mocks.meals.getMeals).not.toHaveBeenCalled();
+  });
+
+  it("rejects assistant draft requests without a token", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      payload: {
+        message: "Ajoute mon repas de ce midi",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expectErrorShape(body, "UNAUTHORIZED");
+  });
+
+  it("rejects invalid assistant draft payloads", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        message: "ok",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(400);
+    expectValidationError(body);
+  });
+
+  it("creates a confirmable meal draft from a free text request", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        message: "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual({
+      action: "create_meal",
+      confidence: "medium",
+      missingFields: ["foodIds", "quantities"],
+      payload: {
+        date: expect.any(String),
+        items: [{ name: "Riz" }, { name: "poulet" }, { name: "banane" }],
+        mealType: "lunch",
+        name: "Dejeuner",
+        notes: "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane.",
+      },
+      requiresConfirmation: true,
+      summary: "Preparer un repas lunch avec 3 element(s).",
+    });
+    expect(mocks.meals.createMeal).not.toHaveBeenCalled();
+  });
+
+  it("enriches a meal draft with known food ids before confirmation", async () => {
+    mocks.foods.getFoods.mockResolvedValue([
+      { ...food, id: FOOD_ID, name: "Riz" },
+      {
+        ...food,
+        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        name: "Poulet",
+      },
+    ]);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        message: "Tu peux rajouter mon repas de ce midi ? Riz, poulet.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_meal");
+    expect(body.data.missingFields).toEqual(["quantities"]);
+    expect(body.data.payload.items).toEqual([
+      { foodId: FOOD_ID, name: "Riz", resolvedName: "Riz" },
+      {
+        foodId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        name: "poulet",
+        resolvedName: "Poulet",
+      },
+    ]);
+    expect(mocks.foods.getFoods).toHaveBeenCalledWith(USER_ID);
+    expect(mocks.meals.createMeal).not.toHaveBeenCalled();
+  });
+
+  it("creates a confirmable body measurement draft from a weight request", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "measurements",
+        message: "Ajoute ma pesee du jour a 82,4 kg.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_body_measurement");
+    expect(body.data.payload.weightKg).toBe(82.4);
+    expect(body.data.requiresConfirmation).toBe(true);
+    expect(body.data.missingFields).toEqual([]);
+    expect(mocks.bodyMeasurements.createBodyMeasurement).not.toHaveBeenCalled();
+  });
+
+  it("creates a guarded update draft from a body measurement correction", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "measurements",
+        history: [
+          {
+            content: "Ajoute ma pesee du jour a 82,4 kg.",
+            role: "user",
+          },
+          {
+            content: "Ajouter une pesee a 82.4 kg.",
+            role: "assistant",
+          },
+        ],
+        message: "Corrige plutot la pesee a 82,1 kg.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("update_body_measurement");
+    expect(body.data.payload.weightKg).toBe(82.1);
+    expect(body.data.missingFields).toEqual(["id"]);
+    expect(body.data.requiresConfirmation).toBe(true);
+    expect(mocks.bodyMeasurements.updateBodyMeasurement).not.toHaveBeenCalled();
+  });
+
+  it("creates a confirmable workout draft from a planning request", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "workouts",
+        message: "Planifie une seance push demain a 18h",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_workout");
+    expect(body.data.payload.name).toBe("push");
+    expect(body.data.payload.status).toBe("PLANNED");
+    expect(body.data.missingFields).toEqual(["exerciseIds", "sets"]);
+    expect(body.data.requiresConfirmation).toBe(true);
+    expect(mocks.workouts.createWorkout).not.toHaveBeenCalled();
+  });
+
+  it("enriches a workout draft with known exercise ids before confirmation", async () => {
+    mocks.exercises.getExercises.mockResolvedValue([
+      {
+        ...exercise,
+        id: EXERCISE_ID,
+        name: "Developpe couche",
+      },
+      {
+        ...exercise,
+        id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        name: "Dips",
+      },
+    ]);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "workouts",
+        message:
+          "Planifie une seance push demain a 18h avec developpe couche et dips.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_workout");
+    expect(body.data.missingFields).toEqual(["sets"]);
+    expect(body.data.payload.exercises).toEqual([
+      {
+        exerciseId: EXERCISE_ID,
+        name: "developpe couche",
+        resolvedName: "Developpe couche",
+      },
+      {
+        exerciseId: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        name: "dips",
+        resolvedName: "Dips",
+      },
+    ]);
+    expect(mocks.exercises.getExercises).toHaveBeenCalled();
+    expect(mocks.workouts.createWorkout).not.toHaveBeenCalled();
+  });
+
+  it("uses a valid Anthropic assistant draft when the provider is configured", async () => {
+    const providerDraft = {
+      action: "create_meal",
+      confidence: "high",
+      missingFields: ["foodIds", "quantities"],
+      payload: {
+        items: [{ name: "riz" }, { name: "poulet" }],
+        mealType: "lunch",
+        name: "Dejeuner IA",
+      },
+      requiresConfirmation: true,
+      summary: "Brouillon IA pret a confirmer.",
+    };
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue({
+        content: [
+          {
+            text: JSON.stringify(providerDraft),
+            type: "text",
+          },
+        ],
+        stop_reason: "end_turn",
+      }),
+      ok: true,
+    });
+    vi.stubEnv("ANTHROPIC_API_KEY", "test-key");
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        history: [
+          {
+            content: "Ajoute mon repas de ce midi",
+            role: "user",
+          },
+        ],
+        message: "Ajoute mon dejeuner riz poulet",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data).toEqual(providerDraft);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.anthropic.com/v1/messages",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+          "x-api-key": "test-key",
+        }),
+        method: "POST",
+      }),
+    );
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).messages[0].content).toContain(
+      "Historique recent:\nuser: Ajoute mon repas de ce midi",
+    );
+    expect(mocks.meals.createMeal).not.toHaveBeenCalled();
   });
 
   it("returns validation details and skips queries for invalid payloads", async () => {

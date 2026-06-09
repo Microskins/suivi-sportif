@@ -1,5 +1,34 @@
 # IA Idees
 
+## 2026-06-08 - Assistant IA MCP: diff, raccourcis et trace
+
+## Contexte
+
+- L'assistant IA MCP va permettre de piloter des actions metier en langage naturel.
+- Plus l'IA touche aux repas, seances, mensurations, objectifs ou au profil, plus il faut de la visibilite sur ce qui va changer et sur ce qui a change.
+
+## Proposition
+
+- Ajouter plus tard un apercu du diff avant application, surtout pour les champs sensibles et les creations complexes.
+- Proposer des raccourcis de commandes courantes dans l'UI pour accelerer les demandes repetitives.
+- Conserver un journal leger des actions IA pour le support et la confiance.
+
+## Impact
+
+- Reduit le risque d'action involontaire.
+- Rend la chatbox plus rapide et plus rassurante au quotidien.
+- Facilite le diagnostic si une demande est mal interpretee.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/058-chatbox-ia.md
+
+---
+
 ## 2026-06-08 - Synthese corporelle: poids, anciennete et raccourci objectif
 
 ## Contexte

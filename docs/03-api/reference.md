@@ -137,6 +137,86 @@ passe actuel:
 }
 ```
 
+## Assistant IA
+
+Toutes les routes sont protegees et utilisent l'utilisateur du JWT.
+
+### `POST /api/assistant/draft`
+
+Prepare un brouillon d'action a partir d'une demande libre. Cette route ne
+modifie aucune donnee: le client doit afficher le brouillon puis demander une
+confirmation explicite avant d'appeler les endpoints metier.
+
+Si `ANTHROPIC_API_KEY` est configure cote serveur, l'assistant utilise Claude
+pour produire le brouillon structure. Si la cle est absente, si l'appel echoue
+ou si la sortie ne respecte pas le contrat attendu, l'API retombe sur le
+brouillon local deterministe.
+
+Avant de repondre, l'orchestrateur peut enrichir le brouillon en lecture seule:
+les aliments nommes peuvent etre relies a des `foodId` existants et les
+exercices nommes a des `exerciseId` existants. Les champs qui demandent encore
+un choix utilisateur, comme les quantites ou les series, restent dans
+`missingFields`.
+
+Actions possibles: `create_meal`, `update_meal`, `delete_meal`,
+`create_body_measurement`, `update_body_measurement`,
+`delete_body_measurement`, `create_workout`, `update_workout`,
+`delete_workout`, `create_user_goal`, `update_profile`, `unknown`.
+Les actions de modification ou suppression doivent fournir un `id`; sinon le
+brouillon reste bloque via `missingFields`. Le sommeil n'est pas gere par cet
+assistant.
+
+Body:
+
+```json
+{
+  "context": "meals",
+  "history": [
+    {
+      "role": "user",
+      "content": "Ajoute ma pesee du jour a 82,4 kg."
+    },
+    {
+      "role": "assistant",
+      "content": "Ajouter une pesee a 82.4 kg."
+    }
+  ],
+  "message": "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane."
+}
+```
+
+`context` est optionnel et vaut `dashboard`, `profile`, `meals`, `workouts`,
+`measurements` ou `goals`. `history` est optionnel, limite a 20 messages, et
+sert uniquement a donner le fil recent de conversation a l'assistant.
+
+Reponse `200`:
+
+```json
+{
+  "data": {
+    "action": "create_meal",
+    "confidence": "medium",
+    "missingFields": ["foodIds", "quantities"],
+    "payload": {
+      "name": "Dejeuner",
+      "mealType": "lunch",
+      "items": [{ "name": "Riz" }, { "name": "poulet" }]
+    },
+    "requiresConfirmation": true,
+    "summary": "Preparer un repas lunch avec 2 element(s)."
+  }
+}
+```
+
+Actions possibles:
+
+- `create_meal`
+- `create_body_measurement`
+- `create_workout`
+- `create_user_goal`
+- `update_profile`
+- `unknown`
+
 ## Exercises
 
 Toutes les routes sont protegees.
