@@ -63,6 +63,7 @@ Index chronologique des chantiers planifies et executes.
 57. [Synthese poids corporel](./057-synthese-poids-corps.md)
 58. [Assistant IA MCP](./058-chatbox-ia.md)
 59. [Fix memoire build deploy](./059-fix-deploy-build-memory.md)
+60. [Assistant creation aliments](./060-assistant-creation-aliments.md)
 
 ## Convention
 

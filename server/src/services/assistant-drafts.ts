@@ -1,6 +1,7 @@
 import type { AssistantDraftRequestInput } from "../schemas/index.js";
 
 export type AssistantDraftAction =
+  | "create_food"
   | "create_meal"
   | "update_meal"
   | "delete_meal"
@@ -49,6 +50,74 @@ function parseNumber(value: string) {
 
 function extractEmail(message: string) {
   return message.match(/[^\s@]+@[^\s@]+\.[^\s@]+/)?.[0] ?? null;
+}
+
+function extractFoodName(message: string, normalized: string) {
+  const markerMatch =
+    message.match(/(?:aliment|nourriture|food)\s*:?\s*(.+)$/i) ??
+    message.match(/(?:cree|creer|ajoute|ajouter)\s+(?:un\s+)?(?:aliment|food)\s+(.+)$/i);
+
+  const value = markerMatch?.[1] ?? message;
+  return value
+    .replace(/\b(avec|calories|proteines|glucides|lipides|fibres)\b.*$/i, "")
+    .replace(/^\s*(un|une|l')\s+/i, "")
+    .trim()
+    .replace(/[.!?]+$/g, "") || (/(avoine|riz|poulet|banane)/.test(normalized) ? message : "");
+}
+
+function extractMacro(normalized: string, labels: string[]) {
+  for (const label of labels) {
+    const beforeLabelMatch = normalized.match(
+      new RegExp(`(\\d+(?:[,.]\\d+)?)\\s*(?:g\\s*)?${label}`),
+    );
+    if (beforeLabelMatch) return parseNumber(beforeLabelMatch[1]);
+
+    const afterLabelMatch = normalized.match(
+      new RegExp(`${label}\\D+(\\d+(?:[,.]\\d+)?)`),
+    );
+    if (afterLabelMatch) return parseNumber(afterLabelMatch[1]);
+  }
+
+  return null;
+}
+
+function draftFood(message: string, normalized: string): AssistantDraft | null {
+  if (!/(aliment|nourriture|food|flocon|avoine)/.test(normalized)) return null;
+  if (/(repas|dejeuner|diner|petit dej|petit-dej|collation)/.test(normalized)) {
+    return null;
+  }
+
+  const name = extractFoodName(message, normalized);
+  const caloriesKcal = extractMacro(normalized, ["kcal", "calories"]);
+  const proteinGrams = extractMacro(normalized, ["proteines", "protein"]);
+  const carbsGrams = extractMacro(normalized, ["glucides", "carbs"]);
+  const fatGrams = extractMacro(normalized, ["lipides", "fat"]);
+  const fiberGrams = extractMacro(normalized, ["fibres", "fiber"]);
+
+  return {
+    action: "create_food",
+    confidence: name ? "medium" : "low",
+    missingFields: [
+      ...(name ? [] : ["name"]),
+      ...(caloriesKcal === null ? ["caloriesKcal"] : []),
+      ...(proteinGrams === null ? ["proteinGrams"] : []),
+      ...(carbsGrams === null ? ["carbsGrams"] : []),
+      ...(fatGrams === null ? ["fatGrams"] : []),
+    ],
+    payload: {
+      ...(name ? { name } : {}),
+      ...(caloriesKcal === null ? {} : { caloriesKcal }),
+      ...(proteinGrams === null ? {} : { proteinGrams }),
+      ...(carbsGrams === null ? {} : { carbsGrams }),
+      ...(fatGrams === null ? {} : { fatGrams }),
+      ...(fiberGrams === null ? {} : { fiberGrams }),
+      servingUnit: "g",
+    },
+    requiresConfirmation: true,
+    summary: name
+      ? `Preparer l'aliment ${name}.`
+      : "Preparer un nouvel aliment.",
+  };
 }
 
 function draftProfile(message: string): AssistantDraft | null {
@@ -273,6 +342,7 @@ export function createAssistantDraft(
   const normalized = normalize(message);
 
   return (
+    draftFood(message, normalized) ??
     draftMeal(message, normalized, now) ??
     draftBodyMeasurement(message, normalized, now) ??
     draftWorkout(message, normalized, now) ??

@@ -31,6 +31,7 @@ const examples = [
 
 const actionLabels: Record<AssistantDraft["action"], string> = {
   create_body_measurement: "Nouvelle mensuration",
+  create_food: "Nouvel aliment",
   create_meal: "Nouveau repas",
   create_user_goal: "Nouvel objectif",
   create_workout: "Nouvelle seance",
@@ -54,6 +55,92 @@ const MAX_HISTORY_ITEMS = 20;
 
 function formatPayload(payload: Record<string, unknown>) {
   return JSON.stringify(payload, null, 2);
+}
+
+function missingFieldLabel(field: string) {
+  const labels: Record<string, string> = {
+    exerciseIds: "exercices a reconnaitre dans ta bibliotheque",
+    foodIds: "aliments a reconnaitre dans ta base",
+    caloriesKcal: "calories pour 100 g",
+    carbsGrams: "glucides pour 100 g",
+    fatGrams: "lipides pour 100 g",
+    id: "element exact a modifier ou supprimer",
+    intent: "demande a preciser",
+    items: "aliments du repas",
+    quantities: "quantites en grammes ou portions",
+    proteinGrams: "proteines pour 100 g",
+    sets: "series de la seance",
+    targetValue: "valeur cible",
+    weightKg: "poids en kg",
+  };
+
+  return labels[field] ?? field;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function summarizeMealItems(payload: Record<string, unknown>) {
+  if (!Array.isArray(payload.items) || payload.items.length === 0) return [];
+
+  return payload.items
+    .filter(isRecord)
+    .map((item) => {
+      const name =
+        typeof item.resolvedName === "string"
+          ? item.resolvedName
+          : typeof item.name === "string"
+            ? item.name
+            : "Aliment";
+      const status = typeof item.foodId === "string" ? "reconnu" : "a verifier";
+      const quantity =
+        typeof item.quantityGrams === "number"
+          ? `${item.quantityGrams} g`
+          : "quantite manquante";
+
+      return { name, quantity, status };
+    });
+}
+
+function summarizeFood(payload: Record<string, unknown>) {
+  if (typeof payload.name !== "string") return null;
+
+  const macros = [
+    ["Calories", payload.caloriesKcal, "kcal"],
+    ["Proteines", payload.proteinGrams, "g"],
+    ["Glucides", payload.carbsGrams, "g"],
+    ["Lipides", payload.fatGrams, "g"],
+    ["Fibres", payload.fiberGrams, "g"],
+  ]
+    .filter(([, value]) => typeof value === "number")
+    .map(([label, value, unit]) => `${label}: ${value} ${unit}`);
+
+  return {
+    macros,
+    name: payload.name,
+    servingUnit: payload.servingUnit === "unit" ? "par unite" : "pour 100 g",
+  };
+}
+
+function draftExplanation(draft: AssistantDraft) {
+  if (draft.missingFields.length === 0) {
+    return "Tout est pret: tu peux confirmer pour appliquer l'action.";
+  }
+
+  if (draft.action === "create_meal" || draft.action === "update_meal") {
+    return "Je ne peux pas encore appliquer ce repas: certains aliments ne sont pas lies a ta base et/ou les quantites ne sont pas assez claires.";
+  }
+
+  if (draft.action === "create_food") {
+    return "Je peux creer cet aliment apres confirmation. Verifie surtout les valeurs nutritionnelles avant de valider.";
+  }
+
+  if (draft.action === "create_workout" || draft.action === "update_workout") {
+    return "Je ne peux pas encore appliquer cette seance: il manque les exercices exacts et/ou les series.";
+  }
+
+  return "Je garde le brouillon bloque tant que ces informations ne sont pas claires.";
 }
 
 export function AssistantChatbox({
@@ -87,6 +174,8 @@ export function AssistantChatbox({
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
+  const foodSummary = draft ? summarizeFood(draft.payload) : null;
+  const mealItemsSummary = draft ? summarizeMealItems(draft.payload) : [];
 
   useEffect(() => {
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
@@ -267,14 +356,88 @@ export function AssistantChatbox({
                     </span>
                   </div>
                   <p className="mt-3 text-sm text-stone-100">{draft.summary}</p>
+                  <p className="mt-2 rounded-xl border border-amber-200/20 bg-amber-200/10 px-3 py-2 text-xs leading-relaxed text-amber-50">
+                    {draftExplanation(draft)}
+                  </p>
                   {draft.missingFields.length > 0 && (
-                    <p className="mt-2 text-xs text-amber-100">
-                      A completer: {draft.missingFields.join(", ")}
-                    </p>
+                    <div className="mt-3 space-y-2">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-100">
+                        A completer
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {draft.missingFields.map((field) => (
+                          <span
+                            key={field}
+                            className="rounded-full border border-amber-100/20 bg-amber-100/10 px-3 py-1 text-xs text-amber-50"
+                          >
+                            {missingFieldLabel(field)}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   )}
-                  <pre className="mt-3 max-h-48 overflow-auto rounded-xl bg-black/35 p-3 text-xs leading-relaxed text-emerald-50">
+                  {mealItemsSummary.length > 0 && (
+                    <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100">
+                        Aliments detectes
+                      </p>
+                      <div className="mt-2 space-y-2">
+                        {mealItemsSummary.map((item) => (
+                          <div
+                            key={`${item.name}-${item.quantity}-${item.status}`}
+                            className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white/[0.06] px-3 py-2 text-xs"
+                          >
+                            <span className="font-semibold text-stone-50">
+                              {item.name}
+                            </span>
+                            <span className="text-stone-300">{item.quantity}</span>
+                            <span
+                              className={
+                                item.status === "reconnu"
+                                  ? "rounded-full bg-emerald-200 px-2 py-0.5 font-semibold text-emerald-950"
+                                  : "rounded-full bg-amber-200 px-2 py-0.5 font-semibold text-amber-950"
+                              }
+                            >
+                              {item.status}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {foodSummary && (
+                    <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100">
+                        Aliment propose
+                      </p>
+                      <div className="mt-2 rounded-lg bg-white/[0.06] px-3 py-2 text-xs">
+                        <p className="font-semibold text-stone-50">
+                          {foodSummary.name}
+                        </p>
+                        <p className="mt-1 text-stone-300">
+                          Valeurs {foodSummary.servingUnit}
+                        </p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {foodSummary.macros.map((macro) => (
+                            <span
+                              key={macro}
+                              className="rounded-full bg-emerald-100/10 px-2 py-1 text-emerald-50"
+                            >
+                              {macro}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <details className="mt-3 rounded-xl bg-black/35 text-xs text-emerald-50">
+                    <summary className="cursor-pointer px-3 py-2 font-semibold text-emerald-100">
+                      Voir les donnees techniques
+                    </summary>
+                    <pre className="max-h-48 overflow-auto p-3 pt-0 leading-relaxed">
                     {formatPayload(draft.payload)}
-                  </pre>
+                    </pre>
+                  </details>
                   <button
                     type="button"
                     onClick={applyDraft}

@@ -158,13 +158,17 @@ exercices nommes a des `exerciseId` existants. Les champs qui demandent encore
 un choix utilisateur, comme les quantites ou les series, restent dans
 `missingFields`.
 
-Actions possibles: `create_meal`, `update_meal`, `delete_meal`,
+Actions possibles: `create_food`, `create_meal`, `update_meal`, `delete_meal`,
 `create_body_measurement`, `update_body_measurement`,
 `delete_body_measurement`, `create_workout`, `update_workout`,
 `delete_workout`, `create_user_goal`, `update_profile`, `unknown`.
 Les actions de modification ou suppression doivent fournir un `id`; sinon le
 brouillon reste bloque via `missingFields`. Le sommeil n'est pas gere par cet
 assistant.
+
+Pour un repas, les aliments doivent deja exister dans la base et les quantites
+doivent etre claires. Si un aliment manque, l'assistant peut d'abord preparer
+un brouillon `create_food`, a confirmer, puis le repas peut etre redemande.
 
 Body:
 

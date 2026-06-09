@@ -4,6 +4,7 @@ import type {
   BodyMeasurementInput,
   BodyMeasurement,
   Exercise,
+  FoodInput,
   MealInput,
   Meal,
   UserGoalInput,
@@ -122,6 +123,24 @@ function toMealInput(payload: Record<string, unknown>): MealInput {
         : "other",
     name: requireString(payload.name, "name"),
     notes: optionalString(payload.notes),
+  };
+}
+
+function toFoodInput(payload: Record<string, unknown>): FoodInput {
+  return {
+    barcode: optionalString(payload.barcode),
+    brand: optionalString(payload.brand),
+    caloriesKcal: requireNumber(payload.caloriesKcal, "caloriesKcal"),
+    carbsGrams: requireNumber(payload.carbsGrams, "carbsGrams"),
+    fatGrams: requireNumber(payload.fatGrams, "fatGrams"),
+    fiberGrams:
+      typeof payload.fiberGrams === "number" ? payload.fiberGrams : null,
+    name: requireString(payload.name, "name"),
+    proteinGrams: requireNumber(payload.proteinGrams, "proteinGrams"),
+    servingUnit:
+      payload.servingUnit === "unit" || payload.servingUnit === "g"
+        ? payload.servingUnit
+        : "g",
   };
 }
 
@@ -351,6 +370,12 @@ export function Dashboard({
     if (draft.action === "create_meal") {
       await mealsStore.createMeal(toMealInput(draft.payload), foodsStore.foods);
       await mealsStore.fetchMeals();
+      return;
+    }
+
+    if (draft.action === "create_food") {
+      await foodsStore.createFood(toFoodInput(draft.payload));
+      await foodsStore.fetchFoods();
       return;
     }
 

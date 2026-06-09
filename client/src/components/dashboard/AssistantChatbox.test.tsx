@@ -61,7 +61,9 @@ describe("AssistantChatbox", () => {
     expect(screen.getAllByText("Preparer un repas lunch.").length).toBeGreaterThan(
       0,
     );
-    expect(screen.getByText(/A completer: quantities/)).toBeInTheDocument();
+    expect(
+      screen.getByText("quantites en grammes ou portions"),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("button", {
         name: "Complete les champs manquants avant confirmation",

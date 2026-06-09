@@ -39,6 +39,7 @@ export const assistantDraftRequestSchema = z.object({
 });
 
 export const assistantDraftActionSchema = z.enum([
+  "create_food",
   "create_meal",
   "update_meal",
   "delete_meal",

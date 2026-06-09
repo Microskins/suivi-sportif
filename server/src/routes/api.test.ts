@@ -2789,6 +2789,34 @@ describe("API", () => {
     expect(mocks.meals.createMeal).not.toHaveBeenCalled();
   });
 
+  it("creates a confirmable food draft from a free text request", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        message:
+          "Cree un aliment flocon d'avoine avec 370 kcal, proteines 13, glucides 60, lipides 7, fibres 10.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_food");
+    expect(body.data.missingFields).toEqual([]);
+    expect(body.data.payload).toEqual({
+      caloriesKcal: 370,
+      carbsGrams: 60,
+      fatGrams: 7,
+      fiberGrams: 10,
+      name: "flocon d'avoine",
+      proteinGrams: 13,
+      servingUnit: "g",
+    });
+    expect(mocks.foods.createFood).not.toHaveBeenCalled();
+  });
+
   it("enriches a meal draft with known food ids before confirmation", async () => {
     mocks.foods.getFoods.mockResolvedValue([
       { ...food, id: FOOD_ID, name: "Riz" },

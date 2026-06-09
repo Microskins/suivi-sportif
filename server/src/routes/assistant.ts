@@ -29,6 +29,7 @@ const assistantDraftSchema = {
       type: "string",
       enum: [
         "create_meal",
+        "create_food",
         "update_meal",
         "delete_meal",
         "create_body_measurement",
