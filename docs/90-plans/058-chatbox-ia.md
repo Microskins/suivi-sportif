@@ -89,3 +89,8 @@
 - 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w client -- --run src/components/dashboard/AssistantChatbox.test.tsx"` OK, 4 tests passes.
 - 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run build -w server"` OK; `server/dist/` supprime apres verification.
 - 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run build -w client"` OK avec avertissement bundle Vite > 500 kB deja non bloquant; `client/dist/` supprime apres verification.
+- 2026-06-09: correction du parsing repas assistant pour extraire les quantites `g/gr` et normaliser les sorties IA imparfaites avant enrichissement.
+- 2026-06-09: l'orchestration repas conserve maintenant `quantityGrams` quand un aliment est reconnu, tolere les variantes singulier/pluriel comme `fruit rouge` / `Fruits rouges` et recalcule `reply` apres enrichissement.
+- 2026-06-09: `wsl bash -lc 'cd /mnt/g/suivi-sportif && npm run test -w server -- --run src/routes/api.test.ts -t "breakfast draft"'` OK, cas exact petit dejeuner avec 3 aliments.
+- 2026-06-09: `wsl bash -lc 'cd /mnt/g/suivi-sportif && npm run typecheck -w server'` OK.
+- 2026-06-09: `wsl bash -lc 'cd /mnt/g/suivi-sportif && npm run test -w server -- --run'` OK, 184 tests passes.

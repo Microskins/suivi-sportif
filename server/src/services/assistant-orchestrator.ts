@@ -8,6 +8,7 @@ type AssistantOrchestratorOptions = {
 
 type NamedPayloadItem = {
   name?: unknown;
+  quantityGrams?: unknown;
 };
 
 type MatchResult = {
@@ -28,12 +29,19 @@ function compactMissingFields(fields: string[], remove: string[]) {
   return fields.filter((field) => !removeSet.has(field));
 }
 
-function getNamedItems(payload: Record<string, unknown>) {
+function getMealDraftItems(payload: Record<string, unknown>) {
   const items = payload.items;
   if (!Array.isArray(items)) return [];
 
   return items
-    .filter((item): item is NamedPayloadItem => Boolean(item))
+    .filter(
+      (item): item is NamedPayloadItem =>
+        Boolean(item) && typeof item === "object",
+    );
+}
+
+function getNamedItems(payload: Record<string, unknown>) {
+  return getMealDraftItems(payload)
     .map((item) => (typeof item.name === "string" ? item.name : null))
     .filter((name): name is string => Boolean(name));
 }
@@ -48,9 +56,20 @@ function findByName<T extends { id: string; name: string }>(
 
   const partial = collection.find((item) => {
     const normalizedItemName = normalize(item.name);
+    const itemTokens = normalizedItemName.split(/\s+/).filter(Boolean);
+    const nameTokens = normalizedName.split(/\s+/).filter(Boolean);
+    const sharedTokens = itemTokens.filter((token) => {
+      const singularToken = token.replace(/s$/i, "");
+      return nameTokens.some((nameToken) => {
+        const singularNameToken = nameToken.replace(/s$/i, "");
+        return singularToken === singularNameToken;
+      });
+    });
+
     return (
       normalizedItemName.includes(normalizedName) ||
-      normalizedName.includes(normalizedItemName)
+      normalizedName.includes(normalizedItemName) ||
+      (itemTokens.length > 0 && sharedTokens.length === itemTokens.length)
     );
   });
 
@@ -76,20 +95,42 @@ async function enrichMealDraft(
 
   if (matches.length === 0) return draft;
 
+  const missingFields =
+    matches.length === itemNames.length
+      ? compactMissingFields(draft.missingFields, ["foodIds"])
+      : draft.missingFields;
+  const summary = `${draft.summary} ${matches.length} aliment(s) reconnu(s).`;
+
   return {
     ...draft,
-    missingFields:
-      matches.length === itemNames.length
-        ? compactMissingFields(draft.missingFields, ["foodIds"])
-        : draft.missingFields,
+    missingFields,
     payload: {
       ...draft.payload,
       items: itemNames.map((name) => {
+        const sourceItem = getMealDraftItems(draft.payload).find(
+          (item) => item.name === name,
+        );
         const match = matches.find((candidate) => candidate.name === name);
-        return match ? { foodId: match.foodId, name, resolvedName: match.foodName } : { name };
+        const quantityGrams =
+          sourceItem && typeof sourceItem.quantityGrams === "number"
+            ? { quantityGrams: sourceItem.quantityGrams }
+            : {};
+
+        return match
+          ? {
+              foodId: match.foodId,
+              name,
+              resolvedName: match.foodName,
+              ...quantityGrams,
+            }
+          : { name, ...quantityGrams };
       }),
     },
-    summary: `${draft.summary} ${matches.length} aliment(s) reconnu(s).`,
+    reply:
+      missingFields.length === 0
+        ? `${summary} Tout est pret: tu peux confirmer pour l'ajouter.`
+        : `${summary} Il me manque encore quelques infos avant de pouvoir te proposer la confirmation.`,
+    summary,
   } satisfies AssistantDraft;
 }
 

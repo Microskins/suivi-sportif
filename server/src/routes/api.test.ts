@@ -2950,6 +2950,66 @@ describe("API", () => {
     expect(mocks.meals.createMeal).not.toHaveBeenCalled();
   });
 
+  it("extracts quantities and enriches a breakfast draft with known foods", async () => {
+    mocks.foods.getFoods.mockResolvedValue([
+      { ...food, id: FOOD_ID, name: "Fromage blanc 0%" },
+      {
+        ...food,
+        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        name: "Flocons d'avoine",
+      },
+      {
+        ...food,
+        id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        name: "Fruits rouges",
+      },
+    ]);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        message:
+          "salut tu peux me creer mon petit dej 200gr de fromage blanc 0% milsani, 30 gr de flocons d'avoine Boni,150 gr de fruit rouge",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_meal");
+    expect(body.data.missingFields).toEqual([]);
+    expect(body.data.summary).toBe(
+      "Preparer un repas breakfast avec 3 element(s). 3 aliment(s) reconnu(s).",
+    );
+    expect(body.data.reply).toBe(
+      "Preparer un repas breakfast avec 3 element(s). 3 aliment(s) reconnu(s). Tout est pret: tu peux confirmer pour l'ajouter.",
+    );
+    expect(body.data.payload.items).toEqual([
+      {
+        foodId: FOOD_ID,
+        name: "fromage blanc 0% milsani",
+        quantityGrams: 200,
+        resolvedName: "Fromage blanc 0%",
+      },
+      {
+        foodId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        name: "flocons d'avoine Boni",
+        quantityGrams: 30,
+        resolvedName: "Flocons d'avoine",
+      },
+      {
+        foodId: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        name: "fruit rouge",
+        quantityGrams: 150,
+        resolvedName: "Fruits rouges",
+      },
+    ]);
+    expect(mocks.foods.getFoods).toHaveBeenCalledWith(USER_ID);
+    expect(mocks.meals.createMeal).not.toHaveBeenCalled();
+  });
+
   it("creates a confirmable body measurement draft from a weight request", async () => {
     const response = await app.inject({
       method: "POST",

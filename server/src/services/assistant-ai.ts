@@ -6,7 +6,7 @@ import {
 import {
   AssistantDraft,
   createAssistantDraft,
-  sanitizeAssistantDraft,
+  normalizeAssistantDraft,
 } from "./assistant-drafts.js";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
@@ -165,7 +165,7 @@ async function createAnthropicDraft(
   );
 
   return parsedDraft.success
-    ? withAssistantReply(sanitizeAssistantDraft(parsedDraft.data))
+    ? withAssistantReply(normalizeAssistantDraft(parsedDraft.data, input.message))
     : null;
 }
 
@@ -198,7 +198,7 @@ export async function createAssistantDraftWithAi(
   options: AssistantAiOptions = {},
 ): Promise<AssistantDraft> {
   const fallbackDraft = withAssistantReply(
-    sanitizeAssistantDraft(createAssistantDraft(input, options.now)),
+    normalizeAssistantDraft(createAssistantDraft(input, options.now), input.message),
   );
 
   try {

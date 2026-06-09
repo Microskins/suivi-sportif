@@ -26,6 +26,13 @@ export type AssistantDraft = {
   missingFields: string[];
 };
 
+type MealItemDraft = {
+  foodId?: string;
+  name?: string;
+  quantityGrams?: number;
+  resolvedName?: string;
+};
+
 function normalize(value: string) {
   return value
     .normalize("NFD")
@@ -272,7 +279,89 @@ function cleanMealItemsText(message: string, normalized: string) {
     .replace(/tu peux/gi, "")
     .replace(/(rajouter|ajouter|creer|cree)/gi, "")
     .replace(/mon repas/gi, "")
+    .replace(/mon petit dej|petit dej|petit-dej|petit dejeuner/gi, "")
     .replace(/de ce midi|de ce soir|du matin|de ce matin/gi, "");
+}
+
+function cleanMealItemName(value: string) {
+  return value
+    .replace(/^\s*(de|d'|du|des|un|une)\s+/i, "")
+    .replace(/[.!?:;,]+$/g, "")
+    .trim();
+}
+
+function extractMealItemsWithQuantities(text: string) {
+  const items: Array<{ name: string; quantityGrams: number }> = [];
+  const itemPattern =
+    /(\d+(?:[,.]\d+)?)\s*(?:g|gr|grammes?)\s+(?:de\s+|d')?(.+?)(?=(?:[,;]|\bet\b|\d+(?:[,.]\d+)?\s*(?:g|gr|grammes?)\b|$))/gi;
+
+  for (const match of text.matchAll(itemPattern)) {
+    const quantityGrams = parseNumber(match[1]);
+    const name = cleanMealItemName(match[2]);
+
+    if (name && Number.isFinite(quantityGrams)) {
+      items.push({ name, quantityGrams });
+    }
+  }
+
+  return items;
+}
+
+function getMealDraftItems(draft: AssistantDraft) {
+  const items = draft.payload.items;
+  if (!Array.isArray(items)) return [];
+
+  return items.filter(
+    (item): item is MealItemDraft => Boolean(item) && typeof item === "object",
+  );
+}
+
+function normalizeMealDraft(draft: AssistantDraft, sourceMessage?: string) {
+  if (draft.action !== "create_meal" && draft.action !== "update_meal") {
+    return draft;
+  }
+
+  const source =
+    sourceMessage ??
+    (typeof draft.payload.notes === "string" ? draft.payload.notes : undefined);
+  const parsedItems = source ? extractMealItemsWithQuantities(source) : [];
+  if (parsedItems.length === 0) return draft;
+
+  const existingItems = getMealDraftItems(draft);
+  const nextItems = parsedItems.map((parsedItem) => {
+    const existingItem = existingItems.find((item) => {
+      if (typeof item.name !== "string") return false;
+      return normalize(item.name).includes(normalize(parsedItem.name));
+    });
+
+    return {
+      ...(existingItem?.foodId ? { foodId: existingItem.foodId } : {}),
+      name: parsedItem.name,
+      quantityGrams: parsedItem.quantityGrams,
+      ...(existingItem?.resolvedName
+        ? { resolvedName: existingItem.resolvedName }
+        : {}),
+    };
+  });
+  const missingFields = draft.missingFields.filter(
+    (field) => field !== "items" && field !== "quantities",
+  );
+  const mealType = typeof draft.payload.mealType === "string" ? draft.payload.mealType : "meal";
+
+  return {
+    ...draft,
+    confidence: draft.confidence === "low" ? "medium" : draft.confidence,
+    missingFields,
+    payload: {
+      ...draft.payload,
+      items: nextItems,
+      ...(typeof draft.payload.notes === "string" ? {} : { notes: source }),
+    },
+    summary:
+      draft.action === "update_meal"
+        ? `Preparer la modification d'un repas ${mealType} avec ${nextItems.length} element(s).`
+        : `Preparer un repas ${mealType} avec ${nextItems.length} element(s).`,
+  } satisfies AssistantDraft;
 }
 
 function draftMeal(message: string, normalized: string, now: Date) {
@@ -408,7 +497,7 @@ export function createAssistantDraft(
   const message = input.message.trim();
   const normalized = normalize(message);
 
-  return (
+  const draft =
     draftExercise(message, normalized) ??
     draftFood(message, normalized) ??
     draftMeal(message, normalized, now) ??
@@ -422,11 +511,16 @@ export function createAssistantDraft(
       payload: { message },
       requiresConfirmation: false,
       summary: "Demande non reconnue pour le moment.",
-    }
-  );
+    };
+
+  return normalizeAssistantDraft(draft, message);
 }
 
 export function sanitizeAssistantDraft(draft: AssistantDraft): AssistantDraft {
+  if (draft.action === "create_meal" || draft.action === "update_meal") {
+    return normalizeMealDraft(draft);
+  }
+
   if (draft.action !== "create_food" || typeof draft.payload.name !== "string") {
     return draft;
   }
@@ -442,4 +536,11 @@ export function sanitizeAssistantDraft(draft: AssistantDraft): AssistantDraft {
     },
     summary: `Preparer l'aliment ${name}.`,
   };
+}
+
+export function normalizeAssistantDraft(
+  draft: AssistantDraft,
+  sourceMessage?: string,
+): AssistantDraft {
+  return sanitizeAssistantDraft(normalizeMealDraft(draft, sourceMessage));
 }
