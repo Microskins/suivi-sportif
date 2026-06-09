@@ -41,9 +41,9 @@
 - [x] Brancher l'orchestration MCP pour enrichir les brouillons depuis les outils.
 - [x] Ajouter le branchement IA cote serveur avec cle d'environnement.
 - [x] Ajouter la chatbox dans le dashboard cote frontend.
-- [ ] Reutiliser les stores existants pour appliquer ou rafraichir les changements confirmes.
-- [ ] Ajouter les tests API, composants et validations utiles.
-- [ ] Mettre a jour les notes de verification et les docs si le comportement public evolue.
+- [x] Reutiliser les stores existants pour appliquer ou rafraichir les changements confirmes.
+- [x] Ajouter les tests API, composants et validations utiles.
+- [x] Mettre a jour les notes de verification et les docs si le comportement public evolue.
 
 ## Notes de verification
 
@@ -74,3 +74,7 @@
 - 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w client -- --run src/components/dashboard/AssistantChatbox.test.tsx"` OK, 2 tests passes.
 - 2026-06-08: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run build -w client"` OK avec avertissement bundle Vite > 500 kB deja non bloquant; `client/dist/` supprime apres verification.
 - 2026-06-08: verification visuelle Browser non lancee car le navigateur integre `iab` est indisponible dans cette session; demarrage Vite verifie via `timeout 12s env VITE_BYPASS_AUTH=true npm run dev -w client -- --host 127.0.0.1`, serveur pret sur `http://127.0.0.1:5173/` avant arret volontaire par timeout.
+- 2026-06-09: confirmation des brouillons branchee cote dashboard: application via stores existants pour repas, mensurations, seances, objectifs utilisateur et profil; les brouillons incomplets restent bloques par `missingFields`.
+- 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run typecheck -w client"` OK apres confirmation.
+- 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w client -- --run src/components/dashboard/AssistantChatbox.test.tsx"` OK, 3 tests passes.
+- 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run build -w client"` OK avec avertissement bundle Vite > 500 kB deja non bloquant; `client/dist/` supprime apres verification.

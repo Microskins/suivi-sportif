@@ -4,6 +4,7 @@ import type { DashboardResource } from "./ResourceHeader";
 
 type AssistantChatboxProps = {
   isAuthBypassEnabled: boolean;
+  onApplyDraft: (draft: AssistantDraft) => Promise<void>;
   resource: DashboardResource;
 };
 
@@ -42,13 +43,16 @@ function formatPayload(payload: Record<string, unknown>) {
 
 export function AssistantChatbox({
   isAuthBypassEnabled,
+  onApplyDraft,
   resource,
 }: AssistantChatboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [draft, setDraft] = useState<AssistantDraft | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
 
   async function submit(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
@@ -57,6 +61,7 @@ export function AssistantChatbox({
 
     setIsLoading(true);
     setError(null);
+    setSuccess(null);
     try {
       const result = await api.createAssistantDraft({
         context: contextByResource[resource],
@@ -71,6 +76,28 @@ export function AssistantChatbox({
       );
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function applyDraft() {
+    if (!draft || draft.missingFields.length > 0 || isAuthBypassEnabled) return;
+
+    setIsApplying(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      await onApplyDraft(draft);
+      setSuccess("Action appliquee. Les donnees ont ete rafraichies.");
+      setDraft(null);
+      setMessage("");
+    } catch (applyError) {
+      setError(
+        applyError instanceof Error
+          ? applyError.message
+          : "Impossible d'appliquer le brouillon assistant",
+      );
+    } finally {
+      setIsApplying(false);
     }
   }
 
@@ -141,6 +168,12 @@ export function AssistantChatbox({
                 </p>
               )}
 
+              {success && (
+                <p className="mt-3 rounded-2xl border border-emerald-200/30 bg-emerald-200/10 px-3 py-2 text-xs text-emerald-100">
+                  {success}
+                </p>
+              )}
+
               {draft && (
                 <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.06] p-3">
                   <div className="flex flex-wrap items-center gap-2">
@@ -160,9 +193,18 @@ export function AssistantChatbox({
                   <pre className="mt-3 max-h-48 overflow-auto rounded-xl bg-black/35 p-3 text-xs leading-relaxed text-emerald-50">
                     {formatPayload(draft.payload)}
                   </pre>
-                  <p className="mt-3 text-xs text-stone-300">
-                    Confirmation et application via les stores: prochaine tranche.
-                  </p>
+                  <button
+                    type="button"
+                    onClick={applyDraft}
+                    disabled={draft.missingFields.length > 0 || isApplying}
+                    className="mt-3 w-full rounded-xl border border-emerald-200/40 bg-emerald-200 px-3 py-2 text-xs font-bold text-emerald-950 transition hover:bg-lime-200 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/10 disabled:text-stone-300"
+                  >
+                    {draft.missingFields.length > 0
+                      ? "Complete les champs manquants avant confirmation"
+                      : isApplying
+                        ? "Application..."
+                        : "Confirmer et appliquer"}
+                  </button>
                 </div>
               )}
             </div>
