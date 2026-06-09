@@ -66,6 +66,7 @@ Index chronologique des chantiers planifies et executes.
 60. [Assistant creation aliments](./060-assistant-creation-aliments.md)
 61. [Chat assistant interactif](./061-chat-assistant-interactif.md)
 62. [Assistant creation exercices](./062-assistant-creation-exercices.md)
+63. [Assistant chat V2](./063-assistant-chat-v2.md)
 
 ## Convention
 

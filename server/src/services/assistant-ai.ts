@@ -5,6 +5,7 @@ import {
 } from "../schemas/index.js";
 import {
   AssistantDraft,
+  continueAssistantDraft,
   createAssistantDraft,
   normalizeAssistantDraft,
 } from "./assistant-drafts.js";
@@ -97,6 +98,7 @@ function buildPrompt(input: AssistantDraftRequest, fallbackDraft: AssistantDraft
     "Conserve les champs incomplets dans missingFields plutot que d'inventer des identifiants, quantites ou mots de passe.",
     "Pour toute modification ou suppression, ajoute id dans missingFields si l'identifiant de la donnee cible n'est pas explicitement connu.",
     "Pour les repas, si les aliments sont nommes mais pas lies a des foodIds, ajoute foodIds et quantities dans missingFields.",
+    "Si un brouillon courant est fourni, interprete le message comme une reponse pour completer ce brouillon avant de creer une nouvelle action.",
     "Pour creer un aliment, action create_food avec name, caloriesKcal, proteinGrams, carbsGrams, fatGrams, fiberGrams optionnel, servingUnit. Si une valeur nutritionnelle manque, garde son champ dans missingFields.",
     "Pour creer un exercice, action create_exercise avec name, description optionnelle, difficulty BEGINNER/INTERMEDIATE/ADVANCED, exerciseType STRENGTH/CARDIO/MOBILITY et bodyParts optionnel.",
     "Pour une seance, ajoute exerciseIds et sets dans missingFields si la demande donne seulement les noms d'exercices.",
@@ -104,6 +106,7 @@ function buildPrompt(input: AssistantDraftRequest, fallbackDraft: AssistantDraft
     `Contexte: ${input.context ?? "dashboard"}.`,
     `Historique recent:\n${history || "Aucun historique."}`,
     `Message utilisateur: ${input.message}`,
+    `Brouillon courant: ${JSON.stringify(input.currentDraft ?? null)}`,
     `Brouillon local de secours: ${JSON.stringify(fallbackDraft)}`,
   ].join("\n");
 }
@@ -197,8 +200,11 @@ export async function createAssistantDraftWithAi(
   input: AssistantDraftRequest,
   options: AssistantAiOptions = {},
 ): Promise<AssistantDraft> {
+  const localDraft = input.currentDraft
+    ? continueAssistantDraft(input.currentDraft, input.message)
+    : createAssistantDraft(input, options.now);
   const fallbackDraft = withAssistantReply(
-    normalizeAssistantDraft(createAssistantDraft(input, options.now), input.message),
+    normalizeAssistantDraft(localDraft, input.message),
   );
 
   try {

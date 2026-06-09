@@ -377,6 +377,7 @@ export type AssistantDraft = {
 
 export type AssistantDraftRequest = {
   context?: AssistantDraftContext;
+  currentDraft?: AssistantDraft;
   history?: Array<{
     content: string;
     role: "user" | "assistant";

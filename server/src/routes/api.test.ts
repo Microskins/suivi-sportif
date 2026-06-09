@@ -3010,6 +3010,60 @@ describe("API", () => {
     expect(mocks.meals.createMeal).not.toHaveBeenCalled();
   });
 
+  it("continues a meal draft with quantities from a follow-up message", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        currentDraft: {
+          action: "create_meal",
+          confidence: "medium",
+          missingFields: ["quantities"],
+          payload: {
+            date: "2026-06-09T12:00:00.000Z",
+            items: [
+              { foodId: FOOD_ID, name: "Riz", resolvedName: "Riz" },
+              {
+                foodId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+                name: "Poulet",
+                resolvedName: "Poulet",
+              },
+            ],
+            mealType: "lunch",
+            name: "Dejeuner",
+          },
+          requiresConfirmation: true,
+          summary: "Preparer un repas lunch avec 2 element(s).",
+        },
+        message: "Mets 150g de riz et 200g de poulet",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.missingFields).toEqual([]);
+    expect(body.data.reply).toBe(
+      "Preparer un repas lunch avec 2 element(s). Tout est pret: tu peux confirmer.",
+    );
+    expect(body.data.payload.items).toEqual([
+      {
+        foodId: FOOD_ID,
+        name: "Riz",
+        quantityGrams: 150,
+        resolvedName: "Riz",
+      },
+      {
+        foodId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        name: "Poulet",
+        quantityGrams: 200,
+        resolvedName: "Poulet",
+      },
+    ]);
+    expect(mocks.meals.createMeal).not.toHaveBeenCalled();
+  });
+
   it("creates a confirmable body measurement draft from a weight request", async () => {
     const response = await app.inject({
       method: "POST",

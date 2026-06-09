@@ -150,7 +150,7 @@ function draftExplanation(draft: AssistantDraft) {
   }
 
   if (draft.action === "create_meal" || draft.action === "update_meal") {
-    return "Je ne peux pas encore appliquer ce repas: certains aliments ne sont pas lies a ta base et/ou les quantites ne sont pas assez claires.";
+    return "Je ne peux pas encore appliquer ce repas: reponds dans le chat avec les aliments ou quantites manquantes.";
   }
 
   if (draft.action === "create_food") {
@@ -224,6 +224,7 @@ export function AssistantChatbox({
     try {
       const result = await api.createAssistantDraft({
         context: contextByResource[resource],
+        currentDraft: draft ?? undefined,
         history: history.slice(-12),
         message: trimmedMessage,
       });
@@ -285,7 +286,7 @@ export function AssistantChatbox({
                     Assistant IA
                   </p>
                   <h2 className="mt-1 text-lg font-semibold text-white">
-                    Brouillon avant action
+                    Chat d'action V2
                   </h2>
                 </div>
                 <button
@@ -302,7 +303,11 @@ export function AssistantChatbox({
                   className="min-h-24 w-full resize-none rounded-2xl border border-white/10 bg-white/95 px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:ring-4 focus:ring-emerald-300/20"
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
-                  placeholder="Ex: ajoute mon repas de ce midi..."
+                  placeholder={
+                    draft
+                      ? "Reponds ici pour completer le brouillon..."
+                      : "Ex: ajoute mon repas de ce midi..."
+                  }
                   disabled={isAuthBypassEnabled || isLoading}
                 />
                 <div className="flex flex-wrap gap-2">
@@ -322,7 +327,11 @@ export function AssistantChatbox({
                   disabled={isAuthBypassEnabled || isLoading || message.trim().length < 3}
                   className="w-full rounded-2xl bg-emerald-300 px-4 py-3 text-sm font-bold text-emerald-950 shadow-lg shadow-emerald-950/30 transition hover:bg-lime-200 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {isLoading ? "L'assistant reflechit..." : "Envoyer a l'assistant"}
+                  {isLoading
+                    ? "L'assistant reflechit..."
+                    : draft
+                      ? "Completer le brouillon"
+                      : "Envoyer a l'assistant"}
                 </button>
               </form>
 

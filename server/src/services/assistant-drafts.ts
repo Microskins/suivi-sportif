@@ -334,9 +334,14 @@ function normalizeMealDraft(draft: AssistantDraft, sourceMessage?: string) {
       return normalize(item.name).includes(normalize(parsedItem.name));
     });
 
+    const shouldPreserveExistingName =
+      Boolean(existingItem?.foodId) || Boolean(existingItem?.resolvedName);
+
     return {
       ...(existingItem?.foodId ? { foodId: existingItem.foodId } : {}),
-      name: parsedItem.name,
+      name: shouldPreserveExistingName && existingItem?.name
+        ? existingItem.name
+        : parsedItem.name,
       quantityGrams: parsedItem.quantityGrams,
       ...(existingItem?.resolvedName
         ? { resolvedName: existingItem.resolvedName }
@@ -362,6 +367,124 @@ function normalizeMealDraft(draft: AssistantDraft, sourceMessage?: string) {
         ? `Preparer la modification d'un repas ${mealType} avec ${nextItems.length} element(s).`
         : `Preparer un repas ${mealType} avec ${nextItems.length} element(s).`,
   } satisfies AssistantDraft;
+}
+
+function extractQuantityList(text: string) {
+  return [...text.matchAll(/(\d+(?:[,.]\d+)?)\s*(?:g|gr|grammes?)?\b/gi)]
+    .map((match) => parseNumber(match[1]))
+    .filter((value) => Number.isFinite(value));
+}
+
+function markMealQuantitiesComplete(draft: AssistantDraft): AssistantDraft {
+  const items = getMealDraftItems(draft);
+  const hasAllQuantities =
+    items.length > 0 &&
+    items.every((item) => typeof item.quantityGrams === "number");
+
+  if (!hasAllQuantities) return draft;
+
+  return {
+    ...draft,
+    missingFields: draft.missingFields.filter((field) => field !== "quantities"),
+  };
+}
+
+function completeMealDraftFromMessage(
+  draft: AssistantDraft,
+  message: string,
+): AssistantDraft {
+  const normalizedDraft = normalizeMealDraft(draft, message);
+  const normalizedItems = getMealDraftItems(normalizedDraft);
+  if (
+    normalizedItems.some((item) => typeof item.quantityGrams === "number") ||
+    normalizedItems.length === 0
+  ) {
+    return markMealQuantitiesComplete(normalizedDraft);
+  }
+
+  const quantities = extractQuantityList(message);
+  if (quantities.length === 0) return normalizedDraft;
+
+  return markMealQuantitiesComplete({
+    ...normalizedDraft,
+    payload: {
+      ...normalizedDraft.payload,
+      items: normalizedItems.map((item, index) => ({
+        ...item,
+        ...(quantities[index] === undefined
+          ? {}
+          : { quantityGrams: quantities[index] }),
+      })),
+    },
+  });
+}
+
+function completeFoodDraftFromMessage(
+  draft: AssistantDraft,
+  message: string,
+): AssistantDraft {
+  const normalized = normalize(message);
+  const caloriesKcal = extractMacro(normalized, ["kcal", "calories"]);
+  const proteinGrams = extractMacro(normalized, ["proteines", "protein"]);
+  const carbsGrams = extractMacro(normalized, ["glucides", "carbs"]);
+  const fatGrams = extractMacro(normalized, ["lipides", "fat"]);
+  const fiberGrams = extractMacro(normalized, ["fibres", "fiber"]);
+  const payload = {
+    ...draft.payload,
+    ...(caloriesKcal === null ? {} : { caloriesKcal }),
+    ...(proteinGrams === null ? {} : { proteinGrams }),
+    ...(carbsGrams === null ? {} : { carbsGrams }),
+    ...(fatGrams === null ? {} : { fatGrams }),
+    ...(fiberGrams === null ? {} : { fiberGrams }),
+  };
+  const missingFields = draft.missingFields.filter((field) => {
+    if (field === "caloriesKcal" && typeof payload.caloriesKcal === "number") {
+      return false;
+    }
+    if (field === "proteinGrams" && typeof payload.proteinGrams === "number") {
+      return false;
+    }
+    if (field === "carbsGrams" && typeof payload.carbsGrams === "number") {
+      return false;
+    }
+    if (field === "fatGrams" && typeof payload.fatGrams === "number") {
+      return false;
+    }
+    if (field === "fiberGrams" && typeof payload.fiberGrams === "number") {
+      return false;
+    }
+    return true;
+  });
+
+  return sanitizeAssistantDraft({
+    ...draft,
+    missingFields,
+    payload,
+  });
+}
+
+function withFollowUpReply(draft: AssistantDraft): AssistantDraft {
+  if (draft.action === "create_meal" || draft.action === "update_meal") {
+    return {
+      ...draft,
+      reply:
+        draft.missingFields.length === 0
+          ? `${draft.summary} Tout est pret: tu peux confirmer.`
+          : `${draft.summary} J'ai repris ta reponse et il reste encore: ${draft.missingFields.join(", ")}.`,
+    };
+  }
+
+  if (draft.action === "create_food") {
+    return {
+      ...draft,
+      reply:
+        draft.missingFields.length === 0
+          ? `${draft.summary} Tout est pret: tu peux confirmer la creation.`
+          : `${draft.summary} J'ai complete ce que je pouvais. Il manque encore: ${draft.missingFields.join(", ")}.`,
+    };
+  }
+
+  return draft;
 }
 
 function draftMeal(message: string, normalized: string, now: Date) {
@@ -543,4 +666,18 @@ export function normalizeAssistantDraft(
   sourceMessage?: string,
 ): AssistantDraft {
   return sanitizeAssistantDraft(normalizeMealDraft(draft, sourceMessage));
+}
+
+export function continueAssistantDraft(
+  draft: AssistantDraft,
+  message: string,
+): AssistantDraft {
+  const nextDraft =
+    draft.action === "create_meal" || draft.action === "update_meal"
+      ? completeMealDraftFromMessage(draft, message)
+      : draft.action === "create_food"
+        ? completeFoodDraftFromMessage(draft, message)
+        : draft;
+
+  return withFollowUpReply(normalizeAssistantDraft(nextDraft, message));
 }

@@ -14,30 +14,6 @@ export const dateRangeParamSchema = z
     path: ["end"],
   });
 
-// ============== Assistant Schemas ==============
-export const assistantDraftRequestSchema = z.object({
-  context: z
-    .enum([
-      "dashboard",
-      "profile",
-      "meals",
-      "workouts",
-      "measurements",
-      "goals",
-    ])
-    .optional(),
-  history: z
-    .array(
-      z.object({
-        content: z.string().min(1).max(2000),
-        role: z.enum(["user", "assistant"]),
-      }),
-    )
-    .max(20)
-    .optional(),
-  message: z.string().min(3, "Message requis").max(2000),
-});
-
 export const assistantDraftActionSchema = z.enum([
   "create_exercise",
   "create_food",
@@ -63,6 +39,31 @@ export const assistantDraftResponseSchema = z.object({
   reply: z.string().optional(),
   requiresConfirmation: z.boolean(),
   summary: z.string(),
+});
+
+// ============== Assistant Schemas ==============
+export const assistantDraftRequestSchema = z.object({
+  context: z
+    .enum([
+      "dashboard",
+      "profile",
+      "meals",
+      "workouts",
+      "measurements",
+      "goals",
+    ])
+    .optional(),
+  currentDraft: assistantDraftResponseSchema.optional(),
+  history: z
+    .array(
+      z.object({
+        content: z.string().min(1).max(2000),
+        role: z.enum(["user", "assistant"]),
+      }),
+    )
+    .max(20)
+    .optional(),
+  message: z.string().min(3, "Message requis").max(2000),
 });
 
 // ============== User Schemas ==============

@@ -119,6 +119,7 @@ export async function assistantRoutes(fastify: FastifyInstance) {
                 required: ["content", "role"],
               },
             },
+            currentDraft: assistantDraftSchema,
             message: { type: "string", minLength: 3, maxLength: 2000 },
           },
           required: ["message"],
