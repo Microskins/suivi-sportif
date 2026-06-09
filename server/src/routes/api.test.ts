@@ -2783,6 +2783,8 @@ describe("API", () => {
         name: "Dejeuner",
         notes: "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane.",
       },
+      reply:
+        "Preparer un repas lunch avec 3 element(s). Il me manque encore quelques infos avant de pouvoir te proposer la confirmation.",
       requiresConfirmation: true,
       summary: "Preparer un repas lunch avec 3 element(s).",
     });

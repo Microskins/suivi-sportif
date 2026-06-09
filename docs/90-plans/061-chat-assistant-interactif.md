@@ -30,3 +30,6 @@
 - 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run typecheck -w client"` OK.
 - 2026-06-09: `wsl bash -lc 'cd /mnt/g/suivi-sportif && npm run test -w server -- --run src/routes/api.test.ts -t assistant'` OK, 3 tests passes.
 - 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w client -- --run src/components/dashboard/AssistantChatbox.test.tsx"` OK, 4 tests passes.
+- 2026-06-09: l'action GitHub `27196947770` a echoue car le test complet du brouillon repas attendait encore l'ancien contrat sans `reply`.
+- 2026-06-09: `wsl bash -lc 'cd /mnt/g/suivi-sportif && npm run test -w server -- --run src/routes/api.test.ts -t "confirmable meal draft"'` OK, test cible repasse.
+- 2026-06-09: `wsl bash -lc 'cd /mnt/g/suivi-sportif && npm run test -w server -- --run'` OK, 183 tests passes.
