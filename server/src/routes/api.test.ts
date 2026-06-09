@@ -2818,6 +2818,29 @@ describe("API", () => {
     expect(mocks.foods.createFood).not.toHaveBeenCalled();
   });
 
+  it("creates a confirmable exercise draft from a free text request", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "workouts",
+        message:
+          "Ajoute un exercice hip thrust pour les fessiers, difficulte intermediaire.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_exercise");
+    expect(body.data.missingFields).toEqual([]);
+    expect(body.data.payload.name).toBe("hip thrust");
+    expect(body.data.payload.difficulty).toBe("INTERMEDIATE");
+    expect(body.data.payload.exerciseType).toBe("STRENGTH");
+    expect(body.data.requiresConfirmation).toBe(true);
+    expect(mocks.exercises.createExercise).not.toHaveBeenCalled();
+  });
+
   it("keeps only the food name when nutrition values follow it", async () => {
     const response = await app.inject({
       method: "POST",

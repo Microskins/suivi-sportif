@@ -1,6 +1,7 @@
 import type { AssistantDraftRequestInput } from "../schemas/index.js";
 
 export type AssistantDraftAction =
+  | "create_exercise"
   | "create_food"
   | "create_meal"
   | "update_meal"
@@ -51,6 +52,64 @@ function parseNumber(value: string) {
 
 function extractEmail(message: string) {
   return message.match(/[^\s@]+@[^\s@]+\.[^\s@]+/)?.[0] ?? null;
+}
+
+function cleanExerciseName(value: string) {
+  return value
+    .replace(/\b(avec|pour|description|difficulte|difficulté|type|muscles?)\b.*$/i, "")
+    .replace(/^\s*(un|une|l')\s+/i, "")
+    .trim()
+    .replace(/[.!?:;,]+$/g, "");
+}
+
+function extractExerciseDraftName(message: string) {
+  const markerMatch =
+    message.match(/(?:exercice|exo)\s*:?\s*(.+)$/i) ??
+    message.match(/(?:cree|creer|ajoute|ajouter)\s+(?:un\s+)?(?:exercice|exo)\s+(.+)$/i);
+
+  return cleanExerciseName(markerMatch?.[1] ?? message);
+}
+
+function draftExercise(message: string, normalized: string): AssistantDraft | null {
+  if (!/(exercice|exo)/.test(normalized)) return null;
+  if (/(seance|entrainement|training|workout)/.test(normalized)) return null;
+
+  const name = extractExerciseDraftName(message);
+  const exerciseType = /cardio/.test(normalized)
+    ? "CARDIO"
+    : /(mobilite|mobility|etirement|stretch)/.test(normalized)
+      ? "MOBILITY"
+      : "STRENGTH";
+  const difficulty = /(avance|advanced)/.test(normalized)
+    ? "ADVANCED"
+    : /(intermediaire|intermediate)/.test(normalized)
+      ? "INTERMEDIATE"
+      : "BEGINNER";
+  const bodyPartsMatch = message.match(/(?:muscles?|parties? du corps)\s*:?\s*([^.;!?]+)/i);
+  const bodyParts = bodyPartsMatch?.[1]
+    ?.split(/,|;|\bet\b/i)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  return {
+    action: "create_exercise",
+    confidence: name ? "medium" : "low",
+    missingFields: name ? [] : ["name"],
+    payload: {
+      ...(bodyParts?.length ? { bodyParts } : {}),
+      description: message,
+      difficulty,
+      exerciseType,
+      ...(name ? { name } : {}),
+    },
+    requiresConfirmation: true,
+    reply: name
+      ? `Je peux ajouter l'exercice ${name}. Verifie le brouillon avant confirmation.`
+      : "Je peux ajouter un exercice, mais il me manque son nom.",
+    summary: name
+      ? `Preparer l'exercice ${name}.`
+      : "Preparer un nouvel exercice.",
+  };
 }
 
 function cleanFoodName(value: string) {
@@ -350,6 +409,7 @@ export function createAssistantDraft(
   const normalized = normalize(message);
 
   return (
+    draftExercise(message, normalized) ??
     draftFood(message, normalized) ??
     draftMeal(message, normalized, now) ??
     draftBodyMeasurement(message, normalized, now) ??

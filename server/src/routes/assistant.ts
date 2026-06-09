@@ -30,6 +30,7 @@ const assistantDraftSchema = {
       enum: [
         "create_meal",
         "create_food",
+        "create_exercise",
         "update_meal",
         "delete_meal",
         "create_body_measurement",

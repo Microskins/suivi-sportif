@@ -350,6 +350,7 @@ export type AssistantDraftContext =
   | "goals";
 
 export type AssistantDraftAction =
+  | "create_exercise"
   | "create_food"
   | "create_meal"
   | "update_meal"

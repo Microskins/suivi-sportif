@@ -26,11 +26,13 @@ const examples = [
   "Ajoute ma pesee du jour a 82,4 kg.",
   "Tu peux rajouter mon repas de ce midi ? Riz, poulet.",
   "Cree un aliment fruit rouge avec 45 kcal, proteines 1, glucides 10, lipides 0,5.",
+  "Ajoute un exercice hip thrust pour les fessiers.",
   "Planifie une seance push demain a 18h avec developpe couche et dips.",
 ];
 
 const actionLabels: Record<AssistantDraft["action"], string> = {
   create_body_measurement: "Nouvelle mensuration",
+  create_exercise: "Nouvel exercice",
   create_food: "Nouvel aliment",
   create_meal: "Nouveau repas",
   create_user_goal: "Nouvel objectif",
@@ -127,6 +129,21 @@ function summarizeFood(payload: Record<string, unknown>) {
   };
 }
 
+function summarizeExercise(payload: Record<string, unknown>) {
+  if (typeof payload.name !== "string") return null;
+
+  return {
+    bodyParts: Array.isArray(payload.bodyParts)
+      ? payload.bodyParts.filter((part): part is string => typeof part === "string")
+      : [],
+    difficulty:
+      typeof payload.difficulty === "string" ? payload.difficulty : "BEGINNER",
+    exerciseType:
+      typeof payload.exerciseType === "string" ? payload.exerciseType : "STRENGTH",
+    name: payload.name,
+  };
+}
+
 function draftExplanation(draft: AssistantDraft) {
   if (draft.missingFields.length === 0) {
     return "Tout est pret: tu peux confirmer pour appliquer l'action.";
@@ -138,6 +155,10 @@ function draftExplanation(draft: AssistantDraft) {
 
   if (draft.action === "create_food") {
     return "Je peux creer cet aliment apres confirmation. Verifie surtout les valeurs nutritionnelles avant de valider.";
+  }
+
+  if (draft.action === "create_exercise") {
+    return "Je peux ajouter cet exercice a ta bibliotheque apres confirmation.";
   }
 
   if (draft.action === "create_workout" || draft.action === "update_workout") {
@@ -179,6 +200,7 @@ export function AssistantChatbox({
   const [isLoading, setIsLoading] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const foodSummary = draft ? summarizeFood(draft.payload) : null;
+  const exerciseSummary = draft ? summarizeExercise(draft.payload) : null;
   const mealItemsSummary = draft ? summarizeMealItems(draft.payload) : [];
 
   useEffect(() => {
@@ -440,6 +462,34 @@ export function AssistantChatbox({
                               className="rounded-full bg-emerald-100/10 px-2 py-1 text-emerald-50"
                             >
                               {macro}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {exerciseSummary && (
+                    <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100">
+                        Exercice propose
+                      </p>
+                      <div className="mt-2 rounded-lg bg-white/[0.06] px-3 py-2 text-xs">
+                        <p className="font-semibold text-stone-50">
+                          {exerciseSummary.name}
+                        </p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <span className="rounded-full bg-emerald-100/10 px-2 py-1 text-emerald-50">
+                            {exerciseSummary.exerciseType}
+                          </span>
+                          <span className="rounded-full bg-emerald-100/10 px-2 py-1 text-emerald-50">
+                            {exerciseSummary.difficulty}
+                          </span>
+                          {exerciseSummary.bodyParts.map((part) => (
+                            <span
+                              key={part}
+                              className="rounded-full bg-lime-100/10 px-2 py-1 text-lime-50"
+                            >
+                              {part}
                             </span>
                           ))}
                         </div>

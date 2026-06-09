@@ -4,6 +4,7 @@ import type {
   BodyMeasurementInput,
   BodyMeasurement,
   Exercise,
+  ExerciseInput,
   FoodInput,
   MealInput,
   Meal,
@@ -141,6 +142,26 @@ function toFoodInput(payload: Record<string, unknown>): FoodInput {
       payload.servingUnit === "unit" || payload.servingUnit === "g"
         ? payload.servingUnit
         : "g",
+  };
+}
+
+function toExerciseInput(payload: Record<string, unknown>): ExerciseInput {
+  return {
+    bodyParts: Array.isArray(payload.bodyParts)
+      ? payload.bodyParts.filter(
+          (part): part is string => typeof part === "string" && part.length > 0,
+        )
+      : undefined,
+    description: optionalString(payload.description),
+    difficulty:
+      payload.difficulty === "INTERMEDIATE" || payload.difficulty === "ADVANCED"
+        ? payload.difficulty
+        : "BEGINNER",
+    exerciseType:
+      payload.exerciseType === "CARDIO" || payload.exerciseType === "MOBILITY"
+        ? payload.exerciseType
+        : "STRENGTH",
+    name: requireString(payload.name, "name"),
   };
 }
 
@@ -376,6 +397,12 @@ export function Dashboard({
     if (draft.action === "create_food") {
       await foodsStore.createFood(toFoodInput(draft.payload));
       await foodsStore.fetchFoods();
+      return;
+    }
+
+    if (draft.action === "create_exercise") {
+      await exercisesStore.createExercise(toExerciseInput(draft.payload));
+      await exercisesStore.fetchExercises();
       return;
     }
 
