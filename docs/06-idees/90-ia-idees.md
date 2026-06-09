@@ -1,5 +1,128 @@
 # IA Idees
 
+## 2026-06-09 - Deploiement OVH: preflight de compatibilite
+
+## Contexte
+
+- Le chantier de migration depend du type exact d'offre OVH choisi.
+- Sans verification amont, on peut lancer une migration sur une offre qui ne supporte pas le runtime, la base de donnees ou les operations attendues.
+
+## Proposition
+
+- Ajouter plus tard un preflight de compatibilite qui verifie automatiquement si la cible supporte:
+  - Node.js runtime;
+  - SSH;
+  - base de donnees externe;
+  - Docker ou, a defaut, un lancement sans Docker;
+  - variables d'environnement critiques.
+
+## Impact
+
+- Evite de partir sur une offre incompatible.
+- Clarifie tres vite le type de migration possible.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/064-migration-vm-vers-ovh.md
+
+---
+
+## 2026-06-09 - Deploiement OVH: smoke tests de cutover
+
+## Contexte
+
+- Une migration d'hebergement peut reussir sur le plan technique mais casser sur le routage, le certificat ou un endpoint metier.
+- Il faut un filet de securite simple au moment du basculement DNS.
+
+## Proposition
+
+- Ajouter plus tard une suite de smoke tests post-cutover qui verifie:
+  - la page d'accueil;
+  - `/health`;
+  - la connexion utilisateur;
+  - un appel API protege avec token;
+  - la presence des assets frontend.
+
+## Impact
+
+- Detection rapide d'une regression apres bascule.
+- Moins de temps perdu a distinguer un probleme DNS d'un probleme applicatif.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/064-migration-vm-vers-ovh.md
+
+---
+
+## 2026-06-09 - Deploiement OVH: drill de sauvegarde et restauration
+
+## Contexte
+
+- La migration d'une VM vers un autre hebergement expose souvent les points faibles du backup/restore.
+- Un rollback est rassurant seulement si la restauration a deja ete testee.
+
+## Proposition
+
+- Ajouter plus tard un exercice periodique de restauration de la base:
+  - export de sauvegarde;
+  - restauration dans un conteneur ou un environnement isole;
+  - verification d'un jeu de donnees minimal;
+  - note de temps de reprise.
+
+## Impact
+
+- Rend les migrations et les rollback beaucoup plus fiables.
+- Met en evidence les lacunes de sauvegarde avant l'incident.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/064-migration-vm-vers-ovh.md
+
+---
+
+## 2026-06-09 - Deploiement OVH: garde-fous sur les variables d'environnement
+
+## Contexte
+
+- Le projet depend de plusieurs variables sensibles pour fonctionner correctement en production.
+- Une migration d'hebergement augmente le risque de mismatch entre domaine, API publique et configuration CORS.
+
+## Proposition
+
+- Ajouter plus tard une validation de demarrage ou de CI qui verifie la presence et la coherence de:
+  - `DATABASE_URL`;
+  - `JWT_SECRET`;
+  - `API_PUBLIC_BASE_URL`;
+  - `CORS_ORIGINS`;
+  - `MCP_AUTH_TOKEN`.
+
+## Impact
+
+- Moins d'erreurs de configuration apres migration.
+- Messages d'erreur plus explicites lors d'un deploiement incomplet.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/064-migration-vm-vers-ovh.md
+
+---
+
 ## 2026-06-08 - Assistant IA MCP: diff, raccourcis et trace
 
 ## Contexte
