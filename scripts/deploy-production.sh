@@ -7,6 +7,7 @@ BRANCH_NAME="${BRANCH_NAME:-main}"
 HEALTH_RETRIES="${HEALTH_RETRIES:-30}"
 HEALTH_SLEEP_SECONDS="${HEALTH_SLEEP_SECONDS:-3}"
 DEPLOY_SSH_KEY_PATH="${DEPLOY_SSH_KEY_PATH:-}"
+COMPOSE_BUILD_SERVICES="${COMPOSE_BUILD_SERVICES:-api client mcp}"
 
 log() {
   printf '\n== %s ==\n' "$*"
@@ -91,7 +92,10 @@ else
 fi
 
 log "Build images"
-docker compose build
+for service in $COMPOSE_BUILD_SERVICES; do
+  log "Build image: $service"
+  docker compose build "$service"
+done
 
 log "Apply migrations"
 set +e

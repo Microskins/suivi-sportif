@@ -62,6 +62,7 @@ Index chronologique des chantiers planifies et executes.
 56. [Renumerotation continue des plans](./056-renumerotation-continue-plans.md)
 57. [Synthese poids corporel](./057-synthese-poids-corps.md)
 58. [Assistant IA MCP](./058-chatbox-ia.md)
+59. [Fix memoire build deploy](./059-fix-deploy-build-memory.md)
 
 ## Convention
 
