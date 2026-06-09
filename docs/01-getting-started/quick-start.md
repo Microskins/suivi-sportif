@@ -23,7 +23,7 @@ Option assistant IA avec Anthropic:
 
 ```env
 ANTHROPIC_API_KEY="sk-ant-..."
-ANTHROPIC_MODEL="claude-sonnet-4-5-20250929"
+ANTHROPIC_MODEL="claude-haiku-4-5-20251001"
 ```
 
 Si `ANTHROPIC_API_KEY` est absent, l'assistant garde son brouillon local
