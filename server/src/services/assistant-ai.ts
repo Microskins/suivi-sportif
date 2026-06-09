@@ -39,8 +39,14 @@ const assistantDraftJsonSchema = {
       type: "string",
       enum: [
         "create_meal",
+        "update_meal",
+        "delete_meal",
         "create_body_measurement",
+        "update_body_measurement",
+        "delete_body_measurement",
         "create_workout",
+        "update_workout",
+        "delete_workout",
         "create_user_goal",
         "update_profile",
         "unknown",
@@ -72,16 +78,24 @@ function anthropicApiKey() {
 }
 
 function buildPrompt(input: AssistantDraftRequest, fallbackDraft: AssistantDraft) {
+  const history = input.history
+    ?.slice(-12)
+    .map((item) => `${item.role}: ${item.content}`)
+    .join("\n");
+
   return [
     "Tu transformes une demande utilisateur en brouillon d'action pour une app de suivi sportif.",
     "Tu dois repondre uniquement avec un JSON valide conforme au schema.",
     "Ne cree, modifie ou supprime aucune donnee: ce brouillon sera confirme par l'utilisateur avant application.",
-    "Actions disponibles: create_meal, create_body_measurement, create_workout, create_user_goal, update_profile, unknown.",
+    "Actions disponibles: create_meal, update_meal, delete_meal, create_body_measurement, update_body_measurement, delete_body_measurement, create_workout, update_workout, delete_workout, create_user_goal, update_profile, unknown.",
+    "N'ajoute jamais d'action ou de payload lie au sommeil: ce domaine n'est pas gere par cette application.",
     "Conserve les champs incomplets dans missingFields plutot que d'inventer des identifiants, quantites ou mots de passe.",
+    "Pour toute modification ou suppression, ajoute id dans missingFields si l'identifiant de la donnee cible n'est pas explicitement connu.",
     "Pour les repas, si les aliments sont nommes mais pas lies a des foodIds, ajoute foodIds et quantities dans missingFields.",
     "Pour une seance, ajoute exerciseIds et sets dans missingFields si la demande donne seulement les noms d'exercices.",
     "Pour un changement d'email ou mot de passe, currentPassword doit rester dans missingFields.",
     `Contexte: ${input.context ?? "dashboard"}.`,
+    `Historique recent:\n${history || "Aucun historique."}`,
     `Message utilisateur: ${input.message}`,
     `Brouillon local de secours: ${JSON.stringify(fallbackDraft)}`,
   ].join("\n");

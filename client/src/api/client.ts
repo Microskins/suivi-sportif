@@ -351,8 +351,14 @@ export type AssistantDraftContext =
 
 export type AssistantDraftAction =
   | "create_meal"
+  | "update_meal"
+  | "delete_meal"
   | "create_body_measurement"
+  | "update_body_measurement"
+  | "delete_body_measurement"
   | "create_workout"
+  | "update_workout"
+  | "delete_workout"
   | "create_user_goal"
   | "update_profile"
   | "unknown";
@@ -368,6 +374,10 @@ export type AssistantDraft = {
 
 export type AssistantDraftRequest = {
   context?: AssistantDraftContext;
+  history?: Array<{
+    content: string;
+    role: "user" | "assistant";
+  }>;
   message: string;
 };
 

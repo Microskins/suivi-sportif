@@ -354,6 +354,20 @@ export function Dashboard({
       return;
     }
 
+    if (draft.action === "update_meal") {
+      const id = requireString(draft.payload.id, "id");
+      await mealsStore.updateMeal(id, toMealInput(draft.payload), foodsStore.foods);
+      await mealsStore.fetchMeals();
+      return;
+    }
+
+    if (draft.action === "delete_meal") {
+      const id = requireString(draft.payload.id, "id");
+      await mealsStore.deleteMeal(id);
+      await mealsStore.fetchMeals();
+      return;
+    }
+
     if (draft.action === "create_body_measurement") {
       await bodyMeasurementsStore.createBodyMeasurement(
         toBodyMeasurementInput(draft.payload),
@@ -362,8 +376,39 @@ export function Dashboard({
       return;
     }
 
+    if (draft.action === "update_body_measurement") {
+      const id = requireString(draft.payload.id, "id");
+      await bodyMeasurementsStore.updateBodyMeasurement(
+        id,
+        toBodyMeasurementInput(draft.payload),
+      );
+      await bodyMeasurementsStore.fetchBodyMeasurements();
+      return;
+    }
+
+    if (draft.action === "delete_body_measurement") {
+      const id = requireString(draft.payload.id, "id");
+      await bodyMeasurementsStore.deleteBodyMeasurement(id);
+      await bodyMeasurementsStore.fetchBodyMeasurements();
+      return;
+    }
+
     if (draft.action === "create_workout") {
       await workoutsStore.createWorkout(toWorkoutInput(draft.payload));
+      await workoutsStore.fetchWorkouts();
+      return;
+    }
+
+    if (draft.action === "update_workout") {
+      const id = requireString(draft.payload.id, "id");
+      await workoutsStore.updateWorkout(id, toWorkoutInput(draft.payload));
+      await workoutsStore.fetchWorkouts();
+      return;
+    }
+
+    if (draft.action === "delete_workout") {
+      const id = requireString(draft.payload.id, "id");
+      await workoutsStore.deleteWorkout(id);
       await workoutsStore.fetchWorkouts();
       return;
     }

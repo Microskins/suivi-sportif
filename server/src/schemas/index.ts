@@ -26,13 +26,28 @@ export const assistantDraftRequestSchema = z.object({
       "goals",
     ])
     .optional(),
+  history: z
+    .array(
+      z.object({
+        content: z.string().min(1).max(2000),
+        role: z.enum(["user", "assistant"]),
+      }),
+    )
+    .max(20)
+    .optional(),
   message: z.string().min(3, "Message requis").max(2000),
 });
 
 export const assistantDraftActionSchema = z.enum([
   "create_meal",
+  "update_meal",
+  "delete_meal",
   "create_body_measurement",
+  "update_body_measurement",
+  "delete_body_measurement",
   "create_workout",
+  "update_workout",
+  "delete_workout",
   "create_user_goal",
   "update_profile",
   "unknown",

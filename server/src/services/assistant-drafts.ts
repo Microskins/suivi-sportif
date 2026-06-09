@@ -2,8 +2,14 @@ import type { AssistantDraftRequestInput } from "../schemas/index.js";
 
 export type AssistantDraftAction =
   | "create_meal"
+  | "update_meal"
+  | "delete_meal"
   | "create_body_measurement"
+  | "update_body_measurement"
+  | "delete_body_measurement"
   | "create_workout"
+  | "update_workout"
+  | "delete_workout"
   | "create_user_goal"
   | "update_profile"
   | "unknown";
@@ -59,18 +65,48 @@ function draftProfile(message: string): AssistantDraft | null {
   };
 }
 
+function destructiveDraft(
+  action: AssistantDraftAction,
+  summary: string,
+  message: string,
+): AssistantDraft {
+  return {
+    action,
+    confidence: "low",
+    missingFields: ["id"],
+    payload: { notes: message },
+    requiresConfirmation: true,
+    summary,
+  };
+}
+
 function draftBodyMeasurement(message: string, normalized: string, now: Date) {
   if (!/(pesee|poids|mensuration)/.test(normalized)) return null;
+
+  if (/(supprime|supprimer|efface|retire)/.test(normalized)) {
+    return destructiveDraft(
+      "delete_body_measurement",
+      "Preparer la suppression d'une mensuration.",
+      message,
+    );
+  }
 
   const weightMatch =
     normalized.match(/(\d+(?:[,.]\d+)?)\s*kg/) ??
     normalized.match(/(?:pesee|poids)\D+(\d+(?:[,.]\d+)?)/);
   const weightKg = weightMatch ? parseNumber(weightMatch[1]) : null;
 
+  const isUpdate = /(modifie|modifier|corrige|corriger|remplace)/.test(
+    normalized,
+  );
+
   return {
-    action: "create_body_measurement",
+    action: isUpdate ? "update_body_measurement" : "create_body_measurement",
     confidence: weightKg === null ? "low" : "high",
-    missingFields: weightKg === null ? ["weightKg"] : [],
+    missingFields: [
+      ...(isUpdate ? ["id"] : []),
+      ...(weightKg === null ? ["weightKg"] : []),
+    ],
     payload: {
       date: now.toISOString(),
       ...(weightKg === null ? {} : { weightKg }),
@@ -78,8 +114,12 @@ function draftBodyMeasurement(message: string, normalized: string, now: Date) {
     requiresConfirmation: true,
     summary:
       weightKg === null
-        ? "Preparer une nouvelle mensuration."
-        : `Ajouter une pesee a ${weightKg} kg.`,
+        ? isUpdate
+          ? "Preparer la modification d'une mensuration."
+          : "Preparer une nouvelle mensuration."
+        : isUpdate
+          ? `Modifier une pesee a ${weightKg} kg.`
+          : `Ajouter une pesee a ${weightKg} kg.`,
   } satisfies AssistantDraft;
 }
 
@@ -104,6 +144,14 @@ function draftMeal(message: string, normalized: string, now: Date) {
     return null;
   }
 
+  if (/(supprime|supprimer|efface|retire)/.test(normalized)) {
+    return destructiveDraft(
+      "delete_meal",
+      "Preparer la suppression d'un repas.",
+      message,
+    );
+  }
+
   const isDinner = /(soir|diner)/.test(normalized);
   const isBreakfast = /(matin|petit dej|petit-dej)/.test(normalized);
   const isSnack = /collation/.test(normalized);
@@ -120,11 +168,17 @@ function draftMeal(message: string, normalized: string, now: Date) {
     .split(/,|;|\bet\b/i)
     .map((item) => item.trim().replace(/[.!?]+$/g, ""))
     .filter((item) => item.length > 1);
+  const isUpdate = /(modifie|modifier|corrige|corriger|remplace)/.test(
+    normalized,
+  );
 
   return {
-    action: "create_meal",
+    action: isUpdate ? "update_meal" : "create_meal",
     confidence: itemNames.length > 0 ? "medium" : "low",
-    missingFields: itemNames.length > 0 ? ["foodIds", "quantities"] : ["items"],
+    missingFields: [
+      ...(isUpdate ? ["id"] : []),
+      ...(itemNames.length > 0 ? ["foodIds", "quantities"] : ["items"]),
+    ],
     payload: {
       date,
       items: itemNames.map((name) => ({ name })),
@@ -140,12 +194,22 @@ function draftMeal(message: string, normalized: string, now: Date) {
       notes: message,
     },
     requiresConfirmation: true,
-    summary: `Preparer un repas ${mealType} avec ${itemNames.length} element(s).`,
+    summary: isUpdate
+      ? `Preparer la modification d'un repas ${mealType} avec ${itemNames.length} element(s).`
+      : `Preparer un repas ${mealType} avec ${itemNames.length} element(s).`,
   } satisfies AssistantDraft;
 }
 
 function draftWorkout(message: string, normalized: string, now: Date) {
   if (!/(seance|entrainement|training|workout)/.test(normalized)) return null;
+
+  if (/(supprime|supprimer|efface|retire|annule|annuler)/.test(normalized)) {
+    return destructiveDraft(
+      "delete_workout",
+      "Preparer la suppression d'une seance.",
+      message,
+    );
+  }
 
   const hourMatch = normalized.match(/(\d{1,2})\s*h/);
   const hour = hourMatch ? Number(hourMatch[1]) : 18;
@@ -154,11 +218,14 @@ function draftWorkout(message: string, normalized: string, now: Date) {
     : isoAtHour(now, hour);
   const nameMatch = normalized.match(/\b(push|pull|legs|full body|cardio)\b/);
   const name = nameMatch ? nameMatch[1] : "Seance";
+  const isUpdate = /(modifie|modifier|corrige|corriger|deplace|deplacer)/.test(
+    normalized,
+  );
 
   return {
-    action: "create_workout",
+    action: isUpdate ? "update_workout" : "create_workout",
     confidence: "medium",
-    missingFields: ["exerciseIds", "sets"],
+    missingFields: [...(isUpdate ? ["id"] : []), "exerciseIds", "sets"],
     payload: {
       date,
       duration: 60,
@@ -167,7 +234,9 @@ function draftWorkout(message: string, normalized: string, now: Date) {
       status: new Date(date).getTime() > now.getTime() ? "PLANNED" : "COMPLETED",
     },
     requiresConfirmation: true,
-    summary: `Preparer une seance ${name}.`,
+    summary: isUpdate
+      ? `Preparer la modification d'une seance ${name}.`
+      : `Preparer une seance ${name}.`,
   } satisfies AssistantDraft;
 }
 

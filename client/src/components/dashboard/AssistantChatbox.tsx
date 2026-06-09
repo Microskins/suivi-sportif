@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { api, type AssistantDraft, type AssistantDraftContext } from "../../api/client";
 import type { DashboardResource } from "./ResourceHeader";
 
@@ -26,6 +26,7 @@ const examples = [
   "Ajoute ma pesee du jour a 82,4 kg.",
   "Tu peux rajouter mon repas de ce midi ? Riz, poulet.",
   "Planifie une seance push demain a 18h avec developpe couche et dips.",
+  "Corrige ma derniere pesee a 82,1 kg.",
 ];
 
 const actionLabels: Record<AssistantDraft["action"], string> = {
@@ -33,9 +34,23 @@ const actionLabels: Record<AssistantDraft["action"], string> = {
   create_meal: "Nouveau repas",
   create_user_goal: "Nouvel objectif",
   create_workout: "Nouvelle seance",
+  delete_body_measurement: "Suppression mensuration",
+  delete_meal: "Suppression repas",
+  delete_workout: "Suppression seance",
   unknown: "A preciser",
+  update_body_measurement: "Modification mensuration",
+  update_meal: "Modification repas",
   update_profile: "Modification profil",
+  update_workout: "Modification seance",
 };
+
+type AssistantHistoryItem = {
+  content: string;
+  role: "user" | "assistant";
+};
+
+const HISTORY_STORAGE_KEY = "assistant_chat_history";
+const MAX_HISTORY_ITEMS = 20;
 
 function formatPayload(payload: Record<string, unknown>) {
   return JSON.stringify(payload, null, 2);
@@ -49,10 +64,39 @@ export function AssistantChatbox({
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [draft, setDraft] = useState<AssistantDraft | null>(null);
+  const [history, setHistory] = useState<AssistantHistoryItem[]>(() => {
+    try {
+      const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
+      if (!stored) return [];
+      const parsed = JSON.parse(stored);
+      if (!Array.isArray(parsed)) return [];
+      return parsed
+        .filter(
+          (item): item is AssistantHistoryItem =>
+            item !== null &&
+            typeof item === "object" &&
+            typeof item.content === "string" &&
+            (item.role === "user" || item.role === "assistant"),
+        )
+        .slice(-MAX_HISTORY_ITEMS);
+    } catch {
+      return [];
+    }
+  });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+  }, [history]);
+
+  function appendHistory(items: AssistantHistoryItem[]) {
+    setHistory((current) =>
+      [...current, ...items].slice(-MAX_HISTORY_ITEMS),
+    );
+  }
 
   async function submit(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
@@ -65,9 +109,14 @@ export function AssistantChatbox({
     try {
       const result = await api.createAssistantDraft({
         context: contextByResource[resource],
+        history: history.slice(-12),
         message: trimmedMessage,
       });
       setDraft(result);
+      appendHistory([
+        { content: trimmedMessage, role: "user" },
+        { content: result.summary, role: "assistant" },
+      ]);
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -155,6 +204,39 @@ export function AssistantChatbox({
                   {isLoading ? "Preparation du brouillon..." : "Preparer le brouillon"}
                 </button>
               </form>
+
+              {history.length > 0 && (
+                <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-100">
+                      Historique
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setHistory([]);
+                        setDraft(null);
+                      }}
+                      className="rounded-full border border-white/10 px-2 py-1 text-[0.68rem] text-stone-200 transition hover:bg-white/10"
+                    >
+                      Effacer
+                    </button>
+                  </div>
+                  <div className="mt-3 max-h-36 space-y-2 overflow-auto pr-1">
+                    {history.slice(-6).map((item, index) => (
+                      <p
+                        key={`${item.role}-${index}-${item.content}`}
+                        className="rounded-xl bg-white/[0.06] px-3 py-2 text-xs text-stone-100"
+                      >
+                        <span className="font-semibold text-emerald-100">
+                          {item.role === "user" ? "Toi" : "IA"}:
+                        </span>{" "}
+                        {item.content}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {isAuthBypassEnabled && (
                 <p className="mt-3 rounded-2xl border border-amber-200/30 bg-amber-200/10 px-3 py-2 text-xs text-amber-100">

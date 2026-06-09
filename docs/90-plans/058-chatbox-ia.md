@@ -44,6 +44,9 @@
 - [x] Reutiliser les stores existants pour appliquer ou rafraichir les changements confirmes.
 - [x] Ajouter les tests API, composants et validations utiles.
 - [x] Mettre a jour les notes de verification et les docs si le comportement public evolue.
+- [x] Ajouter un historique de conversation assistant sans donnees sommeil.
+- [x] Etendre les brouillons aux modifications/suppressions repas, seances et mensurations avec confirmation.
+- [x] Valider backend/frontend et documenter le comportement public.
 
 ## Notes de verification
 
@@ -77,4 +80,12 @@
 - 2026-06-09: confirmation des brouillons branchee cote dashboard: application via stores existants pour repas, mensurations, seances, objectifs utilisateur et profil; les brouillons incomplets restent bloques par `missingFields`.
 - 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run typecheck -w client"` OK apres confirmation.
 - 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w client -- --run src/components/dashboard/AssistantChatbox.test.tsx"` OK, 3 tests passes.
+- 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run build -w client"` OK avec avertissement bundle Vite > 500 kB deja non bloquant; `client/dist/` supprime apres verification.
+- 2026-06-09: historique local assistant ajoute dans la chatbox et transmis au backend via `history`; le prompt exclut explicitement toute action sommeil.
+- 2026-06-09: actions assistant etendues aux brouillons `update_*` et `delete_*` pour repas, seances et mensurations; les actions sensibles restent bloquees par `missingFields` tant que `id` manque.
+- 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run typecheck -w server"` OK.
+- 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run typecheck -w client"` OK.
+- 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w server -- --run src/routes/api.test.ts"` OK, 146 tests passes.
+- 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run test -w client -- --run src/components/dashboard/AssistantChatbox.test.tsx"` OK, 4 tests passes.
+- 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run build -w server"` OK; `server/dist/` supprime apres verification.
 - 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && npm run build -w client"` OK avec avertissement bundle Vite > 500 kB deja non bloquant; `client/dist/` supprime apres verification.

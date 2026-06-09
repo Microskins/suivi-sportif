@@ -29,8 +29,14 @@ const assistantDraftSchema = {
       type: "string",
       enum: [
         "create_meal",
+        "update_meal",
+        "delete_meal",
         "create_body_measurement",
+        "update_body_measurement",
+        "delete_body_measurement",
         "create_workout",
+        "update_workout",
+        "delete_workout",
         "create_user_goal",
         "update_profile",
         "unknown",
@@ -97,6 +103,18 @@ export async function assistantRoutes(fastify: FastifyInstance) {
                 "measurements",
                 "goals",
               ],
+            },
+            history: {
+              type: "array",
+              maxItems: 20,
+              items: {
+                type: "object",
+                properties: {
+                  content: { type: "string", minLength: 1, maxLength: 2000 },
+                  role: { type: "string", enum: ["user", "assistant"] },
+                },
+                required: ["content", "role"],
+              },
             },
             message: { type: "string", minLength: 3, maxLength: 2000 },
           },

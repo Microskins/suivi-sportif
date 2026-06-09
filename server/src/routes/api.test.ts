@@ -2845,6 +2845,36 @@ describe("API", () => {
     expect(mocks.bodyMeasurements.createBodyMeasurement).not.toHaveBeenCalled();
   });
 
+  it("creates a guarded update draft from a body measurement correction", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "measurements",
+        history: [
+          {
+            content: "Ajoute ma pesee du jour a 82,4 kg.",
+            role: "user",
+          },
+          {
+            content: "Ajouter une pesee a 82.4 kg.",
+            role: "assistant",
+          },
+        ],
+        message: "Corrige plutot la pesee a 82,1 kg.",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("update_body_measurement");
+    expect(body.data.payload.weightKg).toBe(82.1);
+    expect(body.data.missingFields).toEqual(["id"]);
+    expect(body.data.requiresConfirmation).toBe(true);
+    expect(mocks.bodyMeasurements.updateBodyMeasurement).not.toHaveBeenCalled();
+  });
+
   it("creates a confirmable workout draft from a planning request", async () => {
     const response = await app.inject({
       method: "POST",
@@ -2945,6 +2975,12 @@ describe("API", () => {
       headers: authHeaders(),
       payload: {
         context: "meals",
+        history: [
+          {
+            content: "Ajoute mon repas de ce midi",
+            role: "user",
+          },
+        ],
         message: "Ajoute mon dejeuner riz poulet",
       },
     });
@@ -2962,6 +2998,9 @@ describe("API", () => {
         }),
         method: "POST",
       }),
+    );
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).messages[0].content).toContain(
+      "Historique recent:\nuser: Ajoute mon repas de ce midi",
     );
     expect(mocks.meals.createMeal).not.toHaveBeenCalled();
   });

@@ -162,11 +162,11 @@ export async function enrichAssistantDraft(
   options: AssistantOrchestratorOptions,
 ) {
   try {
-    if (draft.action === "create_meal") {
+    if (draft.action === "create_meal" || draft.action === "update_meal") {
       return enrichMealDraft(draft, options);
     }
 
-    if (draft.action === "create_workout") {
+    if (draft.action === "create_workout" || draft.action === "update_workout") {
       return enrichWorkoutDraft(draft);
     }
 

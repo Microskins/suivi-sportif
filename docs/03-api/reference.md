@@ -158,17 +158,36 @@ exercices nommes a des `exerciseId` existants. Les champs qui demandent encore
 un choix utilisateur, comme les quantites ou les series, restent dans
 `missingFields`.
 
+Actions possibles: `create_meal`, `update_meal`, `delete_meal`,
+`create_body_measurement`, `update_body_measurement`,
+`delete_body_measurement`, `create_workout`, `update_workout`,
+`delete_workout`, `create_user_goal`, `update_profile`, `unknown`.
+Les actions de modification ou suppression doivent fournir un `id`; sinon le
+brouillon reste bloque via `missingFields`. Le sommeil n'est pas gere par cet
+assistant.
+
 Body:
 
 ```json
 {
   "context": "meals",
+  "history": [
+    {
+      "role": "user",
+      "content": "Ajoute ma pesee du jour a 82,4 kg."
+    },
+    {
+      "role": "assistant",
+      "content": "Ajouter une pesee a 82.4 kg."
+    }
+  ],
   "message": "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane."
 }
 ```
 
 `context` est optionnel et vaut `dashboard`, `profile`, `meals`, `workouts`,
-`measurements` ou `goals`.
+`measurements` ou `goals`. `history` est optionnel, limite a 20 messages, et
+sert uniquement a donner le fil recent de conversation a l'assistant.
 
 Reponse `200`:
 

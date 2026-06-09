@@ -17,6 +17,7 @@ vi.mock("../../api/client", () => ({
 describe("AssistantChatbox", () => {
   afterEach(() => {
     cleanup();
+    localStorage.clear();
     vi.clearAllMocks();
   });
 
@@ -53,10 +54,13 @@ describe("AssistantChatbox", () => {
     await waitFor(() => {
       expect(api.createAssistantDraft).toHaveBeenCalledWith({
         context: "meals",
+        history: [],
         message: "Ajoute mon repas de ce midi avec riz",
       });
     });
-    expect(screen.getByText("Preparer un repas lunch.")).toBeInTheDocument();
+    expect(screen.getAllByText("Preparer un repas lunch.").length).toBeGreaterThan(
+      0,
+    );
     expect(screen.getByText(/A completer: quantities/)).toBeInTheDocument();
     expect(
       screen.getByRole("button", {
@@ -64,6 +68,76 @@ describe("AssistantChatbox", () => {
       }),
     ).toBeDisabled();
     expect(onApplyDraft).not.toHaveBeenCalled();
+  });
+
+  it("sends recent chat history with the next assistant request", async () => {
+    const onApplyDraft = vi.fn();
+    vi.mocked(api.createAssistantDraft)
+      .mockResolvedValueOnce({
+        action: "create_body_measurement",
+        confidence: "high",
+        missingFields: [],
+        payload: {
+          date: "2026-06-09T08:00:00.000Z",
+          weightKg: 82.4,
+        },
+        requiresConfirmation: true,
+        summary: "Ajouter une pesee a 82.4 kg.",
+      })
+      .mockResolvedValueOnce({
+        action: "update_body_measurement",
+        confidence: "low",
+        missingFields: ["id"],
+        payload: {
+          date: "2026-06-09T08:00:00.000Z",
+          weightKg: 82.1,
+        },
+        requiresConfirmation: true,
+        summary: "Modifier une pesee a 82.1 kg.",
+      });
+
+    render(
+      <AssistantChatbox
+        isAuthBypassEnabled={false}
+        onApplyDraft={onApplyDraft}
+        resource="measurements"
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /assistant/i }));
+    fireEvent.change(screen.getByPlaceholderText(/ajoute mon repas/i), {
+      target: { value: "Ajoute ma pesee du jour a 82,4 kg" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Preparer le brouillon" }),
+    );
+
+    await screen.findAllByText("Ajouter une pesee a 82.4 kg.");
+
+    fireEvent.change(screen.getByPlaceholderText(/ajoute mon repas/i), {
+      target: { value: "Corrige plutot a 82,1 kg" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Preparer le brouillon" }),
+    );
+
+    await waitFor(() => {
+      expect(api.createAssistantDraft).toHaveBeenLastCalledWith({
+        context: "measurements",
+        history: [
+          {
+            content: "Ajoute ma pesee du jour a 82,4 kg",
+            role: "user",
+          },
+          {
+            content: "Ajouter une pesee a 82.4 kg.",
+            role: "assistant",
+          },
+        ],
+        message: "Corrige plutot a 82,1 kg",
+      });
+    });
+    expect(screen.getByText(/Historique/i)).toBeInTheDocument();
   });
 
   it("applies a complete assistant draft after confirmation", async () => {
@@ -97,7 +171,7 @@ describe("AssistantChatbox", () => {
       screen.getByRole("button", { name: "Preparer le brouillon" }),
     );
 
-    await screen.findByText("Ajouter une pesee a 82.4 kg.");
+    await screen.findAllByText("Ajouter une pesee a 82.4 kg.");
     fireEvent.click(
       screen.getByRole("button", { name: "Confirmer et appliquer" }),
     );
