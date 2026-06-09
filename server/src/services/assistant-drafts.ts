@@ -52,23 +52,30 @@ function extractEmail(message: string) {
   return message.match(/[^\s@]+@[^\s@]+\.[^\s@]+/)?.[0] ?? null;
 }
 
+function cleanFoodName(value: string) {
+  return value
+    .replace(
+      /\b(avec|calories?|kcal|proteines?|protéines?|glucides?|lipides?|fibres?)\b.*$/i,
+      "",
+    )
+    .replace(/^\s*(un|une|l')\s+/i, "")
+    .trim()
+    .replace(/[.!?:;,]+$/g, "");
+}
+
 function extractFoodName(message: string, normalized: string) {
   const markerMatch =
     message.match(/(?:aliment|nourriture|food)\s*:?\s*(.+)$/i) ??
     message.match(/(?:cree|creer|ajoute|ajouter)\s+(?:un\s+)?(?:aliment|food)\s+(.+)$/i);
 
   const value = markerMatch?.[1] ?? message;
-  return value
-    .replace(/\b(avec|calories|proteines|glucides|lipides|fibres)\b.*$/i, "")
-    .replace(/^\s*(un|une|l')\s+/i, "")
-    .trim()
-    .replace(/[.!?]+$/g, "") || (/(avoine|riz|poulet|banane)/.test(normalized) ? message : "");
+  return cleanFoodName(value) || (/(avoine|riz|poulet|banane)/.test(normalized) ? message : "");
 }
 
 function extractMacro(normalized: string, labels: string[]) {
   for (const label of labels) {
     const beforeLabelMatch = normalized.match(
-      new RegExp(`(\\d+(?:[,.]\\d+)?)\\s*(?:g\\s*)?${label}`),
+      new RegExp(`(\\d+(?:[,.]\\d+)?)\\s*(?:g\\s+)?${label}`),
     );
     if (beforeLabelMatch) return parseNumber(beforeLabelMatch[1]);
 
@@ -356,4 +363,22 @@ export function createAssistantDraft(
       summary: "Demande non reconnue pour le moment.",
     }
   );
+}
+
+export function sanitizeAssistantDraft(draft: AssistantDraft): AssistantDraft {
+  if (draft.action !== "create_food" || typeof draft.payload.name !== "string") {
+    return draft;
+  }
+
+  const name = cleanFoodName(draft.payload.name);
+  if (!name || name === draft.payload.name) return draft;
+
+  return {
+    ...draft,
+    payload: {
+      ...draft.payload,
+      name,
+    },
+    summary: `Preparer l'aliment ${name}.`,
+  };
 }

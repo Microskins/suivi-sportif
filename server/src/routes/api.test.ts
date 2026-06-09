@@ -2817,6 +2817,77 @@ describe("API", () => {
     expect(mocks.foods.createFood).not.toHaveBeenCalled();
   });
 
+  it("keeps only the food name when nutrition values follow it", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        message:
+          "Tu peux rajouter l'aliment fruit rouge ?Calories : 45 kcalProteines : 1 gGlucides : 10 gLipides : 0,5 g",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.action).toBe("create_food");
+    expect(body.data.payload.name).toBe("fruit rouge");
+    expect(body.data.payload.caloriesKcal).toBe(45);
+    expect(body.data.payload.proteinGrams).toBe(1);
+    expect(body.data.payload.carbsGrams).toBe(10);
+    expect(body.data.payload.fatGrams).toBe(0.5);
+    expect(mocks.foods.createFood).not.toHaveBeenCalled();
+  });
+
+  it("sanitizes an Anthropic food draft name before returning it", async () => {
+    const providerDraft = {
+      action: "create_food",
+      confidence: "high",
+      missingFields: [],
+      payload: {
+        caloriesKcal: 45,
+        carbsGrams: 10,
+        fatGrams: 0.5,
+        name: "fruit rouge Calories : 45 kcal Proteines : 1 g",
+        proteinGrams: 1,
+        servingUnit: "g",
+      },
+      requiresConfirmation: true,
+      summary: "Brouillon IA pret a confirmer.",
+    };
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue({
+        content: [
+          {
+            text: JSON.stringify(providerDraft),
+            type: "text",
+          },
+        ],
+        stop_reason: "end_turn",
+      }),
+      ok: true,
+    });
+    vi.stubEnv("ANTHROPIC_API_KEY", "test-key");
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/assistant/draft",
+      headers: authHeaders(),
+      payload: {
+        context: "meals",
+        message: "Ajoute l'aliment fruit rouge",
+      },
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(200);
+    expect(body.data.payload.name).toBe("fruit rouge");
+    expect(body.data.summary).toBe("Preparer l'aliment fruit rouge.");
+    expect(mocks.foods.createFood).not.toHaveBeenCalled();
+  });
+
   it("enriches a meal draft with known food ids before confirmation", async () => {
     mocks.foods.getFoods.mockResolvedValue([
       { ...food, id: FOOD_ID, name: "Riz" },
