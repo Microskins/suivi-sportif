@@ -46,6 +46,7 @@ const assistantDraftSchema = {
     confidence: { type: "string", enum: ["low", "medium", "high"] },
     missingFields: { type: "array", items: { type: "string" } },
     payload: { type: "object", additionalProperties: true },
+    reply: { type: "string" },
     requiresConfirmation: { type: "boolean" },
     summary: { type: "string" },
   },

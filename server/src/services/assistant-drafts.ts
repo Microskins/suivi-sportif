@@ -19,6 +19,7 @@ export type AssistantDraft = {
   action: AssistantDraftAction;
   confidence: "low" | "medium" | "high";
   requiresConfirmation: boolean;
+  reply?: string;
   summary: string;
   payload: Record<string, unknown>;
   missingFields: string[];

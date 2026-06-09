@@ -64,6 +64,7 @@ Index chronologique des chantiers planifies et executes.
 58. [Assistant IA MCP](./058-chatbox-ia.md)
 59. [Fix memoire build deploy](./059-fix-deploy-build-memory.md)
 60. [Assistant creation aliments](./060-assistant-creation-aliments.md)
+61. [Chat assistant interactif](./061-chat-assistant-interactif.md)
 
 ## Convention
 

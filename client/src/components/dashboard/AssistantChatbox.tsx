@@ -25,8 +25,8 @@ const contextByResource: Record<DashboardResource, AssistantDraftContext> = {
 const examples = [
   "Ajoute ma pesee du jour a 82,4 kg.",
   "Tu peux rajouter mon repas de ce midi ? Riz, poulet.",
+  "Cree un aliment fruit rouge avec 45 kcal, proteines 1, glucides 10, lipides 0,5.",
   "Planifie une seance push demain a 18h avec developpe couche et dips.",
-  "Corrige ma derniere pesee a 82,1 kg.",
 ];
 
 const actionLabels: Record<AssistantDraft["action"], string> = {
@@ -55,6 +55,10 @@ const MAX_HISTORY_ITEMS = 20;
 
 function formatPayload(payload: Record<string, unknown>) {
   return JSON.stringify(payload, null, 2);
+}
+
+function assistantReply(draft: AssistantDraft) {
+  return draft.reply?.trim() || draft.summary;
 }
 
 function missingFieldLabel(field: string) {
@@ -204,7 +208,7 @@ export function AssistantChatbox({
       setDraft(result);
       appendHistory([
         { content: trimmedMessage, role: "user" },
-        { content: result.summary, role: "assistant" },
+        { content: assistantReply(result), role: "assistant" },
       ]);
     } catch (requestError) {
       setError(
@@ -226,6 +230,12 @@ export function AssistantChatbox({
     try {
       await onApplyDraft(draft);
       setSuccess("Action appliquee. Les donnees ont ete rafraichies.");
+      appendHistory([
+        {
+          content: "C'est ajoute. J'ai rafraichi les donnees.",
+          role: "assistant",
+        },
+      ]);
       setDraft(null);
       setMessage("");
     } catch (applyError) {
@@ -290,7 +300,7 @@ export function AssistantChatbox({
                   disabled={isAuthBypassEnabled || isLoading || message.trim().length < 3}
                   className="w-full rounded-2xl bg-emerald-300 px-4 py-3 text-sm font-bold text-emerald-950 shadow-lg shadow-emerald-950/30 transition hover:bg-lime-200 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {isLoading ? "Preparation du brouillon..." : "Preparer le brouillon"}
+                  {isLoading ? "L'assistant reflechit..." : "Envoyer a l'assistant"}
                 </button>
               </form>
 
@@ -355,7 +365,13 @@ export function AssistantChatbox({
                       Confiance {draft.confidence}
                     </span>
                   </div>
-                  <p className="mt-3 text-sm text-stone-100">{draft.summary}</p>
+                  <p className="mt-3 rounded-xl bg-emerald-100/10 px-3 py-2 text-sm leading-relaxed text-stone-50">
+                    {assistantReply(draft)}
+                  </p>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100">
+                    Brouillon propose
+                  </p>
+                  <p className="mt-2 text-sm text-stone-100">{draft.summary}</p>
                   <p className="mt-2 rounded-xl border border-amber-200/20 bg-amber-200/10 px-3 py-2 text-xs leading-relaxed text-amber-50">
                     {draftExplanation(draft)}
                   </p>

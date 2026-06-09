@@ -57,6 +57,7 @@ const assistantDraftJsonSchema = {
     confidence: { type: "string", enum: ["low", "medium", "high"] },
     missingFields: { type: "array", items: { type: "string" } },
     payload: { type: "object", additionalProperties: true },
+    reply: { type: "string" },
     requiresConfirmation: { type: "boolean" },
     summary: { type: "string" },
   },
@@ -88,6 +89,7 @@ function buildPrompt(input: AssistantDraftRequest, fallbackDraft: AssistantDraft
   return [
     "Tu transformes une demande utilisateur en brouillon d'action pour une app de suivi sportif.",
     "Tu dois repondre uniquement avec un JSON valide conforme au schema.",
+    "Le champ reply doit etre une reponse naturelle, courte et utile pour l'utilisateur, comme dans un chat.",
     "Ne cree, modifie ou supprime aucune donnee: ce brouillon sera confirme par l'utilisateur avant application.",
     "Actions disponibles: create_food, create_meal, update_meal, delete_meal, create_body_measurement, update_body_measurement, delete_body_measurement, create_workout, update_workout, delete_workout, create_user_goal, update_profile, unknown.",
     "N'ajoute jamais d'action ou de payload lie au sommeil: ce domaine n'est pas gere par cette application.",
@@ -160,15 +162,41 @@ async function createAnthropicDraft(
     JSON.parse(textBlock.data.text),
   );
 
-  return parsedDraft.success ? sanitizeAssistantDraft(parsedDraft.data) : null;
+  return parsedDraft.success
+    ? withAssistantReply(sanitizeAssistantDraft(parsedDraft.data))
+    : null;
+}
+
+function withAssistantReply(draft: AssistantDraft): AssistantDraft {
+  if (draft.reply?.trim()) return draft;
+
+  if (draft.action === "unknown") {
+    return {
+      ...draft,
+      reply:
+        "Je n'ai pas encore assez compris la demande. Peux-tu me donner un peu plus de details ?",
+    };
+  }
+
+  if (draft.missingFields.length > 0) {
+    return {
+      ...draft,
+      reply: `${draft.summary} Il me manque encore quelques infos avant de pouvoir te proposer la confirmation.`,
+    };
+  }
+
+  return {
+    ...draft,
+    reply: `${draft.summary} Verifie le brouillon, puis confirme si tout est bon.`,
+  };
 }
 
 export async function createAssistantDraftWithAi(
   input: AssistantDraftRequest,
   options: AssistantAiOptions = {},
 ): Promise<AssistantDraft> {
-  const fallbackDraft = sanitizeAssistantDraft(
-    createAssistantDraft(input, options.now),
+  const fallbackDraft = withAssistantReply(
+    sanitizeAssistantDraft(createAssistantDraft(input, options.now)),
   );
 
   try {

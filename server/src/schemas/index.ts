@@ -59,6 +59,7 @@ export const assistantDraftResponseSchema = z.object({
   confidence: z.enum(["low", "medium", "high"]),
   missingFields: z.array(z.string()),
   payload: z.record(z.unknown()),
+  reply: z.string().optional(),
   requiresConfirmation: z.boolean(),
   summary: z.string(),
 });

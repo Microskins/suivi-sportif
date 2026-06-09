@@ -2804,6 +2804,7 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(200);
     expect(body.data.action).toBe("create_food");
+    expect(body.data.reply).toContain("Verifie le brouillon");
     expect(body.data.missingFields).toEqual([]);
     expect(body.data.payload).toEqual({
       caloriesKcal: 370,
@@ -3050,6 +3051,7 @@ describe("API", () => {
         mealType: "lunch",
         name: "Dejeuner IA",
       },
+      reply: "J'ai prepare le repas, il manque les quantites.",
       requiresConfirmation: true,
       summary: "Brouillon IA pret a confirmer.",
     };

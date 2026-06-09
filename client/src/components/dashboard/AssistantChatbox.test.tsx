@@ -31,6 +31,7 @@ describe("AssistantChatbox", () => {
         items: [{ foodId: "food-1", name: "Riz", resolvedName: "Riz" }],
         mealType: "lunch",
       },
+      reply: "J'ai prepare ton repas, il manque juste la quantite.",
       requiresConfirmation: true,
       summary: "Preparer un repas lunch.",
     });
@@ -48,7 +49,7 @@ describe("AssistantChatbox", () => {
       target: { value: "Ajoute mon repas de ce midi avec riz" },
     });
     fireEvent.click(
-      screen.getByRole("button", { name: "Preparer le brouillon" }),
+      screen.getByRole("button", { name: "Envoyer a l'assistant" }),
     );
 
     await waitFor(() => {
@@ -61,6 +62,10 @@ describe("AssistantChatbox", () => {
     expect(screen.getAllByText("Preparer un repas lunch.").length).toBeGreaterThan(
       0,
     );
+    expect(
+      screen.getAllByText("J'ai prepare ton repas, il manque juste la quantite.")
+        .length,
+    ).toBeGreaterThan(0);
     expect(
       screen.getByText("quantites en grammes ou portions"),
     ).toBeInTheDocument();
@@ -83,6 +88,7 @@ describe("AssistantChatbox", () => {
           date: "2026-06-09T08:00:00.000Z",
           weightKg: 82.4,
         },
+        reply: "C'est note, j'ai prepare la pesee.",
         requiresConfirmation: true,
         summary: "Ajouter une pesee a 82.4 kg.",
       })
@@ -94,6 +100,7 @@ describe("AssistantChatbox", () => {
           date: "2026-06-09T08:00:00.000Z",
           weightKg: 82.1,
         },
+        reply: "Je prepare la correction de ta pesee.",
         requiresConfirmation: true,
         summary: "Modifier une pesee a 82.1 kg.",
       });
@@ -111,16 +118,16 @@ describe("AssistantChatbox", () => {
       target: { value: "Ajoute ma pesee du jour a 82,4 kg" },
     });
     fireEvent.click(
-      screen.getByRole("button", { name: "Preparer le brouillon" }),
+      screen.getByRole("button", { name: "Envoyer a l'assistant" }),
     );
 
-    await screen.findAllByText("Ajouter une pesee a 82.4 kg.");
+    await screen.findAllByText("C'est note, j'ai prepare la pesee.");
 
     fireEvent.change(screen.getByPlaceholderText(/ajoute mon repas/i), {
       target: { value: "Corrige plutot a 82,1 kg" },
     });
     fireEvent.click(
-      screen.getByRole("button", { name: "Preparer le brouillon" }),
+      screen.getByRole("button", { name: "Envoyer a l'assistant" }),
     );
 
     await waitFor(() => {
@@ -132,7 +139,7 @@ describe("AssistantChatbox", () => {
             role: "user",
           },
           {
-            content: "Ajouter une pesee a 82.4 kg.",
+            content: "C'est note, j'ai prepare la pesee.",
             role: "assistant",
           },
         ],
@@ -152,6 +159,7 @@ describe("AssistantChatbox", () => {
         date: "2026-06-09T08:00:00.000Z",
         weightKg: 82.4,
       },
+      reply: "J'ai prepare ta pesee, tu peux confirmer.",
       requiresConfirmation: true,
       summary: "Ajouter une pesee a 82.4 kg.",
     };
@@ -170,10 +178,10 @@ describe("AssistantChatbox", () => {
       target: { value: "Ajoute ma pesee du jour a 82,4 kg" },
     });
     fireEvent.click(
-      screen.getByRole("button", { name: "Preparer le brouillon" }),
+      screen.getByRole("button", { name: "Envoyer a l'assistant" }),
     );
 
-    await screen.findAllByText("Ajouter une pesee a 82.4 kg.");
+    await screen.findAllByText("J'ai prepare ta pesee, tu peux confirmer.");
     fireEvent.click(
       screen.getByRole("button", { name: "Confirmer et appliquer" }),
     );
@@ -184,6 +192,7 @@ describe("AssistantChatbox", () => {
     expect(
       screen.getByText("Action appliquee. Les donnees ont ete rafraichies."),
     ).toBeInTheDocument();
+    expect(screen.getByText("C'est ajoute. J'ai rafraichi les donnees.")).toBeInTheDocument();
   });
 
   it("disables the assistant when auth bypass is enabled", () => {

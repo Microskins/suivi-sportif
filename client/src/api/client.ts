@@ -369,6 +369,7 @@ export type AssistantDraft = {
   confidence: "low" | "medium" | "high";
   missingFields: string[];
   payload: Record<string, unknown>;
+  reply?: string;
   requiresConfirmation: boolean;
   summary: string;
 };
