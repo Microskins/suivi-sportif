@@ -27,3 +27,5 @@
 - 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && docker compose config --quiet"` OK avec avertissement local attendu `MCP_AUTH_TOKEN` absent.
 - 2026-06-09: `ANTHROPIC_API_KEY` et `ANTHROPIC_MODEL` ajoutes a l'environnement du service Docker `api`.
 - 2026-06-09: `wsl bash -lc "cd /mnt/g/suivi-sportif && docker compose config --quiet"` OK apres ajout Anthropic, avec avertissement local attendu `MCP_AUTH_TOKEN` absent.
+- 2026-06-17: le run GitHub Actions `27679981077` a echoue dans `Deploy locally` avec `ENOSPC: no space left on device` pendant `npm run build -w client` dans Docker.
+- 2026-06-17: ajout d'un `docker system prune -af` juste avant les builds pour liberer l'espace disque inutilise sur le runner self-hosted.

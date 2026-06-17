@@ -92,6 +92,9 @@ else
 fi
 
 log "Build images"
+log "Prune unused Docker data"
+docker system prune -af
+
 for service in $COMPOSE_BUILD_SERVICES; do
   log "Build image: $service"
   docker compose build "$service"
