@@ -41,7 +41,7 @@ const MISSING_FIELD_LABELS: Record<string, string> = {
   fatGrams: "les lipides",
   fiberGrams: "les fibres",
   foodIds: "les aliments",
-  id: "l'element cible",
+  id: "l'élément à modifier",
   intent: "la demande",
   items: "les aliments",
   name: "le nom",
@@ -500,7 +500,9 @@ function withFollowUpReply(draft: AssistantDraft): AssistantDraft {
       reply:
         draft.missingFields.length === 0
           ? "C'est bon, je m'en occupe."
-          : `Il me manque encore ${humanizeMissingFields(draft.missingFields)}.`,
+          : `Je peux continuer, mais il me manque encore ${humanizeMissingFields(
+              draft.missingFields,
+            )}.`,
     };
   }
 
@@ -510,7 +512,9 @@ function withFollowUpReply(draft: AssistantDraft): AssistantDraft {
       reply:
         draft.missingFields.length === 0
           ? "C'est bon, je m'en occupe."
-          : `Il me manque encore ${humanizeMissingFields(draft.missingFields)}.`,
+          : `Je peux continuer, mais il me manque encore ${humanizeMissingFields(
+              draft.missingFields,
+            )}.`,
     };
   }
 

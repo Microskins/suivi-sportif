@@ -69,6 +69,7 @@ Index chronologique des chantiers planifies et executes.
 63. [Assistant chat V2](./063-assistant-chat-v2.md)
 64. [Assistant IA contextuel](./064-assistant-ia-contextuel.md)
 65. [Chat box IA sans brouillons](./065-chatbox-ia-sans-brouillons.md)
+66. [Chat box classique sans mutations](./066-chatbox-classique-sans-mutations.md)
 
 ## Convention
 

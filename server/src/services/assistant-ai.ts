@@ -192,7 +192,9 @@ function withAssistantReply(draft: AssistantDraft): AssistantDraft {
   if (draft.missingFields.length > 0) {
     return {
       ...draft,
-      reply: `Il me manque encore ${humanizeMissingFields(draft.missingFields)} avant d'avancer.`,
+      reply: `Je peux t'aider à continuer, mais il me manque encore ${humanizeMissingFields(
+        draft.missingFields,
+      )}.`,
     };
   }
 

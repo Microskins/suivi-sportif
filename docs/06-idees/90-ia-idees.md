@@ -1,5 +1,126 @@
 # IA Idees
 
+## 2026-06-17 - Assistant chat classique: liens directs vers le bon ecran
+
+## Contexte
+
+- Quand le chat devient purement conversationnel, l'utilisateur qui veut vraiment modifier une donnee doit basculer vite vers le bon formulaire.
+- Une redirection manuelle casse vite le rythme de conversation.
+
+## Proposition
+
+- Ajouter plus tard des boutons ou liens contextuels vers les ecrans utiles apres une demande d'ecriture:
+  - mensurations;
+  - repas;
+  - exercices;
+  - seances;
+  - objectifs.
+
+## Impact
+
+- Moins de friction apres une demande que le chat ne peut pas appliquer.
+- L'utilisateur garde le fil de la conversation tout en retrouvant rapidement le bon point d'entree.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/066-chatbox-classique-sans-mutations.md
+
+---
+
+## 2026-06-17 - Assistant chat classique: chips de questions lecture seule
+
+## Contexte
+
+- Une chat box fonctionne mieux quand elle propose aussi des questions pretes a l'emploi.
+- Les demandes de lecture seule sont frequentes: bilan, tendance, explication, navigation.
+
+## Proposition
+
+- Ajouter plus tard des chips orientees question plutot qu'action:
+  - "Resume ma semaine";
+  - "Que vois-tu sur mon poids ?";
+  - "Comment interpretes-tu ma seance ?";
+  - "Que dois-je surveiller ?";
+  - "Ouvre la bonne page".
+
+## Impact
+
+- Plus de reponses utiles en un clic.
+- Moins de tentation de reposer des demandes d'ecriture dans le chat.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/066-chatbox-classique-sans-mutations.md
+
+---
+
+## 2026-06-17 - Assistant chat classique: remise a zero rapide de la conversation
+
+## Contexte
+
+- Un chat purement conversationnel garde souvent du contexte local qui n'a plus de sens apres quelques echanges.
+- L'utilisateur peut vouloir repartir proprement sans perdre l'interface.
+
+## Proposition
+
+- Ajouter plus tard un bouton de reinitialisation du fil local:
+  - effacer l'historique visible;
+  - garder ou non une copie locale selon le choix;
+  - repartie avec les suggestions de depart.
+
+## Impact
+
+- Rend le chat plus lisible.
+- Evite que la conversation ne s'encombre de vieux echanges sans rapport.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/066-chatbox-classique-sans-mutations.md
+
+---
+
+## 2026-06-17 - Assistant chat classique: reponses de redirection plus actionnables
+
+## Contexte
+
+- Quand le chat refuse d'ecrire des donnees, la reponse reste plus utile si elle explique la prochaine etape.
+- L'utilisateur ne doit pas avoir l'impression d'un simple "non".
+
+## Proposition
+
+- Ajouter plus tard un modele de reponse qui:
+  - reconnait la demande;
+  - indique que le chat est en lecture seule;
+  - propose directement le bon ecran ou la bonne action suivante;
+  - resume ce qu'il faut saisir si l'utilisateur y va.
+
+## Impact
+
+- Meilleure UX lors des demandes de mutation.
+- Moins de frustration face a la limitation volontaire du chat.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/066-chatbox-classique-sans-mutations.md
+
+---
+
 ## 2026-06-17 - Assistant IA chat: streaming et presence
 
 ## Contexte
