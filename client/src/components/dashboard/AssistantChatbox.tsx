@@ -27,11 +27,11 @@ const contextByResource: Record<DashboardResource, AssistantDraftContext> = {
 };
 
 const examples = [
-  "Ajoute ma pesee du jour a 82,4 kg.",
-  "Tu peux ajouter mon repas de ce midi ? Riz, poulet.",
   "Resume ma semaine d'entrainement.",
-  "Ajoute un exercice hip thrust pour les fessiers.",
-  "Planifie une seance push demain a 18h.",
+  "Que dois-je surveiller sur mon poids ?",
+  "Comment interpretes-tu ma derniere seance ?",
+  "Aide-moi a comprendre ma nutrition du jour.",
+  "Quelle est la prochaine chose utile a faire ?",
 ];
 
 type AssistantHistoryItem = {
@@ -44,10 +44,6 @@ const MAX_HISTORY_ITEMS = 20;
 
 function assistantReply(draft: AssistantDraft) {
   return draft.reply?.trim() || draft.summary;
-}
-
-function shouldAutoApplyDraft(draft: AssistantDraft) {
-  return draft.action !== "unknown" && draft.missingFields.length === 0;
 }
 
 function ChatBubble({
@@ -103,7 +99,6 @@ export function AssistantChatbox({
 }: AssistantChatboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [draft, setDraft] = useState<AssistantDraft | null>(null);
   const [history, setHistory] = useState<AssistantHistoryItem[]>(() => {
     try {
       const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
@@ -124,9 +119,7 @@ export function AssistantChatbox({
     }
   });
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isApplying, setIsApplying] = useState(false);
   const transcriptEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -138,7 +131,7 @@ export function AssistantChatbox({
       block: "end",
       behavior: "smooth",
     });
-  }, [history, isLoading, isApplying, isOpen]);
+  }, [history, isLoading, isOpen]);
 
   function appendHistory(items: AssistantHistoryItem[]) {
     setHistory((current) =>
@@ -149,68 +142,37 @@ export function AssistantChatbox({
   async function submit(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
     const trimmedMessage = message.trim();
-    if (
-      !trimmedMessage ||
-      isAuthBypassEnabled ||
-      isLoading ||
-      isApplying
-    ) {
+    if (!trimmedMessage || isAuthBypassEnabled || isLoading) {
       return;
     }
 
     setIsLoading(true);
     setError(null);
-    setSuccess(null);
 
     try {
       const result = await api.createAssistantDraft({
         context: contextByResource[resource],
-        currentDraft: draft ?? undefined,
         history: history.slice(-12),
         message: trimmedMessage,
       });
 
-      setDraft(result);
       appendHistory([
         { content: trimmedMessage, role: "user" },
         { content: assistantReply(result), role: "assistant" },
       ]);
       setMessage("");
-
-      if (shouldAutoApplyDraft(result) && !isAuthBypassEnabled) {
-        setIsApplying(true);
-        try {
-          await onApplyDraft(result);
-          setSuccess("C'est fait. J'ai rafraichi les donnees.");
-          appendHistory([
-            {
-              content: "C'est fait. J'ai rafraichi les donnees.",
-              role: "assistant",
-            },
-          ]);
-          setDraft(null);
-        } catch (applyError) {
-          setError(
-            applyError instanceof Error
-              ? applyError.message
-              : "Impossible d'appliquer la demande de l'assistant",
-          );
-        } finally {
-          setIsApplying(false);
-        }
-      }
     } catch (requestError) {
       setError(
         requestError instanceof Error
           ? requestError.message
-          : "Impossible de preparer la reponse de l'assistant",
+          : "Impossible de charger la reponse de l'assistant",
       );
     } finally {
       setIsLoading(false);
     }
   }
 
-  const isBusy = isLoading || isApplying;
+  const isBusy = isLoading;
 
   return (
     <aside className="fixed bottom-4 right-4 z-40 w-[calc(100vw-2rem)] max-w-md md:bottom-6 md:right-6">
@@ -228,7 +190,8 @@ export function AssistantChatbox({
                   Chat box
                 </h2>
                 <p className="mt-1 text-xs leading-relaxed text-stone-300">
-                  Pose une question ou dicte une action. Je reponds dans le fil.
+                  Pose une question, demande un resume ou une explication. Je
+                  reponds dans le fil.
                 </p>
               </div>
               <button
@@ -246,9 +209,8 @@ export function AssistantChatbox({
               <>
                 <div className="rounded-[1.75rem] border border-dashed border-white/10 bg-white/[0.04] p-4">
                   <p className="text-sm leading-relaxed text-stone-200">
-                    Demande-moi d'ajouter une pesee, un repas, une seance ou un
-                    objectif. Je peux aussi resumer ta semaine ou t'aider a
-                    retrouver une info rapidement.
+                    Je peux resumer ta semaine, t'aider a comprendre tes
+                    donnees ou t'orienter vers la bonne section.
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {examples.map((example) => (
@@ -300,7 +262,7 @@ export function AssistantChatbox({
                 className="min-h-24 w-full resize-none rounded-[1.5rem] border border-white/10 bg-white/95 px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:ring-4 focus:ring-emerald-300/20 disabled:cursor-not-allowed disabled:bg-stone-100"
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
-                placeholder="Ex: ajoute ma pesee du jour a 82,4 kg..."
+                placeholder="Ex: que peux-tu me dire sur ma semaine ?"
                 disabled={isAuthBypassEnabled || isBusy}
               />
               <button
@@ -312,7 +274,7 @@ export function AssistantChatbox({
                 }
                 className="flex w-full items-center justify-center rounded-[1.25rem] bg-emerald-300 px-4 py-3 text-sm font-bold text-emerald-950 shadow-lg shadow-emerald-950/30 transition hover:bg-lime-200 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isBusy ? "Je m'en occupe..." : "Envoyer"}
+                {isBusy ? "Je reflechis..." : "Envoyer"}
               </button>
             </form>
 
@@ -326,12 +288,6 @@ export function AssistantChatbox({
             {error && (
               <p className="mt-3 rounded-[1.25rem] border border-red-300/30 bg-red-300/10 px-3 py-2 text-xs text-red-100">
                 {error}
-              </p>
-            )}
-
-            {success && (
-              <p className="mt-3 rounded-[1.25rem] border border-emerald-200/30 bg-emerald-200/10 px-3 py-2 text-xs text-emerald-100">
-                {success}
               </p>
             )}
           </div>

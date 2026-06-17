@@ -19,14 +19,14 @@ CORS_ORIGINS="http://localhost:5173,http://127.0.0.1:5173"
 NODE_ENV="development"
 ```
 
-Option assistant IA avec Anthropic:
+Option assistant chat IA avec Anthropic:
 
 ```env
 ANTHROPIC_API_KEY="sk-ant-..."
 ANTHROPIC_MODEL="claude-haiku-4-5-20251001"
 ```
 
-Si `ANTHROPIC_API_KEY` est absent, l'assistant garde une reponse locale
+Si `ANTHROPIC_API_KEY` est absent, le chat garde une reponse locale
 deterministe.
 
 Option frontend sans API locale, dans `client/.env`:

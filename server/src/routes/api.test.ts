@@ -2784,7 +2784,7 @@ describe("API", () => {
         notes: "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane.",
       },
       reply:
-        "Il me manque encore les aliments et les quantites avant d'avancer.",
+        "Je peux continuer, mais il me manque encore les aliments et les quantites.",
       requiresConfirmation: true,
       summary: "Preparer un repas lunch avec 3 element(s).",
     });
@@ -3111,6 +3111,9 @@ describe("API", () => {
     expect(body.data.payload.weightKg).toBe(82.1);
     expect(body.data.missingFields).toEqual(["id"]);
     expect(body.data.requiresConfirmation).toBe(true);
+    expect(body.data.reply).toBe(
+      "Je peux t'aider à continuer, mais il me manque encore l'élément à modifier.",
+    );
     expect(mocks.bodyMeasurements.updateBodyMeasurement).not.toHaveBeenCalled();
   });
 

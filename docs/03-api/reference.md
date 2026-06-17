@@ -144,32 +144,18 @@ Toutes les routes sont protegees et utilisent l'utilisateur du JWT.
 ### `POST /api/assistant/draft`
 
 Endpoint de chat IA protege. Il interprete une demande libre pour la chat box
-et renvoie une reponse conversationnelle. L'interface ne montre pas de carte
-technique; quand le contexte est assez complet, elle peut appliquer
-automatiquement l'action interne correspondante.
+et renvoie une reponse conversationnelle. L'interface ne montre plus de
+brouillon technique et n'applique plus de mutation automatique depuis le chat.
 
-Si `ANTHROPIC_API_KEY` est configure cote serveur, l'assistant utilise Claude
-pour produire la reponse et le contexte structure. Si la cle est absente, si
-l'appel echoue ou si la sortie ne respecte pas le contrat attendu, l'API
-retombe sur une reponse locale deterministe.
+Si `ANTHROPIC_API_KEY` est configure cote serveur, le chat utilise Claude pour
+produire la reponse. Si la cle est absente, si l'appel echoue ou si la sortie
+ne respecte pas le contrat attendu, l'API retombe sur une reponse locale
+deterministe.
 
-Avant de repondre, l'orchestrateur peut enrichir le contexte en lecture seule:
-les aliments nommes peuvent etre relies a des `foodId` existants et les
-exercices nommes a des `exerciseId` existants. Les champs qui demandent encore
-un choix utilisateur, comme les quantites ou les series, restent dans
-`missingFields`.
-
-Actions possibles: `create_food`, `create_meal`, `update_meal`, `delete_meal`,
-`create_body_measurement`, `update_body_measurement`,
-`delete_body_measurement`, `create_workout`, `update_workout`,
-`delete_workout`, `create_user_goal`, `update_profile`, `unknown`.
-Les actions de modification ou suppression doivent fournir un `id`; sinon le
-contexte reste incomplet via `missingFields`. Le sommeil n'est pas gere par cet
-assistant.
-
-Pour un repas, les aliments doivent deja exister dans la base et les quantites
-doivent etre claires. Si un aliment manque, la chat box peut d'abord preparer
-une creation d'aliment, puis le repas peut etre redemande.
+Le contexte et l'historique recent servent uniquement a rendre la reponse plus
+pertinente. Quand l'utilisateur demande d'ajouter, modifier ou supprimer une
+donnee, le chat repond comme un assistant conversationnel classique et
+redirige vers l'ecran adapte au lieu d'ecrire dans la base.
 
 Body:
 
@@ -179,56 +165,36 @@ Body:
   "history": [
     {
       "role": "user",
-      "content": "Ajoute ma pesee du jour a 82,4 kg."
+      "content": "Tu peux m'aider à comprendre ma semaine ?"
     },
     {
       "role": "assistant",
-      "content": "Je m'occupe de cette pesee."
+      "content": "Bien sur, je peux te faire un resume clair."
     }
   ],
-  "message": "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane."
+  "message": "Que dois-je regarder dans ma nutrition ?"
 }
 ```
 
 `context` est optionnel et vaut `dashboard`, `profile`, `meals`, `workouts`,
 `measurements` ou `goals`. `history` est optionnel, limite a 20 messages, et
-sert uniquement a donner le fil recent de conversation a l'assistant.
+sert uniquement a donner le fil recent de conversation au chat.
 
 Reponse `200`:
 
 ```json
 {
   "data": {
-    "action": "create_meal",
+    "action": "unknown",
     "confidence": "medium",
-    "missingFields": ["foodIds", "quantities"],
-    "payload": {
-      "name": "Dejeuner",
-      "mealType": "lunch",
-      "items": [{ "name": "Riz" }, { "name": "poulet" }]
-    },
-    "requiresConfirmation": true,
-    "reply": "Je reconnais 2 aliments, il me manque encore les quantites.",
-    "summary": "Preparer un repas lunch avec 2 element(s)."
+    "missingFields": [],
+    "payload": {},
+    "requiresConfirmation": false,
+    "reply": "Je peux t'aider à lire ta semaine et à retrouver la bonne page.",
+    "summary": "Je peux t'aider à lire ta semaine et à retrouver la bonne page."
   }
 }
 ```
-
-Actions possibles:
-
-- `create_food`
-- `create_meal`
-- `update_meal`
-- `delete_meal`
-- `create_body_measurement`
-- `update_body_measurement`
-- `delete_body_measurement`
-- `create_workout`
-- `update_workout`
-- `delete_workout`
-- `create_user_goal`
-- `update_profile`
-- `unknown`
 
 ## Exercises
 

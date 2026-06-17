@@ -27,19 +27,16 @@ describe("AssistantChatbox", () => {
     vi.resetAllMocks();
   });
 
-  it("auto-applies a complete assistant response", async () => {
+  it("affiche une reponse conversationnelle sans appliquer de mutation", async () => {
     const onApplyDraft = vi.fn().mockResolvedValue(undefined);
     const draft = {
-      action: "create_body_measurement" as const,
-      confidence: "high" as const,
+      action: "unknown" as const,
+      confidence: "medium" as const,
       missingFields: [],
-      payload: {
-        date: "2026-06-09T08:00:00.000Z",
-        weightKg: 82.4,
-      },
-      reply: "C'est note, j'ajoute ta pesee.",
-      requiresConfirmation: true,
-      summary: "Ajouter une pesee a 82.4 kg.",
+      payload: {},
+      reply: "Je peux t'aider à lire ton poids et à préparer la prochaine étape.",
+      requiresConfirmation: false,
+      summary: "Je peux t'aider à lire ton poids et à préparer la prochaine étape.",
     };
     vi.mocked(api.createAssistantDraft).mockResolvedValue(draft);
 
@@ -52,114 +49,93 @@ describe("AssistantChatbox", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: /chat ia/i }));
-    fireEvent.change(screen.getByPlaceholderText(/ajoute ma pesee/i), {
-      target: { value: "Ajoute ma pesee du jour a 82,4 kg" },
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "Modifie mon poids, je fais 103 kg maintenant" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Envoyer" }));
 
     await waitFor(() => {
       expect(api.createAssistantDraft).toHaveBeenCalledWith({
         context: "measurements",
-        currentDraft: undefined,
         history: [],
-        message: "Ajoute ma pesee du jour a 82,4 kg",
+        message: "Modifie mon poids, je fais 103 kg maintenant",
       });
     });
-    await waitFor(() => {
-      expect(onApplyDraft).toHaveBeenCalledWith(draft);
-    });
+    expect(onApplyDraft).not.toHaveBeenCalled();
     expect(
-      screen.getByText("C'est note, j'ajoute ta pesee."),
+      screen.getByText(
+        "Je peux t'aider à lire ton poids et à préparer la prochaine étape.",
+      ),
     ).toBeInTheDocument();
-    expect(
-      screen.getAllByText("C'est fait. J'ai rafraichi les donnees.").length,
-    ).toBeGreaterThanOrEqual(2);
+    expect(screen.queryByText(/brouillon|confirmer/i)).not.toBeInTheDocument();
   });
 
-  it("reuses the current conversation when the assistant still needs more info", async () => {
+  it("reutilise l'historique conversationnel a chaque message", async () => {
     const onApplyDraft = vi.fn().mockResolvedValue(undefined);
-    const firstDraft = {
-      action: "create_meal" as const,
-      confidence: "medium" as const,
-      missingFields: ["quantities"],
-      payload: {
-        items: [{ foodId: "food-1", name: "Riz", resolvedName: "Riz" }],
-        mealType: "lunch",
-      },
-      reply: "Il me manque encore les quantites.",
-      requiresConfirmation: true,
-      summary: "Preparer un repas lunch.",
-    };
-    const secondDraft = {
-      ...firstDraft,
-      missingFields: [],
-      payload: {
-        ...firstDraft.payload,
-        items: [
-          {
-            foodId: "food-1",
-            name: "Riz",
-            quantityGrams: 150,
-            resolvedName: "Riz",
-          },
-        ],
-      },
-      reply: "C'est bon, je m'en occupe.",
-    };
     vi.mocked(api.createAssistantDraft)
-      .mockResolvedValueOnce(firstDraft)
-      .mockResolvedValueOnce(secondDraft);
+      .mockResolvedValueOnce({
+        action: "unknown",
+        confidence: "medium",
+        missingFields: [],
+        payload: {},
+        reply: "Je peux t'aider à faire le point sur ta semaine.",
+        requiresConfirmation: false,
+        summary: "Je peux t'aider à faire le point sur ta semaine.",
+      })
+      .mockResolvedValueOnce({
+        action: "unknown",
+        confidence: "medium",
+        missingFields: [],
+        payload: {},
+        reply: "Tu peux regarder la tendance des derniers jours.",
+        requiresConfirmation: false,
+        summary: "Tu peux regarder la tendance des derniers jours.",
+      });
 
     render(
       <AssistantChatbox
         isAuthBypassEnabled={false}
         onApplyDraft={onApplyDraft}
-        resource="meals"
+        resource="dashboard"
       />,
     );
 
     fireEvent.click(screen.getByRole("button", { name: /chat ia/i }));
-    fireEvent.change(screen.getByPlaceholderText(/ajoute ma pesee/i), {
-      target: { value: "Ajoute mon repas avec riz" },
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "Resume ma semaine" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Envoyer" }));
 
-    await screen.findByText("Il me manque encore les quantites.");
+    await screen.findByText("Je peux t'aider à faire le point sur ta semaine.");
 
     fireEvent.change(screen.getByRole("textbox"), {
-      target: { value: "150g" },
+      target: { value: "Et ma tendance ?" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Envoyer" }));
 
     await waitFor(() => {
       expect(api.createAssistantDraft).toHaveBeenLastCalledWith({
-        context: "meals",
-        currentDraft: firstDraft,
+        context: "dashboard",
         history: [
           {
-            content: "Ajoute mon repas avec riz",
+            content: "Resume ma semaine",
             role: "user",
           },
           {
-            content: "Il me manque encore les quantites.",
+            content: "Je peux t'aider à faire le point sur ta semaine.",
             role: "assistant",
           },
         ],
-        message: "150g",
+        message: "Et ma tendance ?",
       });
     });
-    await waitFor(() => {
-      expect(onApplyDraft).toHaveBeenCalledWith(secondDraft);
-    });
     expect(
-      screen.getByText("C'est bon, je m'en occupe."),
+      screen.getByText("Tu peux regarder la tendance des derniers jours."),
     ).toBeInTheDocument();
-    expect(
-      screen.getAllByText("C'est fait. J'ai rafraichi les donnees.").length,
-    ).toBeGreaterThanOrEqual(2);
+    expect(onApplyDraft).not.toHaveBeenCalled();
   });
 
-  it("disables the assistant when auth bypass is enabled", () => {
+  it("desactive le chat lorsque le bypass auth est actif", () => {
     render(
       <AssistantChatbox
         isAuthBypassEnabled

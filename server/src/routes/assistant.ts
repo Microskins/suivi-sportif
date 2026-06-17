@@ -91,7 +91,7 @@ export async function assistantRoutes(fastify: FastifyInstance) {
     {
       schema: {
         tags: ["assistant"],
-        summary: "Create assistant action draft",
+        summary: "Create assistant chat reply",
         security: [{ bearerAuth: [] }],
         body: {
           type: "object",
