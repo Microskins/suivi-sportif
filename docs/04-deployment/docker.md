@@ -12,7 +12,7 @@ le meme point d'entree Nginx.
   - `CORS_ORIGINS` (ex: `https://suivi-sportif.fr,https://www.suivi-sportif.fr`)
   - `API_PUBLIC_BASE_URL` (recommande: `https://suivi-sportif.fr`)
   - `MCP_AUTH_TOKEN`
-  - `ANTHROPIC_API_KEY` (optionnel, active les brouillons IA de l'assistant)
+  - `ANTHROPIC_API_KEY` (optionnel, active les reponses IA du chat assistant)
 - Nginx installe sur la machine hote.
 
 ## 2. Construire et demarrer les conteneurs

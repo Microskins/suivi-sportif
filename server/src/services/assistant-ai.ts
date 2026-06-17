@@ -7,6 +7,7 @@ import {
   AssistantDraft,
   continueAssistantDraft,
   createAssistantDraft,
+  humanizeMissingFields,
   normalizeAssistantDraft,
 } from "./assistant-drafts.js";
 
@@ -82,6 +83,10 @@ function anthropicApiKey() {
   return process.env.ANTHROPIC_API_KEY?.trim() || null;
 }
 
+function hasDraftVocabulary(value: string) {
+  return /\bbrouillon(?:s)?\b|\bconfirmation\b|\bconfirmer\b/i.test(value);
+}
+
 function buildPrompt(input: AssistantDraftRequest, fallbackDraft: AssistantDraft) {
   const history = input.history
     ?.slice(-12)
@@ -89,16 +94,17 @@ function buildPrompt(input: AssistantDraftRequest, fallbackDraft: AssistantDraft
     .join("\n");
 
   return [
-    "Tu transformes une demande utilisateur en brouillon d'action pour une app de suivi sportif.",
+    "Tu transformes une demande utilisateur en action interne pour une app de suivi sportif.",
     "Tu dois repondre uniquement avec un JSON valide conforme au schema.",
     "Le champ reply doit etre une reponse naturelle, courte et utile pour l'utilisateur, comme dans un chat.",
-    "Ne cree, modifie ou supprime aucune donnee: ce brouillon sera confirme par l'utilisateur avant application.",
+    "Ne parle jamais de brouillon, de confirmation ou de JSON dans reply.",
+    "Ne cree, modifie ou supprime aucune donnee: cette action sera appliquee apres validation du flux interne.",
     "Actions disponibles: create_exercise, create_food, create_meal, update_meal, delete_meal, create_body_measurement, update_body_measurement, delete_body_measurement, create_workout, update_workout, delete_workout, create_user_goal, update_profile, unknown.",
     "N'ajoute jamais d'action ou de payload lie au sommeil: ce domaine n'est pas gere par cette application.",
     "Conserve les champs incomplets dans missingFields plutot que d'inventer des identifiants, quantites ou mots de passe.",
     "Pour toute modification ou suppression, ajoute id dans missingFields si l'identifiant de la donnee cible n'est pas explicitement connu.",
     "Pour les repas, si les aliments sont nommes mais pas lies a des foodIds, ajoute foodIds et quantities dans missingFields.",
-    "Si un brouillon courant est fourni, interprete le message comme une reponse pour completer ce brouillon avant de creer une nouvelle action.",
+    "Si un contexte courant est fourni, interprete le message comme une reponse pour completer cette action avant d'en creer une nouvelle.",
     "Pour creer un aliment, action create_food avec name, caloriesKcal, proteinGrams, carbsGrams, fatGrams, fiberGrams optionnel, servingUnit. Si une valeur nutritionnelle manque, garde son champ dans missingFields.",
     "Pour creer un exercice, action create_exercise avec name, description optionnelle, difficulty BEGINNER/INTERMEDIATE/ADVANCED, exerciseType STRENGTH/CARDIO/MOBILITY et bodyParts optionnel.",
     "Pour une seance, ajoute exerciseIds et sets dans missingFields si la demande donne seulement les noms d'exercices.",
@@ -106,8 +112,8 @@ function buildPrompt(input: AssistantDraftRequest, fallbackDraft: AssistantDraft
     `Contexte: ${input.context ?? "dashboard"}.`,
     `Historique recent:\n${history || "Aucun historique."}`,
     `Message utilisateur: ${input.message}`,
-    `Brouillon courant: ${JSON.stringify(input.currentDraft ?? null)}`,
-    `Brouillon local de secours: ${JSON.stringify(fallbackDraft)}`,
+    `Contexte courant: ${JSON.stringify(input.currentDraft ?? null)}`,
+    `Contexte local de secours: ${JSON.stringify(fallbackDraft)}`,
   ].join("\n");
 }
 
@@ -173,7 +179,7 @@ async function createAnthropicDraft(
 }
 
 function withAssistantReply(draft: AssistantDraft): AssistantDraft {
-  if (draft.reply?.trim()) return draft;
+  if (draft.reply?.trim() && !hasDraftVocabulary(draft.reply)) return draft;
 
   if (draft.action === "unknown") {
     return {
@@ -186,13 +192,13 @@ function withAssistantReply(draft: AssistantDraft): AssistantDraft {
   if (draft.missingFields.length > 0) {
     return {
       ...draft,
-      reply: `${draft.summary} Il me manque encore quelques infos avant de pouvoir te proposer la confirmation.`,
+      reply: `Il me manque encore ${humanizeMissingFields(draft.missingFields)} avant d'avancer.`,
     };
   }
 
   return {
     ...draft,
-    reply: `${draft.summary} Verifie le brouillon, puis confirme si tout est bon.`,
+    reply: "C'est bon, je m'en occupe.",
   };
 }
 
@@ -212,7 +218,7 @@ export async function createAssistantDraftWithAi(
       (await createAnthropicDraft(input, fallbackDraft, options)) ?? fallbackDraft
     );
   } catch {
-    options.logger?.warn("Assistant AI draft validation failed");
+    options.logger?.warn("Assistant AI response validation failed");
     return fallbackDraft;
   }
 }

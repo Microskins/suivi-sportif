@@ -67,7 +67,8 @@ Index chronologique des chantiers planifies et executes.
 61. [Chat assistant interactif](./061-chat-assistant-interactif.md)
 62. [Assistant creation exercices](./062-assistant-creation-exercices.md)
 63. [Assistant chat V2](./063-assistant-chat-v2.md)
-64. [Migration VM vers OVH](./064-migration-vm-vers-ovh.md)
+64. [Assistant IA contextuel](./064-assistant-ia-contextuel.md)
+65. [Chat box IA sans brouillons](./065-chatbox-ia-sans-brouillons.md)
 
 ## Convention
 

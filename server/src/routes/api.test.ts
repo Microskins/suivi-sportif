@@ -2784,7 +2784,7 @@ describe("API", () => {
         notes: "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane.",
       },
       reply:
-        "Preparer un repas lunch avec 3 element(s). Il me manque encore quelques infos avant de pouvoir te proposer la confirmation.",
+        "Il me manque encore les aliments et les quantites avant d'avancer.",
       requiresConfirmation: true,
       summary: "Preparer un repas lunch avec 3 element(s).",
     });
@@ -2806,7 +2806,7 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(200);
     expect(body.data.action).toBe("create_food");
-    expect(body.data.reply).toContain("Verifie le brouillon");
+    expect(body.data.reply).toBe("C'est bon, je m'en occupe.");
     expect(body.data.missingFields).toEqual([]);
     expect(body.data.payload).toEqual({
       caloriesKcal: 370,
@@ -2984,7 +2984,7 @@ describe("API", () => {
       "Preparer un repas breakfast avec 3 element(s). 3 aliment(s) reconnu(s).",
     );
     expect(body.data.reply).toBe(
-      "Preparer un repas breakfast avec 3 element(s). 3 aliment(s) reconnu(s). Tout est pret: tu peux confirmer pour l'ajouter.",
+      "J'ai reconnu les elements. Je m'en occupe.",
     );
     expect(body.data.payload.items).toEqual([
       {
@@ -3045,7 +3045,7 @@ describe("API", () => {
     expect(response.statusCode).toBe(200);
     expect(body.data.missingFields).toEqual([]);
     expect(body.data.reply).toBe(
-      "Preparer un repas lunch avec 2 element(s). Tout est pret: tu peux confirmer.",
+      "C'est bon, je m'en occupe.",
     );
     expect(body.data.payload.items).toEqual([
       {
