@@ -1,6 +1,12 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { api } from "../../api/client";
@@ -21,148 +27,7 @@ describe("AssistantChatbox", () => {
     vi.resetAllMocks();
   });
 
-  it("creates and displays an assistant draft", async () => {
-    const onApplyDraft = vi.fn();
-    vi.mocked(api.createAssistantDraft).mockResolvedValue({
-      action: "create_meal",
-      confidence: "high",
-      missingFields: ["quantities"],
-      payload: {
-        items: [{ foodId: "food-1", name: "Riz", resolvedName: "Riz" }],
-        mealType: "lunch",
-      },
-      reply: "J'ai prepare ton repas, il manque juste la quantite.",
-      requiresConfirmation: true,
-      summary: "Preparer un repas lunch.",
-    });
-
-    render(
-      <AssistantChatbox
-        isAuthBypassEnabled={false}
-        onApplyDraft={onApplyDraft}
-        resource="meals"
-      />,
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: /assistant/i }));
-    fireEvent.change(screen.getByPlaceholderText(/ajoute mon repas/i), {
-      target: { value: "Ajoute mon repas de ce midi avec riz" },
-    });
-    fireEvent.click(
-      screen.getByRole("button", { name: "Envoyer a l'assistant" }),
-    );
-
-    await waitFor(() => {
-      expect(api.createAssistantDraft).toHaveBeenCalledWith({
-        context: "meals",
-        currentDraft: undefined,
-        history: [],
-        message: "Ajoute mon repas de ce midi avec riz",
-      });
-    });
-    expect(screen.getAllByText("Preparer un repas lunch.").length).toBeGreaterThan(
-      0,
-    );
-    expect(
-      screen.getAllByText("J'ai prepare ton repas, il manque juste la quantite.")
-        .length,
-    ).toBeGreaterThan(0);
-    expect(
-      screen.getByText("quantites en grammes ou portions"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", {
-        name: "Complete les champs manquants avant confirmation",
-      }),
-    ).toBeDisabled();
-    expect(onApplyDraft).not.toHaveBeenCalled();
-  });
-
-  it("sends recent chat history with the next assistant request", async () => {
-    const onApplyDraft = vi.fn();
-    vi.mocked(api.createAssistantDraft)
-      .mockResolvedValueOnce({
-        action: "create_body_measurement",
-        confidence: "high",
-        missingFields: [],
-        payload: {
-          date: "2026-06-09T08:00:00.000Z",
-          weightKg: 82.4,
-        },
-        reply: "C'est note, j'ai prepare la pesee.",
-        requiresConfirmation: true,
-        summary: "Ajouter une pesee a 82.4 kg.",
-      })
-      .mockResolvedValueOnce({
-        action: "update_body_measurement",
-        confidence: "low",
-        missingFields: ["id"],
-        payload: {
-          date: "2026-06-09T08:00:00.000Z",
-          weightKg: 82.1,
-        },
-        reply: "Je prepare la correction de ta pesee.",
-        requiresConfirmation: true,
-        summary: "Modifier une pesee a 82.1 kg.",
-      });
-
-    render(
-      <AssistantChatbox
-        isAuthBypassEnabled={false}
-        onApplyDraft={onApplyDraft}
-        resource="measurements"
-      />,
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: /assistant/i }));
-    fireEvent.change(screen.getByPlaceholderText(/ajoute mon repas/i), {
-      target: { value: "Ajoute ma pesee du jour a 82,4 kg" },
-    });
-    fireEvent.click(
-      screen.getByRole("button", { name: "Envoyer a l'assistant" }),
-    );
-
-    await screen.findAllByText("C'est note, j'ai prepare la pesee.");
-
-    fireEvent.change(screen.getByRole("textbox"), {
-      target: { value: "Corrige plutot a 82,1 kg" },
-    });
-    fireEvent.click(
-      screen.getByRole("button", { name: "Completer le brouillon" }),
-    );
-
-    await waitFor(() => {
-      expect(api.createAssistantDraft).toHaveBeenLastCalledWith({
-        context: "measurements",
-        currentDraft: {
-          action: "create_body_measurement",
-          confidence: "high",
-          missingFields: [],
-          payload: {
-            date: "2026-06-09T08:00:00.000Z",
-            weightKg: 82.4,
-          },
-          reply: "C'est note, j'ai prepare la pesee.",
-          requiresConfirmation: true,
-          summary: "Ajouter une pesee a 82.4 kg.",
-        },
-        history: [
-          {
-            content: "Ajoute ma pesee du jour a 82,4 kg",
-            role: "user",
-          },
-          {
-            content: "C'est note, j'ai prepare la pesee.",
-            role: "assistant",
-          },
-        ],
-        message: "Corrige plutot a 82,1 kg",
-      });
-    });
-    expect(screen.getByText(/Historique/i)).toBeInTheDocument();
-  });
-
-  it("applies a complete assistant draft after confirmation", async () => {
+  it("auto-applies a complete assistant response", async () => {
     const onApplyDraft = vi.fn().mockResolvedValue(undefined);
     const draft = {
       action: "create_body_measurement" as const,
@@ -172,7 +37,7 @@ describe("AssistantChatbox", () => {
         date: "2026-06-09T08:00:00.000Z",
         weightKg: 82.4,
       },
-      reply: "J'ai prepare ta pesee, tu peux confirmer.",
+      reply: "C'est note, j'ajoute ta pesee.",
       requiresConfirmation: true,
       summary: "Ajouter une pesee a 82.4 kg.",
     };
@@ -186,30 +51,33 @@ describe("AssistantChatbox", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /assistant/i }));
-    fireEvent.change(screen.getByPlaceholderText(/ajoute mon repas/i), {
+    fireEvent.click(screen.getByRole("button", { name: /chat ia/i }));
+    fireEvent.change(screen.getByPlaceholderText(/ajoute ma pesee/i), {
       target: { value: "Ajoute ma pesee du jour a 82,4 kg" },
     });
-    fireEvent.click(
-      screen.getByRole("button", { name: "Envoyer a l'assistant" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Envoyer" }));
 
-    await screen.findAllByText("J'ai prepare ta pesee, tu peux confirmer.");
-    fireEvent.click(
-      screen.getByRole("button", { name: "Confirmer et appliquer" }),
-    );
-
+    await waitFor(() => {
+      expect(api.createAssistantDraft).toHaveBeenCalledWith({
+        context: "measurements",
+        currentDraft: undefined,
+        history: [],
+        message: "Ajoute ma pesee du jour a 82,4 kg",
+      });
+    });
     await waitFor(() => {
       expect(onApplyDraft).toHaveBeenCalledWith(draft);
     });
     expect(
-      screen.getByText("Action appliquee. Les donnees ont ete rafraichies."),
+      screen.getByText("C'est note, j'ajoute ta pesee."),
     ).toBeInTheDocument();
-    expect(screen.getByText("C'est ajoute. J'ai rafraichi les donnees.")).toBeInTheDocument();
+    expect(
+      screen.getAllByText("C'est fait. J'ai rafraichi les donnees.").length,
+    ).toBeGreaterThanOrEqual(2);
   });
 
-  it("sends the active draft when completing a conversation", async () => {
-    const onApplyDraft = vi.fn();
+  it("reuses the current conversation when the assistant still needs more info", async () => {
+    const onApplyDraft = vi.fn().mockResolvedValue(undefined);
     const firstDraft = {
       action: "create_meal" as const,
       confidence: "medium" as const,
@@ -218,28 +86,29 @@ describe("AssistantChatbox", () => {
         items: [{ foodId: "food-1", name: "Riz", resolvedName: "Riz" }],
         mealType: "lunch",
       },
-      reply: "Il me manque la quantite du riz.",
+      reply: "Il me manque encore les quantites.",
       requiresConfirmation: true,
       summary: "Preparer un repas lunch.",
     };
+    const secondDraft = {
+      ...firstDraft,
+      missingFields: [],
+      payload: {
+        ...firstDraft.payload,
+        items: [
+          {
+            foodId: "food-1",
+            name: "Riz",
+            quantityGrams: 150,
+            resolvedName: "Riz",
+          },
+        ],
+      },
+      reply: "C'est bon, je m'en occupe.",
+    };
     vi.mocked(api.createAssistantDraft)
       .mockResolvedValueOnce(firstDraft)
-      .mockResolvedValueOnce({
-        ...firstDraft,
-        missingFields: [],
-        payload: {
-          ...firstDraft.payload,
-          items: [
-            {
-              foodId: "food-1",
-              name: "Riz",
-              quantityGrams: 150,
-              resolvedName: "Riz",
-            },
-          ],
-        },
-        reply: "Tout est pret: tu peux confirmer.",
-      });
+      .mockResolvedValueOnce(secondDraft);
 
     render(
       <AssistantChatbox
@@ -249,29 +118,45 @@ describe("AssistantChatbox", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /assistant/i }));
-    fireEvent.change(screen.getByPlaceholderText(/ajoute mon repas/i), {
+    fireEvent.click(screen.getByRole("button", { name: /chat ia/i }));
+    fireEvent.change(screen.getByPlaceholderText(/ajoute ma pesee/i), {
       target: { value: "Ajoute mon repas avec riz" },
     });
-    fireEvent.click(
-      screen.getByRole("button", { name: "Envoyer a l'assistant" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Envoyer" }));
 
-    await screen.findAllByText("Il me manque la quantite du riz.");
+    await screen.findByText("Il me manque encore les quantites.");
+
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "150g" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Completer le brouillon" }));
+    fireEvent.click(screen.getByRole("button", { name: "Envoyer" }));
 
     await waitFor(() => {
-      expect(api.createAssistantDraft).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          currentDraft: firstDraft,
-          message: "150g",
-        }),
-      );
+      expect(api.createAssistantDraft).toHaveBeenLastCalledWith({
+        context: "meals",
+        currentDraft: firstDraft,
+        history: [
+          {
+            content: "Ajoute mon repas avec riz",
+            role: "user",
+          },
+          {
+            content: "Il me manque encore les quantites.",
+            role: "assistant",
+          },
+        ],
+        message: "150g",
+      });
     });
-    expect(screen.getAllByText("Tout est pret: tu peux confirmer.").length).toBeGreaterThan(0);
+    await waitFor(() => {
+      expect(onApplyDraft).toHaveBeenCalledWith(secondDraft);
+    });
+    expect(
+      screen.getByText("C'est bon, je m'en occupe."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByText("C'est fait. J'ai rafraichi les donnees.").length,
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it("disables the assistant when auth bypass is enabled", () => {
@@ -283,7 +168,7 @@ describe("AssistantChatbox", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /assistant/i }));
+    fireEvent.click(screen.getByRole("button", { name: /chat ia/i }));
 
     expect(screen.getByText(/mode bypass est actif/i)).toBeInTheDocument();
     expect(screen.getByRole("textbox")).toBeDisabled();

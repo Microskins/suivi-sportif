@@ -1,6 +1,6 @@
 import * as exercisesQueries from "../db/queries/exercises.js";
 import * as foodsQueries from "../db/queries/foods.js";
-import type { AssistantDraft } from "./assistant-drafts.js";
+import { humanizeMissingFields, type AssistantDraft } from "./assistant-drafts.js";
 
 type AssistantOrchestratorOptions = {
   userId: string;
@@ -128,8 +128,8 @@ async function enrichMealDraft(
     },
     reply:
       missingFields.length === 0
-        ? `${summary} Tout est pret: tu peux confirmer pour l'ajouter.`
-        : `${summary} Il me manque encore quelques infos avant de pouvoir te proposer la confirmation.`,
+        ? "J'ai reconnu les elements. Je m'en occupe."
+        : `J'ai reconnu les elements, mais il me manque encore ${humanizeMissingFields(missingFields)}.`,
     summary,
   } satisfies AssistantDraft;
 }
@@ -194,6 +194,12 @@ async function enrichWorkoutDraft(draft: AssistantDraft) {
           : { name };
       }),
     },
+    reply:
+      matches.length === exerciseNames.length
+        ? "J'ai reconnu les exercices. Je m'en occupe."
+        : `J'ai reconnu les exercices, mais il me manque encore ${humanizeMissingFields(
+            compactMissingFields(draft.missingFields, ["exerciseIds"]),
+          )}.`,
     summary: `${draft.summary} ${matches.length} exercice(s) reconnu(s).`,
   } satisfies AssistantDraft;
 }

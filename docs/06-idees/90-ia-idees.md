@@ -1,5 +1,240 @@
 # IA Idees
 
+## 2026-06-17 - Assistant IA chat: streaming et presence
+
+## Contexte
+
+- Une chat box reste plus vivante quand la reponse arrive comme une vraie conversation, pas comme un bloc statique.
+- Le passage a un chat pur ouvre la porte a une sensation de reponse plus fluide.
+
+## Proposition
+
+- Ajouter plus tard un affichage progressif de la reponse:
+  - indicateur de saisie du modele;
+  - streaming texte ou reveal progressif;
+  - reprise visuelle des messages longs dans des bulles mieux decoupees.
+
+## Impact
+
+- Donne une impression de reactivite.
+- Rend l'IA plus presente et moins froide.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/065-chatbox-ia-sans-brouillons.md
+
+---
+
+## 2026-06-17 - Assistant IA chat: raccourcis contextuels
+
+## Contexte
+
+- Dans une chat box, l'utilisateur gagne du temps avec des suggestions adaptees a l'ecran courant.
+- Les demandes frequentes se repetent souvent sur les memes zones du produit.
+
+## Proposition
+
+- Ajouter plus tard des chips de raccourci selon le contexte actif:
+  - "Ajoute ma pesee" sur les mensurations;
+  - "Resume ma semaine" sur le dashboard;
+  - "Ajoute un repas" sur la nutrition;
+  - "Planifie une seance" sur les entrainements.
+
+## Impact
+
+- Reponses plus rapides.
+- Moins de saisie au clavier pour les actions communes.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/065-chatbox-ia-sans-brouillons.md
+
+---
+
+## 2026-06-17 - Assistant IA chat: annulation rapide apres action
+
+## Contexte
+
+- Si l'assistant applique une action directement depuis le chat, un filet de securite rassure toujours.
+- L'utilisateur doit pouvoir corriger vite une action lancee par erreur.
+
+## Proposition
+
+- Ajouter plus tard un bouton ou une notification d'annulation immediate apres une mutation du chat:
+  - restauration rapide de l'etat precedent;
+  - message de confirmation discret;
+  - limite de temps courte pour l'annulation.
+
+## Impact
+
+- Renforce la confiance.
+- Permet un mode plus direct sans faire revenir les brouillons.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/065-chatbox-ia-sans-brouillons.md
+
+---
+
+## 2026-06-17 - Assistant IA chat: memoire des conversations utiles
+
+## Contexte
+
+- Une chat box devient plus pratique quand on retrouve les discussions importantes.
+- Les utilisateurs reviennent souvent sur les memes sujets de suivi.
+
+## Proposition
+
+- Ajouter plus tard une memoire locale de la conversation avec:
+  - fils epingles;
+  - recherche par mots cles;
+  - resume de conversation partageable.
+
+## Impact
+
+- Facilite le retour sur une consigne ou une interpretation deja donnees.
+- Ameliore la continuite d'usage.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/065-chatbox-ia-sans-brouillons.md
+
+---
+
+## 2026-06-12 - Assistant IA: reponses avec sources
+
+## Contexte
+
+- L'assistant actuel sait deja proposer des brouillons et des conseils courts.
+- Pour qu'il paraisse vraiment intelligent, l'utilisateur doit comprendre sur quoi il se base.
+
+## Proposition
+
+- Ajouter plus tard un mode de reponse qui affiche:
+  - les donnees utilisees pour le conseil;
+  - un niveau de confiance ou de certitude;
+  - une courte explication du raisonnement;
+  - un lien vers l'action ou l'ecran concerne quand c'est pertinent.
+
+## Impact
+
+- Renforce la confiance.
+- Aide a distinguer un conseil solide d'une simple inference du modele.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/064-assistant-ia-contextuel.md
+
+---
+
+## 2026-06-12 - Assistant IA: memoire legere des preferences
+
+## Contexte
+
+- Beaucoup de demandes repetitives gagneraient a reutiliser les habitudes de l'utilisateur.
+- Le chat devient plus fluide si l'assistant retient quelques preferences simples.
+
+## Proposition
+
+- Ajouter plus tard une memoire legere pour:
+  - les unites preferees;
+  - les horaires habituels de repas et d'entrainement;
+  - les exercices ou objectifs frequents;
+  - les formulations ou raccourcis deja compris.
+
+## Impact
+
+- Moins de redites.
+- Chat plus naturel et plus rapide.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/064-assistant-ia-contextuel.md
+
+---
+
+## 2026-06-12 - Assistant IA: resume hebdo et prochaine action
+
+## Contexte
+
+- Le dashboard contient deja assez de signaux pour produire une lecture utile de la semaine.
+- Un vrai coach IA doit aussi savoir condenser et orienter vers la prochaine action utile.
+
+## Proposition
+
+- Ajouter plus tard un resume hebdo qui:
+  - regroupe la progression;
+  - met en avant les ecarts ou points d'attention;
+  - propose une prochaine action simple et prioritaire.
+
+## Impact
+
+- Donne une sensation de suivi actif plutot que de simple saisie de donnees.
+- Aide a transformer le dashboard en outil de decision.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/064-assistant-ia-contextuel.md
+
+---
+
+## 2026-06-12 - Assistant IA: relances intelligentes
+
+## Contexte
+
+- Quand il manque une information, le chat renvoie parfois juste une liste technique de champs manquants.
+- Une vraie IA doit pouvoir reformuler la relance de facon naturelle et progressive.
+
+## Proposition
+
+- Ajouter plus tard des questions de suivi contextuelles:
+  - une seule question a la fois quand c'est possible;
+  - rappel du contexte deja donne;
+  - reprise automatique des reponses dans le brouillon actif.
+
+## Impact
+
+- Rend les echanges plus humains.
+- Diminue la sensation de formulaire deguisant un chat.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/064-assistant-ia-contextuel.md
+
+---
+
 ## 2026-06-09 - Deploiement OVH: preflight de compatibilite
 
 ## Contexte
@@ -27,7 +262,7 @@
 
 ## Liens
 
-- Plan: docs/90-plans/064-migration-vm-vers-ovh.md
+- Aucun plan actif pour l'instant.
 
 ---
 
@@ -58,7 +293,7 @@
 
 ## Liens
 
-- Plan: docs/90-plans/064-migration-vm-vers-ovh.md
+- Aucun plan actif pour l'instant.
 
 ---
 
@@ -88,7 +323,7 @@
 
 ## Liens
 
-- Plan: docs/90-plans/064-migration-vm-vers-ovh.md
+- Aucun plan actif pour l'instant.
 
 ---
 
@@ -119,7 +354,7 @@
 
 ## Liens
 
-- Plan: docs/90-plans/064-migration-vm-vers-ovh.md
+- Aucun plan actif pour l'instant.
 
 ---
 

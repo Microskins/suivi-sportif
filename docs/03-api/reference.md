@@ -143,16 +143,17 @@ Toutes les routes sont protegees et utilisent l'utilisateur du JWT.
 
 ### `POST /api/assistant/draft`
 
-Prepare un brouillon d'action a partir d'une demande libre. Cette route ne
-modifie aucune donnee: le client doit afficher le brouillon puis demander une
-confirmation explicite avant d'appeler les endpoints metier.
+Endpoint de chat IA protege. Il interprete une demande libre pour la chat box
+et renvoie une reponse conversationnelle. L'interface ne montre pas de carte
+technique; quand le contexte est assez complet, elle peut appliquer
+automatiquement l'action interne correspondante.
 
 Si `ANTHROPIC_API_KEY` est configure cote serveur, l'assistant utilise Claude
-pour produire le brouillon structure. Si la cle est absente, si l'appel echoue
-ou si la sortie ne respecte pas le contrat attendu, l'API retombe sur le
-brouillon local deterministe.
+pour produire la reponse et le contexte structure. Si la cle est absente, si
+l'appel echoue ou si la sortie ne respecte pas le contrat attendu, l'API
+retombe sur une reponse locale deterministe.
 
-Avant de repondre, l'orchestrateur peut enrichir le brouillon en lecture seule:
+Avant de repondre, l'orchestrateur peut enrichir le contexte en lecture seule:
 les aliments nommes peuvent etre relies a des `foodId` existants et les
 exercices nommes a des `exerciseId` existants. Les champs qui demandent encore
 un choix utilisateur, comme les quantites ou les series, restent dans
@@ -163,12 +164,12 @@ Actions possibles: `create_food`, `create_meal`, `update_meal`, `delete_meal`,
 `delete_body_measurement`, `create_workout`, `update_workout`,
 `delete_workout`, `create_user_goal`, `update_profile`, `unknown`.
 Les actions de modification ou suppression doivent fournir un `id`; sinon le
-brouillon reste bloque via `missingFields`. Le sommeil n'est pas gere par cet
+contexte reste incomplet via `missingFields`. Le sommeil n'est pas gere par cet
 assistant.
 
 Pour un repas, les aliments doivent deja exister dans la base et les quantites
-doivent etre claires. Si un aliment manque, l'assistant peut d'abord preparer
-un brouillon `create_food`, a confirmer, puis le repas peut etre redemande.
+doivent etre claires. Si un aliment manque, la chat box peut d'abord preparer
+une creation d'aliment, puis le repas peut etre redemande.
 
 Body:
 
@@ -182,7 +183,7 @@ Body:
     },
     {
       "role": "assistant",
-      "content": "Ajouter une pesee a 82.4 kg."
+      "content": "Je m'occupe de cette pesee."
     }
   ],
   "message": "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane."
@@ -207,6 +208,7 @@ Reponse `200`:
       "items": [{ "name": "Riz" }, { "name": "poulet" }]
     },
     "requiresConfirmation": true,
+    "reply": "Je reconnais 2 aliments, il me manque encore les quantites.",
     "summary": "Preparer un repas lunch avec 2 element(s)."
   }
 }
@@ -214,9 +216,16 @@ Reponse `200`:
 
 Actions possibles:
 
+- `create_food`
 - `create_meal`
+- `update_meal`
+- `delete_meal`
 - `create_body_measurement`
+- `update_body_measurement`
+- `delete_body_measurement`
 - `create_workout`
+- `update_workout`
+- `delete_workout`
 - `create_user_goal`
 - `update_profile`
 - `unknown`

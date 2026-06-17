@@ -33,6 +33,36 @@ type MealItemDraft = {
   resolvedName?: string;
 };
 
+const MISSING_FIELD_LABELS: Record<string, string> = {
+  caloriesKcal: "les calories",
+  carbsGrams: "les glucides",
+  currentPassword: "le mot de passe actuel",
+  exerciseIds: "les exercices",
+  fatGrams: "les lipides",
+  fiberGrams: "les fibres",
+  foodIds: "les aliments",
+  id: "l'element cible",
+  intent: "la demande",
+  items: "les aliments",
+  name: "le nom",
+  proteinGrams: "les proteines",
+  quantities: "les quantites",
+  sets: "les series",
+  targetValue: "la valeur cible",
+  weightKg: "le poids",
+};
+
+export function humanizeMissingFields(fields: string[]) {
+  const labels = fields
+    .map((field) => MISSING_FIELD_LABELS[field] ?? field)
+    .filter((label) => Boolean(label));
+
+  if (labels.length === 0) return "quelques informations";
+  if (labels.length === 1) return labels[0];
+
+  return `${labels.slice(0, -1).join(", ")} et ${labels[labels.length - 1]}`;
+}
+
 function normalize(value: string) {
   return value
     .normalize("NFD")
@@ -111,8 +141,8 @@ function draftExercise(message: string, normalized: string): AssistantDraft | nu
     },
     requiresConfirmation: true,
     reply: name
-      ? `Je peux ajouter l'exercice ${name}. Verifie le brouillon avant confirmation.`
-      : "Je peux ajouter un exercice, mais il me manque son nom.",
+      ? `Je peux ajouter l'exercice ${name}.`
+      : "Je peux ajouter un exercice, mais j'ai besoin de son nom.",
     summary: name
       ? `Preparer l'exercice ${name}.`
       : "Preparer un nouvel exercice.",
@@ -469,8 +499,8 @@ function withFollowUpReply(draft: AssistantDraft): AssistantDraft {
       ...draft,
       reply:
         draft.missingFields.length === 0
-          ? `${draft.summary} Tout est pret: tu peux confirmer.`
-          : `${draft.summary} J'ai repris ta reponse et il reste encore: ${draft.missingFields.join(", ")}.`,
+          ? "C'est bon, je m'en occupe."
+          : `Il me manque encore ${humanizeMissingFields(draft.missingFields)}.`,
     };
   }
 
@@ -479,8 +509,8 @@ function withFollowUpReply(draft: AssistantDraft): AssistantDraft {
       ...draft,
       reply:
         draft.missingFields.length === 0
-          ? `${draft.summary} Tout est pret: tu peux confirmer la creation.`
-          : `${draft.summary} J'ai complete ce que je pouvais. Il manque encore: ${draft.missingFields.join(", ")}.`,
+          ? "C'est bon, je m'en occupe."
+          : `Il me manque encore ${humanizeMissingFields(draft.missingFields)}.`,
     };
   }
 

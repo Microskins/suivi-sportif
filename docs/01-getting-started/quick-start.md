@@ -26,7 +26,7 @@ ANTHROPIC_API_KEY="sk-ant-..."
 ANTHROPIC_MODEL="claude-haiku-4-5-20251001"
 ```
 
-Si `ANTHROPIC_API_KEY` est absent, l'assistant garde son brouillon local
+Si `ANTHROPIC_API_KEY` est absent, l'assistant garde une reponse locale
 deterministe.
 
 Option frontend sans API locale, dans `client/.env`:
