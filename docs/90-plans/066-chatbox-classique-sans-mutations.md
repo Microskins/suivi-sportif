@@ -27,3 +27,4 @@
 - 2026-06-17: plan cree suite au retour utilisateur demandant d'abandonner le faux flux brouillon/mutation au profit d'un chat classique.
 - 2026-06-17: log GitHub Actions 27679981077 analyse. Echec du job Deploy sur `ENOSPC` pendant `docker build` du client, au moment de recopier `client/public/exercices-assets/images/dips-buste-penche.png` vers `dist`.
 - 2026-06-17: correctif ajoute pour eviter la duplication du dossier `public/` pendant le build Vite Docker. La validation locale n'a pas pu etre lancee ici car `node`, `npm` et `docker` ne sont pas disponibles dans ce shell.
+- 2026-06-17: log GitHub Actions 27687352943 analyse. Echec du test `creates a confirmable meal draft from a free text request` a cause d'un message de reponse desynchronise entre le service et l'assertion; alignement corrige sur `Je peux t'aider a continuer, mais il me manque encore ...`.

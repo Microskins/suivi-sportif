@@ -500,7 +500,7 @@ function withFollowUpReply(draft: AssistantDraft): AssistantDraft {
       reply:
         draft.missingFields.length === 0
           ? "C'est bon, je m'en occupe."
-          : `Je peux continuer, mais il me manque encore ${humanizeMissingFields(
+          : `Je peux t'aider à continuer, mais il me manque encore ${humanizeMissingFields(
               draft.missingFields,
             )}.`,
     };
@@ -512,7 +512,7 @@ function withFollowUpReply(draft: AssistantDraft): AssistantDraft {
       reply:
         draft.missingFields.length === 0
           ? "C'est bon, je m'en occupe."
-          : `Je peux continuer, mais il me manque encore ${humanizeMissingFields(
+          : `Je peux t'aider à continuer, mais il me manque encore ${humanizeMissingFields(
               draft.missingFields,
             )}.`,
     };

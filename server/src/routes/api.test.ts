@@ -2784,7 +2784,7 @@ describe("API", () => {
         notes: "Tu peux rajouter mon repas de ce midi ? Riz, poulet, banane.",
       },
       reply:
-        "Je peux continuer, mais il me manque encore les aliments et les quantites.",
+        "Je peux t'aider à continuer, mais il me manque encore les aliments et les quantites.",
       requiresConfirmation: true,
       summary: "Preparer un repas lunch avec 3 element(s).",
     });
