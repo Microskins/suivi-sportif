@@ -521,6 +521,7 @@ curl -i https://suivi-sportif.fr/mcp
 
 Resultat public attendu:
 
-- `/` retourne le HTML frontend ou une reponse frontend `200`;
+- `/` retourne le portfolio avec une reponse frontend `200`;
+- `/suivi-sportif` retourne l'application de suivi sportif;
 - `/health` retourne le JSON de sante de l'API;
 - `/mcp` sans token retourne `401 Unauthorized`, pas une `404` Fastify.

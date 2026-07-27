@@ -70,6 +70,7 @@ Index chronologique des chantiers planifies et executes.
 64. [Assistant IA contextuel](./064-assistant-ia-contextuel.md)
 65. [Chat box IA sans brouillons](./065-chatbox-ia-sans-brouillons.md)
 66. [Chat box classique sans mutations](./066-chatbox-classique-sans-mutations.md)
+67. [Portfolio racine et Suivi Sportif en sous-site](./067-portfolio-racine-suivi-sportif.md)
 
 ## Convention
 

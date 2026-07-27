@@ -181,6 +181,16 @@ standardisees `{ data: ... }`.
 Les stores Zustand portent l'etat d'auth, d'exercices et de seances. Le mode
 `VITE_BYPASS_AUTH=true` permet de travailler sur l'interface sans API locale.
 
+Le client sert aussi de point d'entree de portfolio:
+
+- `/` affiche le portfolio;
+- `/suivi-sportif` affiche l'application de suivi sportif;
+- `/suivi-sportif/politique-cookies` affiche sa politique de cookies.
+
+Les routes techniques restent a la racine du domaine: `/api`, `/health` et
+`/mcp`. Cette organisation permet d'ajouter de futurs projets sous leurs
+propres chemins sans nouveau domaine ni DNS.
+
 ## MCP
 
 Le workspace `mcp/` expose un serveur de debug sur `127.0.0.1:3033`. Il fournit

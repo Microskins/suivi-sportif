@@ -84,7 +84,8 @@ URLs:
 
 - API: http://localhost:3001
 - Health: http://localhost:3001/health
-- Client: http://localhost:5173
+- Portfolio: http://localhost:5173
+- Suivi Sportif: http://localhost:5173/suivi-sportif
 - MCP: http://127.0.0.1:3033/mcp
 
 ## 5. Verifier
