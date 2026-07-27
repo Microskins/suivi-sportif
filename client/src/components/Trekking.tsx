@@ -201,7 +201,7 @@ export function Trekking() {
     <main className="min-h-screen bg-[#071610] text-[#f4efdf]">
       <section className="relative isolate min-h-[44rem] overflow-hidden border-b border-[#315947]">
         <img
-          src="/trekking/vosges-wild-hero.png"
+          src="/media/trekking/vosges-wild-hero.png"
           alt="Crete des Hautes-Vosges au lever du jour"
           className="absolute inset-0 -z-20 h-full w-full object-cover"
         />

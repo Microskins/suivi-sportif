@@ -78,7 +78,7 @@ export function Portfolio() {
               className="group grid gap-6 border border-[#17322e] bg-[#cfe895] p-5 text-[#17322e] transition hover:bg-[#b8d57c] sm:grid-cols-[160px_1fr_auto] sm:items-center sm:p-6"
             >
               <img
-                src="/trekking/vosges-wild-hero.png"
+                src="/media/trekking/vosges-wild-hero.png"
                 alt="Crete des Vosges au lever du jour"
                 className="aspect-square w-28 object-cover sm:w-40"
               />
