@@ -3,6 +3,7 @@ import { Dashboard } from "./components/Dashboard";
 import { CookieConsentLayer } from "./components/CookieConsentLayer";
 import { CookiePolicyPage } from "./components/CookiePolicyPage";
 import { Portfolio } from "./components/Portfolio";
+import { Trekking } from "./components/Trekking";
 import { useAuthStore } from "./stores/authStore";
 
 type AuthMode = "login" | "register";
@@ -10,9 +11,14 @@ type AuthMode = "login" | "register";
 const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
 const SPORT_APP_PATH = "/suivi-sportif";
 const COOKIE_POLICY_PATH = `${SPORT_APP_PATH}/politique-cookies`;
+const TREKKING_PATH = "/trekking";
 
 export default function App() {
   const currentPath = window.location.pathname.replace(/\/+$/, "") || "/";
+
+  if (currentPath === TREKKING_PATH || currentPath.startsWith(`${TREKKING_PATH}/`)) {
+    return <Trekking />;
+  }
 
   if (currentPath !== SPORT_APP_PATH && !currentPath.startsWith(`${SPORT_APP_PATH}/`)) {
     return <Portfolio />;

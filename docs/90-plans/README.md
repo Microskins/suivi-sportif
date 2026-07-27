@@ -71,6 +71,7 @@ Index chronologique des chantiers planifies et executes.
 65. [Chat box IA sans brouillons](./065-chatbox-ia-sans-brouillons.md)
 66. [Chat box classique sans mutations](./066-chatbox-classique-sans-mutations.md)
 67. [Portfolio racine et Suivi Sportif en sous-site](./067-portfolio-racine-suivi-sportif.md)
+68. [Mini-site Trekking et premier trek dans les Vosges](./068-trekking-vosges.md)
 
 ## Convention
 

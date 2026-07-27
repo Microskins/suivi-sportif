@@ -1,5 +1,57 @@
 # IA Idees
 
+## 2026-07-27 - Trekking: fiche de decision avant depart
+
+## Contexte
+
+- Le premier trek presente l'itineraire, le materiel et les regles de
+  securite, mais la decision finale depend de conditions recentes.
+
+## Proposition
+
+- Ajouter plus tard une fiche de depart imprimable qui recapitule meteo,
+  contacts, heure limite de demi-tour, solutions de repli et trace offline.
+
+## Impact
+
+- Preparation plus sereine et moins de decisions oubliees le matin du depart.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/068-trekking-vosges.md
+
+---
+
+## 2026-07-27 - Trekking: sauvegarde et partage de listes par trek
+
+## Contexte
+
+- La checklist du sac est utile individuellement, mais chaque trek aura son
+  propre materiel et ses propres choix.
+
+## Proposition
+
+- Prevoir plus tard une exportation simple de la liste et une sauvegarde par
+  trek, avant d'envisager un compte ou une synchronisation distante.
+
+## Impact
+
+- Les futurs treks restent independants et la preparation est reutilisable.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/068-trekking-vosges.md
+
+---
+
 ## 2026-07-27 - Portfolio: catalogue de projets configurable
 
 ## Contexte

@@ -186,6 +186,8 @@ Le client sert aussi de point d'entree de portfolio:
 - `/` affiche le portfolio;
 - `/suivi-sportif` affiche l'application de suivi sportif;
 - `/suivi-sportif/politique-cookies` affiche sa politique de cookies.
+- `/trekking` affiche le carnet de preparation Vosges Wild; sa checklist est
+  conservee localement dans le navigateur via un store Zustand.
 
 Les routes techniques restent a la racine du domaine: `/api`, `/health` et
 `/mcp`. Cette organisation permet d'ajouter de futurs projets sous leurs

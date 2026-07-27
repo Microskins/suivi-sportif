@@ -1,4 +1,5 @@
 const SPORT_APP_PATH = "/suivi-sportif";
+const TREKKING_PATH = "/trekking";
 
 export function Portfolio() {
   return (
@@ -32,8 +33,8 @@ export function Portfolio() {
 
           <div className="relative border-y border-[#17322e]/20 py-8 lg:border-y-0 lg:border-l lg:py-4 lg:pl-12">
             <p className="font-serif text-3xl leading-tight text-[#17322e]">
-              Le premier projet est deja en ligne. D&apos;autres pourront rejoindre
-              cette page au fil du temps.
+              Deux projets sont deja en ligne. D&apos;autres pourront rejoindre cette
+              page au fil du temps.
             </p>
             <div className="mt-8 h-2 w-24 bg-[#d84a32]" />
           </div>
@@ -42,34 +43,60 @@ export function Portfolio() {
         <section id="projets" className="border-t border-[#17322e]/20 py-8 sm:py-10">
           <div className="mb-5 flex items-baseline justify-between gap-4">
             <h2 className="font-serif text-3xl">Projets</h2>
-            <span className="text-sm font-medium text-[#17322e]/60">01</span>
+            <span className="text-sm font-medium text-[#17322e]/60">02</span>
           </div>
 
-          <a
-            href={SPORT_APP_PATH}
-            className="group grid gap-6 border border-[#17322e] bg-[#17322e] p-5 text-[#f4f1e8] transition hover:bg-[#245047] sm:grid-cols-[160px_1fr_auto] sm:items-center sm:p-6"
-          >
-            <div className="flex aspect-square w-28 items-center justify-center bg-[#e2ddcf] p-4 sm:w-40">
+          <div className="grid gap-4">
+            <a
+              href={SPORT_APP_PATH}
+              className="group grid gap-6 border border-[#17322e] bg-[#17322e] p-5 text-[#f4f1e8] transition hover:bg-[#245047] sm:grid-cols-[160px_1fr_auto] sm:items-center sm:p-6"
+            >
+              <div className="flex aspect-square w-28 items-center justify-center bg-[#e2ddcf] p-4 sm:w-40">
+                <img
+                  src="/app-icon-512.png"
+                  alt="Logo Suivi Sportif"
+                  className="h-full w-full object-contain"
+                />
+              </div>
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f4f1e8]/60">
+                  Application web
+                </p>
+                <h3 className="mt-2 font-serif text-3xl">Suivi Sportif</h3>
+                <p className="mt-3 max-w-xl leading-7 text-[#f4f1e8]/80">
+                  Entrainements, nutrition et progression corporelle reunis au meme
+                  endroit.
+                </p>
+              </div>
+              <span className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f4f1e8] transition group-hover:text-[#f7bb4b]">
+                Ouvrir
+              </span>
+            </a>
+
+            <a
+              href={TREKKING_PATH}
+              className="group grid gap-6 border border-[#17322e] bg-[#cfe895] p-5 text-[#17322e] transition hover:bg-[#b8d57c] sm:grid-cols-[160px_1fr_auto] sm:items-center sm:p-6"
+            >
               <img
-                src="/app-icon-512.png"
-                alt="Logo Suivi Sportif"
-                className="h-full w-full object-contain"
+                src="/trekking/vosges-wild-hero.png"
+                alt="Crete des Vosges au lever du jour"
+                className="aspect-square w-28 object-cover sm:w-40"
               />
-            </div>
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f4f1e8]/60">
-                Application web
-              </p>
-              <h3 className="mt-2 font-serif text-3xl">Suivi Sportif</h3>
-              <p className="mt-3 max-w-xl leading-7 text-[#f4f1e8]/80">
-                Entrainements, nutrition et progression corporelle reunis au meme
-                endroit.
-              </p>
-            </div>
-            <span className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f4f1e8] transition group-hover:text-[#f7bb4b]">
-              Ouvrir
-            </span>
-          </a>
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#17322e]/60">
+                  Carnet de trek
+                </p>
+                <h3 className="mt-2 font-serif text-3xl">Vosges Wild</h3>
+                <p className="mt-3 max-w-xl leading-7 text-[#17322e]/80">
+                  Premier trek de trois jours dans les Hautes-Vosges: itineraire,
+                  etapes, sac et preparation terrain.
+                </p>
+              </div>
+              <span className="text-sm font-semibold uppercase tracking-[0.16em] transition group-hover:text-[#d84a32]">
+                Ouvrir
+              </span>
+            </a>
+          </div>
         </section>
       </div>
     </main>
