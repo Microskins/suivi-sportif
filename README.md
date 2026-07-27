@@ -22,7 +22,7 @@ Disponible:
 - Exercices: CRUD + filtre par groupe musculaire
 - Seances: CRUD + recherche par plage de dates
 - Nutrition: aliments, repas, objectifs nutritionnels
-- Frontend React avec auth, dashboard et stores Zustand
+- Frontend React multi-sites avec portfolio, Trekking et Suivi Sportif
 - Tests API avec `fastify.inject()`
 - Assets Docker de production et runbook Nginx
 - Serveur MCP de debug

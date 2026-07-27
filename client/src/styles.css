@@ -2,6 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
+@layer base {
+  :root {
+    --site-accent: #d84a32;
+    --site-background: #f4f1e8;
+    --site-body: "Avenir Next", "Segoe UI", sans-serif;
+    --site-display: "Bodoni 72", Didot, "Times New Roman", serif;
+    --site-ink: #17322e;
+  }
+
+  html[data-site="suivi-sportif"] {
+    --site-accent: #d8ff63;
+    --site-background: #071411;
+    --site-body: Bahnschrift, "DIN Alternate", "Franklin Gothic Medium", sans-serif;
+    --site-display: "Bahnschrift Condensed", "DIN Condensed", Impact, sans-serif;
+    --site-ink: #eef5eb;
+  }
+
+  html[data-site="trekking"] {
+    --site-accent: #cfe895;
+    --site-background: #071610;
+    --site-body: "Avenir Next", "Segoe UI", sans-serif;
+    --site-display: Rockwell, "Roboto Slab", "Bookman Old Style", serif;
+    --site-ink: #f4efdf;
+  }
+
+  body {
+    margin: 0;
+    background: var(--site-background);
+    color: var(--site-ink);
+    font-family: var(--site-body);
+    text-rendering: optimizeLegibility;
+  }
+
+  html[data-site] .font-serif,
+  html[data-site] .site-display {
+    font-family: var(--site-display);
+  }
+
+  ::selection {
+    background: var(--site-accent);
+    color: var(--site-background);
+  }
+}
+
+@layer utilities {
+  .site-sport-grid {
+    background-color: #edf2e8;
+    background-image:
+      linear-gradient(rgba(7, 20, 17, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(7, 20, 17, 0.045) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
 }

@@ -7,7 +7,7 @@ suivi-sportif/
 |-- .agents/
 |   `-- skills/                  # Skills projet pour Codex
 |-- .github/                     # GitHub Actions
-|-- client/                      # Frontend React/Vite
+|-- client/                      # Frontend multi-sites React/Vite
 |-- config/                      # Configuration locale/outillage
 |-- deploy/
 |   `-- nginx/                   # Configuration Nginx production
@@ -75,26 +75,66 @@ Fichiers importants:
 client/
 |-- index.html
 |-- package.json
+|-- public/
+|   `-- sites/
+|       |-- portfolio/
+|       |   `-- favicon.svg
+|       |-- suivi-sportif/
+|       |   |-- body-measurements/
+|       |   |-- exercises/
+|       |   |-- favicon.svg
+|       |   `-- site.webmanifest
+|       `-- trekking/
+|           `-- favicon.svg
 |-- vite.config.ts
 `-- src/
-    |-- App.tsx
+    |-- app/
+    |   |-- site-identities.ts
+    |   `-- site-router.tsx
     |-- main.tsx
-    |-- api/
-    |   `-- client.ts
-    `-- stores/
-        |-- authStore.ts
-        |-- bypassMockData.ts
-        |-- exercisesStore.ts
-        `-- workoutsStore.ts
+    `-- sites/
+        |-- portfolio/
+        |   |-- portfolio-brand.tsx
+        |   `-- portfolio-site.tsx
+        |-- trekking/
+        |   |-- trekking-brand.tsx
+        |   |-- trekking-home-site.tsx
+        |   |-- trekking-store.ts
+        |   `-- vosges-wild-site.tsx
+        `-- suivi-sportif/
+            |-- api/
+            |-- components/
+            |   |-- auth/
+            |   |-- dashboard/
+            |   `-- privacy/
+            |-- consent/
+            |-- data/
+            |-- stores/
+            `-- suivi-sportif-site.tsx
 ```
 
 Fichiers importants:
 
-- `client/src/api/client.ts`: client HTTP.
-- `client/src/stores/authStore.ts`: auth et session.
-- `client/src/stores/bypassMockData.ts`: donnees mockees du mode bypass.
-- `client/src/stores/exercisesStore.ts`: etat exercices.
-- `client/src/stores/workoutsStore.ts`: etat seances.
+- `client/src/app/site-router.tsx`: choisit le site a partir de l'URL.
+- `client/src/app/site-identities.ts`: applique les metadonnees et le favicon
+  propres au site courant.
+- `client/src/sites/portfolio/`: page d'accueil et catalogue de projets.
+- `client/src/sites/trekking/`: catalogue, carnets de trek et etat local.
+- `client/src/sites/*/*-brand.tsx`: signature visuelle locale a chaque site.
+- `client/src/sites/suivi-sportif/api/client.ts`: client HTTP de Suivi Sportif.
+- `client/src/sites/suivi-sportif/stores/`: etat metier de Suivi Sportif.
+- `client/src/sites/suivi-sportif/data/`: donnees mockees du mode bypass.
+
+Les sites ne s'importent pas entre eux. Un futur dossier `client/src/shared`
+sera cree uniquement lorsqu'un module sera effectivement utilise par au moins
+deux sites.
+
+Tous les fichiers maintenus dans `client/src` doivent rester a 500 lignes ou
+moins. Le controle se lance avec:
+
+```bash
+npm run check:file-size
+```
 
 ## MCP
 

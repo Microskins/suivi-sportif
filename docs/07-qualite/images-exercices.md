@@ -7,10 +7,11 @@ d'exercices.
 
 ## Verification du 2026-06-01
 
-- Source: `client/public/exercices-assets/exercices.json`
+- Source: `client/public/sites/suivi-sportif/exercises/exercices.json`
 - Exercices declares: 163
 - Images referencees: 163
-- Fichiers presents dans `client/public/exercices-assets/images`: 64
+- Images PNG presentes dans
+  `client/public/sites/suivi-sportif/exercises/images`: 63
 - Images referencees absentes: 100
 - Statut global: `A_COMPLETER`
 

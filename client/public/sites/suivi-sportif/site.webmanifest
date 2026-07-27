@@ -1,0 +1,28 @@
+{
+  "name": "Suivi Sportif",
+  "short_name": "Suivi Sportif",
+  "description": "Application de suivi d'entrainements, nutrition et progression corporelle.",
+  "start_url": "/suivi-sportif",
+  "scope": "/suivi-sportif",
+  "display": "standalone",
+  "background_color": "#071411",
+  "theme_color": "#d8ff63",
+  "icons": [
+    {
+      "src": "/sites/suivi-sportif/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/sites/suivi-sportif/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/sites/suivi-sportif/app-icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

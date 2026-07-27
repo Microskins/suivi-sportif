@@ -21,7 +21,9 @@
 ## Notes de verification
 
 - Idee annexe ajoutee dans `docs/06-idees/90-ia-idees.md`.
-- Verification visuelle des PNG `client/public/og-image.png` et `client/public/app-icon-512.png`: rendu net et lisible.
+- Verification visuelle des PNG
+  `client/public/sites/suivi-sportif/og-image.png` et
+  `client/public/sites/suivi-sportif/app-icon-512.png`: rendu net et lisible.
 - Dimensions verifiees via PowerShell/System.Drawing:
   - `favicon-16.png`: 16x16;
   - `favicon-32.png`: 32x32;
@@ -32,7 +34,8 @@
   - `og-image.png`: 1200x630.
 - `favicon.ico` genere avec les PNG 16x16 et 32x32 integres.
 - References de `client/index.html` vers les assets publics verifiees: tous les fichiers existent.
-- `client/public/site.webmanifest` parse correctement avec `ConvertFrom-Json`.
+- `client/public/sites/suivi-sportif/site.webmanifest` parse correctement avec
+  `ConvertFrom-Json`.
 - `npm run build -w client` non lance: `npm` et `node` absents du PATH dans ce shell.
 - 2026-06-07: `npm run typecheck -w client` via WSL Node 22.12.0: OK.
 - 2026-06-07: `npm run build -w client` via WSL Node 22.12.0: OK; avertissement Vite attendu sur chunk JS > 500 kB.

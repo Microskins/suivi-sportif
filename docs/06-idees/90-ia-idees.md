@@ -1,5 +1,264 @@
 # IA Idees
 
+## 2026-07-27 - Trekking: alternative cartographique sans dependance Google
+
+## Contexte
+
+- Les traces fournies sont actuellement hebergees dans Google My Maps.
+- Un service tiers peut etre indisponible, bloque ou inadapte a un usage hors
+  connexion sur le terrain.
+
+## Proposition
+
+- Etudier plus tard un export GPX affiche avec MapLibre ou une carte statique
+  generee par trek.
+- Conserver les donnees de trace independamment du fournisseur de carte.
+
+## Impact
+
+- Trace plus durable, portable et utilisable avec moins de dependances tierces.
+
+## Complexite
+
+- L
+
+## Liens
+
+- Plan: docs/90-plans/068-trekking-vosges.md
+
+---
+
+## 2026-07-27 - Trekking: description accessible des traces
+
+## Contexte
+
+- Une carte embarquee reste difficile a lire au clavier ou avec un lecteur
+  d'ecran.
+- Le parcours schematique donne deja des reperes qui pourraient servir
+  d'alternative textuelle.
+
+## Proposition
+
+- Associer plus tard a chaque trace une liste ordonnee de points de passage,
+  distances et principales bifurcations.
+- Relier cette description au cadre cartographique avec les attributs
+  d'accessibilite adaptes.
+
+## Impact
+
+- Itineraire comprehensible meme lorsque la carte ne peut pas etre consultee.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/068-trekking-vosges.md
+
+---
+
+## 2026-07-27 - Trekking: catalogue de traces pilote par les donnees
+
+## Contexte
+
+- Vosges Wild contient maintenant plusieurs cartes et les futurs voyages
+  pourront avoir leurs propres variantes.
+- Declarer chaque integration directement dans une page rendrait les prochains
+  ajouts repetitifs.
+
+## Proposition
+
+- Extraire plus tard les titres, fournisseurs, URLs, points de depart et statuts
+  de verification dans un catalogue de traces par trek.
+- Garder le composant cartographique generique a l'interieur du site Trekking.
+
+## Impact
+
+- Ajout de parcours plus rapide et contenu plus facile a relire.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/068-trekking-vosges.md
+
+---
+
+## 2026-07-27 - Multi-sites: navigation transversale discrete
+
+## Contexte
+
+- Chaque site possede maintenant sa propre identite.
+- Un visiteur peut cependant perdre le lien avec le portfolio lorsqu'il entre
+  directement dans Suivi Sportif ou un carnet Trekking.
+
+## Proposition
+
+- Definir plus tard un lien de retour au portfolio, discret mais place de facon
+  coherente dans chaque signature de marque.
+- Conserver le libelle et le comportement accessibles au clavier sans imposer
+  une barre de navigation commune aux trois univers.
+
+## Impact
+
+- Rend l'ecosysteme plus facile a comprendre sans diluer les identites.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/069-arborescence-frontend-multi-sites.md
+
+---
+
+## 2026-07-27 - Multi-sites: pages 404 contextuelles
+
+## Contexte
+
+- Le routeur sait distinguer les sites, mais une sous-route inconnue retombe
+  encore sur un ecran existant.
+- Une identite forte rend une erreur generique plus visible et moins coherente.
+
+## Proposition
+
+- Ajouter une page introuvable par univers avec les bons ton, couleur et liens
+  de retour.
+- Journaliser uniquement le chemin demande, sans donnee personnelle.
+
+## Impact
+
+- Navigation plus claire et erreurs mieux integrees au produit.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/069-arborescence-frontend-multi-sites.md
+
+---
+
+## 2026-07-27 - Multi-sites: tests de metadonnees par route
+
+## Contexte
+
+- Le titre, la description, le favicon et la couleur navigateur deviennent
+  dynamiques selon le site.
+- Une regression peut rester invisible dans les tests de composants metier.
+
+## Proposition
+
+- Ajouter un test cible qui applique chaque chemin public et verifie le jeu de
+  metadonnees attendu.
+- Couvrir aussi une route enfant de Suivi Sportif et une route Trekking.
+
+## Impact
+
+- Evite qu'un site herite silencieusement de l'identite d'un autre.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/069-arborescence-frontend-multi-sites.md
+
+---
+
+## 2026-07-27 - Frontend: verifier les frontieres entre sites
+
+## Contexte
+
+- Le client va isoler le portfolio, Suivi Sportif et Trekking dans trois
+  dossiers de site.
+- Une convention documentaire n'empeche pas un futur import direct entre deux
+  sites.
+
+## Proposition
+
+- Ajouter plus tard une regle ESLint ou un test d'architecture qui interdit les
+  imports entre `sites/*`, sauf passage explicite par `shared`.
+
+## Impact
+
+- Evite le retour progressif d'un frontend couple.
+- Rend les dependances entre sites visibles pendant la revue de code.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/069-arborescence-frontend-multi-sites.md
+
+---
+
+## 2026-07-27 - Frontend: criteres d'extraction d'un site autonome
+
+## Contexte
+
+- Un build Vite unique reste adapte aux trois sites actuels.
+- Un futur mini-site pourrait toutefois avoir un cycle de livraison, des
+  dependances ou une equipe differente.
+
+## Proposition
+
+- Documenter des criteres objectifs avant de transformer un site en workspace:
+  poids du bundle, dependances propres, frequence de livraison et besoin d'un
+  deploiement independant.
+
+## Impact
+
+- Evite une migration prematuree tout en donnant un seuil clair pour la suite.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/069-arborescence-frontend-multi-sites.md
+
+---
+
+## 2026-07-27 - Frontend: catalogue des composants vraiment partages
+
+## Contexte
+
+- Le dossier `shared` doit rester plus strict qu'un dossier `components`
+  generique.
+- Les futurs sites risquent de dupliquer ou de partager trop tot leurs
+  primitives visuelles.
+
+## Proposition
+
+- Ajouter plus tard une petite page de catalogue ou des stories pour les
+  composants utilises par au moins deux sites, avec leur contrat et leurs
+  variantes.
+
+## Impact
+
+- Rend les composants communs plus faciles a decouvrir et a faire evoluer.
+- Limite les abstractions sans usage reel.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/069-arborescence-frontend-multi-sites.md
+
+---
+
 ## 2026-07-27 - Trekking: fiche de decision avant depart
 
 ## Contexte
@@ -1282,6 +1541,8 @@
 ## Liens
 
 - Plan: docs/90-plans/036-angle-technique-dette-maintenance.md
+- Plan: docs/90-plans/069-arborescence-frontend-multi-sites.md (controle
+  `client/src` realise; extension au reste du depot encore ouverte)
 
 ---
 
