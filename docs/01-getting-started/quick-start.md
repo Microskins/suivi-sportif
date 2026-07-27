@@ -87,6 +87,7 @@ URLs:
 - Portfolio: http://localhost:5173
 - Suivi Sportif: http://localhost:5173/suivi-sportif
 - Trekking: http://localhost:5173/trekking
+- Vosges Wild: http://localhost:5173/trekking/vosges-wild
 - MCP: http://127.0.0.1:3033/mcp
 
 ## 5. Verifier

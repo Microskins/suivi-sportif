@@ -208,7 +208,7 @@ export function Trekking() {
         <div className="absolute inset-0 -z-10 bg-[#071610]/55" />
         <div className="mx-auto flex min-h-[44rem] max-w-6xl flex-col px-6 py-6 sm:px-10 lg:px-14">
           <header className="flex items-center justify-between border-b border-white/20 pb-5">
-            <a href="/" className="font-serif text-xl font-semibold tracking-wide">
+            <a href="/trekking" className="font-serif text-xl font-semibold tracking-wide">
               Vosges Wild
             </a>
             <a

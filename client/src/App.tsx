@@ -4,6 +4,7 @@ import { CookieConsentLayer } from "./components/CookieConsentLayer";
 import { CookiePolicyPage } from "./components/CookiePolicyPage";
 import { Portfolio } from "./components/Portfolio";
 import { Trekking } from "./components/Trekking";
+import { TrekkingHome } from "./components/TrekkingHome";
 import { useAuthStore } from "./stores/authStore";
 
 type AuthMode = "login" | "register";
@@ -12,12 +13,17 @@ const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
 const SPORT_APP_PATH = "/suivi-sportif";
 const COOKIE_POLICY_PATH = `${SPORT_APP_PATH}/politique-cookies`;
 const TREKKING_PATH = "/trekking";
+const VOSGES_WILD_PATH = `${TREKKING_PATH}/vosges-wild`;
 
 export default function App() {
   const currentPath = window.location.pathname.replace(/\/+$/, "") || "/";
 
-  if (currentPath === TREKKING_PATH || currentPath.startsWith(`${TREKKING_PATH}/`)) {
+  if (currentPath === VOSGES_WILD_PATH) {
     return <Trekking />;
+  }
+
+  if (currentPath === TREKKING_PATH || currentPath.startsWith(`${TREKKING_PATH}/`)) {
+    return <TrekkingHome />;
   }
 
   if (currentPath !== SPORT_APP_PATH && !currentPath.startsWith(`${SPORT_APP_PATH}/`)) {

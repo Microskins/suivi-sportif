@@ -12,6 +12,8 @@
   preparation sombre, inspire du terrain et lisible en exterieur.
 - Conserver le mini-site dans le client React existant, sans nouvelle API ni
   nouveau domaine.
+- Utiliser `/trekking` comme catalogue et un chemin dedie par voyage, en
+  commencant par `/trekking/vosges-wild`.
 - Inclure une vue d'itineraire, les trois etapes, une liste de materiel
   interactive locale et les rappels de securite.
 - Presenter les distances et conditions comme indicatives: elles devront etre
@@ -26,6 +28,7 @@
 - [x] Construire le mini-site `/trekking` et ses interactions.
 - [x] Ajouter le projet au portfolio et documenter la route.
 - [x] Corriger la collision entre la route `/trekking` et les assets publics.
+- [x] Creer un catalogue de voyages et une route dediee pour Vosges Wild.
 - [ ] Verifier le typecheck, les tests frontend et le build (bloque par Node.js absent).
 
 ## Notes de verification
@@ -41,3 +44,7 @@
 - 2026-07-27: correction Nginx: le dossier public `/trekking` entrait en
   collision avec la route React et retournait `403`. L'image est deplacee sous
   `/media/trekking` pour liberer la route.
+- 2026-07-27: `/trekking` est desormais le catalogue des voyages et Vosges Wild
+  est accessible sous `/trekking/vosges-wild`.
+- 2026-07-27: `git diff --check` valide la mise a jour des routes; le build local
+  reste bloque par l'absence de Node.js dans l'environnement.
