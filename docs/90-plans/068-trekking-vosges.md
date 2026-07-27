@@ -5,6 +5,8 @@
 - Ajouter au portfolio un mini-site de trekking accessible sous `/trekking`.
 - Presenter un premier trek de trois jours dans les Hautes-Vosges avec les
   informations utiles a sa preparation.
+- Integrer les deux traces Google My Maps fournies pour comparer les parcours
+  directement dans le carnet Vosges Wild.
 
 ## Decisions
 
@@ -18,6 +20,10 @@
   interactive locale et les rappels de securite.
 - Presenter les distances et conditions comme indicatives: elles devront etre
   verifiees avant un depart reel.
+- Charger chaque carte Google uniquement apres une action explicite du visiteur
+  et conserver un lien d'ouverture externe.
+- Presenter les deux traces dans des cartes responsives, sans leur inventer de
+  nom ou de role non fourni.
 
 ## Todo
 
@@ -29,7 +35,12 @@
 - [x] Ajouter le projet au portfolio et documenter la route.
 - [x] Corriger la collision entre la route `/trekking` et les assets publics.
 - [x] Creer un catalogue de voyages et une route dediee pour Vosges Wild.
-- [ ] Verifier le typecheck, les tests frontend et le build (bloque par Node.js absent).
+- [x] Ajouter un composant cartographique dedie aux deux traces fournies.
+- [x] Integrer les cartes dans la vue itineraire avec un chargement explicite.
+- [x] Verifier la responsivite, les liens, les imports et la limite de 500 lignes.
+- [x] Verifier le typecheck, le test cible et le build via WSL.
+- [ ] Retablir la suite frontend et le lint globaux (echecs existants hors
+  cartographie et configuration ESLint 10 absente).
 
 ## Notes de verification
 
@@ -48,3 +59,21 @@
   est accessible sous `/trekking/vosges-wild`.
 - 2026-07-27: `git diff --check` valide la mise a jour des routes; le build local
   reste bloque par l'absence de Node.js dans l'environnement.
+- 2026-07-27: ajout demande de deux traces Google My Maps dans la vue itineraire
+  de Vosges Wild.
+- 2026-07-27: `route-maps.tsx` isole les deux integrations. Aucune iframe Google
+  n'est creee avant le clic sur `Charger la carte`; chaque trace conserve aussi
+  un lien d'ouverture dans un nouvel onglet.
+- 2026-07-27: trois idees adjacentes ajoutees a
+  `docs/06-idees/90-ia-idees.md`: alternative sans Google, description
+  accessible et catalogue de traces pilote par les donnees.
+- 2026-07-27: `npm run typecheck -w client` via WSL: OK.
+- 2026-07-27: test cible `route-maps.test.tsx` via WSL: 1 test passe.
+- 2026-07-27: `npm run build -w client` via WSL: OK; Vite signale le chunk
+  JavaScript existant de 738,61 kB apres minification.
+- 2026-07-27: suite frontend globale: 13 tests passent et 4 echouent dans
+  `dashboard-overview.test.tsx` et `assistant-chatbox.test.tsx`, sans lien avec
+  Trekking. Le lint ne demarre pas car ESLint 10 attend un fichier
+  `eslint.config.*` absent du depot.
+- 2026-07-27: la verification visuelle automatisee locale est indisponible a
+  cause des metadonnees de sandbox du navigateur integre.

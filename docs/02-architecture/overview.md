@@ -164,22 +164,45 @@ Organisation actuelle:
 
 ```text
 client/src/
-|-- App.tsx
+|-- app/
+|   |-- site-identities.ts
+|   `-- site-router.tsx
 |-- main.tsx
-|-- api/
-|   `-- client.ts
-`-- stores/
-    |-- authStore.ts
-    |-- bypassMockData.ts
-    |-- exercisesStore.ts
-    `-- workoutsStore.ts
+`-- sites/
+    |-- portfolio/
+    |-- trekking/
+    `-- suivi-sportif/
+        |-- api/
+        |-- components/
+        |-- consent/
+        |-- data/
+        `-- stores/
 ```
 
-`client/src/api/client.ts` centralise les appels HTTP et lit les reponses
-standardisees `{ data: ... }`.
+`client/src/app/site-router.tsx` ne porte aucune logique metier: il choisit le
+site selon le chemin courant. Chaque site possede ses composants et son etat,
+sans import direct vers les fichiers internes d'un autre site.
 
-Les stores Zustand portent l'etat d'auth, d'exercices et de seances. Le mode
-`VITE_BYPASS_AUTH=true` permet de travailler sur l'interface sans API locale.
+`client/src/app/site-identities.ts` porte uniquement le registre transversal
+des identites. Il applique avant le rendu React le titre, la description, la
+couleur navigateur, le favicon et l'attribut `data-site` correspondant a la
+route. Les images sociales suivent aussi le contexte. Le manifeste et les
+icones d'installation PWA ne sont ajoutes que pour Suivi Sportif, afin que le
+portfolio et Trekking ne proposent pas d'installer la mauvaise application.
+Les signatures de marque, palettes et composants visuels restent dans leur
+dossier de site:
+
+- portfolio: direction editoriale ivoire, encre et vermillon;
+- Suivi Sportif: interface technique sombre, avec accent citron;
+- Trekking: univers organique nocturne inspire des cartes topographiques.
+
+Cette frontiere permet d'ajouter un site sans melanger son interface avec les
+autres, tout en gardant un seul document HTML et un seul build Vite.
+
+Dans Suivi Sportif, `api/client.ts` centralise les appels HTTP et lit les
+reponses standardisees `{ data: ... }`. Les stores Zustand portent l'etat
+d'auth, d'exercices et de seances. Le mode `VITE_BYPASS_AUTH=true` permet de
+travailler sur l'interface sans API locale.
 
 Le client sert aussi de point d'entree de portfolio:
 
@@ -189,10 +212,15 @@ Le client sert aussi de point d'entree de portfolio:
 - `/trekking` affiche le catalogue des voyages de trekking.
 - `/trekking/vosges-wild` affiche le carnet de preparation Vosges Wild; sa
   checklist est conservee localement dans le navigateur via un store Zustand.
+  Ses deux traces Google My Maps restent inactives jusqu'au clic du visiteur.
 
 Les routes techniques restent a la racine du domaine: `/api`, `/health` et
 `/mcp`. Cette organisation permet d'ajouter de futurs projets sous leurs
 propres chemins sans nouveau domaine ni DNS.
+
+Les assets propres a un site suivent la meme frontiere sous
+`client/public/sites/<site>`. Les fichiers maintenus dans `client/src` sont
+limites a 500 lignes et controles avec `npm run check:file-size`.
 
 ## MCP
 
