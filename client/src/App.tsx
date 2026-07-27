@@ -2,14 +2,27 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Dashboard } from "./components/Dashboard";
 import { CookieConsentLayer } from "./components/CookieConsentLayer";
 import { CookiePolicyPage } from "./components/CookiePolicyPage";
+import { Portfolio } from "./components/Portfolio";
 import { useAuthStore } from "./stores/authStore";
 
 type AuthMode = "login" | "register";
 
 const isAuthBypassEnabled = import.meta.env.VITE_BYPASS_AUTH === "true";
+const SPORT_APP_PATH = "/suivi-sportif";
+const COOKIE_POLICY_PATH = `${SPORT_APP_PATH}/politique-cookies`;
 
 export default function App() {
-  const isPolicyPage = window.location.pathname === "/politique-cookies";
+  const currentPath = window.location.pathname.replace(/\/+$/, "") || "/";
+
+  if (currentPath !== SPORT_APP_PATH && !currentPath.startsWith(`${SPORT_APP_PATH}/`)) {
+    return <Portfolio />;
+  }
+
+  return <SportApp />;
+}
+
+function SportApp() {
+  const isPolicyPage = window.location.pathname === COOKIE_POLICY_PATH;
   const {
     user,
     isAuthenticated,
@@ -208,7 +221,7 @@ export default function App() {
 
             <p className="mt-4 text-xs text-slate-500">
               En continuant, tu peux consulter notre{" "}
-              <a href="/politique-cookies" className="font-medium text-slate-800 underline">
+              <a href={COOKIE_POLICY_PATH} className="font-medium text-slate-800 underline">
                 politique cookies
               </a>
               .

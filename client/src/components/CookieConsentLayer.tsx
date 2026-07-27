@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { initializeConsentGatedBootstraps } from "../consent/trackerBootstrap";
 import { useCookieConsentStore } from "../stores/cookieConsentStore";
 
+const COOKIE_POLICY_PATH = "/suivi-sportif/politique-cookies";
+
 function CookieBanner() {
   const acceptAll = useCookieConsentStore((state) => state.acceptAll);
   const rejectAll = useCookieConsentStore((state) => state.rejectAll);
@@ -19,7 +21,7 @@ function CookieBanner() {
             ou refuser les categories optionnelles, puis modifier ton choix a tout moment.
           </p>
           <a
-            href="/politique-cookies"
+            href={COOKIE_POLICY_PATH}
             className="mt-2 inline-block text-sm font-medium text-slate-900 underline"
           >
             Consulter la politique cookies
@@ -91,7 +93,7 @@ function CookiePreferencesModal() {
           actifs pour le fonctionnement de l'application.
         </p>
         <a
-          href="/politique-cookies"
+          href={COOKIE_POLICY_PATH}
           className="mt-2 inline-block text-sm font-medium text-slate-900 underline"
         >
           Lire la politique cookies

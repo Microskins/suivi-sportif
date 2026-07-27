@@ -5,7 +5,7 @@ export function CookiePolicyPage() {
   return (
     <main className="min-h-screen bg-slate-100 px-6 py-10 text-slate-900">
       <section className="mx-auto max-w-3xl rounded border border-slate-300 bg-white p-6 shadow-sm">
-        <a href="/" className="text-sm font-medium text-slate-900 underline">
+        <a href="/suivi-sportif" className="text-sm font-medium text-slate-900 underline">
           Retour a l'application
         </a>
         <h1 className="mt-4 text-2xl font-bold">Politique de cookies</h1>

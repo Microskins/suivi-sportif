@@ -1,5 +1,61 @@
 # IA Idees
 
+## 2026-07-27 - Portfolio: catalogue de projets configurable
+
+## Contexte
+
+- Le domaine va accueillir plusieurs mini-sites, avec Suivi Sportif comme
+  premier projet accessible depuis le portfolio.
+- Ajouter chaque projet directement dans le composant sera vite repetitif.
+
+## Proposition
+
+- Quand un deuxieme projet sera pret, extraire la liste des projets dans une
+  configuration typée qui porte le titre, le resume, le chemin, le statut et
+  une image optionnelle.
+
+## Impact
+
+- Ajout des futurs projets plus rapide et presentation coherente.
+- Le portfolio reste facile a faire evoluer sans coupler les mini-sites entre
+  eux.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/067-portfolio-racine-suivi-sportif.md
+
+---
+
+## 2026-07-27 - Portfolio: metadonnees partageables par projet
+
+## Contexte
+
+- La page racine peut etre partagee, mais chaque mini-site meritera aussi un
+  titre et une image de partage adaptes.
+
+## Proposition
+
+- Ajouter plus tard des metadonnees par route pour mettre a jour le titre de
+  document et les balises de partage selon le projet consulte.
+
+## Impact
+
+- Liens mieux identifies dans les navigateurs et reseaux sociaux.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/067-portfolio-racine-suivi-sportif.md
+
+---
+
 ## 2026-06-17 - Assistant chat classique: liens directs vers le bon ecran
 
 ## Contexte
