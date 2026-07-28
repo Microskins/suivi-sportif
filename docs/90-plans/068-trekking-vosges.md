@@ -20,8 +20,8 @@
   interactive locale et les rappels de securite.
 - Presenter les distances et conditions comme indicatives: elles devront etre
   verifiees avant un depart reel.
-- Charger chaque carte Google uniquement apres une action explicite du visiteur
-  et conserver un lien d'ouverture externe.
+- Charger automatiquement la carte Google de la trace selectionnee et conserver
+  un lien d'ouverture externe.
 - Presenter les deux traces dans des cartes responsives, sans leur inventer de
   nom ou de role non fourni.
 - Utiliser les fichiers de preparation Option 1 et Option 2 comme source des
@@ -122,3 +122,5 @@
   `npm run build -w client` via WSL: OK.
 - 2026-07-28: les URLs Google My Maps ont ete inversees pour faire correspondre
   l'iframe de la trace 01 au GR5 et celle de la trace 02 a la boucle.
+- 2026-07-28: la carte de la trace selectionnee est chargee automatiquement a
+  l'ouverture de l'onglet cartographique.

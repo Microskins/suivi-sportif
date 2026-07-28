@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { RouteMaps, type TrekRoute } from "./route-maps";
 
 const route: TrekRoute = {
@@ -20,14 +20,11 @@ const route: TrekRoute = {
 afterEach(cleanup);
 
 describe("RouteMaps", () => {
-  it("loads only the selected route map after an explicit action", () => {
+  it("loads the selected route map immediately", () => {
     render(<RouteMaps route={route} />);
 
-    expect(document.querySelectorAll("iframe")).toHaveLength(0);
     expect(screen.getByText("Legende du trace")).toBeInTheDocument();
     expect(screen.getByText("Jour 3")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Charger la carte" }));
 
     const map = document.querySelector<HTMLIFrameElement>("iframe");
     expect(map?.src).toContain("mid=trace-01");

@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export type TrekRoute = {
   accentClass: string;
   externalUrl: string;
@@ -10,39 +8,7 @@ export type TrekRoute = {
   summary: string;
 };
 
-function MapPlaceholder({
-  label,
-  onLoad,
-}: {
-  label: string;
-  onLoad: () => void;
-}) {
-  return (
-    <div className="grid h-full min-h-72 place-items-center bg-[#0a1f17] p-8 text-center">
-      <div className="max-w-sm">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#95d5a8]">
-          Carte interactive
-        </p>
-        <p className="mt-4 font-serif text-3xl text-[#f4efdf]">{label}</p>
-        <p className="mt-3 text-sm leading-6 text-[#9eb3a6]">
-          Charge la carte pour consulter le trace, ses couches et sa legende
-          originale.
-        </p>
-        <button
-          type="button"
-          onClick={onLoad}
-          className="mt-6 border border-[#cfe895] bg-[#cfe895] px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#102016] transition hover:bg-transparent hover:text-[#cfe895] focus:outline-none focus:ring-2 focus:ring-[#f4efdf] focus:ring-offset-2 focus:ring-offset-[#0a1f17]"
-        >
-          Charger la carte
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export function RouteMaps({ route }: { route: TrekRoute }) {
-  const [isLoaded, setIsLoaded] = useState(false);
-
   return (
     <section
       aria-labelledby={`${route.id}-map-title`}
@@ -72,21 +38,13 @@ export function RouteMaps({ route }: { route: TrekRoute }) {
 
       <div className="mt-6 overflow-hidden border border-[#315947] bg-[#102d21]">
         <div className="aspect-[16/10] min-h-72">
-          {isLoaded ? (
-            <iframe
-              src={route.mapUrl}
-              title={`Carte Google My Maps - ${route.label}`}
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-              className="h-full w-full border-0"
-            />
-          ) : (
-            <MapPlaceholder
-              label={route.label}
-              onLoad={() => setIsLoaded(true)}
-            />
-          )}
+          <iframe
+            src={route.mapUrl}
+            title={`Carte Google My Maps - ${route.label}`}
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+            className="h-full w-full border-0"
+          />
         </div>
         <div className="border-t border-[#315947] p-5">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-[#95d5a8]">
