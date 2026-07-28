@@ -1,10 +1,11 @@
 import { useState } from "react";
 
 export type TrekRoute = {
-  lineClass: string;
+  accentClass: string;
   externalUrl: string;
   id: string;
   label: string;
+  mapLegend: Array<{ label: string; lineClass: string }>;
   mapUrl: string;
   summary: string;
 };
@@ -87,17 +88,27 @@ export function RouteMaps({ route }: { route: TrekRoute }) {
             />
           )}
         </div>
-        <div className="grid gap-4 border-t border-[#315947] p-5 sm:grid-cols-[auto_1fr] sm:items-center">
-          <div className="flex items-center gap-3 text-sm font-semibold text-[#dfe9e2]">
-            <span
-              aria-hidden="true"
-              className={`h-1.5 w-12 rounded-full ${route.lineClass}`}
-            />
-            {route.label}
+        <div className="border-t border-[#315947] p-5">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#95d5a8]">
+            Legende du trace
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            {route.mapLegend.map((item) => (
+              <div
+                key={item.label}
+                className="flex items-center gap-3 text-sm font-semibold text-[#dfe9e2]"
+              >
+                <span
+                  aria-hidden="true"
+                  className={`h-1.5 w-10 rounded-full ${item.lineClass}`}
+                />
+                {item.label}
+              </div>
+            ))}
           </div>
-          <p className="text-sm leading-6 text-[#9eb3a6]">
-            Legende: cette couleur identifie le trace affiche. Les points et les
-            autres couleurs restent ceux de la carte Google My Maps.
+          <p className="mt-4 text-sm leading-6 text-[#9eb3a6]">
+            Les marqueurs de sommets, photos, sources, refuges, parkings et
+            passages exposes sont visibles directement sur la carte.
           </p>
         </div>
       </div>

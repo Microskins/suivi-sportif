@@ -24,6 +24,8 @@
   et conserver un lien d'ouverture externe.
 - Presenter les deux traces dans des cartes responsives, sans leur inventer de
   nom ou de role non fourni.
+- Utiliser les fichiers de preparation Option 1 et Option 2 comme source des
+  etapes, statistiques et couleurs de trace affichees dans Vosges Wild.
 
 ## Todo
 
@@ -42,6 +44,8 @@
 - [x] Aligner la carte Trekking du portfolio avec son identite visuelle.
 - [x] Separer la navigation Vosges Wild par trace, avec des itineraires, etapes
   et legendes propres a chaque parcours.
+- [x] Remplacer les contenus generiques des deux traces par les informations
+  des fichiers de preparation fournis.
 - [x] Verifier la responsivite, les liens, les imports et la limite de 500 lignes.
 - [x] Verifier le typecheck, le test cible et le build via WSL.
 - [ ] Retablir la suite frontend et le lint globaux (echecs existants hors
@@ -101,3 +105,9 @@
 - 2026-07-28: `npm run typecheck -w client` et `npm run build -w client` via
   WSL: OK. Le test Vitest cible demarre, mais ne retourne toujours pas de
   resultat final dans cette console WSL.
+- 2026-07-28: les fichiers Option 1 (GR5 Lac Blanc - Grand Ballon) et Option 2
+  (Boucle Hohneck et des Lacs) ont fourni les etapes, distances, deniveles,
+  durees, points de passage et la legende vert/violet/bleu par jour.
+- 2026-07-28: l'idee existante de fiches de traces pilotees par les donnees
+  couvre deja l'amelioration complementaire identifiee; aucune idee redondante
+  n'a ete ajoutee.

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { RouteMaps } from "./route-maps";
-import type { TrekRoute } from "./route-maps";
 import { TrekkingBrand } from "./trekking-brand";
 import { useTrekkingStore } from "./trekking-store";
+import { TREK_ROUTES, type TrekRouteContent } from "./vosges-wild-routes";
 
 type RouteView = "itineraire" | "etapes" | "carte" | "sac";
 
@@ -45,73 +45,6 @@ const PROGRESS_WIDTH_CLASSES = [
   "w-full",
 ];
 
-type TrekRouteContent = TrekRoute & {
-  stages: Array<{ day: string; title: string; detail: string }>;
-};
-
-const TREK_ROUTES: TrekRouteContent[] = [
-  {
-    id: "trace-01",
-    label: "Trace 01",
-    lineClass: "bg-[#3079ed]",
-    mapUrl:
-      "https://www.google.com/maps/d/embed?mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk&ehbc=2E312F",
-    externalUrl:
-      "https://www.google.com/maps/d/u/0/viewer?mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk",
-    summary:
-      "Premier itineraire enregistre dans la carte. Chaque point de passage est a lire directement dans la legende et sur le trace.",
-    stages: [
-      {
-        day: "01",
-        title: "Depart",
-        detail: "Le point de depart de la trace est identifie sur la carte.",
-      },
-      {
-        day: "02",
-        title: "Parcours",
-        detail:
-          "Les passages et points d'interet suivent la ligne bleue de la trace 01.",
-      },
-      {
-        day: "03",
-        title: "Arrivee",
-        detail:
-          "L'arrivee de cette trace est indiquee sur sa carte interactive.",
-      },
-    ],
-  },
-  {
-    id: "trace-02",
-    label: "Trace 02",
-    lineClass: "bg-[#3079ed]",
-    mapUrl:
-      "https://www.google.com/maps/d/embed?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0&ehbc=2E312F",
-    externalUrl:
-      "https://www.google.com/maps/d/u/0/viewer?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0",
-    summary:
-      "Second itineraire enregistre dans la carte. Il se consulte independamment de la trace 01 pour garder ses reperes et sa legende.",
-    stages: [
-      {
-        day: "01",
-        title: "Depart",
-        detail: "Le point de depart de la trace est identifie sur la carte.",
-      },
-      {
-        day: "02",
-        title: "Parcours",
-        detail:
-          "Les passages et points d'interet suivent la ligne de la trace 02.",
-      },
-      {
-        day: "03",
-        title: "Arrivee",
-        detail:
-          "L'arrivee de cette trace est indiquee sur sa carte interactive.",
-      },
-    ],
-  },
-];
-
 function RouteItinerary({ route }: { route: TrekRouteContent }) {
   return (
     <div className="grid gap-8 p-6 lg:grid-cols-[0.8fr_1.2fr] lg:p-10">
@@ -144,7 +77,9 @@ function RouteItinerary({ route }: { route: TrekRouteContent }) {
               <p className="font-serif text-2xl text-[#f4efdf]">
                 {stage.title}
               </p>
-              <p className="mt-1 text-sm text-[#9eb3a6]">{stage.detail}</p>
+              <p className="mt-1 text-sm text-[#9eb3a6]">
+                {stage.distance} - {stage.elevation} - {stage.duration}
+              </p>
             </div>
           </li>
         ))}
@@ -170,9 +105,34 @@ function Stages({ route }: { route: TrekRouteContent }) {
           <h3 className="relative mt-5 max-w-xs font-serif text-3xl leading-none text-[#f4efdf]">
             {stage.title}
           </h3>
+          <div className="relative mt-6 flex flex-wrap gap-2 text-xs font-semibold text-[#dfe9e2]">
+            <span className="border border-[#315947] px-3 py-2">
+              {stage.distance}
+            </span>
+            <span className="border border-[#315947] px-3 py-2">
+              {stage.elevation}
+            </span>
+            <span className="border border-[#315947] px-3 py-2">
+              {stage.duration}
+            </span>
+            <span className="border border-[#315947] px-3 py-2">
+              {stage.difficulty}
+            </span>
+          </div>
           <p className="relative mt-6 max-w-sm text-sm leading-6 text-[#a9bcb1]">
             {stage.detail}
           </p>
+          <ul className="relative mt-6 space-y-2 border-t border-[#315947] pt-5 text-sm leading-6 text-[#dfe9e2]">
+            {stage.points.map((point) => (
+              <li key={point} className="flex gap-2">
+                <span
+                  aria-hidden="true"
+                  className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#95d5a8]"
+                />
+                {point}
+              </li>
+            ))}
+          </ul>
         </article>
       ))}
     </div>
@@ -291,12 +251,7 @@ export function VosgesWildSite() {
 
       <div className="mx-auto max-w-6xl px-6 sm:px-10 lg:px-14">
         <section className="grid border-x border-b border-[#315947] bg-[#102d21] sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            ["49 km", "base indicative"],
-            ["3 jours", "2 nuits"],
-            ["1 363 m", "point culminant"],
-            ["Modere +", "avec sac"],
-          ].map(([value, label]) => (
+          {activeRoute.stats.map(([value, label]) => (
             <div
               key={label}
               className="border-b border-[#315947] p-6 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
@@ -343,7 +298,7 @@ export function VosgesWildSite() {
                   }`}
                 >
                   <span
-                    className={`h-1.5 w-10 rounded-full ${route.lineClass}`}
+                    className={`h-1.5 w-10 rounded-full ${route.accentClass}`}
                     aria-hidden="true"
                   />
                   <span>
