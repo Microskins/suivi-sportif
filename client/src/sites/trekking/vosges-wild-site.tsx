@@ -231,7 +231,7 @@ export function VosgesWildSite() {
               Micro-aventure - 3 jours / 2 nuits
             </p>
             <h1 className="mt-6 font-serif text-6xl leading-[0.88] sm:text-7xl lg:text-9xl">
-              La crete
+              Les Vosges
               <br />
               comme horizon.
             </h1>

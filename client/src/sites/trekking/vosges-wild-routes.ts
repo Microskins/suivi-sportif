@@ -23,14 +23,14 @@ const MAP_LEGEND = [
 export const TREK_ROUTES: TrekRouteContent[] = [
   {
     id: "trace-01",
-    label: "GR5 - Lac Blanc au Grand Ballon",
+    label: "Mini GR5 - Lac Blanc au Grand Ballon",
     accentClass: "bg-[#0f9d58]",
     mapUrl:
       "https://www.google.com/maps/d/embed?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0&ehbc=2E312F",
     externalUrl:
       "https://www.google.com/maps/d/u/0/viewer?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0",
     summary:
-      "Une traversee de trois jours sur le GR5, du Lac Blanc au Grand Ballon, par les cretes, le Hohneck et les sommets du massif.",
+      "Une traversee de trois jours sur le Mini GR5, du Lac Blanc au Grand Ballon, par les cretes, le Hohneck et les sommets du massif.",
     stats: [
       ["40,8 km", "distance totale"],
       ["1 311 m", "denivele positif"],
