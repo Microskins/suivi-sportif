@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 type TrekMap = {
+  details: Array<{ label: string; value: string }>;
+  externalUrl: string;
   id: string;
   label: string;
   src: string;
@@ -11,11 +13,31 @@ const TREK_MAPS: TrekMap[] = [
     id: "trace-01",
     label: "Trace 01",
     src: "https://www.google.com/maps/d/embed?mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk&ehbc=2E312F",
+    externalUrl:
+      "https://www.google.com/maps/d/u/0/viewer?mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk",
+    details: [
+      { label: "Depart et arrivee", value: "A relever sur la carte" },
+      { label: "Distance et duree", value: "A relever sur la carte" },
+      { label: "Denivele", value: "A relever sur la carte" },
+      { label: "Points de passage", value: "Sommets, lacs et cols visibles sur la carte" },
+      { label: "Eau et ravitaillement", value: "Verifier chaque point avant le depart" },
+      { label: "Nuit et bivouac", value: "Verifier les restrictions locales" },
+    ],
   },
   {
     id: "trace-02",
     label: "Trace 02",
     src: "https://www.google.com/maps/d/embed?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0&ehbc=2E312F",
+    externalUrl:
+      "https://www.google.com/maps/d/u/0/viewer?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0",
+    details: [
+      { label: "Depart et arrivee", value: "A relever sur la carte" },
+      { label: "Distance et duree", value: "A relever sur la carte" },
+      { label: "Denivele", value: "A relever sur la carte" },
+      { label: "Points de passage", value: "Sommets, lacs et cols visibles sur la carte" },
+      { label: "Eau et ravitaillement", value: "Verifier chaque point avant le depart" },
+      { label: "Nuit et bivouac", value: "Verifier les restrictions locales" },
+    ],
   },
 ];
 
@@ -80,7 +102,7 @@ function TrekMapCard({
           <h4 className="mt-1 font-serif text-2xl text-[#f4efdf]">{map.label}</h4>
         </div>
         <a
-          href={map.src}
+          href={map.externalUrl}
           target="_blank"
           rel="noreferrer"
           className="text-xs font-bold uppercase tracking-[0.12em] text-[#cfe895] underline decoration-[#315947] underline-offset-4 transition hover:decoration-[#cfe895]"
@@ -102,6 +124,27 @@ function TrekMapCard({
         ) : (
           <MapPlaceholder label={map.label} onLoad={onLoad} />
         )}
+      </div>
+
+      <div className="border-t border-[#315947] p-5">
+        <table className="w-full border-collapse text-left text-sm">
+          <caption className="mb-3 text-left text-xs font-black uppercase tracking-[0.18em] text-[#95d5a8]">
+            Fiche {map.label.toLowerCase()}
+          </caption>
+          <tbody>
+            {map.details.map((detail) => (
+              <tr key={detail.label} className="border-t border-[#315947] first:border-t-0">
+                <th
+                  scope="row"
+                  className="w-[43%] py-3 pr-4 align-top font-semibold text-[#dfe9e2]"
+                >
+                  {detail.label}
+                </th>
+                <td className="py-3 align-top leading-6 text-[#9eb3a6]">{detail.value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </article>
   );

@@ -37,6 +37,8 @@
 - [x] Creer un catalogue de voyages et une route dediee pour Vosges Wild.
 - [x] Ajouter un composant cartographique dedie aux deux traces fournies.
 - [x] Integrer les cartes dans la vue itineraire avec un chargement explicite.
+- [x] Ajouter une fiche de preparation distincte sous chacune des deux traces.
+- [x] Autoriser les integrations Google My Maps dans la CSP de production.
 - [x] Verifier la responsivite, les liens, les imports et la limite de 500 lignes.
 - [x] Verifier le typecheck, le test cible et le build via WSL.
 - [ ] Retablir la suite frontend et le lint globaux (echecs existants hors
@@ -77,3 +79,14 @@
   `eslint.config.*` absent du depot.
 - 2026-07-27: la verification visuelle automatisee locale est indisponible a
   cause des metadonnees de sandbox du navigateur integre.
+- 2026-07-28: Google ne donne pas acces a l'export KML des deux cartes depuis
+  l'environnement de travail (`403`); les valeurs non exposees restent marquees
+  "A relever sur la carte" dans les fiches au lieu d'etre inventees.
+- 2026-07-28: `frame-src https://www.google.com` ajoute aux deux configurations
+  Nginx afin d'autoriser uniquement les iframes Google My Maps utilisees par le
+  site.
+- 2026-07-28: `npm run typecheck -w client` et `npm run build -w client` via
+  WSL: OK. Le build genere `client/dist`, supprime apres verification.
+- 2026-07-28: le test cible `route-maps.test.tsx` demarre dans Vitest mais ne
+  retourne pas de resultat final dans la console WSL de cet environnement; son
+  blocage est sans lien visible avec la compilation, qui passe.

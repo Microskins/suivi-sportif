@@ -12,6 +12,8 @@ describe("RouteMaps", () => {
     render(<RouteMaps />);
 
     expect(document.querySelectorAll("iframe")).toHaveLength(0);
+    expect(screen.getByText("Fiche trace 01")).toBeInTheDocument();
+    expect(screen.getByText("Fiche trace 02")).toBeInTheDocument();
 
     const loadButtons = screen.getAllByRole("button", {
       name: "Charger la carte",

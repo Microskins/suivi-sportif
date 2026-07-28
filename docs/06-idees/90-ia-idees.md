@@ -1,5 +1,33 @@
 # IA Idees
 
+## 2026-07-28 - Trekking: fiches de traces pilotees par les donnees
+
+## Contexte
+
+- Les deux cartes Google My Maps utilisent aujourd'hui les memes rubriques de
+  preparation mais leurs valeurs restent a completer depuis les traces.
+
+## Proposition
+
+- Extraire plus tard chaque trace dans une donnee locale versionnee qui porte
+  son GPX, ses statistiques, ses points de passage et ses restrictions, afin de
+  remplir automatiquement la carte et la fiche.
+
+## Impact
+
+- Informations coherentes entre la carte, la fiche et le futur telechargement
+  GPX.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/068-trekking-vosges.md
+
+---
+
 ## 2026-07-27 - Trekking: alternative cartographique sans dependance Google
 
 ## Contexte
