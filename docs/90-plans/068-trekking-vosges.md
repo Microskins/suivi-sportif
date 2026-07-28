@@ -40,6 +40,8 @@
 - [x] Ajouter une fiche de preparation distincte sous chacune des deux traces.
 - [x] Autoriser les integrations Google My Maps dans la CSP de production.
 - [x] Aligner la carte Trekking du portfolio avec son identite visuelle.
+- [x] Separer la navigation Vosges Wild par trace, avec des itineraires, etapes
+  et legendes propres a chaque parcours.
 - [x] Verifier la responsivite, les liens, les imports et la limite de 500 lignes.
 - [x] Verifier le typecheck, le test cible et le build via WSL.
 - [ ] Retablir la suite frontend et le lint globaux (echecs existants hors
@@ -93,3 +95,9 @@
   blocage est sans lien visible avec la compilation, qui passe.
 - 2026-07-28: la carte projet du portfolio utilise le favicon Trekking et le
   nom de site `Trekking`; `Vosges Wild` reste le nom du premier voyage.
+- 2026-07-28: la navigation Vosges Wild distingue desormais `Trace 01` et
+  `Trace 02`; chaque selection ouvre son propre itineraire, ses etapes et son
+  unique embed Google My Maps avec une legende associee.
+- 2026-07-28: `npm run typecheck -w client` et `npm run build -w client` via
+  WSL: OK. Le test Vitest cible demarre, mais ne retourne toujours pas de
+  resultat final dans cette console WSL.

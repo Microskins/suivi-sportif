@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { RouteMaps } from "./route-maps";
+import type { TrekRoute } from "./route-maps";
 import { TrekkingBrand } from "./trekking-brand";
 import { useTrekkingStore } from "./trekking-store";
 
-type RouteView = "trace" | "etapes" | "sac";
+type RouteView = "itineraire" | "etapes" | "carte" | "sac";
 
 const PACKING_ITEMS = [
   "Tente ou abri leger",
@@ -44,85 +45,122 @@ const PROGRESS_WIDTH_CLASSES = [
   "w-full",
 ];
 
-const STAGES = [
+type TrekRouteContent = TrekRoute & {
+  stages: Array<{ day: string; title: string; detail: string }>;
+};
+
+const TREK_ROUTES: TrekRouteContent[] = [
   {
-    day: "01",
-    title: "Schlucht - Hohneck - Schiessrothried",
-    distance: "13 a 15 km",
-    duration: "5 a 6 h",
-    detail: "Depart matinal, sommet du Hohneck puis descente soutenue vers le lac.",
+    id: "trace-01",
+    label: "Trace 01",
+    lineClass: "bg-[#3079ed]",
+    mapUrl:
+      "https://www.google.com/maps/d/embed?mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk&ehbc=2E312F",
+    externalUrl:
+      "https://www.google.com/maps/d/u/0/viewer?mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk",
+    summary:
+      "Premier itineraire enregistre dans la carte. Chaque point de passage est a lire directement dans la legende et sur le trace.",
+    stages: [
+      {
+        day: "01",
+        title: "Depart",
+        detail: "Le point de depart de la trace est identifie sur la carte.",
+      },
+      {
+        day: "02",
+        title: "Parcours",
+        detail:
+          "Les passages et points d'interet suivent la ligne bleue de la trace 01.",
+      },
+      {
+        day: "03",
+        title: "Arrivee",
+        detail:
+          "L'arrivee de cette trace est indiquee sur sa carte interactive.",
+      },
+    ],
   },
   {
-    day: "02",
-    title: "Crete - Tanet - Lac Blanc",
-    distance: "19 a 21 km",
-    duration: "6 a 8 h",
-    detail: "La journee la plus engagee: longue traversee, reserve sensible et solution de nuit a confirmer.",
-  },
-  {
-    day: "03",
-    title: "Lac Blanc - Gazon du Faing - Schlucht",
-    distance: "13 a 15 km",
-    duration: "5 a 6 h",
-    detail: "Retour par les cretes: partir tot et surveiller le vent, le brouillard et les orages.",
+    id: "trace-02",
+    label: "Trace 02",
+    lineClass: "bg-[#3079ed]",
+    mapUrl:
+      "https://www.google.com/maps/d/embed?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0&ehbc=2E312F",
+    externalUrl:
+      "https://www.google.com/maps/d/u/0/viewer?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0",
+    summary:
+      "Second itineraire enregistre dans la carte. Il se consulte independamment de la trace 01 pour garder ses reperes et sa legende.",
+    stages: [
+      {
+        day: "01",
+        title: "Depart",
+        detail: "Le point de depart de la trace est identifie sur la carte.",
+      },
+      {
+        day: "02",
+        title: "Parcours",
+        detail:
+          "Les passages et points d'interet suivent la ligne de la trace 02.",
+      },
+      {
+        day: "03",
+        title: "Arrivee",
+        detail:
+          "L'arrivee de cette trace est indiquee sur sa carte interactive.",
+      },
+    ],
   },
 ];
 
-function RouteTrace() {
+function RouteItinerary({ route }: { route: TrekRouteContent }) {
   return (
-    <>
-      <div className="grid gap-8 p-6 lg:grid-cols-[0.8fr_1.2fr] lg:p-10">
-        <div className="border-b border-[#315947] pb-8 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#cfe895]">
-            Boucle de preparation
-          </p>
-          <h3 className="mt-3 font-serif text-4xl leading-none text-[#f4efdf]">
-            Col de la Schlucht
-          </h3>
-          <p className="mt-4 leading-7 text-[#b5c8bb]">
-            Depart et retour a 1 139 m. Le parcours suit les chaumes, le Hohneck,
-            les lacs glaciaires et le GR5 avant de revenir au point de depart.
-          </p>
-          <p className="mt-6 border-l-2 border-[#f4c56a] pl-4 text-sm leading-6 text-[#dfe9e2]">
-            La trace est un support de preparation. Une carte IGN recente et les
-            conditions du terrain restent indispensables.
-          </p>
-        </div>
-
-        <ol className="space-y-0">
-          {[
-            ["01", "Col de la Schlucht", "1 139 m - depart"],
-            ["02", "Hohneck", "1 363 m - point culminant"],
-            ["03", "Lac de Schiessrothried", "930 m - eau a traiter"],
-            ["04", "Le Tanet et Gazon du Faing", "1 292 a 1 306 m - zone sensible"],
-            ["05", "Lac Blanc", "1 055 m - nuit a anticiper"],
-            ["06", "Retour Schlucht", "49 km - boucle terminee"],
-          ].map(([index, title, note], itemIndex) => (
-            <li key={title} className="grid grid-cols-[2.5rem_1fr] gap-4">
-              <div className="flex flex-col items-center">
-                <span className="grid h-9 w-9 place-items-center rounded-full border border-[#cfe895] text-xs font-bold text-[#cfe895]">
-                  {index}
-                </span>
-                {itemIndex < 5 && <span className="h-10 w-px bg-[#315947]" />}
-              </div>
-              <div className="pb-4 pt-1">
-                <p className="font-serif text-2xl text-[#f4efdf]">{title}</p>
-                <p className="mt-1 text-sm text-[#9eb3a6]">{note}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+    <div className="grid gap-8 p-6 lg:grid-cols-[0.8fr_1.2fr] lg:p-10">
+      <div className="border-b border-[#315947] pb-8 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#cfe895]">
+          Itineraire selectionne
+        </p>
+        <h3 className="mt-3 font-serif text-4xl leading-none text-[#f4efdf]">
+          {route.label}
+        </h3>
+        <p className="mt-4 leading-7 text-[#b5c8bb]">{route.summary}</p>
+        <p className="mt-6 border-l-2 border-[#f4c56a] pl-4 text-sm leading-6 text-[#dfe9e2]">
+          La carte, ses points et sa legende sont propres a cette trace. Une
+          carte IGN recente et les conditions du terrain restent indispensables.
+        </p>
       </div>
-      <RouteMaps />
-    </>
+
+      <ol className="space-y-0">
+        {route.stages.map((stage, itemIndex) => (
+          <li key={stage.day} className="grid grid-cols-[2.5rem_1fr] gap-4">
+            <div className="flex flex-col items-center">
+              <span className="grid h-9 w-9 place-items-center rounded-full border border-[#cfe895] text-xs font-bold text-[#cfe895]">
+                {stage.day}
+              </span>
+              {itemIndex < route.stages.length - 1 && (
+                <span className="h-10 w-px bg-[#315947]" />
+              )}
+            </div>
+            <div className="pb-4 pt-1">
+              <p className="font-serif text-2xl text-[#f4efdf]">
+                {stage.title}
+              </p>
+              <p className="mt-1 text-sm text-[#9eb3a6]">{stage.detail}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 
-function Stages() {
+function Stages({ route }: { route: TrekRouteContent }) {
   return (
     <div className="grid gap-px bg-[#315947] md:grid-cols-3">
-      {STAGES.map((stage) => (
-        <article key={stage.day} className="relative min-h-80 overflow-hidden bg-[#102d21] p-6 lg:p-8">
+      {route.stages.map((stage) => (
+        <article
+          key={stage.day}
+          className="relative min-h-80 overflow-hidden bg-[#102d21] p-6 lg:p-8"
+        >
           <span className="absolute -right-2 -top-8 font-serif text-9xl leading-none text-white/[0.04]">
             {stage.day}
           </span>
@@ -132,11 +170,9 @@ function Stages() {
           <h3 className="relative mt-5 max-w-xs font-serif text-3xl leading-none text-[#f4efdf]">
             {stage.title}
           </h3>
-          <div className="relative mt-6 flex flex-wrap gap-2 text-xs font-semibold text-[#dfe9e2]">
-            <span className="border border-[#315947] px-3 py-2">{stage.distance}</span>
-            <span className="border border-[#315947] px-3 py-2">{stage.duration}</span>
-          </div>
-          <p className="relative mt-6 max-w-sm text-sm leading-6 text-[#a9bcb1]">{stage.detail}</p>
+          <p className="relative mt-6 max-w-sm text-sm leading-6 text-[#a9bcb1]">
+            {stage.detail}
+          </p>
         </article>
       ))}
     </div>
@@ -155,7 +191,9 @@ function PackList() {
           <p className="font-serif text-4xl text-[#f4efdf]">
             {packedItemIds.length} / {PACKING_ITEMS.length}
           </p>
-          <p className="mt-1 text-sm text-[#a9bcb1]">elements prets pour le depart</p>
+          <p className="mt-1 text-sm text-[#a9bcb1]">
+            elements prets pour le depart
+          </p>
         </div>
         <button
           type="button"
@@ -200,7 +238,10 @@ function PackList() {
 }
 
 export function VosgesWildSite() {
-  const [routeView, setRouteView] = useState<RouteView>("trace");
+  const [routeId, setRouteId] = useState(TREK_ROUTES[0].id);
+  const [routeView, setRouteView] = useState<RouteView>("itineraire");
+  const activeRoute =
+    TREK_ROUTES.find((route) => route.id === routeId) ?? TREK_ROUTES[0];
 
   return (
     <main className="min-h-screen bg-[#071610] text-[#f4efdf]">
@@ -235,7 +276,8 @@ export function VosgesWildSite() {
             </h1>
             <p className="mt-7 max-w-2xl text-lg leading-8 text-[#e7ede9] sm:text-xl">
               Un carnet de preparation pour une premiere itinerance dans les
-              Hautes-Vosges, entre Hohneck, lacs glaciaires et chaumes d'altitude.
+              Hautes-Vosges, entre Hohneck, lacs glaciaires et chaumes
+              d'altitude.
             </p>
             <a
               href="#itineraire"
@@ -255,7 +297,10 @@ export function VosgesWildSite() {
             ["1 363 m", "point culminant"],
             ["Modere +", "avec sac"],
           ].map(([value, label]) => (
-            <div key={label} className="border-b border-[#315947] p-6 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
+            <div
+              key={label}
+              className="border-b border-[#315947] p-6 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
+            >
               <p className="font-serif text-4xl text-[#f4efdf]">{value}</p>
               <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-[#9eb3a6]">
                 {label}
@@ -275,19 +320,52 @@ export function VosgesWildSite() {
               </h2>
             </div>
             <p className="max-w-xl text-lg leading-8 text-[#a9bcb1]">
-              La boucle se construit autour des points majeurs. Les kilometres,
-              temps et altitudes sont des reperes de preparation, pas une promesse
-              de conditions terrain.
+              Choisis une trace pour ne consulter que son itineraire, ses etapes
+              et sa carte. Les informations visibles restent des reperes de
+              preparation, pas une promesse de conditions terrain.
             </p>
           </div>
 
           <div className="mt-10 overflow-hidden border border-[#315947] bg-[#102d21]">
+            <div className="grid border-b border-[#315947] sm:grid-cols-2">
+              {TREK_ROUTES.map((route) => (
+                <button
+                  key={route.id}
+                  type="button"
+                  onClick={() => {
+                    setRouteId(route.id);
+                    setRouteView("itineraire");
+                  }}
+                  className={`flex items-center gap-3 border-b border-[#315947] px-5 py-4 text-left transition last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0 ${
+                    activeRoute.id === route.id
+                      ? "bg-[#15392a] text-[#f4efdf]"
+                      : "text-[#9eb3a6] hover:bg-[#123222] hover:text-[#f4efdf]"
+                  }`}
+                >
+                  <span
+                    className={`h-1.5 w-10 rounded-full ${route.lineClass}`}
+                    aria-hidden="true"
+                  />
+                  <span>
+                    <span className="block text-xs font-black uppercase tracking-[0.16em]">
+                      Parcours
+                    </span>
+                    <span className="mt-1 block font-serif text-2xl">
+                      {route.label}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
             <div className="flex flex-wrap gap-2 border-b border-[#315947] p-3">
-              {([
-                ["trace", "Itineraire"],
-                ["etapes", "Les etapes"],
-                ["sac", "Le sac"],
-              ] as const).map(([view, label]) => (
+              {(
+                [
+                  ["itineraire", "Itineraire"],
+                  ["etapes", "Les etapes"],
+                  ["carte", "La carte"],
+                  ["sac", "Le sac"],
+                ] as const
+              ).map(([view, label]) => (
                 <button
                   key={view}
                   type="button"
@@ -302,8 +380,11 @@ export function VosgesWildSite() {
                 </button>
               ))}
             </div>
-            {routeView === "trace" && <RouteTrace />}
-            {routeView === "etapes" && <Stages />}
+            {routeView === "itineraire" && (
+              <RouteItinerary route={activeRoute} />
+            )}
+            {routeView === "etapes" && <Stages route={activeRoute} />}
+            {routeView === "carte" && <RouteMaps route={activeRoute} />}
             {routeView === "sac" && <PackList />}
           </div>
         </section>
@@ -313,18 +394,22 @@ export function VosgesWildSite() {
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#95d5a8]">
               Bivouac
             </p>
-            <h2 className="mt-4 font-serif text-4xl leading-none">Bivouaquer sans abimer</h2>
+            <h2 className="mt-4 font-serif text-4xl leading-none">
+              Bivouaquer sans abimer
+            </h2>
             <p className="mt-6 max-w-xl leading-8 text-[#a9bcb1]">
               Installer leger au coucher du soleil, repartir au lever du jour,
-              ne laisser aucun dechet et ne jamais faire de feu. Les reserves, les
-              communes et les proprietaires imposent leurs propres regles.
+              ne laisser aucun dechet et ne jamais faire de feu. Les reserves,
+              les communes et les proprietaires imposent leurs propres regles.
             </p>
           </article>
           <article className="bg-[#102d21] p-7 sm:p-10">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#f4c56a]">
               Point de vigilance
             </p>
-            <h2 className="mt-4 font-serif text-4xl leading-none">Une nuit de secours</h2>
+            <h2 className="mt-4 font-serif text-4xl leading-none">
+              Une nuit de secours
+            </h2>
             <p className="mt-6 max-w-xl leading-8 text-[#c0cec5]">
               Garder une solution en dur autour du Lac Blanc: refuge, auberge,
               gite ou camping. Le beau panorama ne vaut jamais une installation
@@ -342,9 +427,21 @@ export function VosgesWildSite() {
           </h2>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {[
-              ["Maintenir", "Temps stable, bonne visibilite, vent raisonnable et aucun orage annonce.", "border-t-[#95d5a8]"],
-              ["Adapter", "Brouillard ou pluie faible: raccourcir, eviter les passages raides et dormir en dur.", "border-t-[#f4c56a]"],
-              ["Reporter", "Orages, fortes rafales, canicule, pluie durable ou vigilance officielle.", "border-t-[#ff8c7e]"],
+              [
+                "Maintenir",
+                "Temps stable, bonne visibilite, vent raisonnable et aucun orage annonce.",
+                "border-t-[#95d5a8]",
+              ],
+              [
+                "Adapter",
+                "Brouillard ou pluie faible: raccourcir, eviter les passages raides et dormir en dur.",
+                "border-t-[#f4c56a]",
+              ],
+              [
+                "Reporter",
+                "Orages, fortes rafales, canicule, pluie durable ou vigilance officielle.",
+                "border-t-[#ff8c7e]",
+              ],
             ].map(([title, detail, color]) => (
               <article
                 key={title}
@@ -359,8 +456,8 @@ export function VosgesWildSite() {
       </div>
 
       <footer className="border-t border-[#315947] px-6 py-8 text-sm text-[#81958a] sm:px-10 lg:px-14">
-        Vosges Wild - carnet de preparation personnel. Verifier les regles locales,
-        les fermetures et la meteo avant chaque depart.
+        Vosges Wild - carnet de preparation personnel. Verifier les regles
+        locales, les fermetures et la meteo avant chaque depart.
       </footer>
     </main>
   );

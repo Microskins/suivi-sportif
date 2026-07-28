@@ -1,42 +1,29 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { RouteMaps } from "./route-maps";
+import { RouteMaps, type TrekRoute } from "./route-maps";
 
-afterEach(() => {
-  cleanup();
-});
+const route: TrekRoute = {
+  id: "trace-01",
+  label: "Trace 01",
+  lineClass: "bg-[#3079ed]",
+  mapUrl: "https://www.google.com/maps/d/embed?mid=trace-01",
+  externalUrl: "https://www.google.com/maps/d/u/0/viewer?mid=trace-01",
+  summary: "Itineraire de la trace 01.",
+};
+
+afterEach(cleanup);
 
 describe("RouteMaps", () => {
-  it("loads each Google map only after an explicit action", () => {
-    render(<RouteMaps />);
+  it("loads only the selected route map after an explicit action", () => {
+    render(<RouteMaps route={route} />);
 
     expect(document.querySelectorAll("iframe")).toHaveLength(0);
-    expect(screen.getByText("Fiche trace 01")).toBeInTheDocument();
-    expect(screen.getByText("Fiche trace 02")).toBeInTheDocument();
+    expect(screen.getByText("Legende:", { exact: false })).toBeInTheDocument();
 
-    const loadButtons = screen.getAllByRole("button", {
-      name: "Charger la carte",
-    });
-    fireEvent.click(loadButtons[0]);
+    fireEvent.click(screen.getByRole("button", { name: "Charger la carte" }));
 
-    const firstMap = document.querySelector<HTMLIFrameElement>("iframe");
-    expect(firstMap?.src).toContain(
-      "mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk",
-    );
-    expect(document.querySelectorAll("iframe")).toHaveLength(1);
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "Charger la carte" }),
-    );
-
-    const loadedMapUrls = Array.from(
-      document.querySelectorAll<HTMLIFrameElement>("iframe"),
-      (iframe) => iframe.src,
-    );
-    expect(loadedMapUrls).toHaveLength(2);
-    expect(loadedMapUrls[1]).toContain(
-      "mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0",
-    );
+    const map = document.querySelector<HTMLIFrameElement>("iframe");
+    expect(map?.src).toContain("mid=trace-01");
   });
 });
