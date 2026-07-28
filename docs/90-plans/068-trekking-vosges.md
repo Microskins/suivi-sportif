@@ -120,3 +120,5 @@
 - 2026-07-28: ajout de l'idee d'export du carnet photo local dans
   `docs/06-idees/90-ia-idees.md`; `npm run typecheck -w client` et
   `npm run build -w client` via WSL: OK.
+- 2026-07-28: les URLs Google My Maps ont ete inversees pour faire correspondre
+  l'iframe de la trace 01 au GR5 et celle de la trace 02 a la boucle.

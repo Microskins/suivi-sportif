@@ -26,9 +26,9 @@ export const TREK_ROUTES: TrekRouteContent[] = [
     label: "GR5 - Lac Blanc au Grand Ballon",
     accentClass: "bg-[#0f9d58]",
     mapUrl:
-      "https://www.google.com/maps/d/embed?mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk&ehbc=2E312F",
+      "https://www.google.com/maps/d/embed?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0&ehbc=2E312F",
     externalUrl:
-      "https://www.google.com/maps/d/u/0/viewer?mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk",
+      "https://www.google.com/maps/d/u/0/viewer?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0",
     summary:
       "Une traversee de trois jours sur le GR5, du Lac Blanc au Grand Ballon, par les cretes, le Hohneck et les sommets du massif.",
     stats: [
@@ -103,9 +103,9 @@ export const TREK_ROUTES: TrekRouteContent[] = [
     label: "Boucle Hohneck et des Lacs",
     accentClass: "bg-[#9334e6]",
     mapUrl:
-      "https://www.google.com/maps/d/embed?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0&ehbc=2E312F",
+      "https://www.google.com/maps/d/embed?mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk&ehbc=2E312F",
     externalUrl:
-      "https://www.google.com/maps/d/u/0/viewer?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0",
+      "https://www.google.com/maps/d/u/0/viewer?mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk",
     summary:
       "Une boucle de trois jours autour du Hohneck, des lacs glaciaires et des cretes, avec retour au point de depart.",
     stats: [
