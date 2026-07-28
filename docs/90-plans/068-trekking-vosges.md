@@ -26,6 +26,8 @@
   nom ou de role non fourni.
 - Utiliser les fichiers de preparation Option 1 et Option 2 comme source des
   etapes, statistiques et couleurs de trace affichees dans Vosges Wild.
+- Conserver les photos importees localement dans le navigateur, sans les
+  transmettre a un service tiers ni les associer a un compte.
 
 ## Todo
 
@@ -46,6 +48,7 @@
   et legendes propres a chaque parcours.
 - [x] Remplacer les contenus generiques des deux traces par les informations
   des fichiers de preparation fournis.
+- [x] Ajouter une galerie de photos importees, independante pour chaque trace.
 - [x] Verifier la responsivite, les liens, les imports et la limite de 500 lignes.
 - [x] Verifier le typecheck, le test cible et le build via WSL.
 - [ ] Retablir la suite frontend et le lint globaux (echecs existants hors
@@ -111,3 +114,9 @@
 - 2026-07-28: l'idee existante de fiches de traces pilotees par les donnees
   couvre deja l'amelioration complementaire identifiee; aucune idee redondante
   n'a ete ajoutee.
+- 2026-07-28: ajout d'un carnet photo local par trace via IndexedDB: import
+  JPEG, PNG ou WebP, apercu et suppression. Les fichiers ne quittent pas le
+  navigateur de l'appareil.
+- 2026-07-28: ajout de l'idee d'export du carnet photo local dans
+  `docs/06-idees/90-ia-idees.md`; `npm run typecheck -w client` et
+  `npm run build -w client` via WSL: OK.

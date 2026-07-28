@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { RouteMaps } from "./route-maps";
+import { RoutePhotoGallery } from "./route-photo-gallery";
 import { TrekkingBrand } from "./trekking-brand";
 import { useTrekkingStore } from "./trekking-store";
 import { TREK_ROUTES, type TrekRouteContent } from "./vosges-wild-routes";
 
-type RouteView = "itineraire" | "etapes" | "carte" | "sac";
+type RouteView = "itineraire" | "etapes" | "carte" | "photos" | "sac";
 
 const PACKING_ITEMS = [
   "Tente ou abri leger",
@@ -318,6 +319,7 @@ export function VosgesWildSite() {
                   ["itineraire", "Itineraire"],
                   ["etapes", "Les etapes"],
                   ["carte", "La carte"],
+                  ["photos", "Les photos"],
                   ["sac", "Le sac"],
                 ] as const
               ).map(([view, label]) => (
@@ -340,6 +342,9 @@ export function VosgesWildSite() {
             )}
             {routeView === "etapes" && <Stages route={activeRoute} />}
             {routeView === "carte" && <RouteMaps route={activeRoute} />}
+            {routeView === "photos" && (
+              <RoutePhotoGallery route={activeRoute} />
+            )}
             {routeView === "sac" && <PackList />}
           </div>
         </section>

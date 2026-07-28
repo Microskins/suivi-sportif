@@ -1,5 +1,31 @@
 # IA Idees
 
+## 2026-07-28 - Trekking: export du carnet photo local
+
+## Contexte
+
+- Les photos de parcours peuvent etre conservees localement par trace, sans
+  compte ni envoi vers un service externe.
+
+## Proposition
+
+- Prevoir plus tard un export ZIP ou une planche PDF des photos, accompagnee
+  des etapes et statistiques du trace selectionne.
+
+## Impact
+
+- Le carnet reste portable et partageable sans rendre les photos publiques.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/068-trekking-vosges.md
+
+---
+
 ## 2026-07-28 - Trekking: fiches de traces pilotees par les donnees
 
 ## Contexte
