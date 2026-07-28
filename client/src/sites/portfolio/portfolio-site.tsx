@@ -79,19 +79,21 @@ export function PortfolioSite() {
               href={TREKKING_PATH}
               className="group grid gap-6 border border-[#17322e] bg-[#cfe895] p-5 text-[#17322e] transition hover:bg-[#b8d57c] sm:grid-cols-[160px_1fr_auto] sm:items-center sm:p-6"
             >
-              <img
-                src="/sites/trekking/vosges-wild-hero.png"
-                alt="Crete des Vosges au lever du jour"
-                className="aspect-square w-28 object-cover sm:w-40"
-              />
+              <div className="flex aspect-square w-28 items-center justify-center bg-[#071610] p-6 sm:w-40">
+                <img
+                  src="/sites/trekking/favicon.svg"
+                  alt="Marque Trekking"
+                  className="h-full w-full object-contain"
+                />
+              </div>
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#17322e]/60">
-                  Carnet de trek
+                  Carnets de marche
                 </p>
-                <h3 className="mt-2 font-serif text-3xl">Vosges Wild</h3>
+                <h3 className="mt-2 font-serif text-3xl">Trekking</h3>
                 <p className="mt-3 max-w-xl leading-7 text-[#17322e]/80">
-                  Premier trek de trois jours dans les Hautes-Vosges: itineraire,
-                  etapes, sac et preparation terrain.
+                  Itineraires, preparation terrain et carnets de marche pour les
+                  voyages a pied.
                 </p>
               </div>
               <span className="text-sm font-semibold uppercase tracking-[0.16em] transition group-hover:text-[#d84a32]">

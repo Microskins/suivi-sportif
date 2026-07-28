@@ -39,6 +39,7 @@
 - [x] Integrer les cartes dans la vue itineraire avec un chargement explicite.
 - [x] Ajouter une fiche de preparation distincte sous chacune des deux traces.
 - [x] Autoriser les integrations Google My Maps dans la CSP de production.
+- [x] Aligner la carte Trekking du portfolio avec son identite visuelle.
 - [x] Verifier la responsivite, les liens, les imports et la limite de 500 lignes.
 - [x] Verifier le typecheck, le test cible et le build via WSL.
 - [ ] Retablir la suite frontend et le lint globaux (echecs existants hors
@@ -90,3 +91,5 @@
 - 2026-07-28: le test cible `route-maps.test.tsx` demarre dans Vitest mais ne
   retourne pas de resultat final dans la console WSL de cet environnement; son
   blocage est sans lien visible avec la compilation, qui passe.
+- 2026-07-28: la carte projet du portfolio utilise le favicon Trekking et le
+  nom de site `Trekking`; `Vosges Wild` reste le nom du premier voyage.
