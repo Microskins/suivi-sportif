@@ -416,7 +416,7 @@ export function VosgesWildSite() {
       </div>
 
       <footer className="border-t border-[#315947] px-6 py-8 text-sm text-[#81958a] sm:px-10 lg:px-14">
-        Vosges Wild - carnet de preparation personnel. Verifier les regles
+        Vosges 2027 - carnet de preparation personnel. Verifier les regles
         locales, les fermetures et la meteo avant chaque depart.
       </footer>
     </main>

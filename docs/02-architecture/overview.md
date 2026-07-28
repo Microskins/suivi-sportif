@@ -210,7 +210,7 @@ Le client sert aussi de point d'entree de portfolio:
 - `/suivi-sportif` affiche l'application de suivi sportif;
 - `/suivi-sportif/politique-cookies` affiche sa politique de cookies.
 - `/trekking` affiche le catalogue des voyages de trekking.
-- `/trekking/vosges-wild` affiche le carnet de preparation Vosges Wild; sa
+- `/trekking/vosges-wild` affiche le carnet de preparation Vosges 2027; sa
   checklist est conservee localement dans le navigateur via un store Zustand.
   Ses deux traces Google My Maps restent inactives jusqu'au clic du visiteur.
 

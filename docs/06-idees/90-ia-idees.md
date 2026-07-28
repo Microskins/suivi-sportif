@@ -116,7 +116,7 @@
 
 ## Contexte
 
-- Vosges Wild contient maintenant plusieurs cartes et les futurs voyages
+- Vosges 2027 contient maintenant plusieurs cartes et les futurs voyages
   pourront avoir leurs propres variantes.
 - Declarer chaque integration directement dans une page rendrait les prochains
   ajouts repetitifs.

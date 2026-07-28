@@ -54,7 +54,7 @@ export function TrekkingHomeSite() {
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#95d5a8]">
                 France - Hautes-Vosges
               </p>
-              <h3 className="mt-5 font-serif text-5xl leading-[0.9]">Vosges Wild</h3>
+              <h3 className="mt-5 font-serif text-5xl leading-[0.9]">Vosges 2027</h3>
               <p className="mt-5 max-w-lg leading-7 text-[#b5c8bb]">
                 Une boucle de trois jours entre le Hohneck, les lacs glaciaires et
                 les chaumes d'altitude.

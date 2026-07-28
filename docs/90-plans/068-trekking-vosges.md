@@ -6,16 +6,16 @@
 - Presenter un premier trek de trois jours dans les Hautes-Vosges avec les
   informations utiles a sa preparation.
 - Integrer les deux traces Google My Maps fournies pour comparer les parcours
-  directement dans le carnet Vosges Wild.
+  directement dans le carnet Vosges 2027.
 
 ## Decisions
 
-- Reprendre la direction "Vosges Wild" du modele fourni: un carnet de
+- Reprendre la direction "Vosges 2027" du modele fourni: un carnet de
   preparation sombre, inspire du terrain et lisible en exterieur.
 - Conserver le mini-site dans le client React existant, sans nouvelle API ni
   nouveau domaine.
 - Utiliser `/trekking` comme catalogue et un chemin dedie par voyage, en
-  commencant par `/trekking/vosges-wild`.
+  commencant par `/trekking/vosges-2027`.
 - Inclure une vue d'itineraire, les trois etapes, une liste de materiel
   interactive locale et les rappels de securite.
 - Presenter les distances et conditions comme indicatives: elles devront etre
@@ -25,7 +25,7 @@
 - Presenter les deux traces dans des cartes responsives, sans leur inventer de
   nom ou de role non fourni.
 - Utiliser les fichiers de preparation Option 1 et Option 2 comme source des
-  etapes, statistiques et couleurs de trace affichees dans Vosges Wild.
+  etapes, statistiques et couleurs de trace affichees dans Vosges 2027.
 - Conserver les photos importees localement dans le navigateur, sans les
   transmettre a un service tiers ni les associer a un compte.
 
@@ -38,13 +38,13 @@
 - [x] Construire le mini-site `/trekking` et ses interactions.
 - [x] Ajouter le projet au portfolio et documenter la route.
 - [x] Corriger la collision entre la route `/trekking` et les assets publics.
-- [x] Creer un catalogue de voyages et une route dediee pour Vosges Wild.
+- [x] Creer un catalogue de voyages et une route dediee pour Vosges 2027.
 - [x] Ajouter un composant cartographique dedie aux deux traces fournies.
 - [x] Integrer les cartes dans la vue itineraire avec un chargement explicite.
 - [x] Ajouter une fiche de preparation distincte sous chacune des deux traces.
 - [x] Autoriser les integrations Google My Maps dans la CSP de production.
 - [x] Aligner la carte Trekking du portfolio avec son identite visuelle.
-- [x] Separer la navigation Vosges Wild par trace, avec des itineraires, etapes
+- [x] Separer la navigation Vosges 2027 par trace, avec des itineraires, etapes
   et legendes propres a chaque parcours.
 - [x] Remplacer les contenus generiques des deux traces par les informations
   des fichiers de preparation fournis.
@@ -67,12 +67,12 @@
 - 2026-07-27: correction Nginx: le dossier public `/trekking` entrait en
   collision avec la route React et retournait `403`. L'image est deplacee sous
   `/media/trekking` pour liberer la route.
-- 2026-07-27: `/trekking` est desormais le catalogue des voyages et Vosges Wild
+- 2026-07-27: `/trekking` est desormais le catalogue des voyages et Vosges 2027
   est accessible sous `/trekking/vosges-wild`.
 - 2026-07-27: `git diff --check` valide la mise a jour des routes; le build local
   reste bloque par l'absence de Node.js dans l'environnement.
 - 2026-07-27: ajout demande de deux traces Google My Maps dans la vue itineraire
-  de Vosges Wild.
+  de Vosges 2027.
 - 2026-07-27: `route-maps.tsx` isole les deux integrations. Aucune iframe Google
   n'est creee avant le clic sur `Charger la carte`; chaque trace conserve aussi
   un lien d'ouverture dans un nouvel onglet.
@@ -101,8 +101,8 @@
   retourne pas de resultat final dans la console WSL de cet environnement; son
   blocage est sans lien visible avec la compilation, qui passe.
 - 2026-07-28: la carte projet du portfolio utilise le favicon Trekking et le
-  nom de site `Trekking`; `Vosges Wild` reste le nom du premier voyage.
-- 2026-07-28: la navigation Vosges Wild distingue desormais `Trace 01` et
+  nom de site `Trekking`; `Vosges 2027` reste le nom du premier voyage.
+- 2026-07-28: la navigation Vosges 2027 distingue desormais `Trace 01` et
   `Trace 02`; chaque selection ouvre son propre itineraire, ses etapes et son
   unique embed Google My Maps avec une legende associee.
 - 2026-07-28: `npm run typecheck -w client` et `npm run build -w client` via
