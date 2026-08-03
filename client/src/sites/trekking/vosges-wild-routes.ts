@@ -30,12 +30,12 @@ export const TREK_ROUTES: TrekRouteContent[] = [
     externalUrl:
       "https://www.google.com/maps/d/u/0/viewer?mid=1vvAnoS9xjo8CzyP8p5Et5jnmojIRMe0",
     summary:
-      "Une traversee de trois jours sur le Mini GR5, du Lac Blanc au Grand Ballon, par les cretes, le Hohneck et les sommets du massif.",
+      "Une traversée de trois jours sur le Mini GR5, du Lac Blanc au Grand Ballon, par les crêtes, le Hohneck et les sommets du massif.",
     stats: [
       ["40,8 km", "distance totale"],
-      ["1 311 m", "denivele positif"],
-      ["14 a 16 h", "marche estimee"],
-      ["Modere a soutenu", "difficulte"],
+      ["1 311 m", "dénivelé positif"],
+      ["14 à 16 h", "marche estimée"],
+      ["Modéré à soutenu", "difficulté"],
     ],
     mapLegend: MAP_LEGEND,
     stages: [
@@ -44,13 +44,13 @@ export const TREK_ROUTES: TrekRouteContent[] = [
         title: "Lac Blanc - Hohneck - Trois Fours",
         distance: "13,6 km",
         elevation: "+436 m / -354 m",
-        duration: "4 h 30 a 5 h",
-        difficulty: "Modere",
+        duration: "4 h 30 à 5 h",
+        difficulty: "Modéré",
         detail:
-          "Mise en jambe sur les cretes, avec le Hohneck comme point majeur avant la nuit vers Trois Fours.",
+          "Mise en jambe sur les crêtes, avec le Hohneck comme point majeur avant la nuit vers Trois Fours.",
         points: [
           "Parking du Lac Blanc",
-          "Belvedere du Lac Blanc",
+          "Belvédère du Lac Blanc",
           "Gazon du Faing",
           "Tanet",
           "Panorama des Hautes-Vosges",
@@ -63,10 +63,10 @@ export const TREK_ROUTES: TrekRouteContent[] = [
         title: "Trois Fours - Schiessrothried - Rainkopf - Kastelberg",
         distance: "13,6 km",
         elevation: "+386 m / -430 m",
-        duration: "4 h 30 a 5 h",
-        difficulty: "Modere",
+        duration: "4 h 30 à 5 h",
+        difficulty: "Modéré",
         detail:
-          "Etape entre refuges, lacs et sources. Confirmer le secteur de nuit selon la reglementation.",
+          "Étape entre refuges, lacs et sources. Confirmer le secteur de nuit selon la réglementation.",
         points: [
           "Refuge des Trois Fours",
           "Fontaine des Trois Fours",
@@ -75,7 +75,7 @@ export const TREK_ROUTES: TrekRouteContent[] = [
           "Source de Ferschmuss",
           "Rainkopf",
           "Kastelberg",
-          "Secteur refuge ou bivouac autorise",
+          "Secteur refuge ou bivouac autorisé",
         ],
       },
       {
@@ -83,15 +83,15 @@ export const TREK_ROUTES: TrekRouteContent[] = [
         title: "Rainkopf - Rothenbachkopf - Grand Ballon",
         distance: "13,6 km",
         elevation: "+489 m / -272 m",
-        duration: "5 h a 5 h 30",
+        duration: "5 h à 5 h 30",
         difficulty: "Soutenu",
         detail:
-          "Derniere journee de cretes jusqu'au Grand Ballon, avec un passage expose au vent.",
+          "Dernière journée de crêtes jusqu'au Grand Ballon, avec un passage exposé au vent.",
         points: [
           "Rainkopf",
           "Rothenbachkopf",
-          "Panorama des cretes",
-          "Passage expose au vent",
+          "Panorama des crêtes",
+          "Passage exposé au vent",
           "Grand Ballon",
           "Parking du Grand Ballon",
         ],
@@ -107,12 +107,12 @@ export const TREK_ROUTES: TrekRouteContent[] = [
     externalUrl:
       "https://www.google.com/maps/d/u/0/viewer?mid=1RgMdZ-flBR0RCBd3crgFZPnPmIPzSjk",
     summary:
-      "Une boucle de trois jours autour du Hohneck, des lacs glaciaires et des cretes, avec retour au point de depart.",
+      "Une boucle de trois jours autour du Hohneck, des lacs glaciaires et des crêtes, avec retour au point de départ.",
     stats: [
       ["36 km", "distance totale"],
-      ["1 019 m", "denivele positif"],
-      ["12 a 14 h", "marche estimee"],
-      ["Modere a soutenu", "difficulte"],
+      ["1 019 m", "dénivelé positif"],
+      ["12 à 14 h", "marche estimée"],
+      ["Modéré à soutenu", "difficulté"],
     ],
     mapLegend: MAP_LEGEND,
     stages: [
@@ -121,10 +121,10 @@ export const TREK_ROUTES: TrekRouteContent[] = [
         title: "Col de la Schlucht - Hohneck - Schiessrothried",
         distance: "12 km",
         elevation: "+385 m / -351 m",
-        duration: "4 h a 4 h 30",
-        difficulty: "Modere",
+        duration: "4 h à 4 h 30",
+        difficulty: "Modéré",
         detail:
-          "Du col vers le Hohneck puis le lac de Schiessrothried, avec un premier secteur de nuit a confirmer.",
+          "Du col vers le Hohneck puis le lac de Schiessrothried, avec un premier secteur de nuit à confirmer.",
         points: [
           "Parking du Col de la Schlucht",
           "Hohneck",
@@ -138,12 +138,12 @@ export const TREK_ROUTES: TrekRouteContent[] = [
         title: "Schiessrothried - Rainkopf - Kastelberg - Blanchemer",
         distance: "12 km",
         elevation: "+283 m / -283 m",
-        duration: "4 h a 4 h 30",
-        difficulty: "Modere",
+        duration: "4 h à 4 h 30",
+        difficulty: "Modéré",
         detail:
-          "Une etape de liaison entre source, sommets et lac de Blanchemer.",
+          "Une étape de liaison entre source, sommets et lac de Blanchemer.",
         points: [
-          "Depart du refuge",
+          "Départ du refuge",
           "Source de Ferschmuss",
           "Rainkopf",
           "Kastelberg",
@@ -156,16 +156,16 @@ export const TREK_ROUTES: TrekRouteContent[] = [
         title: "Blanchemer - Tanet - Gazon du Faing - Retour",
         distance: "12 km",
         elevation: "+351 m / -385 m",
-        duration: "4 h a 5 h",
+        duration: "4 h à 5 h",
         difficulty: "Soutenu",
         detail:
-          "Retour par le Tanet et le Gazon du Faing jusqu'au parking de depart.",
+          "Retour par le Tanet et le Gazon du Faing jusqu'au parking de départ.",
         points: [
-          "Depart",
+          "Départ",
           "Tanet",
           "Gazon du Faing",
-          "Belvedere du Lac Blanc",
-          "Parking de depart",
+          "Belvédère du Lac Blanc",
+          "Parking de départ",
         ],
       },
     ],

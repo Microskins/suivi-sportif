@@ -5,28 +5,38 @@ import { SuiviSportifBrand } from "../suivi-sportif-brand";
 type AuthMode = "login" | "register";
 
 const COOKIE_POLICY_PATH = "/suivi-sportif/politique-cookies";
-const AUTH_INPUT_CLASS =
-  "mt-2 block w-full border border-[#bdc8b8] bg-white px-4 py-3 text-sm text-[#071411] outline-none transition placeholder:text-[#718076] focus:border-[#071411] focus:ring-2 focus:ring-[#d8ff63]";
-const LOADING_BAR_HEIGHT_CLASSES = ["h-3", "h-6", "h-4", "h-8", "h-5", "h-7"];
+const AUTH_INPUT_CLASS = "sport-input mt-2";
 
 export function SuiviSportifLoadingScreen() {
   return (
-    <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#071411] px-6 text-[#eef5eb]">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-[linear-gradient(rgba(216,255,99,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(216,255,99,0.05)_1px,transparent_1px)] [background-size:32px_32px]"
-      />
-      <div className="relative text-center">
+    <main className="site-sport-grid grid min-h-screen place-items-center px-6 text-[#2b241e]">
+      <div className="text-center">
         <SuiviSportifBrand />
-        <div className="mx-auto mt-10 flex w-28 items-end justify-center gap-1">
-          {LOADING_BAR_HEIGHT_CLASSES.map((heightClass) => (
-            <span
-              key={heightClass}
-              className={`w-2 animate-pulse bg-[#d8ff63] ${heightClass}`}
-            />
-          ))}
-        </div>
-        <p className="mt-5 text-xs font-bold uppercase tracking-[0.24em] text-[#9aac9f]">
+        <svg
+          viewBox="0 0 64 64"
+          role="status"
+          aria-label="Chargement du profil"
+          className="mx-auto mt-10 h-20 w-20 -rotate-90 animate-spin"
+        >
+          <defs>
+            <linearGradient id="loading-energy" x1="0" y1="0" x2="1" y2="1">
+              <stop stopColor="#ff7a54" />
+              <stop offset="1" stopColor="#ffb648" />
+            </linearGradient>
+          </defs>
+          <circle cx="32" cy="32" r="24" fill="none" stroke="#f0e3d6" strokeWidth="7" />
+          <circle
+            cx="32"
+            cy="32"
+            r="24"
+            fill="none"
+            stroke="url(#loading-energy)"
+            strokeWidth="7"
+            strokeLinecap="round"
+            strokeDasharray="105 46"
+          />
+        </svg>
+        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c8f83]">
           Chargement du profil
         </p>
       </div>
@@ -69,73 +79,77 @@ export function SuiviSportifAuthScreen() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#071411] text-[#eef5eb]">
+    <main className="site-sport-grid relative min-h-screen overflow-hidden bg-[#fff8f2] text-[#2b241e]">
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[linear-gradient(rgba(216,255,99,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(216,255,99,0.045)_1px,transparent_1px)] [background-size:36px_36px]"
+        className="absolute -left-28 top-24 h-72 w-72 rounded-full bg-[#ffb648]/15 blur-3xl"
       />
-      <div className="relative mx-auto grid min-h-screen max-w-7xl lg:grid-cols-[1.08fr_0.92fr]">
-        <section className="flex flex-col justify-between px-6 py-8 sm:px-10 lg:px-14 lg:py-12">
+      <div
+        aria-hidden="true"
+        className="absolute -right-24 bottom-12 h-80 w-80 rounded-full bg-[#ff7a54]/15 blur-3xl"
+      />
+
+      <div className="relative mx-auto grid min-h-screen max-w-[86rem] lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="flex flex-col justify-between px-6 py-7 sm:px-10 lg:px-14 lg:py-10">
           <SuiviSportifBrand />
 
-          <div className="max-w-2xl py-16 lg:py-20">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-[#64e8d8]">
-              Systeme personnel de progression
+          <div className="max-w-2xl py-14 lg:py-20">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#ff7a54]">
+              Ton espace de progression
             </p>
-            <h1 className="site-display mt-6 text-6xl font-black uppercase leading-[0.82] tracking-[-0.04em] sm:text-7xl lg:text-8xl">
-              Entraine.
+            <h1 className="site-display mt-5 text-6xl font-bold leading-[0.9] tracking-[-0.035em] sm:text-7xl lg:text-8xl">
+              Avance à
               <br />
-              <span className="text-[#d8ff63]">Mesure.</span>
-              <br />
-              Ajuste.
+              <span className="bg-[linear-gradient(135deg,#ff7a54,#ffb648)] bg-clip-text text-transparent">
+                ton rythme.
+              </span>
             </h1>
-            <p className="mt-8 max-w-xl text-lg leading-8 text-[#b9c8bd]">
-              Un poste de pilotage pour relier tes seances, ta nutrition et les
-              signaux reels de ta progression.
+            <p className="mt-7 max-w-xl text-lg leading-8 text-[#806f61]">
+              Tes séances, ta nutrition et tes mesures réunies dans un tableau
+              de bord chaleureux, clair et fait pour durer.
             </p>
           </div>
 
-          <div className="grid grid-cols-3 border-y border-[#294238] text-center">
-            {["Force", "Nutrition", "Corps"].map((label, index) => (
-              <div
-                key={label}
-                className={`px-2 py-4 ${index > 0 ? "border-l border-[#294238]" : ""}`}
-              >
-                <span className="text-[0.62rem] font-black uppercase tracking-[0.2em] text-[#8fa196]">
-                  0{index + 1}
-                </span>
-                <span className="mt-1 block text-sm font-bold uppercase tracking-[0.12em]">
-                  {label}
-                </span>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              ["01", "Séances"],
+              ["02", "Nutrition"],
+              ["03", "Corps"],
+            ].map(([index, label]) => (
+              <div key={label} className="rounded-[16px] bg-white/75 px-3 py-4 shadow-[0_2px_8px_rgba(43,36,30,0.04)]">
+                <span className="site-display text-sm font-bold text-[#ff7a54]">{index}</span>
+                <span className="mt-1 block text-xs font-semibold text-[#665b51]">{label}</span>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="flex items-center bg-[#d8ff63] px-6 py-12 text-[#071411] sm:px-10 lg:px-14">
-          <div className="w-full border border-[#071411] bg-[#f3f5ec] p-6 shadow-[12px_12px_0_#071411] sm:p-9">
+        <section className="flex items-center px-6 py-10 sm:px-10 lg:px-14">
+          <div className="panel w-full p-6 shadow-[0_18px_50px_rgba(255,122,84,0.13)] sm:p-9">
             <div className="flex items-start justify-between gap-5">
               <div>
-                <p className="text-[0.65rem] font-black uppercase tracking-[0.24em] text-[#536159]">
-                  Acces membre / 01
+                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#ff7a54]">
+                  Accès membre
                 </p>
-                <h2 className="site-display mt-2 text-4xl font-black uppercase leading-none">
+                <h2 className="site-display mt-2 text-4xl font-bold leading-none">
                   {title}
                 </h2>
               </div>
-              <span className="h-3 w-3 bg-[#64e8d8] ring-4 ring-[#071411]" />
+              <span className="grid h-11 w-11 place-items-center rounded-full bg-[#fff0e6] text-lg">
+                👋
+              </span>
             </div>
 
-            <div className="mt-8 grid grid-cols-2 border border-[#071411] bg-white">
+            <div className="mt-8 grid grid-cols-2 rounded-full bg-[#fdf6ef] p-1">
               {(["login", "register"] as AuthMode[]).map((authMode) => (
                 <button
                   key={authMode}
                   type="button"
                   onClick={() => handleModeChange(authMode)}
-                  className={`px-3 py-3 text-xs font-black uppercase tracking-[0.16em] transition ${
+                  className={`rounded-full px-3 py-3 text-xs font-semibold transition ${
                     mode === authMode
-                      ? "bg-[#071411] text-[#d8ff63]"
-                      : "text-[#536159] hover:bg-[#e9eee5]"
+                      ? "bg-[linear-gradient(135deg,#ff7a54,#ffb648)] text-white shadow-sm"
+                      : "text-[#806f61] hover:text-[#2b241e]"
                   }`}
                 >
                   {authMode === "login" ? "Connexion" : "Inscription"}
@@ -146,7 +160,7 @@ export function SuiviSportifAuthScreen() {
             <form onSubmit={handleSubmit} className="mt-7">
               {mode === "register" && (
                 <div className="grid gap-5 sm:grid-cols-2">
-                  <label className="text-xs font-black uppercase tracking-[0.14em]">
+                  <label className="text-xs font-semibold text-[#665b51]">
                     Nom
                     <input
                       value={name}
@@ -157,7 +171,7 @@ export function SuiviSportifAuthScreen() {
                       className={AUTH_INPUT_CLASS}
                     />
                   </label>
-                  <label className="text-xs font-black uppercase tracking-[0.14em]">
+                  <label className="text-xs font-semibold text-[#665b51]">
                     Date de naissance
                     <input
                       value={dateOfBirth}
@@ -169,8 +183,8 @@ export function SuiviSportifAuthScreen() {
                 </div>
               )}
 
-              <label className="mt-5 block text-xs font-black uppercase tracking-[0.14em]">
-                Email
+              <label className="mt-5 block text-xs font-semibold text-[#665b51]">
+                E-mail
                 <input
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
@@ -181,7 +195,7 @@ export function SuiviSportifAuthScreen() {
                 />
               </label>
 
-              <label className="mt-5 block text-xs font-black uppercase tracking-[0.14em]">
+              <label className="mt-5 block text-xs font-semibold text-[#665b51]">
                 Mot de passe
                 <input
                   value={password}
@@ -195,7 +209,7 @@ export function SuiviSportifAuthScreen() {
               </label>
 
               {error && (
-                <p className="mt-5 border border-[#b7312c] bg-[#fff1ee] px-4 py-3 text-sm font-semibold text-[#8d241f]">
+                <p className="mt-5 rounded-[14px] border border-[#ffd4ca] bg-[#fff1ed] px-4 py-3 text-sm font-medium text-[#a84432]">
                   {error}
                 </p>
               )}
@@ -203,16 +217,16 @@ export function SuiviSportifAuthScreen() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="mt-7 w-full border border-[#071411] bg-[#071411] px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#d8ff63] transition hover:bg-[#153229] disabled:cursor-not-allowed disabled:opacity-60"
+                className="sport-primary-button mt-7 w-full py-3.5"
               >
-                {isLoading ? "Traitement en cours..." : title}
+                {isLoading ? "Traitement en cours…" : title}
               </button>
 
-              <p className="mt-5 text-xs leading-5 text-[#647169]">
+              <p className="mt-5 text-xs leading-5 text-[#9c8f83]">
                 En continuant, tu peux consulter notre{" "}
                 <a
                   href={COOKIE_POLICY_PATH}
-                  className="font-black text-[#071411] underline decoration-[#64e8d8] decoration-2 underline-offset-4"
+                  className="font-semibold text-[#e85f3c] underline decoration-[#ffb648] decoration-2 underline-offset-4"
                 >
                   politique cookies
                 </a>

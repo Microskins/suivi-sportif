@@ -24,7 +24,7 @@ function getErrorMessage(error: unknown): string {
     return error.message;
   }
 
-  return "Impossible de charger les modeles de seances";
+  return "Impossible de charger les modèles de séances";
 }
 
 function buildWorkoutFromTemplate(
@@ -93,8 +93,8 @@ export const useWorkoutTemplatesStore = create<WorkoutTemplatesState>((set) => (
     if (isAuthBypassEnabled) {
       const template = bypassWorkoutTemplates.find((item) => item.id === id);
       if (!template) {
-        set({ error: "Modele de seance introuvable" });
-        throw new Error("Modele de seance introuvable");
+        set({ error: "Modèle de séance introuvable" });
+        throw new Error("Modèle de séance introuvable");
       }
 
       const workout = buildWorkoutFromTemplate(template, date);

@@ -104,7 +104,7 @@ export function NutritionGoalForm({ item, onSubmit, onCancel }: NutritionGoalFor
       <div className="grid gap-4 md:grid-cols-4">
         <MacroInput label="Calories/jour" value={dailyCaloriesKcal} onChange={setDailyCaloriesKcal} />
         <MacroInput
-          label="Proteines/jour"
+          label="Protéines/jour"
           value={dailyProteinGrams}
           onChange={setDailyProteinGrams}
           required={false}

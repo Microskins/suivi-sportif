@@ -25,7 +25,7 @@ export function FoodsList({ foods, onEdit, onDelete }: FoodsListProps) {
   });
 
   if (!foods.length) {
-    return <EmptyState label="Aucun aliment disponible. Cree un aliment pour composer tes repas." />;
+    return <EmptyState label="Aucun aliment disponible. Crée un aliment pour composer tes repas." />;
   }
 
   return (

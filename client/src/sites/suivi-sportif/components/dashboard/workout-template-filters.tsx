@@ -21,7 +21,7 @@ export function WorkoutTemplateFilters({
 }) {
   return (
     <div className="rounded border border-slate-200 bg-slate-50 p-3">
-      <p className="mb-2 text-sm font-semibold text-slate-800">Filtres modeles</p>
+      <p className="mb-2 text-sm font-semibold text-slate-800">Filtres modèles</p>
       <div className="grid gap-2 md:grid-cols-3">
         <input
           className={inputClass}

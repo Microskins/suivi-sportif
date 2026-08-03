@@ -107,7 +107,7 @@ export function MealForm({
 
     const template: MealTemplate = {
       id: `meal-template-${Date.now()}`,
-      name: name.trim() || "Modele de repas",
+      name: name.trim() || "Modèle de repas",
       mealType,
       notes: emptyToNull(notes),
       items,
@@ -165,7 +165,7 @@ export function MealForm({
       <section className="rounded border border-amber-200 bg-white p-3">
         <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-sm font-semibold text-amber-950">Modeles de repas</p>
+            <p className="text-sm font-semibold text-amber-950">Modèles de repas</p>
             <p className="mt-1 text-xs text-amber-800/80">
               Sauvegarde une combinaison d'aliments pour la reutiliser plus tard.
             </p>
@@ -197,8 +197,8 @@ export function MealForm({
                   type="button"
                   className="text-xs font-bold text-amber-700 hover:text-amber-950"
                   onClick={() => deleteMealTemplate(template.id)}
-                  aria-label={`Supprimer le modele ${template.name}`}
-                  title="Supprimer ce modele"
+                  aria-label={`Supprimer le modèle ${template.name}`}
+                  title="Supprimer ce modèle"
                 >
                   x
                 </button>
@@ -223,7 +223,7 @@ export function MealForm({
               setFoodBrandFilter("ALL");
             }}
           >
-            Reinitialiser
+            Réinitialiser
           </button>
         </div>
         <div className="mt-3 grid gap-2 md:grid-cols-2">
@@ -317,7 +317,7 @@ export function MealForm({
         <div className="mt-3 grid gap-2 sm:grid-cols-4">
           {[
             ["Calories", projectedDayTotals.caloriesKcal, activeGoal?.dailyCaloriesKcal ?? null, "kcal"],
-            ["Proteines", projectedDayTotals.proteinGrams, activeGoal?.dailyProteinGrams ?? null, "g"],
+            ["Protéines", projectedDayTotals.proteinGrams, activeGoal?.dailyProteinGrams ?? null, "g"],
             ["Glucides", projectedDayTotals.carbsGrams, activeGoal?.dailyCarbsGrams ?? null, "g"],
             ["Lipides", projectedDayTotals.fatGrams, activeGoal?.dailyFatGrams ?? null, "g"],
           ].map(([label, value, target, unit]) => (
@@ -350,7 +350,7 @@ export function MealForm({
             Ajouter
           </button>
         </div>
-        {!foods.length && <EmptyState label="Cree un aliment avant de composer un repas." />}
+        {!foods.length && <EmptyState label="Crée un aliment avant de composer un repas." />}
         {!!foods.length && !filteredFoods.length && (
           <EmptyState label="Aucun aliment ne correspond aux filtres. Reinitialise pour voir toute la liste." />
         )}

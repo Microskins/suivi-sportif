@@ -189,7 +189,7 @@ export function Dashboard({
   const contentClass =
     resource === "dashboard" || resource === "calendar"
       ? "min-w-0"
-      : "rounded border border-neutral-200 bg-white p-5 shadow-sm";
+      : "panel min-w-0 p-5 sm:p-6";
 
   async function applyAssistantDraft(draft: AssistantDraft) {
     if (draft.missingFields.length > 0) {
@@ -288,16 +288,15 @@ export function Dashboard({
   }
 
   return (
-    <main className="site-sport-grid min-h-screen text-neutral-950">
-      <section className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
-        <DashboardTopBar
-          userName={userName}
-          userEmail={userEmail}
-          isAuthBypassEnabled={isAuthBypassEnabled}
-          onLogout={onLogout}
-        />
-
-        <div className="mt-5 grid gap-5 md:grid-cols-[230px_1fr]">
+    <main className="site-sport-grid min-h-screen text-[#2b241e]">
+      <section className="min-h-screen md:pl-[230px]">
+        <aside className="border-b border-[#f0e3d6] bg-white p-4 md:fixed md:inset-y-0 md:left-0 md:z-10 md:w-[230px] md:overflow-y-auto md:border-b-0 md:border-r md:p-5">
+          <DashboardTopBar
+            userName={userName}
+            userEmail={userEmail}
+            isAuthBypassEnabled={isAuthBypassEnabled}
+            onLogout={onLogout}
+          />
           <DashboardNav
             resource={resource}
             onSelect={(nextResource) => {
@@ -307,7 +306,9 @@ export function Dashboard({
               setResource(nextResource);
             }}
           />
+        </aside>
 
+        <div className="min-w-0 p-4 sm:p-6 md:p-8 xl:p-10">
           <DashboardMainContent
             activeError={activeError}
             bodyMeasurementDraft={bodyMeasurementDraft}

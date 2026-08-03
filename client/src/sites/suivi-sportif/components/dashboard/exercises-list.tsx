@@ -50,7 +50,7 @@ export function ExercisesList({
   ).sort((a, b) => a.localeCompare(b, "fr"));
 
   if (!exercises.length) {
-    return <EmptyState label="Aucun exercice disponible. Cree un exercice pour composer tes seances." />;
+    return <EmptyState label="Aucun exercice disponible. Crée un exercice pour composer tes séances." />;
   }
 
   const normalizedSearch = search.trim().toLocaleLowerCase("fr-FR");
@@ -132,7 +132,7 @@ export function ExercisesList({
               setBodyPartFilter("ALL");
             }}
           >
-            Reinitialiser
+            Réinitialiser
           </button>
         </div>
         <p className="mt-2 text-xs text-slate-500">

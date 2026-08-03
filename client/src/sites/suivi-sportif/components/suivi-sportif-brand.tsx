@@ -5,19 +5,19 @@ export function SuiviSportifBrand({ compact = false }: { compact?: boolean }) {
     <span className="inline-flex items-center gap-3">
       <span
         aria-hidden="true"
-        className={`relative grid place-items-center border-2 border-[#d8ff63] ${markClass}`}
+        className={`relative grid place-items-center rounded-[14px] bg-[linear-gradient(135deg,#ff7a54,#ffb648)] text-white shadow-[0_6px_14px_rgba(255,122,84,0.22)] ${markClass}`}
       >
-        <span className="site-display text-lg font-black tracking-[-0.08em] text-[#eef5eb]">
+        <span className="site-display text-lg font-bold tracking-[-0.08em]">
           SS
         </span>
-        <span className="absolute -bottom-1 left-1 h-1 w-4 bg-[#64e8d8]" />
+        <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-white bg-[#5fb894]" />
       </span>
       <span>
-        <span className="site-display block text-lg font-black uppercase leading-none tracking-[0.02em] text-[#eef5eb]">
+        <span className="site-display block text-lg font-bold leading-none text-[#2b241e]">
           Suivi Sportif
         </span>
-        <span className="mt-1 block text-[0.58rem] font-bold uppercase tracking-[0.22em] text-[#d8ff63]">
-          Progression system / 01
+        <span className="mt-1 block text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#ff7a54]">
+          Ton rythme, tes progrès
         </span>
       </span>
     </span>

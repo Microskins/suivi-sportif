@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import type { BodyMeasurement, Meal, NutritionGoal, UserGoal, Workout } from "../api/client";
+import { DashboardStatCard } from "./dashboard-overview-stat-card";
 
 type PeriodKey = "3d" | "7d" | "30d" | "365d";
 type QuickAction = "workout" | "meal" | "goal" | "measurement";
@@ -172,39 +173,9 @@ function currentWeekCompletedWorkouts(workouts: Workout[]) {
   }).length;
 }
 
-function StatCard({
-  label,
-  value,
-  detail,
-  tone,
-}: {
-  label: string;
-  value: string;
-  detail: string;
-  tone: "sport" | "nutrition" | "goal" | "body" | "neutral";
-}) {
-  const accents = {
-    sport: "border-l-emerald-500 bg-emerald-50/70",
-    nutrition: "border-l-amber-500 bg-amber-50/70",
-    goal: "border-l-rose-500 bg-rose-50/70",
-    body: "border-l-sky-500 bg-sky-50/70",
-    neutral: "border-l-neutral-900 bg-white",
-  };
-
-  return (
-    <div className={`rounded border border-neutral-200 border-l-4 p-4 shadow-sm transition hover:border-neutral-300 hover:shadow ${accents[tone]}`}>
-      <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-        {label}
-      </p>
-      <p className="mt-2 text-3xl font-bold text-neutral-950">{value}</p>
-      <p className="mt-1 text-sm text-neutral-600">{detail}</p>
-    </div>
-  );
-}
-
 function EmptyChart({ label }: { label: string }) {
   return (
-    <div className="flex h-72 items-center justify-center rounded border border-dashed border-neutral-300 bg-neutral-50 text-center text-sm text-neutral-500">
+    <div className="flex h-72 items-center justify-center rounded-[16px] bg-[#fdf6ef] px-5 text-center text-sm text-[#9c8f83]">
       {label}
     </div>
   );
@@ -241,13 +212,13 @@ export function DashboardOverview({
       : null;
   const bodyWeightValue = latestBodyWeight === null ? "-" : `${formatNumber(latestBodyWeight.weightKg)} kg`;
   const bodyWeightDetail = latestBodyWeight === null
-    ? "Aucune pesee enregistree"
+    ? "Aucune pesée enregistrée"
     : previousBodyWeight === null
-      ? `Premiere pesee le ${formatMeasurementDate(latestBodyWeight.date)}`
+      ? `Première pesée le ${formatMeasurementDate(latestBodyWeight.date)}`
       : `${formatMeasurementDate(latestBodyWeight.date)} | ${
           bodyWeightDelta === 0
-            ? "stable vs precedente"
-            : `${bodyWeightDelta > 0 ? "+" : "-"}${formatNumber(Math.abs(bodyWeightDelta))} kg vs precedente`
+            ? "stable vs précédente"
+            : `${bodyWeightDelta > 0 ? "+" : "-"}${formatNumber(Math.abs(bodyWeightDelta))} kg vs précédente`
         }`;
   const totals = summaries.reduce(
     (acc, summary) => ({
@@ -268,33 +239,39 @@ export function DashboardOverview({
     goal && goal.dailyCaloriesKcal > 0
       ? Math.min(100, Math.round((averageCalories / goal.dailyCaloriesKcal) * 100))
       : 0;
+  const proteinProgress =
+    goal?.dailyProteinGrams && goal.dailyProteinGrams > 0
+      ? Math.min(100, Math.round((averageProtein / goal.dailyProteinGrams) * 100))
+      : 0;
 
   return (
     <div className="space-y-5">
-      <div className="rounded border border-neutral-200 bg-white/90 p-5 shadow-sm">
+      <div className="panel p-5 sm:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
-              Synthese
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#ff7a54]">
+              Synthèse
             </p>
-            <h2 className="mt-1 text-3xl font-bold text-neutral-950">Vue d'ensemble</h2>
-            <p className="mt-1 text-sm text-neutral-600">
-              Suivi sport et nutrition sur la periode choisie.
+            <h2 className="site-display mt-1 text-3xl font-bold text-[#2b241e]">
+              Vue d&apos;ensemble
+            </h2>
+            <p className="mt-1 text-sm text-[#806f61]">
+              Suivi sport et nutrition sur la période choisie.
             </p>
             {isLoading && (
-              <p className="mt-1 text-sm text-neutral-500">Chargement...</p>
+              <p className="mt-1 text-sm text-[#9c8f83]">Chargement…</p>
             )}
           </div>
-          <div className="flex flex-wrap gap-2 rounded border border-neutral-200 bg-neutral-50 p-1">
+          <div className="flex flex-wrap gap-1 rounded-full bg-[#fdf6ef] p-1">
             {periods.map((item) => (
               <button
                 key={item.key}
                 type="button"
                 onClick={() => setPeriod(item.key)}
-                className={`rounded border px-3 py-2 text-sm font-medium transition ${
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                   period === item.key
-                    ? "border-emerald-700 bg-emerald-700 text-white shadow-sm"
-                    : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"
+                    ? "bg-[linear-gradient(135deg,#ff7a54,#ffb648)] text-white shadow-sm"
+                    : "text-[#806f61] hover:bg-white hover:text-[#2b241e]"
                 }`}
               >
                 {item.label}
@@ -305,70 +282,71 @@ export function DashboardOverview({
       </div>
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-        <StatCard
-          label="Seances"
+        <DashboardStatCard
+          label="Séances"
           value={formatNumber(totals.workouts)}
-          detail={`${formatNumber(totals.duration)} min, ${formatNumber(totals.sets)} series`}
-          tone="sport"
+          detail={`${formatNumber(totals.duration)} min · ${formatNumber(totals.sets)} séries`}
+          progress={weeklyWorkoutGoal ? weeklyProgress : undefined}
+          ringId="workouts-ring"
         />
-        <StatCard
+        <DashboardStatCard
           label="Calories moy."
           value={`${formatNumber(averageCalories)} kcal`}
           detail={goal ? `${calorieProgress}% de ${goal.dailyCaloriesKcal} kcal` : "Aucun objectif actif"}
-          tone="nutrition"
+          progress={goal ? calorieProgress : undefined}
+          ringId="calories-ring"
         />
-        <StatCard
-          label="Proteines moy."
+        <DashboardStatCard
+          label="Protéines moy."
           value={`${formatNumber(averageProtein)} g`}
-          detail={goal?.dailyProteinGrams ? `Objectif ${goal.dailyProteinGrams} g/j` : "Objectif non renseigne"}
-          tone="goal"
+          detail={goal?.dailyProteinGrams ? `Objectif ${goal.dailyProteinGrams} g/j` : "Objectif non renseigné"}
+          progress={goal?.dailyProteinGrams ? proteinProgress : undefined}
+          ringId="protein-ring"
         />
-        <StatCard
+        <DashboardStatCard
           label="Objectif actif"
           value={goal?.name ?? "Aucun"}
-          detail={goal ? `${goal.dailyCaloriesKcal} kcal par jour` : "Cree un objectif nutrition"}
-          tone="neutral"
+          detail={goal ? `${goal.dailyCaloriesKcal} kcal par jour` : "Crée un objectif nutrition"}
         />
-        <StatCard
+        <DashboardStatCard
           label="Poids corporel"
           value={bodyWeightValue}
           detail={bodyWeightDetail}
-          tone="body"
         />
       </div>
 
-      <section className="rounded border border-emerald-200 bg-emerald-50/80 p-4 shadow-sm">
+      <section className="panel p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <h3 className="font-semibold text-emerald-950">Regularite hebdomadaire</h3>
-            <p className="mt-1 text-sm text-emerald-800/80">
+            <h3 className="site-display font-bold text-[#2b241e]">Régularité hebdomadaire</h3>
+            <p className="mt-1 text-sm text-[#806f61]">
               {weeklyWorkoutGoal
-                ? `${weeklyCompleted} seance(s) realisee(s) sur ${weeklyTarget} cette semaine.`
-                : "Cree un objectif sport de seances par semaine pour suivre ta regularite."}
+                ? `${weeklyCompleted} séance(s) réalisée(s) sur ${weeklyTarget} cette semaine.`
+                : "Crée un objectif de séances par semaine pour suivre ta régularité."}
             </p>
           </div>
-          <p className="text-3xl font-bold text-emerald-950">
+          <p className="site-display text-3xl font-bold text-[#e85f3c]">
             {weeklyWorkoutGoal ? `${weeklyProgress}%` : "-"}
           </p>
         </div>
         <progress
-          className="mt-3 h-2 w-full overflow-hidden rounded accent-emerald-600"
+          className="sport-progress mt-3"
           value={weeklyProgress}
           max={100}
         />
       </section>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
+        <section className="panel p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="font-semibold text-neutral-950">Charge sportive</h3>
-              <p className="text-sm text-neutral-500">Duree et nombre de seances par jour.</p>
+              <h3 className="site-display font-bold text-[#2b241e]">Charge sportive</h3>
+              <p className="text-sm text-[#9c8f83]">Durée et nombre de séances par jour.</p>
             </div>
             <button
               type="button"
               onClick={() => onQuickAction("workout")}
-              className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-100"
+              className="sport-primary-button"
             >
               Ajouter
             </button>
@@ -377,31 +355,31 @@ export function DashboardOverview({
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={summaries}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0e3d6" />
                   <XAxis dataKey="label" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="duration" name="Minutes" fill="#047857" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="workouts" name="Seances" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="duration" name="Minutes" fill="#ff7a54" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="workouts" name="Séances" fill="#ffb648" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <EmptyChart label="Aucune seance sur cette periode." />
+            <EmptyChart label="Aucune séance sur cette période." />
           )}
         </section>
 
-        <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
+        <section className="panel p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="font-semibold text-neutral-950">Nutrition</h3>
-              <p className="text-sm text-neutral-500">Calories et macros journalieres.</p>
+              <h3 className="site-display font-bold text-[#2b241e]">Nutrition</h3>
+              <p className="text-sm text-[#9c8f83]">Calories et macros journalières.</p>
             </div>
             <button
               type="button"
               onClick={() => onQuickAction("meal")}
-              className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-800 hover:bg-amber-100"
+              className="sport-primary-button"
             >
               Ajouter
             </button>
@@ -410,81 +388,81 @@ export function DashboardOverview({
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={summaries}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0e3d6" />
                   <XAxis dataKey="label" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="calories" name="Kcal" stroke="#111827" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="protein" name="Proteines" stroke="#047857" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="carbs" name="Glucides" stroke="#f59e0b" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="fat" name="Lipides" stroke="#ef4444" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="calories" name="Kcal" stroke="#2b241e" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="protein" name="Protéines" stroke="#5fb894" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="carbs" name="Glucides" stroke="#ffb648" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="fat" name="Lipides" stroke="#ff7a54" strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <EmptyChart label="Aucun repas sur cette periode." />
+            <EmptyChart label="Aucun repas sur cette période." />
           )}
         </section>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
-        <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
-          <h3 className="font-semibold text-neutral-950">Objectif nutrition</h3>
+        <section className="panel p-5">
+          <h3 className="site-display font-bold text-[#2b241e]">Objectif nutrition</h3>
           {goal ? (
-            <div className="mt-3 space-y-2 text-sm text-neutral-700">
+            <div className="mt-3 space-y-2 text-sm text-[#665b51]">
               <p>
                 {goal.name} vise {goal.dailyCaloriesKcal} kcal par jour.
               </p>
               <progress
-                className="h-2 w-full overflow-hidden rounded accent-emerald-500"
+                className="sport-progress"
                 value={calorieProgress}
                 max={100}
               />
-              <p className="text-neutral-500">
+              <p className="text-[#9c8f83]">
                 Moyenne actuelle: {formatNumber(averageCalories)} kcal sur les jours saisis.
               </p>
             </div>
           ) : (
-            <p className="mt-3 text-sm text-neutral-600">
+            <p className="mt-3 rounded-[14px] bg-[#fdf6ef] p-4 text-sm text-[#806f61]">
               Aucun objectif actif pour comparer les calories et macros.
             </p>
           )}
         </section>
 
-        <section className="rounded border border-neutral-200 bg-neutral-950 p-4 text-white shadow-sm">
-          <h3 className="font-semibold">Actions rapides</h3>
+        <section className="quick rounded-[20px] bg-[linear-gradient(135deg,#2b241e,#3a2f26)] p-5 text-white shadow-[0_8px_24px_rgba(43,36,30,0.14)]">
+          <h3 className="site-display font-bold">Actions rapides</h3>
           <p className="mt-1 text-xs text-white/60">
-            Raccourcis vers les trois saisies les plus frequentes.
+            Les saisies les plus fréquentes, à portée de main.
           </p>
           <div className="mt-3 grid gap-2">
             <button
               type="button"
               onClick={() => onQuickAction("workout")}
-              className="rounded bg-emerald-500 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-400"
+              className="rounded-full bg-[linear-gradient(135deg,#ff7a54,#ffb648)] px-3 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5"
             >
-              Planifier une seance
+              Planifier une séance
             </button>
             <button
               type="button"
               onClick={() => onQuickAction("meal")}
-              className="rounded border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/10"
+              className="rounded-full border border-white/20 px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10"
             >
               Saisir un repas
             </button>
             <button
               type="button"
               onClick={() => onQuickAction("goal")}
-              className="rounded border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/10"
+              className="rounded-full border border-white/20 px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10"
             >
               Ajouter un objectif sport
             </button>
             <button
               type="button"
               onClick={() => onQuickAction("measurement")}
-              className="rounded border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/10"
+              className="rounded-full border border-white/20 px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10"
             >
-              Prendre une pesee
+              Prendre une pesée
             </button>
           </div>
         </section>

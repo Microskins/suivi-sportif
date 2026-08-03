@@ -24,7 +24,7 @@ function getErrorMessage(error: unknown): string {
     return error.message;
   }
 
-  return "Impossible de charger les seances";
+  return "Impossible de charger les séances";
 }
 
 function buildBypassWorkoutExercises(data: WorkoutInput, now: string) {

@@ -12,16 +12,16 @@ export function RouteMaps({ route }: { route: TrekRoute }) {
   return (
     <section
       aria-labelledby={`${route.id}-map-title`}
-      className="bg-[#071610] p-6 lg:p-10"
+      className="bg-[#f7ecd5]/70 p-6 lg:p-10"
     >
-      <div className="flex flex-wrap items-start justify-between gap-5 border-b border-[#315947] pb-6">
+      <div className="flex flex-wrap items-start justify-between gap-5 border-b border-[#e0c99e] pb-6">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#95d5a8]">
+          <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[#b0794c]">
             Carte de la trace
           </p>
           <h3
             id={`${route.id}-map-title`}
-            className="mt-3 font-serif text-4xl leading-none text-[#f4efdf]"
+            className="site-display mt-3 text-4xl font-semibold leading-none text-[#332f26]"
           >
             {route.label}
           </h3>
@@ -30,13 +30,13 @@ export function RouteMaps({ route }: { route: TrekRoute }) {
           href={route.externalUrl}
           target="_blank"
           rel="noreferrer"
-          className="border border-[#5d796a] px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-[#cfe895] transition hover:border-[#cfe895]"
+          className="site-label rounded-full bg-[#332f26] px-5 py-3 text-xs font-medium uppercase tracking-[0.1em] text-[#f1e2c4] transition hover:bg-[#5c7350]"
         >
-          Ouvrir la carte
+          Ouvrir dans Google Maps ↗
         </a>
       </div>
 
-      <div className="mt-6 overflow-hidden border border-[#315947] bg-[#102d21]">
+      <div className="mt-6 overflow-hidden border border-[#332f26] bg-[#f1e2c4]">
         <div className="aspect-[16/10] min-h-72">
           <iframe
             src={route.mapUrl}
@@ -46,15 +46,15 @@ export function RouteMaps({ route }: { route: TrekRoute }) {
             className="h-full w-full border-0"
           />
         </div>
-        <div className="border-t border-[#315947] p-5">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#95d5a8]">
-            Legende du trace
+        <div className="border-t border-[#332f26] p-5">
+          <p className="site-label text-xs font-medium uppercase tracking-[0.14em] text-[#b0794c]">
+            Légende du tracé
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             {route.mapLegend.map((item) => (
               <div
                 key={item.label}
-                className="flex items-center gap-3 text-sm font-semibold text-[#dfe9e2]"
+                className="site-label flex items-center gap-3 text-sm font-medium text-[#332f26]"
               >
                 <span
                   aria-hidden="true"
@@ -64,9 +64,9 @@ export function RouteMaps({ route }: { route: TrekRoute }) {
               </div>
             ))}
           </div>
-          <p className="mt-4 text-sm leading-6 text-[#9eb3a6]">
+          <p className="mt-4 text-sm leading-6 text-[#6b6254]">
             Les marqueurs de sommets, photos, sources, refuges, parkings et
-            passages exposes sont visibles directement sur la carte.
+            passages exposés sont visibles directement sur la carte.
           </p>
         </div>
       </div>

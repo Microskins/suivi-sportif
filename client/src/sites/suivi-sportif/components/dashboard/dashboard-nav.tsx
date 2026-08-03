@@ -6,7 +6,7 @@ type DashboardNavProps = {
 };
 
 const sportLinks: Array<[DashboardResource, string]> = [
-  ["workouts", "Seances"],
+  ["workouts", "Séances"],
   ["sportGoals", "Objectifs"],
   ["exercises", "Exercices"],
 ];
@@ -17,38 +17,35 @@ const nutritionLinks: Array<[DashboardResource, string]> = [
   ["goals", "Objectifs"],
 ];
 
-function navButtonClass(
-  isActive: boolean,
-  activeClassName: string,
-) {
-  return `mb-1 block w-full border px-3 py-2 text-left text-sm font-bold transition ${
+function navButtonClass(isActive: boolean) {
+  return `mb-1 block w-full rounded-[12px] px-3 py-2.5 text-left text-sm font-semibold transition ${
     isActive
-      ? activeClassName
-      : "border-transparent text-[#b9c8bd] hover:border-[#294238] hover:bg-[#10251e]"
+      ? "bg-[linear-gradient(135deg,#fff0e6,#ffe8d6)] text-[#e85f3c]"
+      : "text-[#806f61] hover:bg-[#fff8f2] hover:text-[#2b241e]"
   }`;
 }
 
 export function DashboardNav({ resource, onSelect }: DashboardNavProps) {
   return (
-    <nav className="h-fit border border-[#294238] bg-[#071411] p-2 shadow-sm md:sticky md:top-6">
-      <p className="px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.2em] text-[#71877b]">
+    <nav className="mt-6 h-fit">
+      <p className="px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#b3a69a]">
         Accueil
       </p>
       <button
         type="button"
         onClick={() => onSelect("dashboard")}
-        className={navButtonClass(resource === "dashboard", "border-[#d8ff63] bg-[#d8ff63] text-[#071411]")}
+        className={navButtonClass(resource === "dashboard")}
       >
-        Synthese
+        Synthèse
       </button>
       <button
         type="button"
         onClick={() => onSelect("calendar")}
-        className={navButtonClass(resource === "calendar", "border-[#d8ff63] bg-[#d8ff63] text-[#071411]")}
+        className={navButtonClass(resource === "calendar")}
       >
         Calendrier
       </button>
-      <p className="mt-3 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.2em] text-[#71877b]">
+      <p className="mt-3 px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#b3a69a]">
         Sport
       </p>
       {sportLinks.map(([key, label]) => (
@@ -56,12 +53,12 @@ export function DashboardNav({ resource, onSelect }: DashboardNavProps) {
           key={key}
           type="button"
           onClick={() => onSelect(key)}
-          className={navButtonClass(resource === key, "border-[#64e8d8] bg-[#64e8d8] text-[#071411]")}
+          className={navButtonClass(resource === key)}
         >
           {label}
         </button>
       ))}
-      <p className="mt-3 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.2em] text-[#71877b]">
+      <p className="mt-3 px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#b3a69a]">
         Nutrition
       </p>
       {nutritionLinks.map(([key, label]) => (
@@ -69,35 +66,35 @@ export function DashboardNav({ resource, onSelect }: DashboardNavProps) {
           key={key}
           type="button"
           onClick={() => onSelect(key)}
-          className={navButtonClass(resource === key, "border-amber-600 bg-amber-600 text-white shadow-sm")}
+          className={navButtonClass(resource === key)}
         >
           {label}
         </button>
       ))}
-      <p className="mt-3 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.2em] text-[#71877b]">
+      <p className="mt-3 px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#b3a69a]">
         Corps
       </p>
       <button
         type="button"
         onClick={() => onSelect("measurements")}
-        className={navButtonClass(resource === "measurements", "border-rose-600 bg-rose-600 text-white shadow-sm")}
+        className={navButtonClass(resource === "measurements")}
       >
         Mensurations
       </button>
       <button
         type="button"
         onClick={() => onSelect("bodyGoals")}
-        className={navButtonClass(resource === "bodyGoals", "border-rose-600 bg-rose-600 text-white shadow-sm")}
+        className={navButtonClass(resource === "bodyGoals")}
       >
         Objectifs
       </button>
-      <p className="mt-3 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.2em] text-[#71877b]">
+      <p className="mt-3 px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#b3a69a]">
         Compte
       </p>
       <button
         type="button"
         onClick={() => onSelect("profile")}
-        className={navButtonClass(resource === "profile", "border-sky-700 bg-sky-700 text-white shadow-sm")}
+        className={navButtonClass(resource === "profile")}
       >
         Profil
       </button>

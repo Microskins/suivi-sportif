@@ -34,9 +34,9 @@ describe("AssistantChatbox", () => {
       confidence: "medium" as const,
       missingFields: [],
       payload: {},
-      reply: "Je peux t'aider Ã  lire ton poids et Ã  prÃ©parer la prochaine Ã©tape.",
+      reply: "Je peux t'aider à lire ton poids et à préparer la prochaine étape.",
       requiresConfirmation: false,
-      summary: "Je peux t'aider Ã  lire ton poids et Ã  prÃ©parer la prochaine Ã©tape.",
+      summary: "Je peux t'aider à lire ton poids et à préparer la prochaine étape.",
     };
     vi.mocked(api.createAssistantDraft).mockResolvedValue(draft);
 
@@ -64,7 +64,7 @@ describe("AssistantChatbox", () => {
     expect(onApplyDraft).not.toHaveBeenCalled();
     expect(
       screen.getByText(
-        "Je peux t'aider Ã  lire ton poids et Ã  prÃ©parer la prochaine Ã©tape.",
+        "Je peux t'aider à lire ton poids et à préparer la prochaine étape.",
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/brouillon|confirmer/i)).not.toBeInTheDocument();
@@ -78,9 +78,9 @@ describe("AssistantChatbox", () => {
         confidence: "medium",
         missingFields: [],
         payload: {},
-        reply: "Je peux t'aider Ã  faire le point sur ta semaine.",
+        reply: "Je peux t'aider à faire le point sur ta semaine.",
         requiresConfirmation: false,
-        summary: "Je peux t'aider Ã  faire le point sur ta semaine.",
+        summary: "Je peux t'aider à faire le point sur ta semaine.",
       })
       .mockResolvedValueOnce({
         action: "unknown",
@@ -106,7 +106,7 @@ describe("AssistantChatbox", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Envoyer" }));
 
-    await screen.findByText("Je peux t'aider Ã  faire le point sur ta semaine.");
+    await screen.findByText("Je peux t'aider à faire le point sur ta semaine.");
 
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "Et ma tendance ?" },
@@ -122,7 +122,7 @@ describe("AssistantChatbox", () => {
             role: "user",
           },
           {
-            content: "Je peux t'aider Ã  faire le point sur ta semaine.",
+            content: "Je peux t'aider à faire le point sur ta semaine.",
             role: "assistant",
           },
         ],

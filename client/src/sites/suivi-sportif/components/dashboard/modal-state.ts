@@ -19,12 +19,12 @@ export function openCreate(
 
 export function modalTitle(modal: Exclude<ModalState, null>) {
   if (modal.type === "workout-template") {
-    return "Creer depuis un modele";
+    return "Créer depuis un modèle";
   }
 
-  const prefix = modal.item ? "Modifier" : "Creer";
+  const prefix = modal.item ? "Modifier" : "Créer";
   const names = {
-    workout: "une seance",
+    workout: "une séance",
     food: "un aliment",
     goal: "un objectif",
   };

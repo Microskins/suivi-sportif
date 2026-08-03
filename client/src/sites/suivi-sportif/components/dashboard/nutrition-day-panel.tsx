@@ -51,7 +51,7 @@ export function NutritionDayPanel({ meals, goals }: NutritionDayPanelProps) {
       <div className="mt-4 grid gap-3 sm:grid-cols-4">
         {[
           ["Calories", totals.caloriesKcal, goal?.dailyCaloriesKcal ?? null, "kcal"],
-          ["Proteines", totals.proteinGrams, goal?.dailyProteinGrams ?? null, "g"],
+          ["Protéines", totals.proteinGrams, goal?.dailyProteinGrams ?? null, "g"],
           ["Glucides", totals.carbsGrams, goal?.dailyCarbsGrams ?? null, "g"],
           ["Lipides", totals.fatGrams, goal?.dailyFatGrams ?? null, "g"],
         ].map(([label, value, target, unit]) => {

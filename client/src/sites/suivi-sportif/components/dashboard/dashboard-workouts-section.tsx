@@ -49,8 +49,8 @@ export function DashboardWorkoutsSection({
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
         <button type="button" className={workoutsView === "list" ? activeViewButtonClass : inactiveViewButtonClass} onClick={onShowList}>Liste</button>
-        <button type="button" className={workoutsView === "create" ? activeViewButtonClass : inactiveViewButtonClass} onClick={onShowCreate}>Creer une seance</button>
-        <button type="button" className={workoutsView === "from-template" ? activeViewButtonClass : inactiveViewButtonClass} onClick={onShowFromTemplate}>Depuis un modele</button>
+        <button type="button" className={workoutsView === "create" ? activeViewButtonClass : inactiveViewButtonClass} onClick={onShowCreate}>Créer une séance</button>
+        <button type="button" className={workoutsView === "from-template" ? activeViewButtonClass : inactiveViewButtonClass} onClick={onShowFromTemplate}>Depuis un modèle</button>
       </div>
       {workoutsView === "list" && (
         <WorkoutsList

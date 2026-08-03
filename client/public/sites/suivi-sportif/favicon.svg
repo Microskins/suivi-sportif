@@ -1,5 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" fill="#071411"/>
-  <path d="M7 34h11l5-14 8 28 7-20 5 6h14" fill="none" stroke="#d8ff63" stroke-width="6" stroke-linejoin="miter"/>
-  <rect x="7" y="8" width="13" height="5" fill="#64e8d8"/>
+  <defs>
+    <linearGradient id="energy" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff7a54"/>
+      <stop offset="1" stop-color="#ffb648"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#fff8f2"/>
+  <circle cx="32" cy="32" r="24" fill="none" stroke="#f0e3d6" stroke-width="7"/>
+  <path d="M32 8a24 24 0 1 1-20.8 36" fill="none" stroke="url(#energy)" stroke-width="7" stroke-linecap="round"/>
+  <path d="m19 34 8 7 17-19" fill="none" stroke="#2b241e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

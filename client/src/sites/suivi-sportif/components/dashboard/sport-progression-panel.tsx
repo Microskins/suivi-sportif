@@ -66,7 +66,7 @@ function exerciseProgressionSummary(workouts: Workout[], exerciseId: string) {
     ? Math.max(...latestSets.map((set) => set.weight))
     : null;
 
-  let recommendation = "Ajoute deux seances sur cet exercice pour obtenir un conseil fiable.";
+  let recommendation = "Ajoute deux séances sur cet exercice pour obtenir un conseil fiable.";
   let tone = "border-slate-200 bg-slate-50 text-slate-700";
 
   if (latestSets.length >= 2 && latestMinReps !== null && latestTopWeight !== null) {
@@ -76,13 +76,13 @@ function exerciseProgressionSummary(workouts: Workout[], exerciseId: string) {
       (latestAvgRir !== null && latestAvgRir <= 0) || (latestAvgRpe !== null && latestAvgRpe >= 9.5);
 
     if (latestMinReps >= 10 && effortComfortable) {
-      recommendation = `Augmenter legerement la charge: ${roundOne(latestTopWeight + 2.5)} kg a tester.`;
+      recommendation = `Augmenter légèrement la charge : ${roundOne(latestTopWeight + 2.5)} kg à tester.`;
       tone = "border-emerald-200 bg-emerald-50 text-emerald-800";
     } else if (latestMinReps < 6 || effortTooHigh) {
-      recommendation = "Reduire la charge ou garder plus de marge avant de monter.";
+      recommendation = "Réduire la charge ou garder plus de marge avant de monter.";
       tone = "border-amber-200 bg-amber-50 text-amber-800";
     } else {
-      recommendation = "Rester sur la meme charge et viser plus de reps propres.";
+      recommendation = "Rester sur la même charge et viser plus de reps propres.";
       tone = "border-sky-200 bg-sky-50 text-sky-800";
     }
   }
@@ -125,32 +125,32 @@ export function SportProgressionPanel({
     } => row !== null);
 
   return (
-    <section className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
+    <section className="panel p-5">
       <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
         <div>
-          <h3 className="font-semibold text-neutral-950">Progression par exercice</h3>
+          <h3 className="site-display font-bold text-[#2b241e]">Progression par exercice</h3>
           <p className="mt-1 text-sm text-neutral-500">
-            Meilleures perfs, effort recent et conseil de double progression.
+            Meilleures performances, effort récent et conseil de double progression.
           </p>
         </div>
-        <span className="w-fit rounded border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-600">
+        <span className="w-fit rounded-full bg-[#fdf6ef] px-3 py-1 text-xs font-medium text-[#806f61]">
           Plage cible 8-10 reps
         </span>
       </div>
 
       {!rows.length ? (
-        <div className="mt-4 flex h-40 items-center justify-center rounded border border-dashed border-neutral-300 bg-neutral-50 px-4 text-center text-sm text-neutral-500">
-          Termine une seance avec exercices pour afficher les signaux de progression.
+        <div className="mt-4 flex h-40 items-center justify-center rounded-[16px] bg-[#fdf6ef] px-4 text-center text-sm text-[#9c8f83]">
+          Termine une séance avec exercices pour afficher les signaux de progression.
         </div>
       ) : (
         <div className="mt-4 grid gap-3 xl:grid-cols-2">
           {rows.map(({ exercise, summary, linkedGoals }) => (
-            <article key={exercise.id} className="rounded border border-slate-200 bg-slate-50/60 p-3">
+            <article key={exercise.id} className="rounded-[16px] bg-[#fdf6ef] p-3">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="font-semibold text-slate-950">{exercise.name}</p>
                   <p className="mt-1 text-xs text-slate-500">
-                    {summary.sessions} seance(s) realisee(s)
+                    {summary.sessions} séance(s) réalisée(s)
                   </p>
                 </div>
                 {linkedGoals.length > 0 && (
@@ -175,10 +175,10 @@ export function SportProgressionPanel({
               </div>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 <p className="rounded bg-white px-3 py-2 text-sm text-slate-700">
-                  RPE moyen recent: <span className="font-semibold">{formatComputedValue(summary.latestAvgRpe)}</span>
+                  RPE moyen récent : <span className="font-semibold">{formatComputedValue(summary.latestAvgRpe)}</span>
                 </p>
                 <p className="rounded bg-white px-3 py-2 text-sm text-slate-700">
-                  RIR moyen recent: <span className="font-semibold">{formatComputedValue(summary.latestAvgRir)}</span>
+                  RIR moyen récent : <span className="font-semibold">{formatComputedValue(summary.latestAvgRir)}</span>
                 </p>
               </div>
               <p className={`mt-3 rounded border px-3 py-2 text-sm font-medium ${summary.tone}`}>

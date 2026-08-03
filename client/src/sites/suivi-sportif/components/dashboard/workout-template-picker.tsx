@@ -208,7 +208,7 @@ export function WorkoutTemplatePicker({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex flex-wrap gap-2 rounded border border-slate-200 bg-slate-50 p-2">
-        <button type="button" className={mode === "instantiate" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setMode("instantiate")}>Creer une seance</button>
+        <button type="button" className={mode === "instantiate" ? activeViewButtonClass : inactiveViewButtonClass} onClick={() => setMode("instantiate")}>Créer une séance</button>
         <button
           type="button"
           className={mode === "create" ? activeViewButtonClass : inactiveViewButtonClass}
@@ -217,7 +217,7 @@ export function WorkoutTemplatePicker({
             resetTemplateFormToCreateDefaults();
           }}
         >
-          Creer un modele
+          Créer un modèle
         </button>
         <button
           type="button"
@@ -232,12 +232,12 @@ export function WorkoutTemplatePicker({
           }}
           disabled={!templates.length}
         >
-          Modifier un modele
+          Modifier un modèle
         </button>
       </div>
       {mode === "instantiate" ? (
         <>
-          <Field label="Date de la seance">
+          <Field label="Date de la séance">
             <input
               className={inputClass}
               type="datetime-local"
@@ -246,7 +246,7 @@ export function WorkoutTemplatePicker({
               required
             />
           </Field>
-          {!templates.length && <EmptyState label="Aucun modele de seance disponible." />}
+          {!templates.length && <EmptyState label="Aucun modèle de séance disponible." />}
           {templates.length > 0 && (
             <WorkoutTemplateFilters
               templateSearch={templateSearch}
@@ -260,7 +260,7 @@ export function WorkoutTemplatePicker({
             />
           )}
           {templates.length > 0 && !filteredTemplates.length && (
-            <EmptyState label="Aucun modele ne correspond aux filtres." />
+            <EmptyState label="Aucun modèle ne correspond aux filtres." />
           )}
           <div className="grid gap-3 lg:grid-cols-2">
             {filteredTemplates.map((template) => (
@@ -305,7 +305,7 @@ export function WorkoutTemplatePicker({
       ) : (
         <div className="space-y-3 rounded border border-slate-200 p-3">
           {mode === "edit" && (
-            <Field label="Modele a modifier">
+            <Field label="Modèle à modifier">
               <select className={inputClass} value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>
                 {templates.map((template) => (
                   <option key={template.id} value={template.id}>
@@ -325,7 +325,7 @@ export function WorkoutTemplatePicker({
             <Field label="Niveau">
               <input className={inputClass} value={level} onChange={(event) => setLevel(event.target.value)} required />
             </Field>
-            <Field label="Duree (min)">
+            <Field label="Durée (min)">
               <input className={inputClass} type="number" min="0" value={duration} onChange={(event) => setDuration(event.target.value)} required />
             </Field>
           </div>
@@ -355,10 +355,10 @@ export function WorkoutTemplatePicker({
           {isSaving
             ? "Enregistrement..."
             : mode === "instantiate"
-              ? "Creer la seance"
+              ? "Créer la séance"
               : mode === "create"
-                ? "Creer le modele"
-                : "Mettre a jour le modele"}
+                ? "Créer le modèle"
+                : "Mettre à jour le modèle"}
         </button>
       </div>
     </form>

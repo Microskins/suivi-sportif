@@ -191,7 +191,7 @@ export function WorkoutExerciseRows({
                 }
               }}
             >
-              Depose un exercice ici pour l'ajouter a la seance.
+              Dépose un exercice ici pour l&apos;ajouter à la séance.
             </div>
             <div className="min-w-0 flex-[2]">
               <div className="mb-2 flex items-center justify-between gap-2">
@@ -237,7 +237,7 @@ export function WorkoutExerciseRows({
           </div>
         </section>
       )}
-      {!exercises.length && <EmptyState label="Cree un exercice avant de composer une seance." />}
+      {!exercises.length && <EmptyState label="Crée un exercice avant de composer une séance." />}
       {rows.map((row, rowIndex) => {
         const selectedExercise = exercises.find((exercise) => exercise.id === row.exerciseId);
         const recommendedRest = recommendedRestSecondsForExercise(selectedExercise);
@@ -409,7 +409,7 @@ export function WorkoutExerciseRows({
                 >
                   {exercises.find((exercise) => exercise.id === row.exerciseId)?.exerciseType === "CARDIO" ? (
                     <>
-                      <input className={inputClass} type="number" min="0" step="0.1" placeholder="Duree (min)" value={set.durationMinutes} onChange={(event) => updateSet(row, rowIndex, setIndex, "durationMinutes", event.target.value, updateRow)} required />
+                      <input className={inputClass} type="number" min="0" step="0.1" placeholder="Durée (min)" value={set.durationMinutes} onChange={(event) => updateSet(row, rowIndex, setIndex, "durationMinutes", event.target.value, updateRow)} required />
                       <input className={inputClass} type="number" min="0" step="0.1" placeholder="KM/H moyen" value={set.avgKmh} onChange={(event) => updateSet(row, rowIndex, setIndex, "avgKmh", event.target.value, updateRow)} required />
                       <input className={inputClass} type="number" min="0" step="0.1" placeholder="Inclinaison %" value={set.inclinePercent} onChange={(event) => updateSet(row, rowIndex, setIndex, "inclinePercent", event.target.value, updateRow)} />
                       <input className={inputClass} type="number" min="1" max="10" step="0.5" placeholder="RPE" value={set.rpe} onChange={(event) => updateSet(row, rowIndex, setIndex, "rpe", event.target.value, updateRow)} />

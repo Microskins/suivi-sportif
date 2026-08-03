@@ -1,5 +1,95 @@
 # IA Idees
 
+## 2026-07-31 - Frontend: charger les fontes par site
+
+## Contexte
+
+- Les sept familles typographiques sont maintenant auto-hebergees via
+  Fontsource et limitees aux sous-ensembles latins.
+- Le point d'entree commun declare toutefois les fontes des trois sites, meme
+  si une seule identite est affichee par route.
+
+## Proposition
+
+- Charger plus tard les declarations de fontes avec le code propre a chaque
+  site, ou injecter les prechargements critiques selon la route active.
+- Comparer le nombre de requetes et le rendu initial avant/apres.
+
+## Impact
+
+- Moins de declarations et de fontes candidates sur le chemin critique.
+- Conserve l'auto-hebergement et la conformite exacte aux trois DA.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/070-refonte-da-multi-sites.md
+
+---
+
+## 2026-07-31 - Frontend: controle automatise des contrats de DA
+
+## Contexte
+
+- Les trois sites partagent un build, mais leurs palettes, angles, polices et
+  composants signature ne doivent pas se melanger.
+- Une future retouche peut reintroduire silencieusement un ancien token sombre
+  ou un composant d'une autre surface.
+
+## Proposition
+
+- Ajouter plus tard un controle statique cible qui signale les anciens tokens
+  interdits et les imports visuels entre sites.
+- Documenter une courte liste de contrats verifiables par DA sans figer tous
+  les choix de composition.
+
+## Impact
+
+- Moins de regressions d'identite lors des evolutions futures.
+- Revue de code plus rapide sur les changements purement visuels.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/070-refonte-da-multi-sites.md
+
+---
+
+## 2026-07-31 - Trekking: images panorama responsives
+
+## Contexte
+
+- La DA Trekking place le panorama au coeur des pages d'entree.
+- Une image unique en haute definition coute inutilement cher sur les petits
+  ecrans et les connexions de terrain.
+
+## Proposition
+
+- Generer plus tard des variantes AVIF/WebP et plusieurs largeurs du panorama.
+- Les servir avec `picture` ou `image-set` en gardant le PNG actuel comme
+  solution de repli.
+
+## Impact
+
+- Chargement plus rapide sur mobile sans perdre la signature photographique.
+- Moins de donnees consommees en itinerance.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/070-refonte-da-multi-sites.md
+
+---
+
 ## 2026-07-28 - Trekking: export du carnet photo local
 
 ## Contexte

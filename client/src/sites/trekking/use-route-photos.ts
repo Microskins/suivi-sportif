@@ -72,7 +72,7 @@ export function useRoutePhotos(routeId: string) {
         database.close();
       };
       request.onerror = () => {
-        setError("Impossible de lire les photos de ce trace.");
+        setError("Impossible de lire les photos de ce tracé.");
         setIsLoading(false);
         database.close();
       };
@@ -100,7 +100,7 @@ export function useRoutePhotos(routeId: string) {
         file.type.startsWith("image/"),
       );
       if (!imageFiles.length) {
-        setError("Choisis des fichiers image pour les ajouter au trace.");
+        setError("Choisis des fichiers image pour les ajouter au tracé.");
         return;
       }
 

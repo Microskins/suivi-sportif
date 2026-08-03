@@ -1,25 +1,25 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 export const inputClass =
-  "block w-full rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-950 outline-none focus:border-emerald-700";
+  "sport-input";
 export const buttonClass =
-  "inline-flex min-h-10 items-center justify-center rounded bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:opacity-60";
+  "sport-primary-button";
 export const secondaryButtonClass =
-  "inline-flex min-h-10 items-center justify-center rounded border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 disabled:cursor-not-allowed disabled:opacity-60";
+  "sport-secondary-button";
 export const dangerButtonClass =
-  "inline-flex min-h-10 items-center justify-center rounded border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600";
+  "inline-flex min-h-10 items-center justify-center rounded-full border border-[#ffd4ca] bg-white px-4 py-2 text-sm font-medium text-[#b64b36] transition hover:bg-[#fff1ed]";
 export const iconButtonClass =
-  "inline-flex h-9 w-9 items-center justify-center rounded border border-neutral-300 bg-white text-sm font-semibold text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#f0e3d6] bg-white text-sm font-semibold text-[#665b51] hover:border-[#ffb899] hover:bg-[#fff8f2] disabled:cursor-not-allowed disabled:opacity-50";
 export const dragHandleButtonClass =
-  "inline-flex h-9 w-9 cursor-grab items-center justify-center rounded border border-dashed border-slate-400 bg-slate-50 text-slate-700 hover:bg-slate-100 active:cursor-grabbing";
+  "inline-flex h-9 w-9 cursor-grab items-center justify-center rounded-full border border-[#f0e3d6] bg-[#fdf6ef] text-[#806f61] hover:border-[#ffb899] active:cursor-grabbing";
 export const viewButtonClass =
-  "inline-flex min-h-10 items-center justify-center rounded border px-3 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex min-h-10 items-center justify-center rounded-full border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60";
 export const activeViewButtonClass =
-  `${viewButtonClass} border-emerald-700 bg-emerald-700 text-white shadow-sm`;
+  `${viewButtonClass} border-transparent bg-[linear-gradient(135deg,#ff7a54,#ffb648)] text-white shadow-sm`;
 export const inactiveViewButtonClass =
-  `${viewButtonClass} border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50`;
+  `${viewButtonClass} border-[#f0e3d6] bg-white text-[#665b51] hover:bg-[#fff8f2]`;
 export const itemCardClass =
-  "rounded border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300 hover:shadow";
+  "rounded-[18px] bg-white p-4 shadow-[0_2px_8px_rgba(43,36,30,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(43,36,30,0.08)]";
 
 export function ErrorBox({ message }: { message: string | null }) {
   if (!message) {
@@ -27,7 +27,7 @@ export function ErrorBox({ message }: { message: string | null }) {
   }
 
   return (
-    <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+    <p className="rounded-[14px] border border-[#ffd4ca] bg-[#fff1ed] px-4 py-3 text-sm text-[#a84432]">
       {message}
     </p>
   );
@@ -35,7 +35,7 @@ export function ErrorBox({ message }: { message: string | null }) {
 
 export function EmptyState({ label }: { label: string }) {
   return (
-    <div className="rounded border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-600">
+    <div className="rounded-[16px] bg-[#fdf6ef] px-4 py-8 text-center text-sm text-[#806f61]">
       {label}
     </div>
   );
@@ -59,7 +59,7 @@ export function ExerciseImagePreview({
   if (!imageUrl || imageFailed) {
     return (
       <div
-        className={`flex items-center justify-center rounded border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500 ${className}`}
+        className={`flex items-center justify-center rounded-[16px] bg-[#fdf6ef] text-xs text-[#9c8f83] ${className}`}
       >
         {imageUrl ? "Image indisponible" : "Aucune image"}
       </div>
@@ -70,7 +70,7 @@ export function ExerciseImagePreview({
     <img
       src={imageUrl}
       alt={`Illustration de ${label}`}
-      className={`rounded border border-slate-200 object-cover object-[center_56%] ${className}`}
+      className={`rounded-[16px] object-cover object-[center_56%] ${className}`}
       loading="lazy"
       onError={() => setImageFailed(true)}
     />
@@ -85,7 +85,7 @@ export function Field({
   children: ReactNode;
 }) {
   return (
-    <label className="block text-sm font-medium text-slate-700">
+    <label className="block text-sm font-medium text-[#665b51]">
       {label}
       <span className="mt-1 block">{children}</span>
     </label>
@@ -126,7 +126,7 @@ export function FormActions({
   onCancel: () => void;
 }) {
   return (
-    <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
+    <div className="flex flex-col-reverse gap-3 border-t border-[#f0e3d6] pt-4 sm:flex-row sm:justify-end">
       <button type="button" className={secondaryButtonClass} onClick={onCancel}>
         Annuler
       </button>

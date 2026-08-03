@@ -4,27 +4,40 @@
 
 @layer base {
   :root {
-    --site-accent: #d84a32;
-    --site-background: #f4f1e8;
-    --site-body: "Avenir Next", "Segoe UI", sans-serif;
-    --site-display: "Bodoni 72", Didot, "Times New Roman", serif;
-    --site-ink: #17322e;
+    --site-accent: #a63d2f;
+    --site-background: #efe7d8;
+    --site-body: "Source Serif 4", Georgia, serif;
+    --site-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --site-ink: #1b2a3d;
+    --site-label: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --site-line: #c9bfa8;
+    --site-muted: #5b6474;
   }
 
   html[data-site="suivi-sportif"] {
-    --site-accent: #d8ff63;
-    --site-background: #071411;
-    --site-body: Bahnschrift, "DIN Alternate", "Franklin Gothic Medium", sans-serif;
-    --site-display: "Bahnschrift Condensed", "DIN Condensed", Impact, sans-serif;
-    --site-ink: #eef5eb;
+    --site-accent: #ff7a54;
+    --site-background: #fff8f2;
+    --site-body: Inter, sans-serif;
+    --site-display: Quicksand, sans-serif;
+    --site-ink: #2b241e;
+    --site-label: Inter, sans-serif;
+    --site-line: #f0e3d6;
+    --site-muted: #9c8f83;
   }
 
   html[data-site="trekking"] {
-    --site-accent: #cfe895;
-    --site-background: #071610;
-    --site-body: "Avenir Next", "Segoe UI", sans-serif;
-    --site-display: Rockwell, "Roboto Slab", "Bookman Old Style", serif;
-    --site-ink: #f4efdf;
+    --site-accent: #5c7350;
+    --site-background: #f1e2c4;
+    --site-body: "IBM Plex Sans", sans-serif;
+    --site-display: Fraunces, Georgia, serif;
+    --site-ink: #332f26;
+    --site-label: "IBM Plex Mono", monospace;
+    --site-line: #e0c99e;
+    --site-muted: #b0794c;
+  }
+
+  html {
+    background: var(--site-background);
   }
 
   body {
@@ -33,6 +46,7 @@
     color: var(--site-ink);
     font-family: var(--site-body);
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
 
   html[data-site] .font-serif,
@@ -40,18 +54,143 @@
     font-family: var(--site-display);
   }
 
+  html[data-site] .site-label {
+    font-family: var(--site-label);
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--site-accent);
+    outline-offset: 3px;
+  }
+
   ::selection {
     background: var(--site-accent);
-    color: var(--site-background);
+    color: white;
   }
 }
 
 @layer utilities {
   .site-sport-grid {
-    background-color: #edf2e8;
+    background-color: #fff8f2;
     background-image:
-      linear-gradient(rgba(7, 20, 17, 0.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(7, 20, 17, 0.045) 1px, transparent 1px);
-    background-size: 28px 28px;
+      radial-gradient(circle at 12% 8%, rgba(255, 182, 72, 0.12), transparent 25rem),
+      radial-gradient(circle at 92% 18%, rgba(255, 122, 84, 0.09), transparent 28rem);
+  }
+
+  .site-topography {
+    background-image:
+      radial-gradient(ellipse at 10% 20%, transparent 0 34%, rgba(176, 121, 76, 0.12) 34.2% 34.6%, transparent 34.8%),
+      radial-gradient(ellipse at 88% 64%, transparent 0 28%, rgba(176, 121, 76, 0.1) 28.2% 28.6%, transparent 28.8%);
+  }
+}
+
+@layer components {
+  html[data-site="suivi-sportif"] .panel {
+    @apply rounded-[20px] bg-white shadow-[0_2px_8px_rgba(43,36,30,0.05)];
+  }
+
+  html[data-site="suivi-sportif"] .sport-input {
+    @apply block w-full rounded-[14px] border border-[#f0e3d6] bg-white px-4 py-3 text-sm text-[#2b241e] outline-none transition placeholder:text-[#9c8f83] focus:border-[#ff7a54] focus:ring-4 focus:ring-[#ff7a54]/10;
+  }
+
+  html[data-site="suivi-sportif"] .sport-primary-button {
+    @apply inline-flex min-h-10 items-center justify-center rounded-full px-5 py-2 text-sm font-semibold text-white shadow-[0_5px_14px_rgba(255,122,84,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(255,122,84,0.28)] disabled:cursor-not-allowed disabled:opacity-60;
+    background-image: linear-gradient(135deg, #ff7a54, #ffb648);
+  }
+
+  html[data-site="suivi-sportif"] .sport-secondary-button {
+    @apply inline-flex min-h-10 items-center justify-center rounded-full border border-[#f0e3d6] bg-white px-4 py-2 text-sm font-medium text-[#665b51] transition hover:border-[#ffb899] hover:bg-[#fff8f2] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  html[data-site="suivi-sportif"] .sport-progress {
+    @apply h-2.5 w-full overflow-hidden rounded-full bg-[#f4e9de];
+    appearance: none;
+  }
+
+  html[data-site="suivi-sportif"] .sport-progress::-webkit-progress-bar {
+    @apply rounded-full bg-[#f4e9de];
+  }
+
+  html[data-site="suivi-sportif"] .sport-progress::-webkit-progress-value {
+    @apply rounded-full;
+    background-image: linear-gradient(135deg, #ff7a54, #ffb648);
+  }
+
+  html[data-site="suivi-sportif"] .sport-progress::-moz-progress-bar {
+    @apply rounded-full;
+    background-image: linear-gradient(135deg, #ff7a54, #ffb648);
+  }
+}
+
+@layer utilities {
+  html[data-site="suivi-sportif"] .rounded {
+    border-radius: 12px;
+  }
+
+  html[data-site="suivi-sportif"] .rounded-lg {
+    border-radius: 20px;
+  }
+
+  html[data-site="suivi-sportif"] :is(.border-slate-200, .border-slate-300, .border-neutral-200, .border-neutral-300) {
+    border-color: #f0e3d6;
+  }
+
+  html[data-site="suivi-sportif"] :is(.bg-slate-50, .bg-slate-100, .bg-neutral-50, .bg-neutral-100) {
+    background-color: #fdf6ef;
+  }
+
+  html[data-site="suivi-sportif"] :is(.text-slate-950, .text-slate-900, .text-neutral-950, .text-neutral-900) {
+    color: #2b241e;
+  }
+
+  html[data-site="suivi-sportif"] :is(.text-slate-700, .text-neutral-700) {
+    color: #665b51;
+  }
+
+  html[data-site="suivi-sportif"] :is(.text-slate-600, .text-slate-500, .text-neutral-600, .text-neutral-500) {
+    color: #9c8f83;
+  }
+
+  html[data-site="suivi-sportif"] :is(.bg-emerald-50, .bg-emerald-100) {
+    background-color: #eaf6f1;
+  }
+
+  html[data-site="suivi-sportif"] :is(.text-emerald-950, .text-emerald-900, .text-emerald-800, .text-emerald-700) {
+    color: #43866c;
+  }
+
+  html[data-site="suivi-sportif"] :is(.bg-amber-50, .bg-amber-100) {
+    background-color: #fff5e3;
+  }
+
+  html[data-site="suivi-sportif"] :is(.text-amber-950, .text-amber-900, .text-amber-800, .text-amber-700) {
+    color: #9b681b;
+  }
+
+  html[data-site="suivi-sportif"] :is(.bg-rose-50, .bg-rose-100) {
+    background-color: #fff1ed;
+  }
+
+  html[data-site="suivi-sportif"] :is(.text-rose-950, .text-rose-900, .text-rose-800, .text-rose-700) {
+    color: #a84432;
+  }
+
+  html[data-site="suivi-sportif"] .border-dashed {
+    border-style: solid;
+  }
+
+  html[data-site="suivi-sportif"] button:is(.bg-emerald-700, .bg-emerald-600, .bg-slate-900, .bg-neutral-950) {
+    border-color: transparent;
+    border-radius: 999px;
+    background-color: transparent;
+    background-image: linear-gradient(135deg, #ff7a54, #ffb648);
+    color: white;
   }
 }

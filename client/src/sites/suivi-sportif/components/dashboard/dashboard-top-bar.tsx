@@ -12,32 +12,28 @@ export function DashboardTopBar({
   onLogout: () => void;
 }) {
   return (
-    <div className="border border-[#294238] bg-[#071411] p-5 text-[#eef5eb] shadow-[6px_6px_0_#d8ff63]">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <SuiviSportifBrand compact />
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="sm:text-right">
-            <p className="site-display text-2xl font-black uppercase leading-none">
-              {userName}
-            </p>
-            <p className="mt-1 text-xs font-semibold tracking-wide text-[#9aac9f]">
-              {userEmail}
-            </p>
-          </div>
-          {isAuthBypassEnabled && (
-            <p className="inline-flex border border-[#d8ff63]/50 px-2 py-1 text-[0.6rem] font-black uppercase tracking-[0.14em] text-[#d8ff63]">
-              Bypass
-            </p>
-          )}
-          <button
-            type="button"
-            onClick={onLogout}
-            className="border border-[#536c61] px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#eef5eb] transition hover:border-[#d8ff63] hover:text-[#d8ff63]"
-          >
-            Se deconnecter
-          </button>
-        </div>
+    <div>
+      <SuiviSportifBrand compact />
+      <div className="mt-6 rounded-[16px] bg-[#fdf6ef] p-3">
+        <p className="site-display truncate text-base font-bold text-[#2b241e]">
+          {userName}
+        </p>
+        <p className="mt-1 truncate text-[0.68rem] text-[#9c8f83]">
+          {userEmail}
+        </p>
+        {isAuthBypassEnabled && (
+          <p className="mt-2 inline-flex rounded-full bg-[#fff0e6] px-2 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.1em] text-[#e85f3c]">
+            Mode bypass
+          </p>
+        )}
       </div>
+      <button
+        type="button"
+        onClick={onLogout}
+        className="mt-3 w-full rounded-full border border-[#f0e3d6] px-3 py-2 text-xs font-semibold text-[#806f61] transition hover:border-[#ffb899] hover:bg-[#fff8f2] hover:text-[#e85f3c]"
+      >
+        Se déconnecter
+      </button>
     </div>
   );
 }
