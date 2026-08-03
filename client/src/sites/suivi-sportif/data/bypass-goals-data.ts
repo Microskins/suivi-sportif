@@ -13,7 +13,7 @@ export const bypassUserGoals: UserGoal[] = [
     exerciseId: null,
     metric: "SPORT_WORKOUTS_PER_WEEK",
     direction: "AT_LEAST",
-    name: "3 seances par semaine",
+    name: "3 séances par semaine",
     targetValue: 3,
     startDate: "2026-05-01T00:00:00.000Z",
     endDate: null,

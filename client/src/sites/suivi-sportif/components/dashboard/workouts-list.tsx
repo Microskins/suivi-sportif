@@ -17,7 +17,7 @@ function formatDate(value: string) {
 
 export function WorkoutsList({ workouts, onEdit, onDuplicate, onDelete }: WorkoutsListProps) {
   if (!workouts.length) {
-    return <EmptyState label="Aucune seance pour le moment. Commence par creer ou planifier ta premiere seance." />;
+    return <EmptyState label="Aucune séance pour le moment. Commence par créer ou planifier ta première séance." />;
   }
 
   return (
@@ -38,9 +38,9 @@ export function WorkoutsList({ workouts, onEdit, onDuplicate, onDelete }: Workou
                   }`}
                 >
                   {workout.status === "COMPLETED"
-                    ? "Realisee"
+                    ? "Réalisée"
                     : workout.status === "CANCELED"
-                      ? "Annulee"
+                      ? "Annulée"
                       : "Prevue"}
                 </span>
               </div>

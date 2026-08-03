@@ -3,19 +3,16 @@ export function PortfolioBrand() {
     <span className="inline-flex items-center gap-3">
       <span
         aria-hidden="true"
-        className="relative grid h-11 w-11 grid-cols-2 border border-[#17322e] p-1"
+        className="site-display flex h-11 w-11 items-center justify-center border-2 border-[#1b2a3d] bg-[#a63d2f] text-2xl font-bold text-[#efe7d8]"
       >
-        <span className="border-b border-r border-[#17322e]" />
-        <span className="border-b border-[#17322e]" />
-        <span className="border-r border-[#17322e]" />
-        <span className="bg-[#d84a32]" />
+        TC
       </span>
       <span>
-        <span className="site-display block text-lg font-semibold leading-none">
+        <span className="site-display block text-xl font-bold uppercase leading-none tracking-[-0.01em]">
           Portfolio
         </span>
-        <span className="mt-1 block text-[0.58rem] font-bold uppercase tracking-[0.2em] text-[#17322e]/55">
-          Projets choisis / 2026
+        <span className="site-label mt-1 block text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#5b6474]">
+          Projets choisis
         </span>
       </span>
     </span>

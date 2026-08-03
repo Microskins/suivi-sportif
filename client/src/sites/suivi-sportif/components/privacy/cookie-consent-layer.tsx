@@ -12,17 +12,17 @@ function CookieBanner() {
   );
 
   return (
-    <section className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-300 bg-white/95 p-4 shadow-lg backdrop-blur">
+    <section className="fixed inset-x-0 bottom-0 z-50 border-t border-[#f0e3d6] bg-white/95 p-4 shadow-[0_-10px_35px_rgba(43,36,30,0.08)] backdrop-blur">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div className="max-w-3xl">
-          <h2 className="text-sm font-semibold text-slate-900">Gestion des cookies</h2>
-          <p className="mt-1 text-sm text-slate-700">
-            Nous utilisons uniquement les cookies necessaires par defaut. Tu peux accepter
-            ou refuser les categories optionnelles, puis modifier ton choix a tout moment.
+          <h2 className="site-display text-base font-bold text-[#2b241e]">Gestion des cookies</h2>
+          <p className="mt-1 text-sm text-[#665b51]">
+            Nous utilisons uniquement les cookies nécessaires par défaut. Tu peux accepter
+            ou refuser les catégories optionnelles, puis modifier ton choix à tout moment.
           </p>
           <a
             href={COOKIE_POLICY_PATH}
-            className="mt-2 inline-block text-sm font-medium text-slate-900 underline"
+            className="mt-2 inline-block text-sm font-semibold text-[#e85f3c] underline decoration-[#ffb648] underline-offset-4"
           >
             Consulter la politique cookies
           </a>
@@ -31,21 +31,21 @@ function CookieBanner() {
           <button
             type="button"
             onClick={rejectAll}
-            className="rounded border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            className="sport-secondary-button"
           >
             Tout refuser
           </button>
           <button
             type="button"
             onClick={openConsentPreferences}
-            className="rounded border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            className="sport-secondary-button"
           >
             Personnaliser
           </button>
           <button
             type="button"
             onClick={acceptAll}
-            className="rounded bg-slate-900 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+            className="sport-primary-button"
           >
             Tout accepter
           </button>
@@ -85,50 +85,50 @@ function CookiePreferencesModal() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
-      <section className="w-full max-w-xl rounded-lg border border-slate-300 bg-white p-6 shadow-xl">
-        <h2 className="text-lg font-semibold text-slate-900">Preferences cookies</h2>
-        <p className="mt-2 text-sm text-slate-700">
-          Choisis les categories que tu autorises. Les cookies necessaires restent
-          actifs pour le fonctionnement de l'application.
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2b241e]/45 p-4 backdrop-blur-sm">
+      <section className="panel w-full max-w-xl p-6 shadow-[0_20px_60px_rgba(43,36,30,0.2)]">
+        <h2 className="site-display text-xl font-bold text-[#2b241e]">Préférences cookies</h2>
+        <p className="mt-2 text-sm text-[#665b51]">
+          Choisis les catégories que tu autorises. Les cookies nécessaires restent
+          actifs pour le fonctionnement de l&apos;application.
         </p>
         <a
           href={COOKIE_POLICY_PATH}
-          className="mt-2 inline-block text-sm font-medium text-slate-900 underline"
+          className="mt-2 inline-block text-sm font-semibold text-[#e85f3c] underline decoration-[#ffb648] underline-offset-4"
         >
           Lire la politique cookies
         </a>
 
         <div className="mt-4 space-y-3">
-          <label className="flex items-center justify-between rounded border border-slate-200 p-3">
+          <label className="flex items-center justify-between rounded-[14px] bg-[#fdf6ef] p-3">
             <span>
-              <span className="block text-sm font-medium text-slate-900">Necessaires</span>
-              <span className="block text-xs text-slate-600">
-                Authentification, securite et fonctionnement principal.
+              <span className="block text-sm font-medium text-[#2b241e]">Nécessaires</span>
+              <span className="block text-xs text-[#806f61]">
+                Authentification, sécurité et fonctionnement principal.
               </span>
             </span>
-            <input type="checkbox" checked disabled className="h-4 w-4 accent-slate-900" />
+            <input type="checkbox" checked disabled className="h-4 w-4 accent-[#ff7a54]" />
           </label>
 
-          <label className="flex items-center justify-between rounded border border-slate-200 p-3">
+          <label className="flex items-center justify-between rounded-[14px] bg-[#fdf6ef] p-3">
             <span>
-              <span className="block text-sm font-medium text-slate-900">Analytics</span>
-              <span className="block text-xs text-slate-600">
-                Mesure d'usage anonyme pour ameliorer le produit.
+              <span className="block text-sm font-medium text-[#2b241e]">Analytics</span>
+              <span className="block text-xs text-[#806f61]">
+                Mesure d&apos;usage anonyme pour améliorer le produit.
               </span>
             </span>
             <input
               type="checkbox"
               checked={analytics}
               onChange={(event) => setAnalytics(event.target.checked)}
-              className="h-4 w-4 accent-slate-900"
+              className="h-4 w-4 accent-[#ff7a54]"
             />
           </label>
 
-          <label className="flex items-center justify-between rounded border border-slate-200 p-3">
+          <label className="flex items-center justify-between rounded-[14px] bg-[#fdf6ef] p-3">
             <span>
-              <span className="block text-sm font-medium text-slate-900">Marketing</span>
-              <span className="block text-xs text-slate-600">
+              <span className="block text-sm font-medium text-[#2b241e]">Marketing</span>
+              <span className="block text-xs text-[#806f61]">
                 Personalisation publicitaire et campagnes externes.
               </span>
             </span>
@@ -136,7 +136,7 @@ function CookiePreferencesModal() {
               type="checkbox"
               checked={marketing}
               onChange={(event) => setMarketing(event.target.checked)}
-              className="h-4 w-4 accent-slate-900"
+              className="h-4 w-4 accent-[#ff7a54]"
             />
           </label>
         </div>
@@ -145,28 +145,28 @@ function CookiePreferencesModal() {
           <button
             type="button"
             onClick={closeConsentPreferences}
-            className="rounded border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            className="sport-secondary-button"
           >
             Annuler
           </button>
           <button
             type="button"
             onClick={rejectAll}
-            className="rounded border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            className="sport-secondary-button"
           >
             Tout refuser
           </button>
           <button
             type="button"
             onClick={acceptAll}
-            className="rounded border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            className="sport-secondary-button"
           >
             Tout accepter
           </button>
           <button
             type="button"
             onClick={() => savePreferences({ analytics, marketing })}
-            className="rounded bg-slate-900 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+            className="sport-primary-button"
           >
             Enregistrer
           </button>
@@ -186,11 +186,11 @@ function ManageCookiesButton() {
     <button
       type="button"
       onClick={openConsentPreferences}
-      className={`fixed left-4 z-40 rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-700 shadow transition hover:bg-slate-100 ${
+      className={`fixed left-4 z-40 rounded-full border border-[#f0e3d6] bg-white px-4 py-2 text-xs font-semibold text-[#806f61] shadow transition hover:border-[#ffb899] hover:text-[#e85f3c] ${
         isBannerVisible ? "bottom-28" : "bottom-4"
       }`}
     >
-      Gerer mes cookies
+      Gérer mes cookies
     </button>
   );
 }

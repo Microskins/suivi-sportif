@@ -1,9 +1,9 @@
 ﻿// @vitest-environment jsdom
 
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import type { ReactNode } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { BodyMeasurement } from "../api/client";
 import { DashboardOverview } from "./dashboard-overview";
 
@@ -23,6 +23,8 @@ vi.mock("recharts", () => {
     YAxis: () => null,
   };
 });
+
+afterEach(cleanup);
 
 function buildMeasurement(
   overrides: Partial<BodyMeasurement> & Pick<BodyMeasurement, "id" | "date">,
@@ -87,7 +89,7 @@ describe("DashboardOverview", () => {
     expect(screen.getByText("Poids corporel")).toBeInTheDocument();
     expect(screen.getByText("82,4 kg")).toBeInTheDocument();
     expect(screen.getByText(/08\/06\/2026/)).toBeInTheDocument();
-    expect(screen.getByText(/-0,7 kg vs precedente/)).toBeInTheDocument();
+    expect(screen.getByText(/-0,7 kg vs précédente/)).toBeInTheDocument();
   });
 
   it("offers a quick action to take a new body weight measurement", () => {
@@ -105,7 +107,7 @@ describe("DashboardOverview", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Prendre une pesee" }));
+    fireEvent.click(screen.getByRole("button", { name: "Prendre une pesée" }));
 
     expect(onQuickAction).toHaveBeenCalledWith("measurement");
   });

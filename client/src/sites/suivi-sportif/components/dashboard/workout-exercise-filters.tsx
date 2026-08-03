@@ -49,7 +49,7 @@ export function WorkoutExerciseFilters({
             onExerciseBodyPartFilterChange("ALL");
           }}
         >
-          Reinitialiser
+          Réinitialiser
         </button>
       </div>
       <div className="grid gap-2 md:grid-cols-4">

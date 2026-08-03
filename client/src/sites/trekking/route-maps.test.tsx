@@ -23,8 +23,8 @@ describe("RouteMaps", () => {
   it("loads the selected route map immediately", () => {
     render(<RouteMaps route={route} />);
 
-    expect(screen.getByText("Legende du trace")).toBeInTheDocument();
-    expect(screen.getByText("Jour 3")).toBeInTheDocument();
+    expect(screen.getByText("Légende du tracé")).toBeTruthy();
+    expect(screen.getByText("Jour 3")).toBeTruthy();
 
     const map = document.querySelector<HTMLIFrameElement>("iframe");
     expect(map?.src).toContain("mid=trace-01");

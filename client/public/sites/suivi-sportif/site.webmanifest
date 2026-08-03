@@ -5,8 +5,8 @@
   "start_url": "/suivi-sportif",
   "scope": "/suivi-sportif",
   "display": "standalone",
-  "background_color": "#071411",
-  "theme_color": "#d8ff63",
+  "background_color": "#fff8f2",
+  "theme_color": "#ff7a54",
   "icons": [
     {
       "src": "/sites/suivi-sportif/app-icon-192.png",

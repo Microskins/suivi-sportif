@@ -73,6 +73,7 @@ Index chronologique des chantiers planifies et executes.
 67. [Portfolio racine et Suivi Sportif en sous-site](./067-portfolio-racine-suivi-sportif.md)
 68. [Mini-site Trekking et premier trek dans les Vosges](./068-trekking-vosges.md)
 69. [Arborescence frontend multi-sites](./069-arborescence-frontend-multi-sites.md)
+70. [Refonte DA multi-sites](./070-refonte-da-multi-sites.md)
 
 ## Convention
 

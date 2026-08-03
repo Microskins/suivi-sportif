@@ -173,10 +173,10 @@ export function WorkoutForm({
           <div>
             <p className="text-sm font-semibold text-emerald-950">
               {isEditingWorkout
-                ? "Modification de seance"
+                ? "Modification de séance"
                 : isDuplicatingWorkout
-                  ? "Duplication de seance"
-                  : "Nouvelle seance"}
+                  ? "Duplication de séance"
+                  : "Nouvelle séance"}
             </p>
             <p className="mt-1 text-xs text-emerald-800/80">
               {rows.length} exercice(s), {totalSets} serie(s). Les filtres servent a trouver vite le prochain exercice a ajouter.
@@ -194,7 +194,7 @@ export function WorkoutForm({
         <Field label="Date">
           <input className={inputClass} type="datetime-local" value={date} onChange={(event) => setDate(event.target.value)} required />
         </Field>
-        <Field label="Duree (min)">
+        <Field label="Durée (min)">
           <input className={inputClass} type="number" min="0" value={duration} onChange={(event) => setDuration(event.target.value)} required />
         </Field>
       </div>

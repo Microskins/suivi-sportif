@@ -51,7 +51,7 @@ describe("CookieConsentLayer", () => {
     render(<CookieConsentLayer />);
 
     fireEvent.click(screen.getByRole("button", { name: "Personnaliser" }));
-    expect(screen.getByText("Preferences cookies")).toBeTruthy();
+    expect(screen.getByText("Préférences cookies")).toBeTruthy();
 
     const analyticsCheckbox = screen.getByRole("checkbox", { name: /analytics/i });
     fireEvent.click(analyticsCheckbox);
@@ -67,7 +67,7 @@ describe("CookieConsentLayer", () => {
   it("reopens preferences from persistent button", () => {
     render(<CookieConsentLayer />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Gerer mes cookies" }));
-    expect(screen.getByText("Preferences cookies")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Gérer mes cookies" }));
+    expect(screen.getByText("Préférences cookies")).toBeTruthy();
   });
 });

@@ -112,7 +112,7 @@ export function FoodForm({ item, onSubmit, onCancel }: FoodFormProps) {
             />
             <button
               type="button"
-              className="rounded bg-slate-800 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+              className="sport-primary-button px-4"
               disabled={isLookingUpBarcode}
               onClick={handleBarcodeLookup}
             >
@@ -141,7 +141,7 @@ export function FoodForm({ item, onSubmit, onCancel }: FoodFormProps) {
 
       <div className="grid gap-4 md:grid-cols-5">
         <MacroInput label="Calories" value={caloriesKcal} onChange={setCaloriesKcal} />
-        <MacroInput label="Proteines" value={proteinGrams} onChange={setProteinGrams} />
+        <MacroInput label="Protéines" value={proteinGrams} onChange={setProteinGrams} />
         <MacroInput label="Glucides" value={carbsGrams} onChange={setCarbsGrams} />
         <MacroInput label="Lipides" value={fatGrams} onChange={setFatGrams} />
         <MacroInput label="Fibres" value={fiberGrams} onChange={setFiberGrams} required={false} />

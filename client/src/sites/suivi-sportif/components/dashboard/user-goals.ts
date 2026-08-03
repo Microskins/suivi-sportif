@@ -24,9 +24,9 @@ export const userGoalMetricOptions: Array<{
 }> = [
   {
     value: "SPORT_WORKOUTS_PER_WEEK",
-    label: "Seances par semaine",
+    label: "Séances par semaine",
     domain: "SPORT",
-    unit: "seance(s)",
+    unit: "séance(s)",
     defaultDirection: "AT_LEAST",
   },
   {

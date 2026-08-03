@@ -21,7 +21,7 @@ export const SITE_IDENTITIES: Record<SiteId, SiteIdentity> = {
       "Une selection de projets web utiles, lisibles et construits avec attention.",
     faviconPath: "/sites/portfolio/favicon.svg",
     id: "portfolio",
-    themeColor: "#f4f1e8",
+    themeColor: "#efe7d8",
     title: "Portfolio - Projets web choisis",
   },
   "suivi-sportif": {
@@ -32,11 +32,11 @@ export const SITE_IDENTITIES: Record<SiteId, SiteIdentity> = {
     pwa: {
       appleTouchIconPath: "/sites/suivi-sportif/apple-touch-icon.png",
       manifestPath: "/sites/suivi-sportif/site.webmanifest",
-      maskColor: "#d8ff63",
+      maskColor: "#ff7a54",
       maskIconPath: "/sites/suivi-sportif/safari-pinned-tab.svg",
     },
     socialImagePath: "/sites/suivi-sportif/og-image.png",
-    themeColor: "#071411",
+    themeColor: "#fff8f2",
     title: "Suivi Sportif - Entraine. Mesure. Ajuste.",
   },
   trekking: {
@@ -45,7 +45,7 @@ export const SITE_IDENTITIES: Record<SiteId, SiteIdentity> = {
     faviconPath: "/sites/trekking/favicon.svg",
     id: "trekking",
     socialImagePath: "/sites/trekking/vosges-wild-hero.png",
-    themeColor: "#071610",
+    themeColor: "#f1e2c4",
     title: "Trekking - Carnets de marche",
   },
 };

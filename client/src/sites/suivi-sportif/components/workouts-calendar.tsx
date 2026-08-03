@@ -20,15 +20,15 @@ type CalendarDay = {
 };
 
 const statusTone: Record<WorkoutStatus, string> = {
-  PLANNED: "bg-blue-100 text-blue-800",
-  COMPLETED: "bg-emerald-100 text-emerald-800",
-  CANCELED: "bg-rose-100 text-rose-800",
+  PLANNED: "bg-[#eaf2fc] text-[#4f7ead]",
+  COMPLETED: "bg-[#e7f5ef] text-[#43866c]",
+  CANCELED: "bg-[#fff0eb] text-[#c95b40]",
 };
 
 const statusLabel: Record<WorkoutStatus, string> = {
-  PLANNED: "Prevue",
-  COMPLETED: "Realisee",
-  CANCELED: "Annulee",
+  PLANNED: "Prévue",
+  COMPLETED: "Réalisée",
+  CANCELED: "Annulée",
 };
 
 function dayKey(date: Date): string {
@@ -205,22 +205,27 @@ export function WorkoutsCalendar({
 
   return (
     <div className="min-w-0 space-y-4">
-      <div className="rounded border border-neutral-200 bg-white p-4 shadow-sm">
+      <div className="panel p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-neutral-950">Calendrier des seances</h2>
-            <p className="mt-1 text-sm text-neutral-600">
-              Planifie et relis tes seances semaine par semaine.
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[#ff7a54]">
+              Organisation
+            </p>
+            <h2 className="site-display mt-1 text-2xl font-bold text-[#2b241e]">
+              Calendrier des séances
+            </h2>
+            <p className="mt-1 text-sm text-[#806f61]">
+              Planifie et relis tes séances semaine par semaine.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2 rounded border border-neutral-200 bg-neutral-50 p-1">
+          <div className="flex flex-wrap gap-1 rounded-full bg-[#fdf6ef] p-1">
             <button
               type="button"
               onClick={() => setMode("week")}
-              className={`rounded border px-3 py-2 text-sm font-medium transition ${
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                 mode === "week"
-                  ? "border-emerald-700 bg-emerald-700 text-white"
-                  : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100"
+                  ? "bg-[linear-gradient(135deg,#ff7a54,#ffb648)] text-white shadow-sm"
+                  : "text-[#806f61] hover:bg-white hover:text-[#2b241e]"
               }`}
             >
               Semaine
@@ -228,10 +233,10 @@ export function WorkoutsCalendar({
             <button
               type="button"
               onClick={() => setMode("month")}
-              className={`rounded border px-3 py-2 text-sm font-medium transition ${
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                 mode === "month"
-                  ? "border-emerald-700 bg-emerald-700 text-white"
-                  : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100"
+                  ? "bg-[linear-gradient(135deg,#ff7a54,#ffb648)] text-white shadow-sm"
+                  : "text-[#806f61] hover:bg-white hover:text-[#2b241e]"
               }`}
             >
               Mois
@@ -241,26 +246,26 @@ export function WorkoutsCalendar({
       </div>
 
       <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <section className="min-w-0 overflow-hidden rounded border border-neutral-200 bg-white p-4 shadow-sm">
-          <div className="mb-4 rounded border border-emerald-200 bg-emerald-50 p-3">
+        <section className="panel min-w-0 overflow-hidden p-4">
+          <div className="mb-4 rounded-[16px] bg-[#fdf6ef] p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-emerald-950">Regularite semaine</p>
-                <p className="mt-1 text-xs text-emerald-800/80">
+                <p className="site-display text-sm font-bold text-[#2b241e]">Régularité de la semaine</p>
+                <p className="mt-1 text-xs text-[#806f61]">
                   {weeklyGoal
-                    ? `${weeklyCompleted} / ${weeklyTarget} seance(s) realisee(s)`
+                    ? `${weeklyCompleted} / ${weeklyTarget} séance(s) réalisée(s)`
                     : "Aucun objectif hebdo actif"}
                 </p>
               </div>
-              <p className="text-xl font-bold text-emerald-950">
+              <p className="site-display text-xl font-bold text-[#e85f3c]">
                 {weeklyGoal ? `${weeklyProgress}%` : "-"}
               </p>
             </div>
-            <progress className="mt-2 h-2 w-full overflow-hidden rounded accent-emerald-600" value={weeklyProgress} max={100} />
+            <progress className="sport-progress mt-3" value={weeklyProgress} max={100} />
           </div>
           <div className="mb-4 flex flex-wrap gap-2 text-xs">
             {(["PLANNED", "COMPLETED", "CANCELED"] as Workout["status"][]).map((status) => (
-              <span key={status} className={`rounded px-2 py-1 font-medium ${statusTone[status]}`}>
+              <span key={status} className={`rounded-full px-3 py-1 font-medium ${statusTone[status]}`}>
                 {statusLabel[status]}
               </span>
             ))}
@@ -268,19 +273,19 @@ export function WorkoutsCalendar({
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <button
               type="button"
-              className="rounded border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-100"
+              className="sport-secondary-button"
               onClick={() => shiftPeriod(-1)}
             >
-              Precedent
+              Précédent
             </button>
-            <p className="min-w-0 flex-1 text-center text-sm font-semibold text-neutral-800">
+            <p className="site-display min-w-0 flex-1 text-center text-sm font-bold text-[#2b241e]">
               {mode === "month"
                 ? anchorDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })
                 : `${labelDate(startOfWeek(anchorDate))} - ${labelDate(endOfWeek(anchorDate))}`}
             </p>
             <button
               type="button"
-              className="rounded border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-100"
+              className="sport-secondary-button"
               onClick={() => shiftPeriod(1)}
             >
               Suivant
@@ -288,7 +293,7 @@ export function WorkoutsCalendar({
           </div>
 
           <div className="overflow-x-auto pb-1">
-            <div className="grid min-w-[640px] grid-cols-7 gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+            <div className="grid min-w-[640px] grid-cols-7 gap-2 text-xs font-semibold uppercase tracking-wide text-[#9c8f83]">
               {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((label) => (
                 <p key={label} className="px-2 py-1">
                   {label}
@@ -306,36 +311,38 @@ export function WorkoutsCalendar({
                     key={day.key}
                     type="button"
                     onClick={() => setSelectedDayKey(day.key)}
-                    className={`min-h-28 rounded border p-2 text-left transition ${
+                    className={`min-h-28 rounded-[14px] border p-2 text-left transition ${
                       isSelected
-                        ? "border-emerald-600 bg-emerald-50 shadow-sm"
+                        ? "border-[#ff7a54] bg-[linear-gradient(135deg,#fff0e6,#ffe8d6)] shadow-sm"
+                        : isToday
+                          ? "border-[#ffd4bf] bg-[linear-gradient(135deg,#fff4ec,#ffeadc)]"
                         : day.isCurrentMonth
-                        ? "border-neutral-200 bg-white hover:bg-neutral-50"
-                        : "border-neutral-200 bg-neutral-50 text-neutral-400"
+                          ? "border-[#f0e3d6] bg-white hover:bg-[#fff8f2]"
+                          : "border-[#f0e3d6] bg-[#fdf6ef] text-[#b3a69a]"
                     }`}
                   >
                     <span className="flex items-center justify-between gap-2">
                       <span className="text-sm font-semibold">{day.date.getDate()}</span>
                       {isToday && (
-                        <span className="rounded bg-neutral-950 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                        <span className="rounded-full bg-[linear-gradient(135deg,#ff7a54,#ffb648)] px-2 py-0.5 text-[10px] font-semibold text-white">
                           Auj.
                         </span>
                       )}
                     </span>
-                    <p className="mt-1 text-xs text-neutral-600">
-                      {dayWorkouts.length} seance(s)
+                    <p className="mt-1 text-xs text-[#806f61]">
+                      {dayWorkouts.length} séance(s)
                     </p>
                     <div className="mt-2 flex flex-wrap gap-1">
                       {dayWorkouts.slice(0, 2).map((workout) => (
                         <span
                           key={workout.id}
-                          className={`rounded px-2 py-0.5 text-[10px] font-medium ${statusTone[workout.status]}`}
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${statusTone[workout.status]}`}
                         >
                           {statusLabel[workout.status]}
                         </span>
                       ))}
                       {dayWorkouts.length > 2 && (
-                        <span className="rounded bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-700">
+                        <span className="rounded-full bg-[#f4e9de] px-2 py-0.5 text-[10px] font-medium text-[#806f61]">
                           +{dayWorkouts.length - 2}
                         </span>
                       )}
@@ -347,33 +354,33 @@ export function WorkoutsCalendar({
           </div>
         </section>
 
-        <aside className="min-w-0 rounded border border-neutral-200 bg-white p-4 shadow-sm">
-          <h3 className="text-base font-semibold text-neutral-950">
+        <aside className="panel min-w-0 p-4">
+          <h3 className="site-display text-lg font-bold text-[#2b241e]">
             {selectedDay ? labelDate(selectedDay.date) : "Jour"}
           </h3>
-          {isLoading && <p className="mt-2 text-sm text-neutral-500">Chargement...</p>}
+          {isLoading && <p className="mt-2 text-sm text-[#9c8f83]">Chargement…</p>}
           <button
             type="button"
             onClick={() => selectedDay && onPlan(planningIsoForDay(selectedDay.date))}
-            className="mt-3 w-full rounded bg-emerald-700 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
+            className="sport-primary-button mt-3 w-full"
             disabled={!selectedDay}
           >
-            Planifier une seance
+            Planifier une séance
           </button>
 
           <div className="mt-4 space-y-2">
             {selectedWorkouts.length ? (
               selectedWorkouts.map((workout) => (
-                <article key={workout.id} className="rounded border border-neutral-200 p-3">
+                <article key={workout.id} className="rounded-[14px] bg-[#fdf6ef] p-3">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-semibold text-neutral-900">{workout.name}</p>
+                    <p className="text-sm font-semibold text-[#2b241e]">{workout.name}</p>
                     <span
-                      className={`rounded px-2 py-0.5 text-xs font-medium ${statusTone[workout.status]}`}
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusTone[workout.status]}`}
                     >
                       {statusLabel[workout.status]}
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-neutral-600">
+                  <p className="mt-1 text-xs text-[#806f61]">
                     {new Date(workout.date).toLocaleTimeString("fr-FR", {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -384,14 +391,14 @@ export function WorkoutsCalendar({
                     <button
                       type="button"
                       onClick={() => onEdit(workout)}
-                      className="rounded border border-neutral-300 px-2 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100"
+                      className="sport-secondary-button min-h-8 px-3 py-1 text-xs"
                     >
                       Modifier
                     </button>
                     <button
                       type="button"
                       onClick={() => onDuplicate(workout)}
-                      className="rounded border border-neutral-300 px-2 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100"
+                      className="sport-secondary-button min-h-8 px-3 py-1 text-xs"
                     >
                       Dupliquer
                     </button>
@@ -399,20 +406,20 @@ export function WorkoutsCalendar({
                 </article>
               ))
             ) : (
-              <p className="rounded border border-dashed border-neutral-300 bg-neutral-50 px-3 py-5 text-sm text-neutral-600">
-                Aucune seance sur ce jour. Utilise "Planifier une seance" pour reserver ce creneau.
+              <p className="rounded-[14px] bg-[#fdf6ef] px-3 py-5 text-sm text-[#806f61]">
+                Aucune séance ce jour. Utilise « Planifier une séance » pour réserver ce créneau.
               </p>
             )}
           </div>
 
-          <div className="mt-4 border-t border-neutral-200 pt-4">
-            <p className="text-sm font-semibold text-neutral-900">Associer une seance existante</p>
+          <div className="mt-4 border-t border-[#f0e3d6] pt-4">
+            <p className="text-sm font-semibold text-[#2b241e]">Associer une séance existante</p>
             <select
-              className="mt-2 block w-full rounded border border-neutral-300 bg-white px-3 py-2 text-sm"
+              className="sport-input mt-2"
               value={associateId}
               onChange={(event) => setAssociateId(event.target.value)}
             >
-              <option value="">Selectionner une seance</option>
+              <option value="">Sélectionner une séance</option>
               {movableWorkouts.map((workout) => (
                 <option key={workout.id} value={workout.id}>
                   {workout.name} ({new Date(workout.date).toLocaleDateString("fr-FR")})
@@ -421,16 +428,16 @@ export function WorkoutsCalendar({
             </select>
             <button
               type="button"
-              className="mt-2 w-full rounded border border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-60"
+              className="sport-secondary-button mt-2 w-full"
               onClick={() => void handleAssociate()}
               disabled={!associateId || !selectedDay}
             >
-              Associer a ce jour
+              Associer à ce jour
             </button>
           </div>
 
-          <p className="mt-4 text-xs text-neutral-500">
-            Poids journalier: reserve pour le v2.
+          <p className="mt-4 text-xs text-[#9c8f83]">
+            Poids journalier : réservé pour la v2.
           </p>
         </aside>
       </div>

@@ -54,7 +54,7 @@ export const bypassWorkouts: Workout[] = [
     date: "2026-05-01T17:30:00.000Z",
     status: "COMPLETED",
     duration: 55,
-    notes: "Seance de reprise sans aller a l'echec.",
+    notes: "Séance de reprise sans aller à l’échec.",
     createdAt,
     updatedAt,
     exercises: [
@@ -194,7 +194,7 @@ export const bypassWorkoutTemplates: WorkoutTemplate[] = [
     category: "Cardio",
     level: "Debutant",
     duration: 20,
-    description: "Seance cardio simple pour reprendre progressivement.",
+    description: "Séance cardio simple pour reprendre progressivement.",
     displayOrder: 1,
     createdAt,
     updatedAt,
@@ -427,7 +427,7 @@ export const bypassMeals: Meal[] = [
     name: "Dejeuner entrainement",
     date: "2026-05-04T12:15:00.000Z",
     mealType: "lunch",
-    notes: "Repas simple avant la seance.",
+    notes: "Repas simple avant la séance.",
     createdAt,
     updatedAt,
     items: [

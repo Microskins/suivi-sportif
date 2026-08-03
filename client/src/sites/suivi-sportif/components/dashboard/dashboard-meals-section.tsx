@@ -47,7 +47,7 @@ export function DashboardMealsSection({
           className={mealsView === "create" ? activeViewButtonClass : inactiveViewButtonClass}
           onClick={onShowCreate}
         >
-          Creer un repas
+          Créer un repas
         </button>
       </div>
       {mealsView === "create" ? (

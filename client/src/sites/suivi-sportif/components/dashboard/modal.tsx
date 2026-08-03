@@ -8,14 +8,14 @@ type ModalProps = {
 
 export function Modal({ title, children, onClose }: ModalProps) {
   return (
-    <div className="fixed inset-0 z-20 flex items-start justify-center overflow-y-auto bg-slate-950/40 px-4 py-8">
-      <div className="w-full max-w-3xl rounded border border-slate-200 bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-          <h2 className="text-lg font-semibold text-slate-950">{title}</h2>
+    <div className="fixed inset-0 z-20 flex items-start justify-center overflow-y-auto bg-[#2b241e]/45 px-4 py-8 backdrop-blur-sm">
+      <div className="panel w-full max-w-3xl shadow-[0_20px_60px_rgba(43,36,30,0.2)]">
+        <div className="flex items-center justify-between border-b border-[#f0e3d6] px-5 py-4">
+          <h2 className="site-display text-xl font-bold text-[#2b241e]">{title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded border border-slate-300 px-3 py-1 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            className="sport-secondary-button min-h-9 px-3 py-1"
           >
             Fermer
           </button>

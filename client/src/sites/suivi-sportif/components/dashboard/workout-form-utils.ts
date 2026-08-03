@@ -14,8 +14,8 @@ export const exerciseTypeOptions = [
 
 export const workoutStatusOptions: Array<[WorkoutStatus, string]> = [
   ["PLANNED", "Prevue"],
-  ["COMPLETED", "Realisee"],
-  ["CANCELED", "Annulee"],
+  ["COMPLETED", "Réalisée"],
+  ["CANCELED", "Annulée"],
 ];
 
 export type WorkoutExerciseFormRow = {

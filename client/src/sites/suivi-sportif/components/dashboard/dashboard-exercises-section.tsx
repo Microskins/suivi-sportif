@@ -39,7 +39,7 @@ export function DashboardExercisesSection({
           className={exerciseDraft !== undefined && !exerciseDraft.id ? activeViewButtonClass : inactiveViewButtonClass}
           onClick={onShowCreate}
         >
-          Creer un exercice
+          Créer un exercice
         </button>
       </div>
       {exerciseDraft !== undefined ? (

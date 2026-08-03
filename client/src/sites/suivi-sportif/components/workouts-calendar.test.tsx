@@ -1,6 +1,6 @@
 ﻿// @vitest-environment jsdom
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Workout } from "../api/client";
 import { WorkoutsCalendar } from "./workouts-calendar";
 
@@ -31,6 +31,8 @@ const workouts: Workout[] = [
   },
 ];
 
+afterEach(cleanup);
+
 describe("WorkoutsCalendar", () => {
   it("renders and switches between month and week", () => {
     render(
@@ -45,7 +47,7 @@ describe("WorkoutsCalendar", () => {
       />,
     );
 
-    expect(screen.getByText("Calendrier des seances")).toBeTruthy();
+    expect(screen.getByText("Calendrier des séances")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Semaine" }));
     expect(screen.getByRole("button", { name: "Mois" })).toBeTruthy();
   });
@@ -65,7 +67,7 @@ describe("WorkoutsCalendar", () => {
     );
 
     const planButtons = screen.getAllByRole("button", {
-      name: "Planifier une seance",
+      name: "Planifier une séance",
     });
     fireEvent.click(planButtons[planButtons.length - 1]);
     expect(onPlan).toHaveBeenCalledTimes(1);
@@ -90,7 +92,7 @@ describe("WorkoutsCalendar", () => {
       target: { value: "w1" },
     });
     const associateButtons = screen.getAllByRole("button", {
-      name: "Associer a ce jour",
+      name: "Associer à ce jour",
     });
     fireEvent.click(associateButtons[associateButtons.length - 1]);
     expect(onAssociate).toHaveBeenCalledTimes(1);
