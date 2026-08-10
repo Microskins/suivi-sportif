@@ -171,6 +171,7 @@ client/src/
 `-- sites/
     |-- portfolio/
     |-- trekking/
+    |-- voyage/
     `-- suivi-sportif/
         |-- api/
         |-- components/
@@ -188,13 +189,16 @@ des identites. Il applique avant le rendu React le titre, la description, la
 couleur navigateur, le favicon et l'attribut `data-site` correspondant a la
 route. Les images sociales suivent aussi le contexte. Le manifeste et les
 icones d'installation PWA ne sont ajoutes que pour Suivi Sportif, afin que le
-portfolio et Trekking ne proposent pas d'installer la mauvaise application.
+portfolio, Trekking et Voyage ne proposent pas d'installer la mauvaise
+application.
 Les signatures de marque, palettes et composants visuels restent dans leur
 dossier de site:
 
 - portfolio: direction editoriale ivoire, encre et vermillon;
-- Suivi Sportif: interface technique sombre, avec accent citron;
-- Trekking: univers organique nocturne inspire des cartes topographiques.
+- Suivi Sportif: interface chaleureuse et arrondie, dans la DA Energie;
+- Trekking: univers organique inspire des cartes topographiques;
+- Voyage: billets clairs, encre bleu nuit et donnees monospaces dans la DA
+  Boarding Pass.
 
 Cette frontiere permet d'ajouter un site sans melanger son interface avec les
 autres, tout en gardant un seul document HTML et un seul build Vite.
@@ -213,6 +217,9 @@ Le client sert aussi de point d'entree de portfolio:
 - `/trekking/vosges-wild` affiche le carnet de preparation Vosges 2027; sa
   checklist est conservee localement dans le navigateur via un store Zustand.
   Ses deux traces Google My Maps restent inactives jusqu'au clic du visiteur.
+- `/voyage` affiche le catalogue des carnets de voyage.
+- `/voyage/islande-2026` affiche le carnet de preparation Islande 2026, sans
+  reference de reservation privee dans le bundle public.
 
 Les routes techniques restent a la racine du domaine: `/api`, `/health` et
 `/mcp`. Cette organisation permet d'ajouter de futurs projets sous leurs

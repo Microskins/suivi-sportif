@@ -36,6 +36,17 @@
     --site-muted: #b0794c;
   }
 
+  html[data-site="voyage"] {
+    --site-accent: #1c4ed8;
+    --site-background: #f4f6f8;
+    --site-body: "Space Grotesk", sans-serif;
+    --site-display: "Space Grotesk", sans-serif;
+    --site-ink: #0f1b2b;
+    --site-label: "JetBrains Mono", monospace;
+    --site-line: #dfe4ea;
+    --site-muted: #6b7684;
+  }
+
   html {
     background: var(--site-background);
   }
@@ -80,14 +91,75 @@
   .site-sport-grid {
     background-color: #fff8f2;
     background-image:
-      radial-gradient(circle at 12% 8%, rgba(255, 182, 72, 0.12), transparent 25rem),
-      radial-gradient(circle at 92% 18%, rgba(255, 122, 84, 0.09), transparent 28rem);
+      radial-gradient(
+        circle at 12% 8%,
+        rgba(255, 182, 72, 0.12),
+        transparent 25rem
+      ),
+      radial-gradient(
+        circle at 92% 18%,
+        rgba(255, 122, 84, 0.09),
+        transparent 28rem
+      );
   }
 
   .site-topography {
     background-image:
-      radial-gradient(ellipse at 10% 20%, transparent 0 34%, rgba(176, 121, 76, 0.12) 34.2% 34.6%, transparent 34.8%),
-      radial-gradient(ellipse at 88% 64%, transparent 0 28%, rgba(176, 121, 76, 0.1) 28.2% 28.6%, transparent 28.8%);
+      radial-gradient(
+        ellipse at 10% 20%,
+        transparent 0 34%,
+        rgba(176, 121, 76, 0.12) 34.2% 34.6%,
+        transparent 34.8%
+      ),
+      radial-gradient(
+        ellipse at 88% 64%,
+        transparent 0 28%,
+        rgba(176, 121, 76, 0.1) 28.2% 28.6%,
+        transparent 28.8%
+      );
+  }
+
+  .voyage-barcode {
+    background-image: repeating-linear-gradient(
+      90deg,
+      currentColor 0 2px,
+      transparent 2px 5px,
+      currentColor 5px 6px,
+      transparent 6px 10px
+    );
+  }
+
+  .voyage-ticket-stub {
+    position: relative;
+  }
+
+  .voyage-ticket-stub::before {
+    position: absolute;
+    top: -1px;
+    right: 0;
+    left: 0;
+    height: 2px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      #f4f6f8 0 8px,
+      transparent 8px 15px
+    );
+    content: "";
+  }
+
+  @media (min-width: 768px) {
+    .voyage-ticket-stub::before {
+      top: 0;
+      bottom: 0;
+      left: -1px;
+      width: 2px;
+      height: auto;
+      background-image: repeating-linear-gradient(
+        180deg,
+        #f4f6f8 0 8px,
+        transparent 8px 15px
+      );
+    }
   }
 }
 
@@ -138,15 +210,28 @@
     border-radius: 20px;
   }
 
-  html[data-site="suivi-sportif"] :is(.border-slate-200, .border-slate-300, .border-neutral-200, .border-neutral-300) {
+  html[data-site="suivi-sportif"]
+    :is(
+      .border-slate-200,
+      .border-slate-300,
+      .border-neutral-200,
+      .border-neutral-300
+    ) {
     border-color: #f0e3d6;
   }
 
-  html[data-site="suivi-sportif"] :is(.bg-slate-50, .bg-slate-100, .bg-neutral-50, .bg-neutral-100) {
+  html[data-site="suivi-sportif"]
+    :is(.bg-slate-50, .bg-slate-100, .bg-neutral-50, .bg-neutral-100) {
     background-color: #fdf6ef;
   }
 
-  html[data-site="suivi-sportif"] :is(.text-slate-950, .text-slate-900, .text-neutral-950, .text-neutral-900) {
+  html[data-site="suivi-sportif"]
+    :is(
+      .text-slate-950,
+      .text-slate-900,
+      .text-neutral-950,
+      .text-neutral-900
+    ) {
     color: #2b241e;
   }
 
@@ -154,7 +239,13 @@
     color: #665b51;
   }
 
-  html[data-site="suivi-sportif"] :is(.text-slate-600, .text-slate-500, .text-neutral-600, .text-neutral-500) {
+  html[data-site="suivi-sportif"]
+    :is(
+      .text-slate-600,
+      .text-slate-500,
+      .text-neutral-600,
+      .text-neutral-500
+    ) {
     color: #9c8f83;
   }
 
@@ -162,7 +253,13 @@
     background-color: #eaf6f1;
   }
 
-  html[data-site="suivi-sportif"] :is(.text-emerald-950, .text-emerald-900, .text-emerald-800, .text-emerald-700) {
+  html[data-site="suivi-sportif"]
+    :is(
+      .text-emerald-950,
+      .text-emerald-900,
+      .text-emerald-800,
+      .text-emerald-700
+    ) {
     color: #43866c;
   }
 
@@ -170,7 +267,8 @@
     background-color: #fff5e3;
   }
 
-  html[data-site="suivi-sportif"] :is(.text-amber-950, .text-amber-900, .text-amber-800, .text-amber-700) {
+  html[data-site="suivi-sportif"]
+    :is(.text-amber-950, .text-amber-900, .text-amber-800, .text-amber-700) {
     color: #9b681b;
   }
 
@@ -178,7 +276,8 @@
     background-color: #fff1ed;
   }
 
-  html[data-site="suivi-sportif"] :is(.text-rose-950, .text-rose-900, .text-rose-800, .text-rose-700) {
+  html[data-site="suivi-sportif"]
+    :is(.text-rose-950, .text-rose-900, .text-rose-800, .text-rose-700) {
     color: #a84432;
   }
 
@@ -186,7 +285,13 @@
     border-style: solid;
   }
 
-  html[data-site="suivi-sportif"] button:is(.bg-emerald-700, .bg-emerald-600, .bg-slate-900, .bg-neutral-950) {
+  html[data-site="suivi-sportif"]
+    button:is(
+      .bg-emerald-700,
+      .bg-emerald-600,
+      .bg-slate-900,
+      .bg-neutral-950
+    ) {
     border-color: transparent;
     border-radius: 999px;
     background-color: transparent;

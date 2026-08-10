@@ -1,5 +1,98 @@
 # IA Idees
 
+## 2026-08-10 - Voyage: catalogue pilote par des donnees validees
+
+## Contexte
+
+- Le plan `071-integration-projet-voyage` ajoute un premier voyage directement
+  dans le client afin de valider les parcours et la direction artistique.
+- La multiplication des destinations rendrait des composants declares a la
+  main plus difficiles a relire et a maintenir.
+
+## Proposition
+
+- Extraire plus tard les trajets, etapes, statistiques et reservations
+  publiques dans un catalogue TypeScript valide par un schema Zod.
+- Faire deriver le catalogue, les pages detail et les metadonnees du meme jeu
+  de donnees versionne.
+
+## Impact
+
+- Ajout d'un voyage plus rapide et donnees coherentes entre toutes les vues.
+- Erreurs de contenu detectees avant le build.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/071-integration-projet-voyage.md
+
+---
+
+## 2026-08-10 - Voyage: coffre prive pour les reservations
+
+## Contexte
+
+- La premiere version n'expose ni numero de dossier, ni adresse
+  d'hebergement, ni document de voyage prive.
+- Ces informations seraient utiles pendant le sejour mais ne doivent pas etre
+  publiees dans le bundle du portfolio.
+
+## Proposition
+
+- Etudier un espace authentifie et chiffre pour les confirmations, contacts,
+  adresses et documents de reservation.
+- Definir une duree de conservation et une fonction d'export ou de suppression
+  avant d'y importer des donnees reelles.
+
+## Impact
+
+- Informations utiles regroupees sans transformer le site public en fuite de
+  donnees personnelles.
+- Separation explicite entre contenu editorial et donnees sensibles.
+
+## Complexite
+
+- L
+
+## Liens
+
+- Plan: docs/90-plans/071-integration-projet-voyage.md
+
+---
+
+## 2026-08-10 - Voyage: carnet essentiel disponible hors ligne
+
+## Contexte
+
+- Les horaires, etapes et adresses sont souvent consultes avec une connexion
+  faible ou couteuse pendant un voyage.
+- Le site public reste aujourd'hui dependant du chargement web courant.
+
+## Proposition
+
+- Ajouter plus tard un export PDF compact et une version hors ligne limitee au
+  voyage selectionne.
+- Indiquer la date de derniere synchronisation et exclure par defaut les
+  documents prives de l'export partageable.
+
+## Impact
+
+- Consultation fiable en transit ou a l'etranger.
+- Meilleure maitrise des donnees emportees sur le telephone.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/071-integration-projet-voyage.md
+
+---
+
 ## 2026-07-31 - Frontend: charger les fontes par site
 
 ## Contexte

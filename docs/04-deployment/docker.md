@@ -523,5 +523,6 @@ Resultat public attendu:
 
 - `/` retourne le portfolio avec une reponse frontend `200`;
 - `/suivi-sportif` retourne l'application de suivi sportif;
+- `/voyage` retourne le catalogue des carnets de voyage;
 - `/health` retourne le JSON de sante de l'API;
 - `/mcp` sans token retourne `401 Unauthorized`, pas une `404` Fastify.

@@ -2,6 +2,7 @@ import { PortfolioBrand } from "./portfolio-brand";
 
 const SPORT_APP_PATH = "/suivi-sportif";
 const TREKKING_PATH = "/trekking";
+const VOYAGE_PATH = "/voyage";
 
 const projects = [
   {
@@ -24,6 +25,16 @@ const projects = [
     tag: "Carnets de marche",
     title: "Trekking",
   },
+  {
+    description:
+      "Un carnet d'embarquement pour regrouper trajets, étapes et réservations de chaque départ sans exposer les données privées.",
+    href: VOYAGE_PATH,
+    index: "03",
+    specs: ["Itinéraires", "Réservations", "Carte de route"],
+    status: "En ligne",
+    tag: "Carnets de voyage",
+    title: "Voyage",
+  },
 ];
 
 export function PortfolioSite() {
@@ -36,7 +47,9 @@ export function PortfolioSite() {
           </a>
           <p className="site-label text-right text-[0.68rem] font-semibold uppercase leading-5 tracking-[0.16em] text-[#5b6474] sm:text-xs">
             Édition 2026
-            <span className="block text-[#a63d2f]">N° 02 — Projets choisis</span>
+            <span className="block text-[#a63d2f]">
+              N° 03 — Projets choisis
+            </span>
           </p>
         </header>
 
@@ -52,8 +65,8 @@ export function PortfolioSite() {
             </h1>
             <p className="mt-8 max-w-2xl text-xl leading-8 text-[#1b2a3d] first-letter:float-left first-letter:mr-2 first-letter:font-['Barlow_Condensed'] first-letter:text-6xl first-letter:font-bold first-letter:leading-[0.8] first-letter:text-[#a63d2f] sm:text-2xl sm:leading-9">
               Je conçois des outils web lisibles, concrets et attentifs aux
-              usages quotidiens. Chaque projet commence par un besoin réel et
-              se termine par une interface qui sait rester à sa place.
+              usages quotidiens. Chaque projet commence par un besoin réel et se
+              termine par une interface qui sait rester à sa place.
             </p>
           </div>
 
@@ -67,16 +80,18 @@ export function PortfolioSite() {
             <dl className="site-label mt-12 grid grid-cols-2 gap-y-7 border-t border-[#c9bfa8] pt-6 text-xs font-semibold uppercase tracking-[0.12em]">
               <div>
                 <dt className="text-[#5b6474]">Édition</dt>
-                <dd className="mt-2 text-base text-[#1b2a3d]">2026 / 02</dd>
+                <dd className="mt-2 text-base text-[#1b2a3d]">2026 / 03</dd>
               </div>
               <div>
                 <dt className="text-[#5b6474]">Projets</dt>
-                <dd className="mt-2 text-base text-[#1b2a3d]">Deux en ligne</dd>
+                <dd className="mt-2 text-base text-[#1b2a3d]">
+                  Trois en ligne
+                </dd>
               </div>
               <div className="col-span-2">
                 <dt className="text-[#5b6474]">Territoires</dt>
                 <dd className="mt-2 text-base text-[#1b2a3d]">
-                  Sport · Données · Plein air
+                  Sport · Données · Plein air · Voyage
                 </dd>
               </div>
             </dl>
@@ -89,7 +104,7 @@ export function PortfolioSite() {
               Catalogue
             </h2>
             <span className="site-label text-xs font-semibold uppercase tracking-[0.16em] text-[#5b6474]">
-              Sélection / 001—002
+              Sélection / 001—003
             </span>
           </div>
 
