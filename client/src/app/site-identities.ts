@@ -1,4 +1,4 @@
-export type SiteId = "portfolio" | "suivi-sportif" | "trekking";
+export type SiteId = "portfolio" | "suivi-sportif" | "trekking" | "voyage";
 
 type SiteIdentity = {
   description: string;
@@ -48,6 +48,14 @@ export const SITE_IDENTITIES: Record<SiteId, SiteIdentity> = {
     themeColor: "#f1e2c4",
     title: "Trekking - Carnets de marche",
   },
+  voyage: {
+    description:
+      "Trajets, etapes et reservations reunis dans des carnets de voyage clairs.",
+    faviconPath: "/sites/voyage/favicon.svg",
+    id: "voyage",
+    themeColor: "#0f1b2b",
+    title: "Voyage - Carnets de depart",
+  },
 };
 
 export function normalizePathname(pathname: string) {
@@ -66,6 +74,10 @@ export function siteIdFromPath(pathname: string): SiteId {
 
   if (currentPath === "/trekking" || currentPath.startsWith("/trekking/")) {
     return "trekking";
+  }
+
+  if (currentPath === "/voyage" || currentPath.startsWith("/voyage/")) {
+    return "voyage";
   }
 
   return "portfolio";
@@ -156,12 +168,9 @@ export function applySiteIdentity(pathname: string) {
     identity.pwa?.appleTouchIconPath,
     { sizes: "180x180" },
   );
-  setOptionalLink(
-    "site-mask-icon",
-    "mask-icon",
-    identity.pwa?.maskIconPath,
-    { color: identity.pwa?.maskColor ?? "" },
-  );
+  setOptionalLink("site-mask-icon", "mask-icon", identity.pwa?.maskIconPath, {
+    color: identity.pwa?.maskColor ?? "",
+  });
   setOptionalLink("site-manifest", "manifest", identity.pwa?.manifestPath);
 
   if (favicon) {

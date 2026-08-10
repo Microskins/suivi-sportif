@@ -84,7 +84,9 @@ client/
 |       |   |-- exercises/
 |       |   |-- favicon.svg
 |       |   `-- site.webmanifest
-|       `-- trekking/
+|       |-- trekking/
+|       |   `-- favicon.svg
+|       `-- voyage/
 |           `-- favicon.svg
 |-- vite.config.ts
 `-- src/
@@ -101,6 +103,12 @@ client/
         |   |-- trekking-home-site.tsx
         |   |-- trekking-store.ts
         |   `-- vosges-wild-site.tsx
+        |-- voyage/
+        |   |-- boarding-ticket.tsx
+        |   |-- islande-route-map.tsx
+        |   |-- islande-trip-site.tsx
+        |   |-- voyage-brand.tsx
+        |   `-- voyage-home-site.tsx
         `-- suivi-sportif/
             |-- api/
             |-- components/
@@ -120,6 +128,7 @@ Fichiers importants:
   propres au site courant.
 - `client/src/sites/portfolio/`: page d'accueil et catalogue de projets.
 - `client/src/sites/trekking/`: catalogue, carnets de trek et etat local.
+- `client/src/sites/voyage/`: billets, itineraires et reservations publiques.
 - `client/src/sites/*/*-brand.tsx`: signature visuelle locale a chaque site.
 - `client/src/sites/suivi-sportif/api/client.ts`: client HTTP de Suivi Sportif.
 - `client/src/sites/suivi-sportif/stores/`: etat metier de Suivi Sportif.
