@@ -466,7 +466,7 @@ curl https://suivi-sportif.fr
 retournait la reponse JSON 404 de Fastify:
 
 ```json
-{"message":"Route GET:/ not found","error":"Not Found","statusCode":404}
+{ "message": "Route GET:/ not found", "error": "Not Found", "statusCode": 404 }
 ```
 
 alors que:
@@ -524,5 +524,6 @@ Resultat public attendu:
 - `/` retourne le portfolio avec une reponse frontend `200`;
 - `/suivi-sportif` retourne l'application de suivi sportif;
 - `/voyage` retourne le catalogue des carnets de voyage;
+- `/prix-aliments` retourne le comparateur alimentaire Prix Frais;
 - `/health` retourne le JSON de sante de l'API;
 - `/mcp` sans token retourne `401 Unauthorized`, pas une `404` Fastify.

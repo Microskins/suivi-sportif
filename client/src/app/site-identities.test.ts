@@ -35,3 +35,23 @@ describe("identite du site Voyage", () => {
     ).toContain("/sites/voyage/favicon.svg");
   });
 });
+
+describe("identite du comparateur de prix", () => {
+  it("reconnait la route et applique son identite", () => {
+    expect(siteIdFromPath("/prix-aliments/")).toBe("prix-aliments");
+
+    applySiteIdentity("/prix-aliments");
+
+    expect(document.documentElement.dataset.site).toBe("prix-aliments");
+    expect(document.title).toBe(
+      "Prix Frais - Comparateur de prix alimentaires",
+    );
+    expect(
+      document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+        ?.content,
+    ).toBe("#e9e6dc");
+    expect(
+      document.querySelector<HTMLLinkElement>("#site-icon")?.href,
+    ).toContain("/sites/prix-aliments/favicon.svg");
+  });
+});

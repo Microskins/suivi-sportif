@@ -47,6 +47,17 @@
     --site-muted: #6b7684;
   }
 
+  html[data-site="prix-aliments"] {
+    --site-accent: #c1362b;
+    --site-background: #e9e6dc;
+    --site-body: "JetBrains Mono", monospace;
+    --site-display: "JetBrains Mono", monospace;
+    --site-ink: #1c1c1c;
+    --site-label: "JetBrains Mono", monospace;
+    --site-line: #d8d4c8;
+    --site-muted: #6b6b6b;
+  }
+
   html {
     background: var(--site-background);
   }
@@ -133,6 +144,54 @@
     position: relative;
   }
 
+  .price-counter {
+    background-image:
+      radial-gradient(
+        circle at 18% 12%,
+        rgba(28, 28, 28, 0.035),
+        transparent 22rem
+      ),
+      radial-gradient(
+        circle at 82% 88%,
+        rgba(28, 28, 28, 0.025),
+        transparent 24rem
+      );
+  }
+
+  .price-barcode {
+    background-image: repeating-linear-gradient(
+      90deg,
+      #1c1c1c 0 2px,
+      transparent 2px 4px,
+      #1c1c1c 4px 5px,
+      transparent 5px 9px,
+      #1c1c1c 9px 12px,
+      transparent 12px 14px
+    );
+  }
+
+  .price-reveal {
+    animation: price-reveal 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes price-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .price-reveal {
+      animation: none;
+    }
+  }
+
   .voyage-ticket-stub::before {
     position: absolute;
     top: -1px;
@@ -164,6 +223,57 @@
 }
 
 @layer components {
+  html[data-site="prix-aliments"] .receipt {
+    width: 100%;
+    max-width: 640px;
+    margin-inline: auto;
+    overflow: hidden;
+    border-top: 3px dashed #b8b3a0;
+    border-bottom: 3px dashed #b8b3a0;
+    background: #f7f5ef;
+    box-shadow: 0 18px 45px rgba(28, 28, 28, 0.12);
+  }
+
+  html[data-site="prix-aliments"] .price-divider {
+    border-top: 1px dashed #d8d4c8;
+  }
+
+  html[data-site="prix-aliments"] .line {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dotted #d8d4c8;
+  }
+
+  html[data-site="prix-aliments"] .line:last-child {
+    border-bottom: 0;
+  }
+
+  html[data-site="prix-aliments"] .section-label {
+    color: #6b6b6b;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  html[data-site="prix-aliments"] .best-row {
+    display: flex;
+    justify-content: space-between;
+    margin-block: 0.65rem;
+    padding: 0.85rem;
+    border: 2px solid #3f7d52;
+    background: #eaf3ec;
+  }
+
+  html[data-site="prix-aliments"] .best-tag {
+    color: #3f7d52;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
   html[data-site="suivi-sportif"] .panel {
     @apply rounded-[20px] bg-white shadow-[0_2px_8px_rgba(43,36,30,0.05)];
   }

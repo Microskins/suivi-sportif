@@ -170,6 +170,7 @@ client/src/
 |-- main.tsx
 `-- sites/
     |-- portfolio/
+    |-- prix-aliments/
     |-- trekking/
     |-- voyage/
     `-- suivi-sportif/
@@ -199,6 +200,8 @@ dossier de site:
 - Trekking: univers organique inspire des cartes topographiques;
 - Voyage: billets clairs, encre bleu nuit et donnees monospaces dans la DA
   Boarding Pass.
+- Prix Frais: recu de caisse central sur fond comptoir, JetBrains Mono,
+  separateurs pointilles et vert reserve exclusivement au meilleur prix.
 
 Cette frontiere permet d'ajouter un site sans melanger son interface avec les
 autres, tout en gardant un seul document HTML et un seul build Vite.
@@ -220,6 +223,12 @@ Le client sert aussi de point d'entree de portfolio:
 - `/voyage` affiche le catalogue des carnets de voyage.
 - `/voyage/islande-2026` affiche le carnet de preparation Islande 2026, sans
   reference de reservation privee dans le bundle public.
+- `/prix-aliments` affiche le comparateur alimentaire Prix Frais. Son catalogue
+  local est un jeu de demonstration explicitement identifie comme tel; aucune
+  donnee magasin en direct n'est encore collectee. La configuration locale
+  actuelle utilise le code postal `59278` et quatre fiches officielles:
+  Intermarche Escautpont, Carrefour Conde-sur-l'Escaut, ALDI
+  Fresnes-sur-Escaut et Colruyt Peruwelz.
 
 Les routes techniques restent a la racine du domaine: `/api`, `/health` et
 `/mcp`. Cette organisation permet d'ajouter de futurs projets sous leurs
