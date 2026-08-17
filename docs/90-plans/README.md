@@ -75,6 +75,7 @@ Index chronologique des chantiers planifies et executes.
 69. [Arborescence frontend multi-sites](./069-arborescence-frontend-multi-sites.md)
 70. [Refonte DA multi-sites](./070-refonte-da-multi-sites.md)
 71. [Integration du projet Voyage](./071-integration-projet-voyage.md)
+72. [Comparateur de prix alimentaires](./072-comparateur-prix-aliments.md)
 
 ## Convention
 

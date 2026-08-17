@@ -1,6 +1,7 @@
 import { PortfolioBrand } from "./portfolio-brand";
 
 const SPORT_APP_PATH = "/suivi-sportif";
+const PRICE_COMPARISON_PATH = "/prix-aliments";
 const TREKKING_PATH = "/trekking";
 const VOYAGE_PATH = "/voyage";
 
@@ -35,6 +36,16 @@ const projects = [
     tag: "Carnets de voyage",
     title: "Voyage",
   },
+  {
+    description:
+      "Un comparateur lisible pour rechercher un aliment et confronter son prix, son format et sa fraîcheur chez quatre enseignes.",
+    href: PRICE_COMPARISON_PATH,
+    index: "04",
+    specs: ["8 produits démo", "4 enseignes", "Prix unitaires"],
+    status: "Prototype",
+    tag: "Comparateur alimentaire",
+    title: "Prix Frais",
+  },
 ];
 
 export function PortfolioSite() {
@@ -48,7 +59,7 @@ export function PortfolioSite() {
           <p className="site-label text-right text-[0.68rem] font-semibold uppercase leading-5 tracking-[0.16em] text-[#5b6474] sm:text-xs">
             Édition 2026
             <span className="block text-[#a63d2f]">
-              N° 03 — Projets choisis
+              N° 04 — Projets choisis
             </span>
           </p>
         </header>
@@ -85,13 +96,13 @@ export function PortfolioSite() {
               <div>
                 <dt className="text-[#5b6474]">Projets</dt>
                 <dd className="mt-2 text-base text-[#1b2a3d]">
-                  Trois en ligne
+                  Trois en ligne · Un prototype
                 </dd>
               </div>
               <div className="col-span-2">
                 <dt className="text-[#5b6474]">Territoires</dt>
                 <dd className="mt-2 text-base text-[#1b2a3d]">
-                  Sport · Données · Plein air · Voyage
+                  Sport · Données · Plein air · Voyage · Budget
                 </dd>
               </div>
             </dl>
@@ -104,7 +115,7 @@ export function PortfolioSite() {
               Catalogue
             </h2>
             <span className="site-label text-xs font-semibold uppercase tracking-[0.16em] text-[#5b6474]">
-              Sélection / 001—003
+              Sélection / 001—004
             </span>
           </div>
 

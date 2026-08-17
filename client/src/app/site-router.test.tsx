@@ -7,6 +7,9 @@ import SiteRouter from "./site-router";
 vi.mock("../sites/portfolio/portfolio-site", () => ({
   PortfolioSite: () => <p>Portfolio</p>,
 }));
+vi.mock("../sites/prix-aliments/price-comparison-site", () => ({
+  PriceComparisonSite: () => <p>Comparateur de prix</p>,
+}));
 vi.mock("../sites/suivi-sportif/suivi-sportif-site", () => ({
   SuiviSportifSite: () => <p>Suivi Sportif</p>,
 }));
@@ -41,5 +44,14 @@ describe("routes du site Voyage", () => {
     render(<SiteRouter />);
 
     expect(screen.getByText("Carnet Islande")).toBeTruthy();
+  });
+});
+
+describe("route du comparateur de prix", () => {
+  it("affiche le comparateur alimentaire", () => {
+    window.history.replaceState({}, "", "/prix-aliments");
+    render(<SiteRouter />);
+
+    expect(screen.getByText("Comparateur de prix")).toBeTruthy();
   });
 });

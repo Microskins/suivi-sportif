@@ -1221,6 +1221,7 @@
 
 - Aide a choisir les refactors qui rapportent vraiment.
 - Rend les futures decisions techniques moins intuitives.
+
 ## 2026-06-03 - Securite auth: durcissement session et CORS
 
 ## Contexte
@@ -1341,6 +1342,7 @@
 - Plan: docs/90-plans/038-angle-priorisation-chantiers-impact.md
 
 ---
+
 - Plan: docs/90-plans/047-durcissement-securite-auth-session-cors.md
 
 ## 2026-06-03 - Identite app: theme PWA par contexte
@@ -1988,3 +1990,287 @@
 ## Liens
 
 - Plan: docs/90-plans/027-mensurations-corporelles.md
+
+## 2026-08-17 - Prix alimentaires: collecte planifiee et historique fiable
+
+## Contexte
+
+- Le premier comparateur utilise volontairement des donnees de demonstration.
+- Les catalogues, promotions et conditions d'acces different selon les
+  enseignes et peuvent changer sans preavis.
+
+## Proposition
+
+- Ajouter plus tard des connecteurs serveur independants par enseigne.
+- Enregistrer chaque observation avec sa source, sa zone, son horodatage et son
+  statut de promotion, puis conserver un historique court des variations.
+- Executer la collecte en tache planifiee avec alertes sur les connecteurs en
+  erreur et revue des conditions d'utilisation de chaque source.
+
+## Impact
+
+- Prix tracables et interface resiliente lorsqu'une enseigne devient
+  temporairement indisponible.
+- Possibilite d'afficher une tendance au lieu d'un prix isole.
+
+## Complexite
+
+- L
+
+## Liens
+
+- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+
+---
+
+## 2026-08-17 - Prix alimentaires: comparaison geolocalisee
+
+## Contexte
+
+- Un meme produit peut changer de prix ou de disponibilite selon le magasin et
+  la zone de chalandise.
+
+## Proposition
+
+- Permettre de choisir un code postal puis un point de vente precis pour chaque
+  enseigne.
+- Memoriser la zone localement et afficher la distance avec la date du dernier
+  releve sans demander une geolocalisation permanente.
+
+## Impact
+
+- Comparaisons plus utiles et moins de faux ecarts dus a des magasins eloignes.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+
+---
+
+## 2026-08-17 - Prix alimentaires: recherche par code-barres
+
+## Contexte
+
+- La saisie du nom et de la marque peut etre ambigue pour des formats proches.
+
+## Proposition
+
+- Ajouter un scan EAN depuis l'appareil photo et une saisie manuelle de secours.
+- Utiliser le code-barres comme identifiant de rapprochement entre les offres,
+  avec validation du format et confirmation du produit trouve.
+
+## Impact
+
+- Recherche plus rapide en magasin et comparaison de produits strictement
+  identiques.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+
+---
+
+## 2026-08-17 - Prix alimentaires: panier multi-produits optimise
+
+## Contexte
+
+- Le magasin le moins cher pour un article n'est pas toujours le moins cher
+  pour l'ensemble des courses.
+
+## Proposition
+
+- Ajouter une liste de courses avec quantites et calculer le total par enseigne.
+- Proposer soit un magasin unique, soit une repartition sur plusieurs magasins
+  en tenant compte d'un cout configurable de trajet.
+
+## Impact
+
+- Decision basee sur le vrai budget du panier plutot que sur un seul prix
+  d'appel.
+
+## Complexite
+
+- L
+
+## Liens
+
+- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+
+---
+
+## 2026-08-17 - Prix alimentaires: normalisation transfrontaliere France-Belgique
+
+## Contexte
+
+- La zone 59278 compare trois magasins francais avec un magasin Colruyt situe a
+  Peruwelz, en Belgique.
+- Des differences de consigne, de conditionnement ou de mecanique promotionnelle
+  peuvent rendre un total brut trompeur meme lorsque tous les prix sont en euros.
+
+## Proposition
+
+- Associer chaque offre a son pays et separer le prix du produit des consignes ou
+  avantages fidelite conditionnels.
+- Afficher une note lorsque la comparaison traverse la frontiere ou repose sur
+  une promotion reservee a une carte.
+
+## Impact
+
+- Comparaisons plus justes et moins de mauvaises surprises en caisse.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+
+---
+
+## 2026-08-17 - Prix alimentaires: score d'equivalence produit
+
+## Contexte
+
+- Les marques distributeur et les formats ne sont pas toujours strictement
+  identiques entre Carrefour, Intermarche, ALDI et Colruyt.
+
+## Proposition
+
+- Calculer un score de confiance a partir du code-barres, du poids, de la marque,
+  de la denomination et des caracteristiques principales.
+- Distinguer visuellement un produit identique d'un equivalent de rayon et
+  permettre de masquer les rapprochements faibles.
+
+## Impact
+
+- Evite de presenter comme certain un ecart de prix entre deux produits
+  difficilement comparables.
+
+## Complexite
+
+- L
+
+## Liens
+
+- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+
+---
+
+## 2026-08-17 - Prix alimentaires: controle de validite des points de vente
+
+## Contexte
+
+- Le magasin ALDI demande sous le nom Escautpont est reference officiellement a
+  Fresnes-sur-Escaut, et les adresses de magasin peuvent evoluer.
+
+## Proposition
+
+- Verifier periodiquement que chaque fiche officielle repond et que le nom,
+  l'adresse et l'identifiant magasin n'ont pas change.
+- Afficher une alerte d'administration lorsque la source officielle disparait ou
+  redirige vers un autre point de vente.
+
+## Impact
+
+- Reduit le risque d'associer durablement des prix a un magasin ferme ou deplace.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+
+---
+
+## 2026-08-17 - Prix alimentaires: impression du ticket comparatif
+
+## Contexte
+
+- La direction artistique Ticket de caisse se prete a une version papier ou PDF
+  compacte utilisable pendant les courses.
+
+## Proposition
+
+- Ajouter une feuille `@media print` qui masque la navigation et imprime
+  uniquement la recherche, la date, les magasins et les lignes de prix.
+- Conserver les mentions de prix indicatifs et les sources dans le pied du recu.
+
+## Impact
+
+- Comparatif transportable sans connexion et coherence forte avec la DA.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+
+---
+
+## 2026-08-17 - Prix alimentaires: recherche partageable par URL
+
+## Contexte
+
+- Une recherche filtree n'est actuellement conservee que dans le store Zustand
+  de la page.
+
+## Proposition
+
+- Synchroniser le terme, la categorie et la zone avec des parametres d'URL.
+- Generer un numero de ticket stable a partir de ces parametres pour partager ou
+  retrouver exactement le meme comparatif.
+
+## Impact
+
+- Partage simple d'une comparaison sans capture d'ecran ni ressaisie.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+
+---
+
+## 2026-08-17 - Prix alimentaires: meilleur prix lisible en monochrome
+
+## Contexte
+
+- Le vert est reserve au meilleur prix, mais la couleur peut disparaitre a
+  l'impression ou etre mal percue par certains utilisateurs.
+
+## Proposition
+
+- Tester le ticket en niveaux de gris et avec des simulations de daltonisme.
+- Conserver simultanement l'etoile, le libelle, la bordure double et la position
+  de la ligne afin que le statut ne depende jamais de la seule couleur.
+
+## Impact
+
+- Signal de meilleure offre robuste sur ecran, en impression et pour
+  l'accessibilite.
+
+## Complexite
+
+- S
+
+## Liens
+
+- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+
+---

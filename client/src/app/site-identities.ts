@@ -1,4 +1,9 @@
-export type SiteId = "portfolio" | "suivi-sportif" | "trekking" | "voyage";
+export type SiteId =
+  | "portfolio"
+  | "prix-aliments"
+  | "suivi-sportif"
+  | "trekking"
+  | "voyage";
 
 type SiteIdentity = {
   description: string;
@@ -23,6 +28,14 @@ export const SITE_IDENTITIES: Record<SiteId, SiteIdentity> = {
     id: "portfolio",
     themeColor: "#efe7d8",
     title: "Portfolio - Projets web choisis",
+  },
+  "prix-aliments": {
+    description:
+      "Comparez le prix de vos aliments chez Carrefour, Intermarché, ALDI et Colruyt.",
+    faviconPath: "/sites/prix-aliments/favicon.svg",
+    id: "prix-aliments",
+    themeColor: "#e9e6dc",
+    title: "Prix Frais - Comparateur de prix alimentaires",
   },
   "suivi-sportif": {
     description:
@@ -64,6 +77,13 @@ export function normalizePathname(pathname: string) {
 
 export function siteIdFromPath(pathname: string): SiteId {
   const currentPath = normalizePathname(pathname);
+
+  if (
+    currentPath === "/prix-aliments" ||
+    currentPath.startsWith("/prix-aliments/")
+  ) {
+    return "prix-aliments";
+  }
 
   if (
     currentPath === "/suivi-sportif" ||

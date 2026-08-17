@@ -79,6 +79,8 @@ client/
 |   `-- sites/
 |       |-- portfolio/
 |       |   `-- favicon.svg
+|       |-- prix-aliments/
+|       |   `-- favicon.svg
 |       |-- suivi-sportif/
 |       |   |-- body-measurements/
 |       |   |-- exercises/
@@ -98,6 +100,13 @@ client/
         |-- portfolio/
         |   |-- portfolio-brand.tsx
         |   `-- portfolio-site.tsx
+        |-- prix-aliments/
+        |   |-- price-comparison-site.tsx
+        |   |-- price-comparison-store.ts
+        |   |-- price-data.ts
+        |   |-- product-comparison-card.tsx
+        |   |-- store-location-panel.tsx
+        |   `-- store-locations.ts
         |-- trekking/
         |   |-- trekking-brand.tsx
         |   |-- trekking-home-site.tsx
@@ -127,6 +136,8 @@ Fichiers importants:
 - `client/src/app/site-identities.ts`: applique les metadonnees et le favicon
   propres au site courant.
 - `client/src/sites/portfolio/`: page d'accueil et catalogue de projets.
+- `client/src/sites/prix-aliments/`: recherche locale et comparaison des offres
+  alimentaires de demonstration.
 - `client/src/sites/trekking/`: catalogue, carnets de trek et etat local.
 - `client/src/sites/voyage/`: billets, itineraires et reservations publiques.
 - `client/src/sites/*/*-brand.tsx`: signature visuelle locale a chaque site.

@@ -22,7 +22,8 @@ Disponible:
 - Exercices: CRUD + filtre par groupe musculaire
 - Seances: CRUD + recherche par plage de dates
 - Nutrition: aliments, repas, objectifs nutritionnels
-- Frontend React multi-sites avec portfolio, Voyage, Trekking et Suivi Sportif
+- Frontend React multi-sites avec portfolio, Prix Frais, Voyage, Trekking et
+  Suivi Sportif
 - Tests API avec `fastify.inject()`
 - Assets Docker de production et runbook Nginx
 - Serveur MCP de debug
@@ -105,6 +106,7 @@ URLs locales:
 - API: http://localhost:3001
 - Health: http://localhost:3001/health
 - Client: http://localhost:5173
+- Comparateur de prix: http://localhost:5173/prix-aliments
 - MCP: http://127.0.0.1:3033/mcp
 
 ## Verification
