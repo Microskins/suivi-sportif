@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Suivi Sportif — Calendrier (référence DA Énergie)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #fff8f2;
+    --card: #ffffff;
+    --ink: #2b241e;
+    --ink-soft: #9c8f83;
+    --coral: #ff7a54;
+    --amber: #ffb648;
+    --green: #5fb894;
+    --blue: #6a9bd8;
+    --line: #f0e3d6;
+    --grad: linear-gradient(135deg, var(--coral), var(--amber));
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-pill: 999px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Inter", sans-serif; }
+  h1, h2, .brand { font-family: "Quicksand", sans-serif; font-weight: 600; }
+  .app { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 230px; flex: none; background: #fff; border-right: 1px solid var(--line);
+    padding: 28px 20px; display: flex; flex-direction: column; gap: 28px;
+  }
+  .brand { font-size: 20px; font-weight: 700; }
+  .brand span { color: var(--coral); }
+  nav { display: flex; flex-direction: column; gap: 4px; }
+  .nav-group { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); margin: 14px 0 6px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-md); color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 500; }
+  .nav-item.active { background: linear-gradient(135deg, #fff0e6, #ffe8d6); color: var(--coral); }
+
+  .main { flex: 1; padding: 32px 40px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+  .topbar h1 { font-size: 26px; margin: 0; }
+
+  .toolbar { display: flex; gap: 12px; align-items: center; }
+  .toggle, .filters {
+    display: flex; gap: 4px; background: #fff; padding: 4px; border-radius: var(--radius-pill);
+    box-shadow: 0 2px 8px rgba(43,36,30,.05);
+  }
+  .toggle button, .filters button {
+    border: none; background: transparent; padding: 8px 16px; border-radius: var(--radius-pill);
+    font-family: "Inter", sans-serif; font-size: 13px; font-weight: 600; color: var(--ink-soft); cursor: pointer;
+  }
+  .toggle button.active, .filters button.active { background: var(--grad); color: #fff; }
+
+  .legend { display: flex; gap: 18px; margin-bottom: 18px; font-size: 13px; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .dot.planned { background: var(--blue); }
+  .dot.done { background: var(--green); }
+  .dot.canceled { background: var(--coral); }
+
+  .panel { background: var(--card); border-radius: var(--radius-lg); padding: 22px; box-shadow: 0 2px 8px rgba(43,36,30,.05); }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;
+  }
+  .weekday { text-align: center; font-size: 12px; font-weight: 600; color: var(--ink-soft); padding-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; }
+  .day {
+    min-height: 96px; border-radius: var(--radius-md); background: #fff;
+    border: 1px solid var(--line); padding: 10px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .day.muted { opacity: .4; }
+  .day.today {
+    background: linear-gradient(160deg, #fff0e6, #fff8f2);
+    border-color: transparent;
+  }
+  .day .num { font-family: "Quicksand", sans-serif; font-weight: 700; font-size: 14px; }
+  .event { display: flex; align-items: center; gap: 6px; font-size: 11px; padding: 3px 8px; border-radius: var(--radius-pill); background: #f4e9de; color: var(--ink); }
+  .event .dot { flex: none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">Suivi<span>Sportif</span></div>
+    <nav>
+      <div class="nav-group">Vue d'ensemble</div>
+      <a class="nav-item">Synthèse</a>
+      <a class="nav-item active">Calendrier</a>
+      <div class="nav-group">Entraînement</div>
+      <a class="nav-item">Séances</a>
+      <a class="nav-item">Objectifs</a>
+      <div class="nav-group">Nutrition</div>
+      <a class="nav-item">Aliments</a>
+      <a class="nav-item">Repas</a>
+      <div class="nav-group">Suivi</div>
+      <a class="nav-item">Mensurations</a>
+      <a class="nav-item">Profil</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1>Calendrier des séances</h1>
+      <div class="toolbar">
+        <div class="filters">
+          <button class="active">Août 2026</button>
+        </div>
+        <div class="toggle">
+          <button>Semaine</button>
+          <button class="active">Mois</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><i class="dot planned"></i> Prévue</span>
+      <span><i class="dot done"></i> Réalisée</span>
+      <span><i class="dot canceled"></i> Annulée</span>
+    </div>
+
+    <div class="panel">
+      <div class="grid">
+        <div class="weekday">Lun</div>
+        <div class="weekday">Mar</div>
+        <div class="weekday">Mer</div>
+        <div class="weekday">Jeu</div>
+        <div class="weekday">Ven</div>
+        <div class="weekday">Sam</div>
+        <div class="weekday">Dim</div>
+
+        <div class="day muted"><span class="num">27</span></div>
+        <div class="day muted"><span class="num">28</span></div>
+        <div class="day muted"><span class="num">29</span></div>
+        <div class="day muted"><span class="num">30</span></div>
+        <div class="day muted"><span class="num">31</span></div>
+        <div class="day"><span class="num">1</span></div>
+        <div class="day"><span class="num">2</span></div>
+
+        <div class="day"><span class="num">3</span><span class="event"><i class="dot done"></i>Full body</span></div>
+        <div class="day"><span class="num">4</span></div>
+        <div class="day"><span class="num">5</span><span class="event"><i class="dot done"></i>Course 8km</span></div>
+        <div class="day"><span class="num">6</span></div>
+        <div class="day"><span class="num">7</span><span class="event"><i class="dot done"></i>Full body</span></div>
+        <div class="day"><span class="num">8</span></div>
+        <div class="day"><span class="num">9</span></div>
+
+        <div class="day"><span class="num">10</span><span class="event"><i class="dot done"></i>Course 10km</span></div>
+        <div class="day"><span class="num">11</span></div>
+        <div class="day"><span class="num">12</span><span class="event"><i class="dot canceled"></i>Full body</span></div>
+        <div class="day"><span class="num">13</span></div>
+        <div class="day"><span class="num">14</span><span class="event"><i class="dot done"></i>Haut du corps</span></div>
+        <div class="day"><span class="num">15</span></div>
+        <div class="day"><span class="num">16</span></div>
+
+        <div class="day"><span class="num">17</span><span class="event"><i class="dot done"></i>Course 6km</span></div>
+        <div class="day today"><span class="num">18</span><span class="event"><i class="dot planned"></i>Full body</span></div>
+        <div class="day"><span class="num">19</span><span class="event"><i class="dot planned"></i>Course 8km</span></div>
+        <div class="day"><span class="num">20</span></div>
+        <div class="day"><span class="num">21</span><span class="event"><i class="dot planned"></i>Haut du corps</span></div>
+        <div class="day"><span class="num">22</span></div>
+        <div class="day"><span class="num">23</span></div>
+
+        <div class="day"><span class="num">24</span><span class="event"><i class="dot planned"></i>Full body</span></div>
+        <div class="day"><span class="num">25</span></div>
+        <div class="day"><span class="num">26</span><span class="event"><i class="dot planned"></i>Course 10km</span></div>
+        <div class="day"><span class="num">27</span></div>
+        <div class="day"><span class="num">28</span><span class="event"><i class="dot planned"></i>Bas du corps</span></div>
+        <div class="day"><span class="num">29</span></div>
+        <div class="day"><span class="num">30</span></div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,12 +1,12 @@
 ---
-name: voyage-da-boarding
-description: Direction artistique validée du site Voyage de Thomas Cochart (référencement de tous ses voyages, avec carte des trajets et réservations Airbnb/GetYourGuide), style "Boarding Pass". Utilise ce skill à chaque fois qu'il faut créer, modifier ou étendre une page front du site Voyage (accueil, page détail d'un voyage, nouveau composant) pour que le rendu reste cohérent avec la DA validée — même si l'utilisateur ne redonne pas les détails de style. Déclenche-toi sur toute mention de "site voyage", "projet voyage", "page voyage" ou "front" liée à ce site. Ne pas confondre avec les autres DA du même auteur (suivi-sportif-portfolio-da, trekking-da-topo, suivi-sportif-app-da) — quatre DA distinctes pour quatre surfaces distinctes.
+name: suivi-sportif-voyage-da
+description: Direction artistique validée du site Voyage de Thomas Cochart (référencement de tous ses voyages, avec carte des trajets et réservations Airbnb/GetYourGuide), style "Boarding Pass". Utilise ce skill à chaque fois qu'il faut créer, modifier ou étendre une page front du site Voyage (accueil, page détail d'un voyage, nouveau composant) pour que le rendu reste cohérent avec la DA validée — même si l'utilisateur ne redonne pas les détails de style. Déclenche-toi sur toute mention de "site voyage", "projet voyage", "page voyage" ou "front" liée à ce site. Ne pas confondre avec les 4 autres DA du même auteur : suivi-sportif-app-da (énergie), suivi-sportif-portfolio-da (catalogue éditorial), suivi-sportif-prix-da (ticket de caisse), suivi-sportif-trekking-da (carte topo/panorama) — cinq DA distinctes pour cinq surfaces distinctes.
 
 ---
 
 # DA Voyage — Boarding Pass
 
-Direction validée par l'utilisateur parmi 5 propositions ("passeport", "boarding pass", "satellite/carto", "scrapbook", "éditorial minimal"). Toute nouvelle page ou tout nouveau composant du site Voyage doit suivre ces règles.
+Direction validée par l'utilisateur parmi 5 propositions ("passeport", "boarding pass", "satellite/carto", "scrapbook", "éditorial minimal"). Toute nouvelle page ou tout nouveau composant du site Voyage doit suivre ces règles. Cette DA est indépendante des 4 autres DA du même auteur (app, portfolio, comparateur de prix, trekking) — ne pas les mélanger.
 
 ## Palette
 

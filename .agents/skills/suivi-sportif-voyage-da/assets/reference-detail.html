@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Voyage — Détail (référence DA Boarding Pass)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --ink: #0f1b2b;
+    --sub: #6b7684;
+    --blue: #1c4ed8;
+    --amber: #e08a1e;
+    --line: #dfe4ea;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Space Grotesk", sans-serif; }
+  .mono { font-family: "JetBrains Mono", monospace; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 24px 60px; }
+
+  header { background: var(--ink); color: #fff; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; }
+  header .brand { font-weight: 700; font-size: 18px; }
+  header nav { display: flex; gap: 20px; font-size: 13px; color: #c7cede; }
+
+  .ticket {
+    display: grid; grid-template-columns: 1fr 160px; border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden; margin: 32px 0 24px; background: var(--card);
+  }
+  .ticket .main { padding: 24px; }
+  .route { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .route .code { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 26px; }
+  .route svg { flex: none; color: var(--sub); }
+  .ticket .place { font-size: 15px; color: var(--sub); margin: 0; }
+  .perforation {
+    width: 0; background-image: repeating-linear-gradient(180deg, var(--line) 0 8px, transparent 8px 16px);
+    background-size: 1px 100%; background-repeat: repeat-y; background-position: 0 0;
+  }
+  .t-side { background: var(--ink); color: #fff; padding: 20px 18px; display: flex; flex-direction: column; justify-content: space-between; }
+  .t-side .label { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #9aa5b8; margin-bottom: 6px; }
+  .status { align-self: flex-start; border-radius: 999px; padding: 5px 12px; font-size: 11px; font-family: "JetBrains Mono", monospace; font-weight: 600; }
+  .status.done { background: #dbe6ff; color: var(--blue); }
+
+  .stats-band {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    margin-bottom: 32px;
+  }
+  .stats-band > div { padding: 16px; text-align: center; border-right: 1px solid var(--line); }
+  .stats-band > div:last-child { border-right: none; }
+  .stats-band .val { font-weight: 700; font-size: 18px; }
+  .stats-band .lbl { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--sub); margin-top: 4px; }
+
+  h2 { font-size: 20px; margin: 0 0 16px; }
+
+  .map-frame {
+    background: #eef2f6; border: 1px solid var(--line); border-radius: 12px;
+    padding: 24px; margin-bottom: 12px;
+  }
+  .map-frame svg { width: 100%; height: 220px; }
+  .map-legend { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--sub); text-align: center; margin: 32px 0 0; }
+
+  .bookings { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+  .booking { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .booking .tag { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--sub); }
+  .booking h3 { font-size: 15px; margin: 6px 0 4px; }
+  .booking p { margin: 0 0 10px; font-size: 13px; color: var(--sub); }
+  .booking a { color: var(--blue); font-size: 13px; font-weight: 600; text-decoration: none; float: right; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">Voyage</div>
+    <nav><span>Voyages</span><span>Carte</span><span>À propos</span></nav>
+  </header>
+
+  <div class="wrap">
+    <article class="ticket">
+      <div class="main">
+        <div class="route">
+          <span class="code mono">CDG</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="code mono">KEF</span>
+        </div>
+        <p class="place">Islande — Cercle d'or &amp; côte sud, 12 — 20 juin 2026</p>
+      </div>
+      <div class="perforation"></div>
+      <div class="t-side">
+        <div>
+          <div class="label">Statut</div>
+          <span class="status done">Réalisé</span>
+        </div>
+        <a href="#" style="color:#fff;font-size:13px;text-decoration:none;font-weight:600;">Trace →</a>
+      </div>
+    </article>
+
+    <div class="stats-band">
+      <div><div class="val">640 km</div><div class="lbl">Distance</div></div>
+      <div><div class="val">8 jours</div><div class="lbl">Durée</div></div>
+      <div><div class="val">5</div><div class="lbl">Étapes</div></div>
+      <div><div class="val">Juin 2026</div><div class="lbl">Période</div></div>
+    </div>
+
+    <h2>Trajet</h2>
+    <div class="map-frame">
+      <svg viewBox="0 0 600 220">
+        <circle cx="80" cy="170" r="6" fill="#0f1b2b" />
+        <circle cx="220" cy="90" r="5" fill="#1c4ed8" />
+        <circle cx="360" cy="130" r="5" fill="#1c4ed8" />
+        <circle cx="500" cy="60" r="5" fill="#1c4ed8" />
+        <path d="M80 170 L220 90 L360 130 L500 60" stroke="#1c4ed8" stroke-width="2" stroke-dasharray="6 6" fill="none" />
+      </svg>
+    </div>
+    <p class="map-legend">Repère de préparation — pas une trace GPX officielle.</p>
+
+    <h2 style="margin-top:40px;">Réservations</h2>
+    <div class="bookings">
+      <div class="booking">
+        <span class="tag">Airbnb — nuit 1 à 3</span>
+        <h3>Appartement centre-ville, Reykjavík</h3>
+        <p>3 nuits, quartier 101 Reykjavík</p>
+        <a href="#">Voir →</a>
+      </div>
+      <div class="booking">
+        <span class="tag">GetYourGuide</span>
+        <h3>Excursion Cercle d'or (journée)</h3>
+        <p>Geysir, Gullfoss, Þingvellir</p>
+        <a href="#">Voir →</a>
+      </div>
+      <div class="booking">
+        <span class="tag">Airbnb — nuit 4 à 6</span>
+        <h3>Cabane, côte sud</h3>
+        <p>3 nuits, proche de Vík í Mýrdal</p>
+        <a href="#">Voir →</a>
+      </div>
+      <div class="booking">
+        <span class="tag">GetYourGuide</span>
+        <h3>Randonnée glacier Sólheimajökull</h3>
+        <p>Demi-journée, crampons fournis</p>
+        <a href="#">Voir →</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

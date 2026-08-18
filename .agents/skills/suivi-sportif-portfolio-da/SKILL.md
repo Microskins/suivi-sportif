@@ -1,11 +1,11 @@
 ---
 name: suivi-sportif-portfolio-da
-description: Direction artistique validée du portfolio de Thomas Cochart (suivi-sportif.fr), style "Catalogue éditorial". Utilise ce skill à chaque fois qu'il faut créer, modifier ou étendre une page front du portfolio (accueil, nouvelles pages projet, composants, landing pages) pour que le rendu reste cohérent avec la DA validée — même si l'utilisateur ne redonne pas les détails de style. Déclenche-toi sur toute mention de "portfolio", "suivi-sportif.fr", "page projet", "landing" ou "front" liée à ce site.
+description: Direction artistique validée du portfolio de Thomas Cochart (suivi-sportif.fr), style "Catalogue éditorial". Utilise ce skill à chaque fois qu'il faut créer, modifier ou étendre une page front du portfolio (accueil, nouvelles pages projet, composants, landing pages) pour que le rendu reste cohérent avec la DA validée — même si l'utilisateur ne redonne pas les détails de style. Déclenche-toi sur toute mention de "portfolio", "suivi-sportif.fr", "page projet", "landing" ou "front" liée à ce site. Ne pas confondre avec les 4 autres DA du même auteur : suivi-sportif-app-da (énergie), suivi-sportif-prix-da (ticket de caisse), suivi-sportif-trekking-da (carte topo/panorama), suivi-sportif-voyage-da (boarding pass) — cinq DA distinctes pour cinq surfaces distinctes.
 ---
 
 # DA Portfolio — Catalogue éditorial
 
-Direction validée par l'utilisateur (variante "2 — Catalogue" parmi 3 propositions). Toute nouvelle page ou tout nouveau composant du portfolio doit suivre ces règles, pas repartir d'un style neutre. Ne pas revenir vers les défauts génériques (fond crème + serif + accent terracotta, ou fond noir + vert acide) sauf demande explicite contraire.
+Direction validée par l'utilisateur (variante "2 — Catalogue" parmi 3 propositions). Toute nouvelle page ou tout nouveau composant du portfolio doit suivre ces règles, pas repartir d'un style neutre. Ne pas revenir vers les défauts génériques (fond crème + serif + accent terracotta, ou fond noir + vert acide) sauf demande explicite contraire. Cette DA est indépendante des 4 autres DA du même auteur (app, comparateur de prix, trekking, voyage) — ne pas les mélanger.
 
 ## Palette
 
