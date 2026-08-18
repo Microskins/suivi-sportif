@@ -52,7 +52,7 @@ export function StoreLocationPanel() {
             </div>
             <a
               aria-label={`Ouvrir la fiche officielle de ${store.displayName}`}
-              className="inline-flex shrink-0 items-center gap-1 border-b border-dotted border-[#6b6b6b] pb-0.5 text-[0.6rem] font-semibold uppercase text-[#1c1c1c] hover:border-[#c1362b] hover:text-[#c1362b]"
+              className="print-hidden inline-flex shrink-0 items-center gap-1 border-b border-dotted border-[#6b6b6b] pb-0.5 text-[0.6rem] font-semibold uppercase text-[#1c1c1c] hover:border-[#c1362b] hover:text-[#c1362b]"
               href={store.officialPageUrl}
               rel="noreferrer"
               target="_blank"

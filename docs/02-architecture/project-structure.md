@@ -73,8 +73,11 @@ Fichiers importants:
 
 ```text
 client/
+|-- e2e/
+|   `-- price-comparison.visual.spec.ts
 |-- index.html
 |-- package.json
+|-- playwright.config.ts
 |-- public/
 |   `-- sites/
 |       |-- portfolio/
@@ -104,6 +107,9 @@ client/
         |   |-- price-comparison-site.tsx
         |   |-- price-comparison-store.ts
         |   |-- price-data.ts
+        |   |-- price-search-params.ts
+        |   |-- price-ticket-actions.tsx
+        |   |-- price-ticket-qr.tsx
         |   |-- product-comparison-card.tsx
         |   |-- store-location-panel.tsx
         |   `-- store-locations.ts
@@ -137,7 +143,9 @@ Fichiers importants:
   propres au site courant.
 - `client/src/sites/portfolio/`: page d'accueil et catalogue de projets.
 - `client/src/sites/prix-aliments/`: recherche locale et comparaison des offres
-  alimentaires de demonstration.
+  alimentaires de demonstration, filtres partageables, partage natif et ticket
+  imprime avec QR code local.
+- `client/e2e/`: controles Playwright des rendus desktop, mobile et print.
 - `client/src/sites/trekking/`: catalogue, carnets de trek et etat local.
 - `client/src/sites/voyage/`: billets, itineraires et reservations publiques.
 - `client/src/sites/*/*-brand.tsx`: signature visuelle locale a chaque site.

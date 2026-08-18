@@ -19,7 +19,7 @@ export function PriceSearchPanel({
   return (
     <section
       aria-labelledby="search-title"
-      className="price-divider px-5 py-7 sm:px-8"
+      className="price-divider print-hidden px-5 py-7 sm:px-8"
     >
       <p className="section-label" id="search-title">
         Recherche produit

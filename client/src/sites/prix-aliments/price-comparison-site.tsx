@@ -1,9 +1,16 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PriceBrand } from "./price-brand";
 import { usePriceComparisonStore } from "./price-comparison-store";
 import { COMPARED_PRODUCTS, filterComparedProducts } from "./price-data";
 import { ArrowIcon } from "./price-icons";
 import { PriceSearchPanel } from "./price-search-panel";
+import {
+  buildPriceSearchUrl,
+  createTicketNumber,
+  readPriceSearchParams,
+} from "./price-search-params";
+import { PriceTicketActions } from "./price-ticket-actions";
+import { PriceTicketQr, usePriceTicketQr } from "./price-ticket-qr";
 import { ProductComparisonCard } from "./product-comparison-card";
 import { StoreLocationPanel } from "./store-location-panel";
 import { COMPARISON_AREA } from "./store-locations";
@@ -19,12 +26,41 @@ export function PriceComparisonSite() {
   const query = usePriceComparisonStore((state) => state.query);
   const resetFilters = usePriceComparisonStore((state) => state.resetFilters);
   const setCategory = usePriceComparisonStore((state) => state.setCategory);
+  const setFilters = usePriceComparisonStore((state) => state.setFilters);
   const setQuery = usePriceComparisonStore((state) => state.setQuery);
+  const [areUrlFiltersReady, setAreUrlFiltersReady] = useState(false);
 
   const products = useMemo(
     () => filterComparedProducts(COMPARED_PRODUCTS, query, category),
     [category, query],
   );
+  const ticketNumber = useMemo(
+    () => createTicketNumber({ category, query }),
+    [category, query],
+  );
+  const ticketPath = buildPriceSearchUrl(window.location, { category, query });
+  const ticketUrl = new URL(ticketPath, window.location.origin).href;
+  const qrCode = usePriceTicketQr(ticketUrl);
+
+  useEffect(() => {
+    function syncFiltersFromUrl() {
+      setFilters(readPriceSearchParams(window.location.search));
+    }
+
+    syncFiltersFromUrl();
+    setAreUrlFiltersReady(true);
+    window.addEventListener("popstate", syncFiltersFromUrl);
+
+    return () => window.removeEventListener("popstate", syncFiltersFromUrl);
+  }, [setFilters]);
+
+  useEffect(() => {
+    if (!areUrlFiltersReady) {
+      return;
+    }
+
+    window.history.replaceState(window.history.state, "", ticketPath);
+  }, [areUrlFiltersReady, ticketPath]);
 
   return (
     <main className="price-counter min-h-screen bg-[#e9e6dc] px-3 py-6 text-[#1c1c1c] sm:px-6 sm:py-10">
@@ -33,7 +69,7 @@ export function PriceComparisonSite() {
           <div className="flex items-start justify-between gap-4 text-left text-[0.58rem] uppercase tracking-[0.08em] text-[#6b6b6b]">
             <div>
               <PriceBrand />
-              <p className="mt-2">Ticket N° 59278-0001</p>
+              <p className="mt-2">Ticket N° {ticketNumber}</p>
             </div>
             <div className="text-right">
               <p>{COMPARISON_AREA.postalCode}</p>
@@ -42,7 +78,7 @@ export function PriceComparisonSite() {
             </div>
           </div>
 
-          <div className="mx-auto mt-8 max-w-md">
+          <div className="print-hidden mx-auto mt-8 max-w-md">
             <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#c1362b]">
               Comparateur alimentaire local
             </p>
@@ -57,7 +93,7 @@ export function PriceComparisonSite() {
 
           <nav
             aria-label="Navigation principale"
-            className="mt-7 flex justify-center gap-5 text-[0.6rem] font-semibold uppercase tracking-[0.08em]"
+            className="print-hidden mt-7 flex justify-center gap-5 text-[0.6rem] font-semibold uppercase tracking-[0.08em]"
           >
             <a
               className="border-b border-dotted border-[#6b6b6b] hover:text-[#c1362b]"
@@ -86,6 +122,28 @@ export function PriceComparisonSite() {
           onQueryChange={setQuery}
           query={query}
         />
+
+        <PriceTicketActions
+          isPrintReady={
+            qrCode.sourceUrl === ticketUrl && qrCode.status !== "loading"
+          }
+          ticketNumber={ticketNumber}
+          ticketUrl={ticketUrl}
+        />
+
+        <section className="price-divider print-only px-5 py-5 sm:px-8">
+          <p className="section-label">Recherche imprimée</p>
+          <div className="mt-3 flex justify-between gap-4 border-t border-dotted border-[#d8d4c8] pt-3 text-[0.66rem]">
+            <span>{query || "Tous les produits"}</span>
+            <span>{category}</span>
+          </div>
+          <p className="mt-2 text-[0.58rem] text-[#6b6b6b]">
+            Ticket {ticketNumber} · zone {COMPARISON_AREA.postalCode} · édité le{" "}
+            {new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(
+              new Date(),
+            )}
+          </p>
+        </section>
 
         <StoreLocationPanel />
 
@@ -141,7 +199,7 @@ export function PriceComparisonSite() {
 
         <section
           aria-labelledby="method-title"
-          className="price-divider px-5 py-7 sm:px-8"
+          className="price-divider print-hidden px-5 py-7 sm:px-8"
           id="methode"
         >
           <p className="section-label">Lecture</p>
@@ -177,12 +235,21 @@ export function PriceComparisonSite() {
             disponibilité peuvent varier en magasin. Vérifiez toujours le prix
             affiché par l'enseigne avant votre achat.
           </p>
+          <p className="print-only mx-auto mt-3 max-w-md text-[0.56rem] leading-4 text-[#6b6b6b]">
+            Sources : fiches officielles des points de vente Carrefour,
+            Intermarché, ALDI et Colruyt. Prix de démonstration sans source
+            tarifaire commerciale.
+          </p>
+          <PriceTicketQr
+            qrCodeUrl={qrCode.sourceUrl === ticketUrl ? qrCode.url : undefined}
+            ticketNumber={ticketNumber}
+          />
           <div
-            className="price-barcode mx-auto mt-7 h-12 w-56"
+            className="price-barcode print-hidden mx-auto mt-7 h-12 w-56"
             aria-hidden="true"
           />
-          <p className="mt-2 text-[0.52rem] tracking-[0.22em] text-[#6b6b6b]">
-            5 9278 0001 0400
+          <p className="print-hidden mt-2 text-[0.52rem] tracking-[0.22em] text-[#6b6b6b]">
+            {ticketNumber.replace("-", " ")}
           </p>
         </footer>
       </article>

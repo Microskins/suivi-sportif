@@ -76,6 +76,7 @@ Index chronologique des chantiers planifies et executes.
 70. [Refonte DA multi-sites](./070-refonte-da-multi-sites.md)
 71. [Integration du projet Voyage](./071-integration-projet-voyage.md)
 72. [Comparateur de prix alimentaires](./072-comparateur-prix-aliments.md)
+73. [Idees IA ticket comparateur](./073-idees-ia-ticket-comparateur.md)
 
 ## Convention
 

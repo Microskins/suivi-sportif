@@ -2193,49 +2193,24 @@
 
 ---
 
-## 2026-08-17 - Prix alimentaires: impression du ticket comparatif
+## 2026-08-18 - Prix alimentaires: fraicheur des tickets partages
 
 ## Contexte
 
-- La direction artistique Ticket de caisse se prete a une version papier ou PDF
-  compacte utilisable pendant les courses.
+- Un lien partage reste stable alors que les futurs prix reels pourront evoluer
+  plusieurs fois par jour.
+- Le numero du ticket identifie les filtres, pas la version des observations.
 
 ## Proposition
 
-- Ajouter une feuille `@media print` qui masque la navigation et imprime
-  uniquement la recherche, la date, les magasins et les lignes de prix.
-- Conserver les mentions de prix indicatifs et les sources dans le pied du recu.
+- Afficher l'anciennete de la donnee la plus ancienne et la plus recente du
+  ticket.
+- Ajouter un avertissement explicite lorsqu'un lien est rouvert apres un seuil
+  configurable, avec une action pour actualiser les offres.
 
 ## Impact
 
-- Comparatif transportable sans connexion et coherence forte avec la DA.
-
-## Complexite
-
-- S
-
-## Liens
-
-- Plan: docs/90-plans/072-comparateur-prix-aliments.md
-
----
-
-## 2026-08-17 - Prix alimentaires: recherche partageable par URL
-
-## Contexte
-
-- Une recherche filtree n'est actuellement conservee que dans le store Zustand
-  de la page.
-
-## Proposition
-
-- Synchroniser le terme, la categorie et la zone avec des parametres d'URL.
-- Generer un numero de ticket stable a partir de ces parametres pour partager ou
-  retrouver exactement le meme comparatif.
-
-## Impact
-
-- Partage simple d'une comparaison sans capture d'ecran ni ressaisie.
+- Evite qu'un ancien ticket soit interprete comme une promesse de prix actuelle.
 
 ## Complexite
 
@@ -2243,34 +2218,62 @@
 
 ## Liens
 
-- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+- Plan source: docs/90-plans/073-idees-ia-ticket-comparateur.md
 
 ---
 
-## 2026-08-17 - Prix alimentaires: meilleur prix lisible en monochrome
+## 2026-08-18 - Prix alimentaires: format ticket thermique 80 mm
 
 ## Contexte
 
-- Le vert est reserve au meilleur prix, mais la couleur peut disparaitre a
-  l'impression ou etre mal percue par certains utilisateurs.
+- La feuille actuelle est optimisee pour une impression navigateur classique.
+- Une imprimante thermique de caisse utilise une largeur nettement plus etroite.
 
 ## Proposition
 
-- Tester le ticket en niveaux de gris et avec des simulations de daltonisme.
-- Conserver simultanement l'etoile, le libelle, la bordure double et la position
-  de la ligne afin que le statut ne depende jamais de la seule couleur.
+- Ajouter un mode d'impression optionnel en 80 mm qui compacte les adresses,
+  conserve les prix unitaires et dimensionne le QR code pour rester scannable.
+- Verifier le resultat sur une longueur variable sans couper une ligne d'offre.
 
 ## Impact
 
-- Signal de meilleure offre robuste sur ecran, en impression et pour
-  l'accessibilite.
+- Ticket plus coherent avec la direction artistique et utilisable sur une
+  imprimante de caisse reelle.
 
 ## Complexite
 
-- S
+- M
 
 ## Liens
 
-- Plan: docs/90-plans/072-comparateur-prix-aliments.md
+- Plan source: docs/90-plans/073-idees-ia-ticket-comparateur.md
+
+---
+
+## 2026-08-18 - Prix alimentaires: test de decodage du QR code
+
+## Contexte
+
+- Le test visuel verifie la presence et le contraste du QR code, mais pas que son
+  contenu reste decodable apres une evolution de la generation SVG.
+
+## Proposition
+
+- Rasteriser le QR code produit pendant un test cible puis le relire avec un
+  decodeur local.
+- Verifier que le contenu obtenu correspond exactement a l'URL partageable et
+  ne contient aucun parametre supplementaire.
+
+## Impact
+
+- Evite de livrer un QR code visuellement plausible mais inutilisable.
+
+## Complexite
+
+- M
+
+## Liens
+
+- Plan source: docs/90-plans/073-idees-ia-ticket-comparateur.md
 
 ---

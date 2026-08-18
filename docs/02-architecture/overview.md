@@ -228,7 +228,11 @@ Le client sert aussi de point d'entree de portfolio:
   donnee magasin en direct n'est encore collectee. La configuration locale
   actuelle utilise le code postal `59278` et quatre fiches officielles:
   Intermarche Escautpont, Carrefour Conde-sur-l'Escaut, ALDI
-  Fresnes-sur-Escaut et Colruyt Peruwelz.
+  Fresnes-sur-Escaut et Colruyt Peruwelz. Les parametres `zone`, `q` et
+  `categorie` rendent la recherche partageable et determinent un numero de
+  ticket stable. Web Share est utilise lorsqu'il est disponible, avec copie du
+  lien en repli. La vue d'impression conserve la recherche, la date, les
+  magasins, les offres et les sources; son QR code SVG est genere localement.
 
 Les routes techniques restent a la racine du domaine: `/api`, `/health` et
 `/mcp`. Cette organisation permet d'ajouter de futurs projets sous leurs
