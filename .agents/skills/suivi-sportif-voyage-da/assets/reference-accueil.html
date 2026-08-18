@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Voyage — Accueil (référence DA Boarding Pass)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --ink: #0f1b2b;
+    --sub: #6b7684;
+    --blue: #1c4ed8;
+    --amber: #e08a1e;
+    --line: #dfe4ea;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Space Grotesk", sans-serif; }
+  .mono { font-family: "JetBrains Mono", monospace; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 24px 60px; }
+
+  header {
+    background: var(--ink); color: #fff; padding: 20px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  header .brand { font-weight: 700; font-size: 18px; }
+  header nav { display: flex; gap: 20px; font-size: 13px; color: #c7cede; }
+
+  h1 { font-size: 30px; margin: 40px 0 4px; }
+  .subtitle { color: var(--sub); font-size: 14px; margin: 0 0 28px; }
+
+  .ticket {
+    display: grid; grid-template-columns: 1fr 160px; border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden; margin-bottom: 20px; background: var(--card);
+  }
+  .ticket .main { padding: 22px 24px; }
+  .route { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .route .code { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 20px; }
+  .route svg { flex: none; color: var(--sub); }
+  .ticket .place { font-size: 14px; color: var(--sub); margin: 0 0 14px; }
+  .meta-row { display: flex; gap: 18px; font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--sub); text-transform: uppercase; letter-spacing: .04em; }
+
+  .perforation {
+    width: 0; border-left: 1px dashed transparent;
+    background-image: repeating-linear-gradient(180deg, var(--line) 0 8px, transparent 8px 16px);
+    background-size: 1px 100%; background-repeat: repeat-y; background-position: 0 0;
+  }
+
+  .t-side {
+    background: var(--ink); color: #fff; padding: 20px 18px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .t-side .label { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #9aa5b8; margin-bottom: 6px; }
+  .status {
+    align-self: flex-start; border-radius: 999px; padding: 5px 12px; font-size: 11px;
+    font-family: "JetBrains Mono", monospace; font-weight: 600;
+  }
+  .status.done { background: #dbe6ff; color: var(--blue); }
+  .status.upcoming { background: #fbe6cc; color: var(--amber); }
+  .t-side a { color: #fff; font-size: 13px; text-decoration: none; font-weight: 600; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">Voyage</div>
+    <nav><span>Voyages</span><span>Carte</span><span>À propos</span></nav>
+  </header>
+
+  <div class="wrap">
+    <h1>Mes voyages</h1>
+    <p class="subtitle">Tous les voyages référencés, avec trajets et réservations.</p>
+
+    <article class="ticket">
+      <div class="main">
+        <div class="route">
+          <span class="code mono">CDG</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="code mono">KEF</span>
+        </div>
+        <p class="place">Islande — Cercle d'or &amp; côte sud</p>
+        <div class="meta-row"><span>12 — 20 juin 2026</span><span>8 jours</span><span>640 km</span></div>
+      </div>
+      <div class="perforation"></div>
+      <div class="t-side">
+        <div>
+          <div class="label">Statut</div>
+          <span class="status done">Réalisé</span>
+        </div>
+        <a href="#">Ouvrir →</a>
+      </div>
+    </article>
+
+    <article class="ticket">
+      <div class="main">
+        <div class="route">
+          <span class="code mono">CDG</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="code mono">NRT</span>
+        </div>
+        <p class="place">Japon — Tokyo, Kyoto, Osaka</p>
+        <div class="meta-row"><span>3 — 18 nov. 2026</span><span>15 jours</span><span>1 240 km</span></div>
+      </div>
+      <div class="perforation"></div>
+      <div class="t-side">
+        <div>
+          <div class="label">Statut</div>
+          <span class="status upcoming">À venir</span>
+        </div>
+        <a href="#">Ouvrir →</a>
+      </div>
+    </article>
+
+    <article class="ticket">
+      <div class="main">
+        <div class="route">
+          <span class="code mono">CDG</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="code mono">LIS</span>
+        </div>
+        <p class="place">Portugal — Lisbonne &amp; Algarve</p>
+        <div class="meta-row"><span>2 — 9 mai 2026</span><span>7 jours</span><span>310 km</span></div>
+      </div>
+      <div class="perforation"></div>
+      <div class="t-side">
+        <div>
+          <div class="label">Statut</div>
+          <span class="status done">Réalisé</span>
+        </div>
+        <a href="#">Ouvrir →</a>
+      </div>
+    </article>
+  </div>
+</body>
+</html>

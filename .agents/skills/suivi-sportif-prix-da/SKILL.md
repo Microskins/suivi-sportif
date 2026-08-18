@@ -1,6 +1,6 @@
 ---
-name: comparateur-da-ticket
-description: Direction artistique validée du comparateur de prix alimentaires de Thomas Cochart, style "Ticket de caisse". Utilise ce skill à chaque fois qu'il faut créer, modifier ou étendre une page front de ce projet (recherche, résultat de comparaison, historique de prix, nouveau composant) pour que le rendu reste cohérent avec la DA validée — même si l'utilisateur ne redonne pas les détails de style. Déclenche-toi sur toute mention de "comparateur", "comparateur de prix", "prix alimentaires" ou "front" liée à ce projet. Ne pas confondre avec les autres DA du même auteur (suivi-sportif-portfolio-da, trekking-da-topo, suivi-sportif-app-da, voyage-da-boarding) — cinq DA distinctes pour cinq projets distincts.
+name: suivi-sportif-prix-da
+description: Direction artistique validée du comparateur de prix alimentaires de Thomas Cochart, style "Ticket de caisse". Utilise ce skill à chaque fois qu'il faut créer, modifier ou étendre une page front de ce projet (recherche, résultat de comparaison, historique de prix, nouveau composant) pour que le rendu reste cohérent avec la DA validée — même si l'utilisateur ne redonne pas les détails de style. Déclenche-toi sur toute mention de "comparateur", "comparateur de prix", "prix alimentaires" ou "front" liée à ce projet. Ne pas confondre avec les autres DA du même auteur (suivi-sportif-portfolio-da, suivi-sportif-trekking-da, suivi-sportif-app-da, suivi-sportif-voyage-da) — cinq DA distinctes pour cinq projets distincts.
 ---
 
 # DA Comparateur de prix — Ticket de caisse

@@ -1,12 +1,12 @@
 ---
 name: suivi-sportif-app-da
-description: Direction artistique validée de l'application Suivi Sportif de Thomas Cochart (dashboard de suivi entraînements / nutrition / corps sur suivi-sportif.fr), style "Énergie" — chaleureux, arrondi, jauges circulaires. Utilise ce skill à chaque fois qu'il faut créer, modifier ou étendre une page ou un composant de cette application (synthèse, calendrier, séances, nutrition, objectifs, profil, etc.) pour que le rendu reste cohérent avec la DA validée — même si l'utilisateur ne redonne pas les détails de style. Déclenche-toi sur toute mention de "suivi sportif", "l'app", "le dashboard", "tableau de bord sport" ou "front" liée à cette application. Ne pas confondre avec les DA du portfolio (suivi-sportif-portfolio-da, style catalogue éditorial) ni du site Trekking (trekking-da-topo, style carte topo/panorama) — trois DA distinctes pour trois surfaces distinctes du même auteur.
+description: Direction artistique validée de l'application Suivi Sportif de Thomas Cochart (dashboard de suivi entraînements / nutrition / corps sur suivi-sportif.fr), style "Énergie" — chaleureux, arrondi, jauges circulaires. Utilise ce skill à chaque fois qu'il faut créer, modifier ou étendre une page ou un composant de cette application (synthèse, calendrier, séances, nutrition, objectifs, profil, etc.) pour que le rendu reste cohérent avec la DA validée — même si l'utilisateur ne redonne pas les détails de style. Déclenche-toi sur toute mention de "suivi sportif", "l'app", "le dashboard", "tableau de bord sport" ou "front" liée à cette application. Ne pas confondre avec les 4 autres DA du même auteur : suivi-sportif-portfolio-da (catalogue éditorial), suivi-sportif-prix-da (ticket de caisse), suivi-sportif-trekking-da (carte topo/panorama), suivi-sportif-voyage-da (boarding pass) — cinq DA distinctes pour cinq surfaces distinctes.
 
 ---
 
 # DA Suivi Sportif (app) — Énergie
 
-Direction validée par l'utilisateur parmi 4 propositions ("carnet athlétique", "clinique", "énergie", "performance sombre"). Toute nouvelle page ou tout nouveau composant de l'application doit suivre ces règles. Cette DA est indépendante de celles du portfolio et du site Trekking — ne pas les mélanger, même si c'est le même auteur.
+Direction validée par l'utilisateur parmi 4 propositions ("carnet athlétique", "clinique", "énergie", "performance sombre"). Toute nouvelle page ou tout nouveau composant de l'application doit suivre ces règles. Cette DA est indépendante des 4 autres DA du même auteur (portfolio, comparateur de prix, trekking, voyage) — ne pas les mélanger.
 
 ## Palette
 

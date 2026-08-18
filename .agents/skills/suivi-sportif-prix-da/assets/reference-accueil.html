@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Comparateur de prix — Recherche (référence DA Ticket de caisse)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #e9e6dc;
+    --paper: #f7f5ef;
+    --ink: #1c1c1c;
+    --sub: #6b6b6b;
+    --green: #3f7d52;
+    --red: #c1362b;
+    --line: #d8d4c8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+    font-family: "JetBrains Mono", monospace;
+    display: flex; justify-content: center; padding: 48px 16px;
+  }
+  .receipt {
+    width: 100%; max-width: 640px; background: var(--paper);
+    border-top: 3px dashed #b8b3a0; border-bottom: 3px dashed #b8b3a0;
+    padding: 32px 28px;
+  }
+  .receipt-header { text-align: center; margin-bottom: 20px; }
+  .receipt-header .store { font-weight: 700; font-size: 20px; letter-spacing: .02em; }
+  .receipt-header .sub { color: var(--sub); font-size: 12px; margin-top: 4px; }
+  .divider { border-top: 1px dashed var(--line); margin: 20px 0; }
+
+  form.search { display: flex; }
+  form.search input {
+    flex: 1; font-family: "JetBrains Mono", monospace; font-size: 14px;
+    padding: 12px 14px; border: 2px solid var(--ink); border-right: none;
+    background: #fff; color: var(--ink); border-radius: 0;
+  }
+  form.search input:focus { outline: none; }
+  form.search button {
+    font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 13px;
+    letter-spacing: .04em; text-transform: uppercase; border: 2px solid var(--ink);
+    background: var(--ink); color: #fff; padding: 0 20px; cursor: pointer; border-radius: 0;
+  }
+
+  .section-label {
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--sub);
+    margin: 0 0 10px;
+  }
+
+  .row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px dotted var(--line); font-size: 13px;
+  }
+  .row:last-child { border-bottom: none; }
+  .row .qty { color: var(--sub); }
+  .row .arrow { color: var(--sub); }
+
+  .categories { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .chip {
+    border: 1px solid var(--ink); padding: 6px 12px; font-size: 12px;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+
+  .barcode { display: flex; justify-content: center; gap: 2px; margin-top: 28px; }
+  .barcode i { display: block; width: 2px; background: var(--ink); }
+  .footer-note { text-align: center; font-size: 11px; color: var(--sub); margin-top: 16px; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <div class="receipt">
+    <div class="receipt-header">
+      <div class="store">COMPARATEUR DE PRIX</div>
+      <div class="sub">Ticket N° 0042 — Recherche</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="section-label">Rechercher un produit</p>
+    <form class="search">
+      <input type="text" placeholder="Ex : lait demi-écrémé 1L" />
+      <button type="submit">Chercher</button>
+    </form>
+
+    <div class="divider"></div>
+
+    <p class="section-label">Recherches récentes</p>
+    <div class="row"><span>Lait demi-écrémé 1L</span><span class="arrow">→</span></div>
+    <div class="row"><span>Œufs x12 plein air</span><span class="arrow">→</span></div>
+    <div class="row"><span>Pâtes complètes 500g</span><span class="arrow">→</span></div>
+    <div class="row"><span>Huile d'olive vierge extra 1L</span><span class="arrow">→</span></div>
+
+    <div class="divider"></div>
+
+    <p class="section-label">Catégories</p>
+    <div class="categories">
+      <span class="chip">Épicerie</span>
+      <span class="chip">Frais</span>
+      <span class="chip">Boissons</span>
+      <span class="chip">Surgelés</span>
+      <span class="chip">Hygiène</span>
+    </div>
+
+    <div class="barcode">
+      <script>
+        document.write(Array.from({length: 40}).map(() => {
+          const w = [1,1,2,1,1,3,1][Math.floor(Math.random()*7)];
+          const h = 24 + Math.floor(Math.random()*10);
+          return `<i style="width:${w}px;height:${h}px"></i>`;
+        }).join(""));
+      </script>
+    </div>
+    <p class="footer-note">Prix indicatifs, susceptibles de varier en magasin.<br />Merci de votre visite.</p>
+  </div>
+</body>
+</html>

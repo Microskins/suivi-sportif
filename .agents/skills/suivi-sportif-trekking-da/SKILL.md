@@ -1,11 +1,11 @@
 ---
 name: suivi-sportif-trekking-da
-description: Direction artistique validée du site Trekking de Thomas Cochart (carnets de marche / itinérances à pied), style "Carte topo" avec panorama photo plein cadre. Utilise ce skill à chaque fois qu'il faut créer, modifier ou étendre une page front du site Trekking (accueil, page voyage, nouvelle étape, composant) pour que le rendu reste cohérent avec la DA validée — même si l'utilisateur ne redonne pas les détails de style. Déclenche-toi sur toute mention de "trekking", "carnet de marche", "page voyage", "itinéraire" ou "front" liée à ce site. Ne pas confondre avec la DA du portfolio (suivi-sportif-portfolio-da), qui est un style différent (catalogue éditorial).
+description: Direction artistique validée du site Trekking de Thomas Cochart (carnets de marche / itinérances à pied), style "Carte topo" avec panorama photo plein cadre. Utilise ce skill à chaque fois qu'il faut créer, modifier ou étendre une page front du site Trekking (accueil, page voyage, nouvelle étape, composant) pour que le rendu reste cohérent avec la DA validée — même si l'utilisateur ne redonne pas les détails de style. Déclenche-toi sur toute mention de "trekking", "carnet de marche", "page voyage", "itinéraire" ou "front" liée à ce site. Ne pas confondre avec les 4 autres DA du même auteur : suivi-sportif-app-da (énergie), suivi-sportif-portfolio-da (catalogue éditorial), suivi-sportif-prix-da (ticket de caisse), suivi-sportif-voyage-da (boarding pass) — cinq DA distinctes pour cinq surfaces distinctes.
 ---
 
 # DA Trekking — Carte topo / panorama
 
-Direction validée par l'utilisateur parmi 3 propositions ("carte topo", "balisage sentier", "carnet de terrain"), puis affinée pour remplacer les aplats sombres par un panorama photo plein cadre. Toute nouvelle page ou tout nouveau composant du site Trekking doit suivre ces règles. Cette DA est indépendante de celle du portfolio (suivi-sportif-portfolio-da) — ne pas les mélanger.
+Direction validée par l'utilisateur parmi 3 propositions ("carte topo", "balisage sentier", "carnet de terrain"), puis affinée pour remplacer les aplats sombres par un panorama photo plein cadre. Toute nouvelle page ou tout nouveau composant du site Trekking doit suivre ces règles. Cette DA est indépendante des 4 autres DA du même auteur (app, portfolio, comparateur de prix, voyage) — ne pas les mélanger.
 
 ## Palette
 

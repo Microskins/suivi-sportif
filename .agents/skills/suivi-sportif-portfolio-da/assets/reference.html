@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Thomas Cochart — Portfolio (référence DA Catalogue éditorial)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #efe7d8;
+    --ink: #1b2a3d;
+    --ink-soft: #5b6474;
+    --brick: #a63d2f;
+    --olive: #4a5a3f;
+    --line: #c9bfa8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: "Source Serif 4", serif;
+  }
+  .display { font-family: "Barlow Condensed", sans-serif; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 0; border-bottom: 3px solid var(--ink);
+  }
+  .logo { font-family: "Barlow Condensed", sans-serif; font-weight: 700; text-transform: uppercase; font-size: 20px; letter-spacing: .02em; }
+  .edition { font-family: "Barlow Condensed", sans-serif; font-weight: 600; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
+
+  .hero {
+    display: grid; grid-template-columns: 1.4fr 1px 1fr; gap: 40px;
+    padding: 56px 0; align-items: start;
+  }
+  .hero .rule { background: var(--line); height: 100%; }
+  .eyebrow {
+    font-family: "Barlow Condensed", sans-serif; font-weight: 600; font-size: 13px;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--brick); margin: 0 0 12px;
+  }
+  .hero h1 {
+    font-family: "Barlow Condensed", sans-serif; font-weight: 700; text-transform: uppercase;
+    font-size: clamp(40px, 6vw, 68px); letter-spacing: -.01em; line-height: .9; margin: 0 0 20px;
+  }
+  .lede { font-size: 19px; line-height: 1.5; }
+  .lede::first-letter {
+    font-family: "Barlow Condensed", sans-serif; font-weight: 700; color: var(--brick);
+    font-size: 3.4em; float: left; line-height: .8; margin: .04em .06em 0 0;
+  }
+  .aside { font-style: italic; color: var(--ink-soft); font-size: 15px; line-height: 1.6; padding-top: 4px; }
+
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px solid var(--line); padding-bottom: 10px; margin: 8px 0 4px;
+  }
+  .section-head h2 {
+    font-family: "Barlow Condensed", sans-serif; font-weight: 700; text-transform: uppercase;
+    font-size: 22px; letter-spacing: -.01em; margin: 0;
+  }
+  .section-head span {
+    font-family: "Barlow Condensed", sans-serif; font-size: 12px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+
+  .entry {
+    display: grid; grid-template-columns: 64px 1fr 240px; gap: 24px;
+    padding: 28px 0; border-bottom: 1px solid var(--line); align-items: start;
+  }
+  .entry .index { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 40px; color: var(--line); line-height: 1; }
+  .entry .tag {
+    font-family: "Barlow Condensed", sans-serif; font-weight: 600; font-size: 12px;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--brick); margin: 0 0 6px;
+  }
+  .entry h3 { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 24px; margin: 0 0 8px; text-transform: none; }
+  .entry p { margin: 0; color: var(--ink-soft); font-size: 15px; line-height: 1.5; }
+  .spec-strip {
+    display: flex; gap: 18px; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line);
+    font-family: "Barlow Condensed", sans-serif; font-size: 12px; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+  .entry .side { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .entry .side a {
+    font-family: "Barlow Condensed", sans-serif; font-weight: 600; font-size: 14px;
+    letter-spacing: .04em; text-transform: uppercase; color: var(--brick);
+    text-decoration: underline; text-underline-offset: 4px;
+  }
+  .status { font-size: 12px; font-family: "Barlow Condensed", sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+  .status.online { color: var(--olive); }
+  .status.progress { color: var(--ink-soft); }
+
+  footer {
+    border-top: 3px solid var(--ink); margin-top: 40px; padding: 24px 0;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: "Barlow Condensed", sans-serif; font-size: 12px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Thomas Cochart</div>
+    <div class="edition">Édition 2026 — N°02</div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Développeur — Produits personnels</p>
+      <h1>Applications construites<br />pour durer</h1>
+      <p class="lede">Je conçois et développe des applications web complètes — suivi sportif, carnets de voyage, comparateur de prix — de la base de données à l'interface, avec une attention particulière portée à la direction artistique de chaque projet.</p>
+    </div>
+    <div class="rule"></div>
+    <div class="aside">
+      « Chaque projet a sa propre identité visuelle, pensée pour son usage — pas de template générique réutilisé d'un site à l'autre. »
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>Projets</h2>
+    <span>04 entrées</span>
+  </div>
+
+  <article class="entry">
+    <div class="index">01</div>
+    <div>
+      <p class="tag">Application web</p>
+      <h3>Suivi Sportif</h3>
+      <p>Dashboard de suivi entraînements, nutrition et corps — séances, objectifs, calendrier, mensurations.</p>
+      <div class="spec-strip">
+        <span>Fastify · Prisma · PostgreSQL</span>
+        <span>React · Zustand</span>
+        <span>Depuis 2024</span>
+      </div>
+    </div>
+    <div class="side">
+      <a href="#">Ouvrir</a>
+      <span class="status online">En ligne</span>
+    </div>
+  </article>
+
+  <article class="entry">
+    <div class="index">02</div>
+    <div>
+      <p class="tag">Carnets de marche</p>
+      <h3>Trekking</h3>
+      <p>Itinérances à pied documentées : étapes, dénivelé, décisions météo, traces GPX.</p>
+      <div class="spec-strip">
+        <span>8 carnets publiés</span>
+        <span>420 km cumulés</span>
+      </div>
+    </div>
+    <div class="side">
+      <a href="#">Ouvrir</a>
+      <span class="status online">En ligne</span>
+    </div>
+  </article>
+
+  <article class="entry">
+    <div class="index">03</div>
+    <div>
+      <p class="tag">Référencement de voyages</p>
+      <h3>Voyage</h3>
+      <p>Carte des trajets et réservations centralisées (Airbnb, GetYourGuide) pour chaque voyage.</p>
+      <div class="spec-strip">
+        <span>12 voyages référencés</span>
+        <span>Carte interactive</span>
+      </div>
+    </div>
+    <div class="side">
+      <a href="#">Ouvrir</a>
+      <span class="status online">En ligne</span>
+    </div>
+  </article>
+
+  <article class="entry">
+    <div class="index">04</div>
+    <div>
+      <p class="tag">Comparateur de prix</p>
+      <h3>Prix alimentaires</h3>
+      <p>Comparaison des prix alimentaires entre magasins, avec historique et meilleur prix mis en avant.</p>
+      <div class="spec-strip">
+        <span>Style « ticket de caisse »</span>
+        <span>En développement</span>
+      </div>
+    </div>
+    <div class="side">
+      <a href="#">Ouvrir</a>
+      <span class="status progress">En cours</span>
+    </div>
+  </article>
+
+  <footer>
+    <span>Thomas Cochart — Portfolio</span>
+    <span>suivi-sportif.fr</span>
+  </footer>
+</div>
+</body>
+</html>
