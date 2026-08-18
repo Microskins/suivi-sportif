@@ -1,16 +1,34 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { usePriceComparisonStore } from "./price-comparison-store";
 import { PriceComparisonSite } from "./price-comparison-site";
 
 beforeEach(() => {
+  window.history.replaceState({}, "", "/prix-aliments");
   usePriceComparisonStore.setState({ category: "Tous", query: "" });
+  Object.defineProperty(window.navigator, "clipboard", {
+    configurable: true,
+    value: undefined,
+  });
+  Object.defineProperty(window.navigator, "share", {
+    configurable: true,
+    value: undefined,
+  });
 });
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
 
 describe("comparateur de prix alimentaires", () => {
   it("presente les quatre enseignes et les produits de demonstration", () => {
@@ -90,5 +108,92 @@ describe("comparateur de prix alimentaires", () => {
     expect(
       screen.getByText(/8 produits · prix de démonstration/i),
     ).toBeTruthy();
+  });
+
+  it("restaure une recherche partagee depuis l URL", async () => {
+    window.history.replaceState(
+      {},
+      "",
+      "/prix-aliments?zone=59278&q=pates&categorie=%C3%89picerie",
+    );
+
+    render(<PriceComparisonSite />);
+
+    expect(
+      await screen.findByRole("heading", { level: 3, name: "Penne rigate" }),
+    ).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Épicerie" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  });
+
+  it("synchronise les filtres et copie l URL sur desktop", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(window.navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    render(<PriceComparisonSite />);
+
+    fireEvent.change(
+      screen.getByRole("searchbox", { name: /quel aliment cherchez-vous/i }),
+      { target: { value: "pâtes" } },
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Épicerie" }));
+
+    await waitFor(() => {
+      expect(window.location.search).toBe(
+        "?zone=59278&q=p%C3%A2tes&categorie=%C3%89picerie",
+      );
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /copier le lien/i }));
+
+    await waitFor(() =>
+      expect(writeText).toHaveBeenCalledWith(window.location.href),
+    );
+    expect(screen.getByText(/lien copié dans le presse-papiers/i)).toBeTruthy();
+  });
+
+  it("utilise le partage natif quand il est disponible", async () => {
+    const share = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(window.navigator, "share", {
+      configurable: true,
+      value: share,
+    });
+    render(<PriceComparisonSite />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Partager" }));
+
+    await waitFor(() => expect(share).toHaveBeenCalledOnce());
+    expect(share).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: expect.stringMatching(/Prix Frais/),
+        url: expect.stringContaining("?zone=59278"),
+      }),
+    );
+    expect(screen.getByText(/ticket envoyé avec succès/i)).toBeTruthy();
+  });
+
+  it("genere un QR code local avec l URL partageable", async () => {
+    render(<PriceComparisonSite />);
+
+    const qrCode = await screen.findByAltText(/QR code du ticket 59278-/i);
+
+    expect(qrCode).toHaveAttribute(
+      "src",
+      expect.stringMatching(/^data:image\/svg\+xml/),
+    );
+  });
+
+  it("ouvre la boite de dialogue d impression apres preparation du QR", async () => {
+    const print = vi.spyOn(window, "print").mockImplementation(() => undefined);
+    render(<PriceComparisonSite />);
+
+    await screen.findByAltText(/QR code du ticket 59278-/i);
+    fireEvent.click(screen.getByRole("button", { name: /imprimer/i }));
+
+    expect(print).toHaveBeenCalledOnce();
   });
 });
