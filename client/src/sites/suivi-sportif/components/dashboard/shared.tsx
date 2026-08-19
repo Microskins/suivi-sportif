@@ -11,7 +11,7 @@ export const dangerButtonClass =
 export const iconButtonClass =
   "inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#f0e3d6] bg-white text-sm font-semibold text-[#665b51] hover:border-[#ffb899] hover:bg-[#fff8f2] disabled:cursor-not-allowed disabled:opacity-50";
 export const dragHandleButtonClass =
-  "inline-flex h-9 w-9 cursor-grab items-center justify-center rounded-full border border-[#f0e3d6] bg-[#fdf6ef] text-[#806f61] hover:border-[#ffb899] active:cursor-grabbing";
+  "inline-flex h-9 w-9 cursor-grab items-center justify-center rounded-full border border-[#f0e3d6] bg-[#fdf6ef] text-[var(--site-muted)] hover:border-[#ffb899] active:cursor-grabbing";
 export const viewButtonClass =
   "inline-flex min-h-10 items-center justify-center rounded-full border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60";
 export const activeViewButtonClass =
@@ -35,7 +35,7 @@ export function ErrorBox({ message }: { message: string | null }) {
 
 export function EmptyState({ label }: { label: string }) {
   return (
-    <div className="rounded-[16px] bg-[#fdf6ef] px-4 py-8 text-center text-sm text-[#806f61]">
+    <div className="rounded-[16px] bg-[#fdf6ef] px-4 py-8 text-center text-sm text-[var(--site-muted)]">
       {label}
     </div>
   );
@@ -59,7 +59,7 @@ export function ExerciseImagePreview({
   if (!imageUrl || imageFailed) {
     return (
       <div
-        className={`flex items-center justify-center rounded-[16px] bg-[#fdf6ef] text-xs text-[#9c8f83] ${className}`}
+        className={`flex items-center justify-center rounded-[16px] bg-[#fdf6ef] text-xs text-[var(--site-muted)] ${className}`}
       >
         {imageUrl ? "Image indisponible" : "Aucune image"}
       </div>

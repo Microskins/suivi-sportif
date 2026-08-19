@@ -9,7 +9,7 @@ const AUTH_INPUT_CLASS = "sport-input mt-2";
 
 export function SuiviSportifLoadingScreen() {
   return (
-    <main className="site-sport-grid grid min-h-screen place-items-center px-6 text-[#2b241e]">
+    <main id="contenu-principal" tabIndex={-1} className="site-sport-grid grid min-h-screen place-items-center px-6 text-[var(--site-ink)]">
       <div className="text-center">
         <SuiviSportifBrand />
         <svg
@@ -36,7 +36,7 @@ export function SuiviSportifLoadingScreen() {
             strokeDasharray="105 46"
           />
         </svg>
-        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c8f83]">
+        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--site-muted)]">
           Chargement du profil
         </p>
       </div>
@@ -79,7 +79,7 @@ export function SuiviSportifAuthScreen() {
   }
 
   return (
-    <main className="site-sport-grid relative min-h-screen overflow-hidden bg-[#fff8f2] text-[#2b241e]">
+    <main id="contenu-principal" tabIndex={-1} className="site-sport-grid relative min-h-screen overflow-hidden bg-[#fff8f2] text-[var(--site-ink)]">
       <div
         aria-hidden="true"
         className="absolute -left-28 top-24 h-72 w-72 rounded-full bg-[#ffb648]/15 blur-3xl"
@@ -94,17 +94,17 @@ export function SuiviSportifAuthScreen() {
           <SuiviSportifBrand />
 
           <div className="max-w-2xl py-14 lg:py-20">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#ff7a54]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--site-accent-text)]">
               Ton espace de progression
             </p>
             <h1 className="site-display mt-5 text-6xl font-bold leading-[0.9] tracking-[-0.035em] sm:text-7xl lg:text-8xl">
-              Avance à
+              Avance à{" "}
               <br />
               <span className="bg-[linear-gradient(135deg,#ff7a54,#ffb648)] bg-clip-text text-transparent">
                 ton rythme.
               </span>
             </h1>
-            <p className="mt-7 max-w-xl text-lg leading-8 text-[#806f61]">
+            <p className="mt-7 max-w-xl text-lg leading-8 text-[var(--site-muted)]">
               Tes séances, ta nutrition et tes mesures réunies dans un tableau
               de bord chaleureux, clair et fait pour durer.
             </p>
@@ -117,7 +117,7 @@ export function SuiviSportifAuthScreen() {
               ["03", "Corps"],
             ].map(([index, label]) => (
               <div key={label} className="rounded-[16px] bg-white/75 px-3 py-4 shadow-[0_2px_8px_rgba(43,36,30,0.04)]">
-                <span className="site-display text-sm font-bold text-[#ff7a54]">{index}</span>
+                <span className="site-display text-sm font-bold text-[var(--site-accent-text)]">{index}</span>
                 <span className="mt-1 block text-xs font-semibold text-[#665b51]">{label}</span>
               </div>
             ))}
@@ -128,7 +128,7 @@ export function SuiviSportifAuthScreen() {
           <div className="panel w-full p-6 shadow-[0_18px_50px_rgba(255,122,84,0.13)] sm:p-9">
             <div className="flex items-start justify-between gap-5">
               <div>
-                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#ff7a54]">
+                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--site-accent-text)]">
                   Accès membre
                 </p>
                 <h2 className="site-display mt-2 text-4xl font-bold leading-none">
@@ -149,7 +149,7 @@ export function SuiviSportifAuthScreen() {
                   className={`rounded-full px-3 py-3 text-xs font-semibold transition ${
                     mode === authMode
                       ? "bg-[linear-gradient(135deg,#ff7a54,#ffb648)] text-white shadow-sm"
-                      : "text-[#806f61] hover:text-[#2b241e]"
+                      : "text-[var(--site-muted)] hover:text-[var(--site-ink)]"
                   }`}
                 >
                   {authMode === "login" ? "Connexion" : "Inscription"}
@@ -222,11 +222,11 @@ export function SuiviSportifAuthScreen() {
                 {isLoading ? "Traitement en cours…" : title}
               </button>
 
-              <p className="mt-5 text-xs leading-5 text-[#9c8f83]">
+              <p className="mt-5 text-xs leading-5 text-[var(--site-muted)]">
                 En continuant, tu peux consulter notre{" "}
                 <a
                   href={COOKIE_POLICY_PATH}
-                  className="font-semibold text-[#e85f3c] underline decoration-[#ffb648] decoration-2 underline-offset-4"
+                  className="font-semibold text-[var(--site-accent-text)] underline decoration-[#ffb648] decoration-2 underline-offset-4"
                 >
                   politique cookies
                 </a>

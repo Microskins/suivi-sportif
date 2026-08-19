@@ -50,13 +50,13 @@ const projects = [
 
 export function PortfolioSite() {
   return (
-    <main className="min-h-screen overflow-hidden bg-[#efe7d8] text-[#1b2a3d]">
+    <main id="contenu-principal" tabIndex={-1} className="min-h-screen overflow-hidden bg-[#efe7d8] text-[#1b2a3d]">
       <div className="mx-auto flex min-h-screen max-w-[78rem] flex-col px-5 py-5 sm:px-9 lg:px-14">
         <header className="flex items-center justify-between gap-6 border-b-[3px] border-[#1b2a3d] pb-5">
           <a href="/" aria-label="Retour au portfolio">
             <PortfolioBrand />
           </a>
-          <p className="site-label text-right text-[0.68rem] font-semibold uppercase leading-5 tracking-[0.16em] text-[#5b6474] sm:text-xs">
+          <p className="site-label text-right text-[0.68rem] font-semibold uppercase leading-5 tracking-[0.16em] text-[var(--site-muted)] sm:text-xs">
             Édition 2026
             <span className="block text-[#a63d2f]">
               N° 04 — Projets choisis
@@ -70,7 +70,7 @@ export function PortfolioSite() {
               Thomas Cochart — Développeur produit
             </p>
             <h1 className="site-display mt-5 max-w-4xl text-[clamp(4.8rem,13vw,10rem)] font-bold uppercase leading-[0.82] tracking-[-0.02em]">
-              Faire
+              Faire{" "}
               <br />
               utile.
             </h1>
@@ -84,23 +84,23 @@ export function PortfolioSite() {
           <div className="hidden bg-[#1b2a3d] lg:block" aria-hidden="true" />
 
           <aside className="border-t border-[#c9bfa8] pt-7 lg:border-t-0 lg:pt-8">
-            <p className="text-2xl italic leading-9 text-[#5b6474] sm:text-3xl sm:leading-10">
+            <p className="text-2xl italic leading-9 text-[var(--site-muted)] sm:text-3xl sm:leading-10">
               « Le bon niveau de détail n&apos;est pas celui qui impressionne.
               C&apos;est celui qui aide à décider. »
             </p>
             <dl className="site-label mt-12 grid grid-cols-2 gap-y-7 border-t border-[#c9bfa8] pt-6 text-xs font-semibold uppercase tracking-[0.12em]">
               <div>
-                <dt className="text-[#5b6474]">Édition</dt>
+                <dt className="text-[var(--site-muted)]">Édition</dt>
                 <dd className="mt-2 text-base text-[#1b2a3d]">2026 / 03</dd>
               </div>
               <div>
-                <dt className="text-[#5b6474]">Projets</dt>
+                <dt className="text-[var(--site-muted)]">Projets</dt>
                 <dd className="mt-2 text-base text-[#1b2a3d]">
                   Trois en ligne · Un prototype
                 </dd>
               </div>
               <div className="col-span-2">
-                <dt className="text-[#5b6474]">Territoires</dt>
+                <dt className="text-[var(--site-muted)]">Territoires</dt>
                 <dd className="mt-2 text-base text-[#1b2a3d]">
                   Sport · Données · Plein air · Voyage · Budget
                 </dd>
@@ -114,7 +114,7 @@ export function PortfolioSite() {
             <h2 className="site-display text-4xl font-bold uppercase leading-none sm:text-5xl">
               Catalogue
             </h2>
-            <span className="site-label text-xs font-semibold uppercase tracking-[0.16em] text-[#5b6474]">
+            <span className="site-label text-xs font-semibold uppercase tracking-[0.16em] text-[var(--site-muted)]">
               Sélection / 001—004
             </span>
           </div>
@@ -125,7 +125,14 @@ export function PortfolioSite() {
                 key={project.href}
                 className="grid border-b border-[#c9bfa8] py-7 sm:grid-cols-[64px_1fr] sm:gap-5 lg:grid-cols-[64px_1fr_240px] lg:gap-8 lg:py-9"
               >
-                <p className="site-display text-6xl font-semibold leading-none text-[#c9bfa8]">
+                {/* Numero d'index en encre pale: parti pris editorial de la DA
+                    catalogue, volontairement peu contraste. Il est masque aux
+                    technologies d'assistance car il ne porte aucune
+                    information que l'ordre de la liste ne donne deja. */}
+                <p
+                  aria-hidden="true"
+                  className="site-display text-6xl font-semibold leading-none text-[var(--site-line)]"
+                >
                   {project.index}
                 </p>
 
@@ -136,10 +143,10 @@ export function PortfolioSite() {
                   <h3 className="site-display mt-2 text-5xl font-bold uppercase leading-[0.9] sm:text-6xl">
                     {project.title}
                   </h3>
-                  <p className="mt-5 max-w-2xl text-lg leading-7 text-[#5b6474]">
+                  <p className="mt-5 max-w-2xl text-lg leading-7 text-[var(--site-muted)]">
                     {project.description}
                   </p>
-                  <ul className="site-label mt-7 flex flex-wrap gap-x-5 gap-y-2 border-t border-[#c9bfa8] pt-4 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[#5b6474]">
+                  <ul className="site-label mt-7 flex flex-wrap gap-x-5 gap-y-2 border-t border-[#c9bfa8] pt-4 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--site-muted)]">
                     {project.specs.map((spec) => (
                       <li key={spec}>{spec}</li>
                     ))}
@@ -162,7 +169,7 @@ export function PortfolioSite() {
           </div>
         </section>
 
-        <footer className="site-label mt-auto flex flex-col gap-2 border-t-[3px] border-[#1b2a3d] py-5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#5b6474] sm:flex-row sm:items-center sm:justify-between">
+        <footer className="site-label mt-auto flex flex-col gap-2 border-t-[3px] border-[#1b2a3d] py-5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--site-muted)] sm:flex-row sm:items-center sm:justify-between">
           <p>Thomas Cochart — Portfolio</p>
           <p>Conçu et développé en France</p>
         </footer>

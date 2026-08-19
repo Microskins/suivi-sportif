@@ -47,13 +47,13 @@ export function BoardingTicket({
     <article className="voyage-ticket grid overflow-hidden rounded-xl border border-[#dfe4ea] bg-white md:grid-cols-[minmax(0,1fr)_11rem]">
       <div className="p-6 sm:p-8 lg:p-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="site-label text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#6b7684]">
+          <p className="site-label text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--site-muted)]">
             {eyebrow}
           </p>
           <span
             className={`site-label rounded-full px-3 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.11em] ${
               isUpcoming
-                ? "bg-[#fff2df] text-[#b96d10]"
+                ? "bg-[#fff2df] text-[var(--site-accent-2-text)]"
                 : "bg-[#eaf0ff] text-[#1c4ed8]"
             }`}
           >
@@ -64,7 +64,7 @@ export function BoardingTicket({
         <Heading className="site-display mt-5 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
           {title}
         </Heading>
-        <p className="mt-3 max-w-2xl leading-7 text-[#6b7684]">{description}</p>
+        <p className="mt-3 max-w-2xl leading-7 text-[var(--site-muted)]">{description}</p>
 
         <div className="site-label mt-8 flex items-center gap-4 text-[clamp(2.5rem,8vw,5rem)] font-semibold leading-none tracking-[-0.08em] text-[#0f1b2b]">
           <span>{departureCode}</span>

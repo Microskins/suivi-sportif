@@ -80,7 +80,7 @@ const bookings = [
 
 export function IslandeTripSite() {
   return (
-    <main className="min-h-screen bg-[#f4f6f8] text-[#0f1b2b]">
+    <main id="contenu-principal" tabIndex={-1} className="min-h-screen bg-[#f4f6f8] text-[#0f1b2b]">
       <header className="bg-[#0f1b2b] text-white">
         <div className="mx-auto flex max-w-[78rem] items-center justify-between gap-6 px-5 py-5 sm:px-9 lg:px-14">
           <a href="/voyage" aria-label="Retour aux voyages">
@@ -117,7 +117,7 @@ export function IslandeTripSite() {
                 index > 1 ? "border-t md:border-t-0" : ""
               } border-[#dfe4ea] md:border-l md:first:border-l-0`}
             >
-              <dt className="site-label text-[0.62rem] font-medium uppercase tracking-[0.13em] text-[#6b7684]">
+              <dt className="site-label text-[0.62rem] font-medium uppercase tracking-[0.13em] text-[var(--site-muted)]">
                 {label}
               </dt>
               <dd className="site-display mt-2 text-xl font-semibold sm:text-2xl">
@@ -136,15 +136,15 @@ export function IslandeTripSite() {
               Carte de route
             </p>
             <h2 className="site-display mt-3 text-4xl font-semibold tracking-[-0.03em] sm:text-5xl">
-              D’ouest en est,
+              D’ouest en est,{" "}
               <br />
               sans courir.
             </h2>
-            <p className="mt-5 max-w-md leading-7 text-[#6b7684]">
+            <p className="mt-5 max-w-md leading-7 text-[var(--site-muted)]">
               Le parcours garde des marges pour la météo. Les distances et les
               accès devront être vérifiés avant le départ.
             </p>
-            <div className="site-label mt-8 flex items-center gap-3 text-[0.62rem] font-medium uppercase tracking-[0.1em] text-[#6b7684]">
+            <div className="site-label mt-8 flex items-center gap-3 text-[0.62rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)]">
               <span className="h-2.5 w-2.5 rounded-full bg-[#0f1b2b]" /> Départ
               <span className="ml-2 h-2.5 w-2.5 rounded-full bg-[#1c4ed8]" />{" "}
               Étapes
@@ -156,14 +156,14 @@ export function IslandeTripSite() {
         <section className="border-t border-[#dfe4ea] py-14 sm:py-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="site-label text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#6b7684]">
+              <p className="site-label text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--site-muted)]">
                 Feuille de route
               </p>
               <h2 className="site-display mt-2 text-3xl font-semibold sm:text-4xl">
                 Étape par étape
               </h2>
             </div>
-            <p className="site-label text-xs font-medium uppercase tracking-[0.12em] text-[#6b7684]">
+            <p className="site-label text-xs font-medium uppercase tracking-[0.12em] text-[var(--site-muted)]">
               08 jours / 05 bases
             </p>
           </div>
@@ -178,7 +178,7 @@ export function IslandeTripSite() {
                   <p className="text-sm font-semibold text-[#1c4ed8]">
                     {stage.day}
                   </p>
-                  <p className="mt-1 text-[0.65rem] font-medium uppercase tracking-[0.1em] text-[#6b7684]">
+                  <p className="mt-1 text-[0.65rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)]">
                     {stage.date}
                   </p>
                 </div>
@@ -186,7 +186,7 @@ export function IslandeTripSite() {
                   <h3 className="site-display text-xl font-semibold">
                     {stage.title}
                   </h3>
-                  <p className="mt-2 leading-6 text-[#6b7684]">
+                  <p className="mt-2 leading-6 text-[var(--site-muted)]">
                     {stage.detail}
                   </p>
                 </div>
@@ -203,13 +203,13 @@ export function IslandeTripSite() {
           className="border-t border-[#dfe4ea] py-14 sm:py-16"
         >
           <div className="max-w-2xl">
-            <p className="site-label text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#e08a1e]">
+            <p className="site-label text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--site-accent-2-text)]">
               Préparation
             </p>
             <h2 className="site-display mt-2 text-3xl font-semibold sm:text-4xl">
               Réservations à cadrer
             </h2>
-            <p className="mt-4 leading-7 text-[#6b7684]">
+            <p className="mt-4 leading-7 text-[var(--site-muted)]">
               Les sources sont identifiées, mais aucun lien privé ni numéro de
               dossier n’est publié dans ce carnet.
             </p>
@@ -221,13 +221,13 @@ export function IslandeTripSite() {
                 key={booking.source}
                 className="flex min-h-48 flex-col rounded-xl border border-[#dfe4ea] bg-white p-6 transition hover:-translate-y-0.5 hover:border-[#bcc7d5] hover:shadow-[0_12px_30px_rgba(15,27,43,0.06)]"
               >
-                <p className="site-label text-[0.62rem] font-semibold uppercase tracking-[0.13em] text-[#6b7684]">
+                <p className="site-label text-[0.62rem] font-semibold uppercase tracking-[0.13em] text-[var(--site-muted)]">
                   {booking.source}
                 </p>
                 <h3 className="site-display mt-4 text-xl font-semibold">
                   {booking.title}
                 </h3>
-                <p className="mt-2 leading-6 text-[#6b7684]">
+                <p className="mt-2 leading-6 text-[var(--site-muted)]">
                   {booking.detail}
                 </p>
                 <p className="site-label mt-auto pt-6 text-right text-xs font-semibold uppercase tracking-[0.1em] text-[#1c4ed8]">
@@ -240,7 +240,7 @@ export function IslandeTripSite() {
       </div>
 
       <footer className="border-t border-[#dfe4ea] bg-white">
-        <div className="site-label mx-auto flex max-w-[78rem] flex-col gap-2 px-5 py-5 text-[0.65rem] font-medium uppercase tracking-[0.14em] text-[#6b7684] sm:flex-row sm:justify-between sm:px-9 lg:px-14">
+        <div className="site-label mx-auto flex max-w-[78rem] flex-col gap-2 px-5 py-5 text-[0.65rem] font-medium uppercase tracking-[0.14em] text-[var(--site-muted)] sm:flex-row sm:justify-between sm:px-9 lg:px-14">
           <p>ISL / 2026 · Document de préparation</p>
           <a href="/voyage" className="text-[#1c4ed8] hover:underline">
             Retour aux voyages →

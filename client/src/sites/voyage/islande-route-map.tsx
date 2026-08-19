@@ -78,7 +78,7 @@ export function IslandeRouteMap() {
           </text>
         </g>
       </svg>
-      <figcaption className="site-label border-t border-[#dfe4ea] bg-white px-5 py-4 text-[0.62rem] font-medium uppercase tracking-[0.1em] text-[#6b7684]">
+      <figcaption className="site-label border-t border-[#dfe4ea] bg-white px-5 py-4 text-[0.62rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)]">
         Repère de préparation — itinéraire indicatif, pas une trace GPX
         officielle.
       </figcaption>

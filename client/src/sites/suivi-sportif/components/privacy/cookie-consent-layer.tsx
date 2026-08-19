@@ -22,7 +22,7 @@ function CookieBanner() {
           </p>
           <a
             href={COOKIE_POLICY_PATH}
-            className="mt-2 inline-block text-sm font-semibold text-[#e85f3c] underline decoration-[#ffb648] underline-offset-4"
+            className="mt-2 inline-block text-sm font-semibold text-[var(--site-accent-text)] underline decoration-[#ffb648] underline-offset-4"
           >
             Consulter la politique cookies
           </a>
@@ -94,7 +94,7 @@ function CookiePreferencesModal() {
         </p>
         <a
           href={COOKIE_POLICY_PATH}
-          className="mt-2 inline-block text-sm font-semibold text-[#e85f3c] underline decoration-[#ffb648] underline-offset-4"
+          className="mt-2 inline-block text-sm font-semibold text-[var(--site-accent-text)] underline decoration-[#ffb648] underline-offset-4"
         >
           Lire la politique cookies
         </a>
@@ -103,7 +103,7 @@ function CookiePreferencesModal() {
           <label className="flex items-center justify-between rounded-[14px] bg-[#fdf6ef] p-3">
             <span>
               <span className="block text-sm font-medium text-[#2b241e]">Nécessaires</span>
-              <span className="block text-xs text-[#806f61]">
+              <span className="block text-xs text-[var(--site-muted)]">
                 Authentification, sécurité et fonctionnement principal.
               </span>
             </span>
@@ -113,7 +113,7 @@ function CookiePreferencesModal() {
           <label className="flex items-center justify-between rounded-[14px] bg-[#fdf6ef] p-3">
             <span>
               <span className="block text-sm font-medium text-[#2b241e]">Analytics</span>
-              <span className="block text-xs text-[#806f61]">
+              <span className="block text-xs text-[var(--site-muted)]">
                 Mesure d&apos;usage anonyme pour améliorer le produit.
               </span>
             </span>
@@ -128,7 +128,7 @@ function CookiePreferencesModal() {
           <label className="flex items-center justify-between rounded-[14px] bg-[#fdf6ef] p-3">
             <span>
               <span className="block text-sm font-medium text-[#2b241e]">Marketing</span>
-              <span className="block text-xs text-[#806f61]">
+              <span className="block text-xs text-[var(--site-muted)]">
                 Personalisation publicitaire et campagnes externes.
               </span>
             </span>
@@ -186,7 +186,7 @@ function ManageCookiesButton() {
     <button
       type="button"
       onClick={openConsentPreferences}
-      className={`fixed left-4 z-40 rounded-full border border-[#f0e3d6] bg-white px-4 py-2 text-xs font-semibold text-[#806f61] shadow transition hover:border-[#ffb899] hover:text-[#e85f3c] ${
+      className={`fixed left-4 z-40 rounded-full border border-[#f0e3d6] bg-white px-4 py-2 text-xs font-semibold text-[var(--site-muted)] shadow transition hover:border-[#ffb899] hover:text-[var(--site-accent-text)] ${
         isBannerVisible ? "bottom-28" : "bottom-4"
       }`}
     >

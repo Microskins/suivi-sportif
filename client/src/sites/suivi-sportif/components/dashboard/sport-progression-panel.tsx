@@ -133,13 +133,13 @@ export function SportProgressionPanel({
             Meilleures performances, effort récent et conseil de double progression.
           </p>
         </div>
-        <span className="w-fit rounded-full bg-[#fdf6ef] px-3 py-1 text-xs font-medium text-[#806f61]">
+        <span className="w-fit rounded-full bg-[#fdf6ef] px-3 py-1 text-xs font-medium text-[var(--site-muted)]">
           Plage cible 8-10 reps
         </span>
       </div>
 
       {!rows.length ? (
-        <div className="mt-4 flex h-40 items-center justify-center rounded-[16px] bg-[#fdf6ef] px-4 text-center text-sm text-[#9c8f83]">
+        <div className="mt-4 flex h-40 items-center justify-center rounded-[16px] bg-[#fdf6ef] px-4 text-center text-sm text-[var(--site-muted)]">
           Termine une séance avec exercices pour afficher les signaux de progression.
         </div>
       ) : (

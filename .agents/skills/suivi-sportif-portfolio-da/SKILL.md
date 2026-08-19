@@ -33,6 +33,7 @@ Ne jamais mélanger une police monospace ou une serif display classique (type Fr
 - Header : logo + libellé à gauche, mention d'édition ("Édition 2026 — N°02" ou équivalent) à droite, séparés par une règle de 3px.
 - Hero en deux colonnes (`1.4fr / 1px / 1fr`) séparées par un trait vertical plein : le lede à gauche, une note ou aside en italique à droite.
 - Les listes de contenu (projets, articles, etc.) sont des **entrées de catalogue**, pas des cartes à coins arrondis : `grid-template-columns: 64px 1fr 240px` avec un grand numéro d'index en encre pâle (`--line`), tag + titre + description, puis une colonne latérale avec lien souligné brique et statut.
+- Ce numéro d'index est volontairement peu contrasté (1,49:1) : c'est un parti pris graphique assumé, conservé tel quel. Il porte donc `aria-hidden="true"`, car l'ordre qu'il exprime est déjà donné par l'ordre de la liste. Tout autre texte de cette DA doit en revanche respecter les 4,5:1 de WCAG AA — les deux tokens de couleur du portfolio y sont déjà conformes.
 - Chaque entrée peut porter une **"spec strip"** : ligne de métadonnées réelles séparée par un trait fin au-dessus (ex. distance, durée, modules) — jamais inventée, toujours tirée du contenu réel du projet.
 - Zéro `border-radius` significatif ; tout est à angles droits. Séparateurs en traits pleins fins (1px) ou épais (3px) pour les niveaux de hiérarchie majeurs (header, footer).
 

@@ -26,6 +26,7 @@ import "@fontsource/jetbrains-mono/latin-500.css";
 import "@fontsource/jetbrains-mono/latin-600.css";
 import SiteRouter from "./app/site-router";
 import { applySiteIdentity } from "./app/site-identities";
+import "./tokens.css";
 import "./styles.css";
 
 applySiteIdentity(window.location.pathname);

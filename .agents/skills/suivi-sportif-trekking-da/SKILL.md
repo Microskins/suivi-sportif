@@ -13,12 +13,16 @@ Direction validée par l'utilisateur parmi 3 propositions ("carte topo", "balisa
 |---|---|---|
 | Fond parchemin | `#f1e2c4` | fond de page |
 | Encre principale | `#332f26` | texte, titres, traits, bordures |
-| Sépia / contour | `#b0794c` | labels secondaires, motif de courbes de niveau, spec |
-| Vert forêt | `#5c7350` | accent principal (statuts positifs, liens, anneaux numérotés) |
+| Sépia / contour | `#865c3a` | labels secondaires, motif de courbes de niveau, spec |
+| Vert forêt | `#566c4b` | accent principal (statuts positifs, liens, anneaux numérotés) |
 | Terracotta alerte | `#b1573c` | statut d'alerte ("Reporter", points de vigilance) |
 | Ligne | `#e0c99e` | séparateurs fins |
 
 Palette réchauffée volontairement vers des tons sable/ocre proches d'une lumière de panorama (lever/coucher de soleil en montagne) — ne pas revenir à un beige neutre ou un vert sombre en aplat.
+
+Le sépia et le vert forêt ont été assombris (depuis `#b0794c` et `#5c7350`) pour atteindre les 4,5:1 exigés par WCAG AA sur le parchemin : les valeurs d'origine tombaient à 2,89:1 et 4,08:1. Les teintes restent les mêmes, seule la luminosité change. Ne pas les réclaircir sans revérifier avec `npm run check:contrast`.
+
+La pastille d'eyebrow posée sur la photo utilise le sépia à 90 % d'opacité et non 55 % : en dessous, le texte blanc tombe à 1,93:1 dès que la photo est claire à cet endroit.
 
 ## Typographie
 

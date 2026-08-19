@@ -4,7 +4,7 @@ const VOSGES_WILD_PATH = "/trekking/vosges-wild";
 
 export function TrekkingHomeSite() {
   return (
-    <main className="site-topography min-h-screen bg-[#f1e2c4] text-[#332f26]">
+    <main id="contenu-principal" tabIndex={-1} className="site-topography min-h-screen bg-[#f1e2c4] text-[#332f26]">
       <section className="relative isolate min-h-[44rem] overflow-hidden">
         <img
           src="/sites/trekking/vosges-wild-hero.png"
@@ -24,11 +24,11 @@ export function TrekkingHomeSite() {
           </header>
 
           <div className="mt-auto max-w-5xl pb-24 pt-28 text-white sm:pb-28">
-            <p className="site-label inline-flex rounded-full border border-white/40 bg-[#b0794c]/55 px-4 py-2 text-[0.68rem] font-medium uppercase tracking-[0.14em] backdrop-blur-sm">
+            <p className="site-label inline-flex rounded-full border border-white/40 bg-[#865c3a]/90 px-4 py-2 text-[0.68rem] font-medium uppercase tracking-[0.14em] backdrop-blur-sm">
               🥾 Itinérances à pied
             </p>
             <h1 className="site-display mt-6 max-w-4xl text-[clamp(3.8rem,9vw,6.8rem)] font-semibold leading-[0.9]">
-              Marcher loin,
+              Marcher loin,{" "}
               <br />
               regarder mieux.
             </h1>
@@ -54,14 +54,14 @@ export function TrekkingHomeSite() {
         <section className="pt-8">
           <div className="flex items-end justify-between gap-6 border-b-2 border-[#332f26] pb-4">
             <div>
-              <p className="site-label text-[0.68rem] font-medium uppercase tracking-[0.15em] text-[#b0794c]">
+              <p className="site-label text-[0.68rem] font-medium uppercase tracking-[0.15em] text-[var(--site-muted)]">
                 Carnets disponibles
               </p>
               <h2 className="site-display mt-2 text-4xl font-semibold sm:text-5xl">
                 Choisir un horizon
               </h2>
             </div>
-            <span className="site-label text-xs font-medium text-[#b0794c]">01 / 01</span>
+            <span className="site-label text-xs font-medium text-[var(--site-muted)]">01 / 01</span>
           </div>
 
           <a
@@ -76,7 +76,7 @@ export function TrekkingHomeSite() {
               />
             </div>
             <div className="flex min-h-[24rem] flex-col p-6 sm:p-9">
-              <p className="site-label text-[0.68rem] font-medium uppercase tracking-[0.15em] text-[#5c7350]">
+              <p className="site-label text-[0.68rem] font-medium uppercase tracking-[0.15em] text-[var(--site-accent)]">
                 France · Hautes-Vosges
               </p>
               <h3 className="site-display mt-4 text-5xl font-semibold leading-[0.94] sm:text-6xl">
@@ -103,7 +103,7 @@ export function TrekkingHomeSite() {
               </svg>
 
               <div className="site-label mt-auto flex flex-wrap items-center justify-between gap-5 pt-7 text-xs font-medium uppercase tracking-[0.1em]">
-                <span className="text-[#b0794c]">36 à 41 km · 3 jours</span>
+                <span className="text-[var(--site-muted)]">36 à 41 km · 3 jours</span>
                 <span className="rounded-full bg-[#332f26] px-5 py-3 text-[#f1e2c4] transition group-hover:bg-[#5c7350]">
                   Ouvrir le carnet →
                 </span>

@@ -214,7 +214,7 @@ export function WorkoutsCalendar({
             <h2 className="site-display mt-1 text-2xl font-bold text-[#2b241e]">
               Calendrier des séances
             </h2>
-            <p className="mt-1 text-sm text-[#806f61]">
+            <p className="mt-1 text-sm text-[var(--site-muted)]">
               Planifie et relis tes séances semaine par semaine.
             </p>
           </div>
@@ -225,7 +225,7 @@ export function WorkoutsCalendar({
               className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                 mode === "week"
                   ? "bg-[linear-gradient(135deg,#ff7a54,#ffb648)] text-white shadow-sm"
-                  : "text-[#806f61] hover:bg-white hover:text-[#2b241e]"
+                  : "text-[var(--site-muted)] hover:bg-white hover:text-[#2b241e]"
               }`}
             >
               Semaine
@@ -236,7 +236,7 @@ export function WorkoutsCalendar({
               className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                 mode === "month"
                   ? "bg-[linear-gradient(135deg,#ff7a54,#ffb648)] text-white shadow-sm"
-                  : "text-[#806f61] hover:bg-white hover:text-[#2b241e]"
+                  : "text-[var(--site-muted)] hover:bg-white hover:text-[#2b241e]"
               }`}
             >
               Mois
@@ -251,13 +251,13 @@ export function WorkoutsCalendar({
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="site-display text-sm font-bold text-[#2b241e]">Régularité de la semaine</p>
-                <p className="mt-1 text-xs text-[#806f61]">
+                <p className="mt-1 text-xs text-[var(--site-muted)]">
                   {weeklyGoal
                     ? `${weeklyCompleted} / ${weeklyTarget} séance(s) réalisée(s)`
                     : "Aucun objectif hebdo actif"}
                 </p>
               </div>
-              <p className="site-display text-xl font-bold text-[#e85f3c]">
+              <p className="site-display text-xl font-bold text-[var(--site-accent-text)]">
                 {weeklyGoal ? `${weeklyProgress}%` : "-"}
               </p>
             </div>
@@ -293,7 +293,7 @@ export function WorkoutsCalendar({
           </div>
 
           <div className="overflow-x-auto pb-1">
-            <div className="grid min-w-[640px] grid-cols-7 gap-2 text-xs font-semibold uppercase tracking-wide text-[#9c8f83]">
+            <div className="grid min-w-[640px] grid-cols-7 gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--site-muted)]">
               {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((label) => (
                 <p key={label} className="px-2 py-1">
                   {label}
@@ -329,7 +329,7 @@ export function WorkoutsCalendar({
                         </span>
                       )}
                     </span>
-                    <p className="mt-1 text-xs text-[#806f61]">
+                    <p className="mt-1 text-xs text-[var(--site-muted)]">
                       {dayWorkouts.length} séance(s)
                     </p>
                     <div className="mt-2 flex flex-wrap gap-1">
@@ -342,7 +342,7 @@ export function WorkoutsCalendar({
                         </span>
                       ))}
                       {dayWorkouts.length > 2 && (
-                        <span className="rounded-full bg-[#f4e9de] px-2 py-0.5 text-[10px] font-medium text-[#806f61]">
+                        <span className="rounded-full bg-[#f4e9de] px-2 py-0.5 text-[10px] font-medium text-[var(--site-muted)]">
                           +{dayWorkouts.length - 2}
                         </span>
                       )}
@@ -358,7 +358,7 @@ export function WorkoutsCalendar({
           <h3 className="site-display text-lg font-bold text-[#2b241e]">
             {selectedDay ? labelDate(selectedDay.date) : "Jour"}
           </h3>
-          {isLoading && <p className="mt-2 text-sm text-[#9c8f83]">Chargement…</p>}
+          {isLoading && <p className="mt-2 text-sm text-[var(--site-muted)]">Chargement…</p>}
           <button
             type="button"
             onClick={() => selectedDay && onPlan(planningIsoForDay(selectedDay.date))}
@@ -380,7 +380,7 @@ export function WorkoutsCalendar({
                       {statusLabel[workout.status]}
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-[#806f61]">
+                  <p className="mt-1 text-xs text-[var(--site-muted)]">
                     {new Date(workout.date).toLocaleTimeString("fr-FR", {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -406,7 +406,7 @@ export function WorkoutsCalendar({
                 </article>
               ))
             ) : (
-              <p className="rounded-[14px] bg-[#fdf6ef] px-3 py-5 text-sm text-[#806f61]">
+              <p className="rounded-[14px] bg-[#fdf6ef] px-3 py-5 text-sm text-[var(--site-muted)]">
                 Aucune séance ce jour. Utilise « Planifier une séance » pour réserver ce créneau.
               </p>
             )}
@@ -436,7 +436,7 @@ export function WorkoutsCalendar({
             </button>
           </div>
 
-          <p className="mt-4 text-xs text-[#9c8f83]">
+          <p className="mt-4 text-xs text-[var(--site-muted)]">
             Poids journalier : réservé pour la v2.
           </p>
         </aside>

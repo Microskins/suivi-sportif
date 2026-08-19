@@ -175,7 +175,7 @@ function currentWeekCompletedWorkouts(workouts: Workout[]) {
 
 function EmptyChart({ label }: { label: string }) {
   return (
-    <div className="flex h-72 items-center justify-center rounded-[16px] bg-[#fdf6ef] px-5 text-center text-sm text-[#9c8f83]">
+    <div className="flex h-72 items-center justify-center rounded-[16px] bg-[#fdf6ef] px-5 text-center text-sm text-[var(--site-muted)]">
       {label}
     </div>
   );
@@ -255,11 +255,11 @@ export function DashboardOverview({
             <h2 className="site-display mt-1 text-3xl font-bold text-[#2b241e]">
               Vue d&apos;ensemble
             </h2>
-            <p className="mt-1 text-sm text-[#806f61]">
+            <p className="mt-1 text-sm text-[var(--site-muted)]">
               Suivi sport et nutrition sur la période choisie.
             </p>
             {isLoading && (
-              <p className="mt-1 text-sm text-[#9c8f83]">Chargement…</p>
+              <p className="mt-1 text-sm text-[var(--site-muted)]">Chargement…</p>
             )}
           </div>
           <div className="flex flex-wrap gap-1 rounded-full bg-[#fdf6ef] p-1">
@@ -271,7 +271,7 @@ export function DashboardOverview({
                 className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                   period === item.key
                     ? "bg-[linear-gradient(135deg,#ff7a54,#ffb648)] text-white shadow-sm"
-                    : "text-[#806f61] hover:bg-white hover:text-[#2b241e]"
+                    : "text-[var(--site-muted)] hover:bg-white hover:text-[#2b241e]"
                 }`}
               >
                 {item.label}
@@ -319,13 +319,13 @@ export function DashboardOverview({
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <h3 className="site-display font-bold text-[#2b241e]">Régularité hebdomadaire</h3>
-            <p className="mt-1 text-sm text-[#806f61]">
+            <p className="mt-1 text-sm text-[var(--site-muted)]">
               {weeklyWorkoutGoal
                 ? `${weeklyCompleted} séance(s) réalisée(s) sur ${weeklyTarget} cette semaine.`
                 : "Crée un objectif de séances par semaine pour suivre ta régularité."}
             </p>
           </div>
-          <p className="site-display text-3xl font-bold text-[#e85f3c]">
+          <p className="site-display text-3xl font-bold text-[var(--site-accent-text)]">
             {weeklyWorkoutGoal ? `${weeklyProgress}%` : "-"}
           </p>
         </div>
@@ -341,7 +341,7 @@ export function DashboardOverview({
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <h3 className="site-display font-bold text-[#2b241e]">Charge sportive</h3>
-              <p className="text-sm text-[#9c8f83]">Durée et nombre de séances par jour.</p>
+              <p className="text-sm text-[var(--site-muted)]">Durée et nombre de séances par jour.</p>
             </div>
             <button
               type="button"
@@ -374,7 +374,7 @@ export function DashboardOverview({
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <h3 className="site-display font-bold text-[#2b241e]">Nutrition</h3>
-              <p className="text-sm text-[#9c8f83]">Calories et macros journalières.</p>
+              <p className="text-sm text-[var(--site-muted)]">Calories et macros journalières.</p>
             </div>
             <button
               type="button"
@@ -419,12 +419,12 @@ export function DashboardOverview({
                 value={calorieProgress}
                 max={100}
               />
-              <p className="text-[#9c8f83]">
+              <p className="text-[var(--site-muted)]">
                 Moyenne actuelle: {formatNumber(averageCalories)} kcal sur les jours saisis.
               </p>
             </div>
           ) : (
-            <p className="mt-3 rounded-[14px] bg-[#fdf6ef] p-4 text-sm text-[#806f61]">
+            <p className="mt-3 rounded-[14px] bg-[#fdf6ef] p-4 text-sm text-[var(--site-muted)]">
               Aucun objectif actif pour comparer les calories et macros.
             </p>
           )}

@@ -15,12 +15,15 @@ Direction validée par l'utilisateur parmi 5 propositions ("passeport", "boardin
 | Fond page | `#f4f6f8` | fond de page |
 | Cartes | `#ffffff` | cartes billet, panneaux |
 | Encre principale | `#0f1b2b` | texte, header plein, titres |
-| Texte secondaire | `#6b7684` | labels, métadonnées |
+| Texte secondaire | `#687280` | labels, métadonnées |
 | Bleu (accent 1) | `#1c4ed8` | statut "réalisé", liens, tracé de carte |
-| Ambre (accent 2) | `#e08a1e` | statut "à venir" |
+| Ambre (accent 2) | `#e08a1e` | statut "à venir" — **fond de pastille uniquement** |
+| Ambre texte | `#9e6215` | l'ambre quand il porte du texte (libellé "À venir") |
 | Ligne | `#dfe4ea` | séparateurs, bordures |
 
 Le header est toujours en encre pleine (`--ink`) avec texte clair — c'est le seul bloc sombre en aplat de cette DA, à l'inverse du reste de la page qui reste clair.
+
+⚠️ L'ambre `#e08a1e` ne passe qu'à 2,48:1 et ne peut pas atteindre 4,5:1 sans virer au brun. Il reste donc la couleur du **fond** de la pastille "à venir", tandis que son libellé utilise `var(--site-accent-2-text)` (`#9e6215`). Le texte secondaire a été légèrement assombri (depuis `#6b7684`) pour la même raison. Ne pas écrire ces couleurs en dur : passer par les tokens, et vérifier avec `npm run check:contrast`.
 
 ## Typographie
 

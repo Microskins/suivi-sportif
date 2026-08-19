@@ -15,11 +15,15 @@ Direction validée par l'utilisateur parmi 5 propositions ("ticket de caisse", "
 | Papier du ticket        | `#f7f5ef` | fond du bloc ticket                                                 |
 | Encre principale        | `#1c1c1c` | texte, titres, bordures dures                                       |
 | Texte secondaire        | `#6b6b6b` | labels, métadonnées                                                 |
-| Vert (meilleur prix)    | `#3f7d52` | UNIQUEMENT pour signaler le meilleur prix — jamais utilisé ailleurs |
+| Vert (meilleur prix)    | `#3e7a50` | UNIQUEMENT pour signaler le meilleur prix — jamais utilisé ailleurs |
 | Rouge (accent)          | `#c1362b` | accent ponctuel, pas de rôle fixe imposé                            |
 | Ligne                   | `#d8d4c8` | pointillés/tirets de séparation                                     |
 
 Le vert `--green` est un signal exclusif : dès qu'un prix ou une ligne est en vert, ça veut dire "c'est le meilleur prix trouvé" — ne jamais l'utiliser pour un autre usage décoratif, sous peine de casser ce repère visuel.
+
+Le vert a été très légèrement assombri (depuis `#3f7d52`) : il passait sur le papier du ticket mais pas sur l'encadré vert clair du meilleur prix (4,34:1). L'écart est imperceptible et la valeur actuelle est conforme dans les deux contextes.
+
+Attention au gris : le texte secondaire est `#6b6b6b`, pas un gris plus clair. Un `#858585` s'était glissé dans les composants et échouait au contraste ; utiliser `var(--site-muted)` plutôt qu'une valeur en dur. `npm run check:contrast` vérifie ces seuils.
 
 ## Typographie
 

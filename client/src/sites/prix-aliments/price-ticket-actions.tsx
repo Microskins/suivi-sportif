@@ -55,7 +55,7 @@ export function PriceTicketActions({
           <p className="section-label text-left" id="ticket-actions-title">
             Ticket N° {ticketNumber}
           </p>
-          <p className="mt-1 text-[0.62rem] leading-5 text-[#6b6b6b]">
+          <p className="mt-1 text-[0.62rem] leading-5 text-[var(--site-muted)]">
             Gardez exactement cette recherche ou emportez-la en magasin.
           </p>
         </div>
@@ -77,7 +77,7 @@ export function PriceTicketActions({
           </button>
         </div>
       </div>
-      <p aria-live="polite" className="mt-2 text-[0.6rem] text-[#6b6b6b]">
+      <p aria-live="polite" className="mt-2 text-[0.6rem] text-[var(--site-muted)]">
         {shareStatus === "shared" ? "Ticket envoyé avec succès." : null}
         {shareStatus === "copied" ? "Lien copié dans le presse-papiers." : null}
         {shareStatus === "error"

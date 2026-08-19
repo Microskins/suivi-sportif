@@ -62,18 +62,18 @@ export function DashboardStatCard({
   return (
     <article className="panel flex min-h-36 items-center justify-between gap-4 p-4 transition hover:-translate-y-0.5 hover:shadow-[0_9px_24px_rgba(43,36,30,0.08)]">
       <div className="min-w-0">
-        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[#9c8f83]">
+        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--site-muted)]">
           {label}
         </p>
         <p className="site-display mt-2 break-words text-2xl font-bold text-[#2b241e]">
           {value}
         </p>
-        <p className="mt-1 text-xs leading-5 text-[#806f61]">{detail}</p>
+        <p className="mt-1 text-xs leading-5 text-[var(--site-muted)]">{detail}</p>
       </div>
       {progress !== undefined && (
         <div className="relative shrink-0">
           <ProgressRing progress={progress} ringId={ringId} />
-          <span className="site-display absolute inset-0 grid place-items-center text-xs font-bold text-[#e85f3c]">
+          <span className="site-display absolute inset-0 grid place-items-center text-xs font-bold text-[var(--site-accent-text)]">
             {progress}%
           </span>
         </div>

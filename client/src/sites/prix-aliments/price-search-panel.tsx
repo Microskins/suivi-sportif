@@ -25,7 +25,7 @@ export function PriceSearchPanel({
         Recherche produit
       </p>
       <label
-        className="mt-3 block text-xs text-[#6b6b6b]"
+        className="mt-3 block text-xs text-[var(--site-muted)]"
         htmlFor="product-search"
       >
         Quel aliment cherchez-vous ?
@@ -38,7 +38,7 @@ export function PriceSearchPanel({
           <SearchIcon className="h-5 w-5 shrink-0 text-[#1c1c1c]" />
           <input
             autoComplete="off"
-            className="min-w-0 flex-1 border-0 bg-transparent px-3 py-3 text-sm text-[#1c1c1c] outline-none placeholder:text-[#858585]"
+            className="min-w-0 flex-1 border-0 bg-transparent px-3 py-3 text-sm text-[#1c1c1c] outline-none placeholder:text-[var(--site-muted)]"
             id="product-search"
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder="LAIT, BANANES, POULET..."
@@ -63,7 +63,7 @@ export function PriceSearchPanel({
         </button>
       </form>
 
-      <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[0.66rem] uppercase tracking-[0.08em] text-[#6b6b6b]">
+      <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[0.66rem] uppercase tracking-[0.08em] text-[var(--site-muted)]">
         <span>Raccourcis:</span>
         {QUICK_SEARCHES.map((quickSearch) => (
           <button
@@ -87,7 +87,7 @@ export function PriceSearchPanel({
             className={`shrink-0 border px-2.5 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.06em] transition ${
               category === productCategory
                 ? "border-[#1c1c1c] bg-[#1c1c1c] text-[#f7f5ef]"
-                : "border-transparent text-[#6b6b6b] hover:border-[#1c1c1c] hover:text-[#1c1c1c]"
+                : "border-transparent text-[var(--site-muted)] hover:border-[#1c1c1c] hover:text-[#1c1c1c]"
             }`}
             key={productCategory}
             onClick={() => onCategoryChange(productCategory)}

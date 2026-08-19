@@ -33,7 +33,7 @@ export function ProductComparisonCard({
         <h3 className="mt-2 text-lg font-bold uppercase leading-6">
           {product.name}
         </h3>
-        <p className="mt-1 text-[0.68rem] text-[#6b6b6b]">
+        <p className="mt-1 text-[0.68rem] text-[var(--site-muted)]">
           {product.brand} · {product.format}
         </p>
         <p className="mt-3 text-[0.62rem] font-semibold uppercase tracking-[0.08em] text-[#c1362b]">
@@ -65,23 +65,25 @@ export function ProductComparisonCard({
                     </span>
                   ) : null}
                 </div>
-                <p className="mt-1 text-[0.66rem] text-[#6b6b6b]">
+                <p className="mt-1 text-[0.66rem] text-[var(--site-muted)]">
                   {formatPrice(offer.unitPrice)} {offer.unitSuffix}
                 </p>
-                <p className="mt-0.5 text-[0.58rem] text-[#858585]">
+                <p className="mt-0.5 text-[0.58rem] text-[var(--site-muted)]">
                   {storeLocation.city} · relevé du {offer.collectedAt}
                 </p>
               </div>
 
               <div className="shrink-0 text-right">
                 {offer.previousPrice ? (
-                  <p className="text-[0.62rem] text-[#858585] line-through">
+                  <p className="text-[0.62rem] text-[var(--site-muted)] line-through">
                     {formatPrice(offer.previousPrice)}
                   </p>
                 ) : null}
                 <p
                   className={`text-base font-bold tabular-nums ${
-                    isCheapest ? "text-[#3f7d52]" : "text-[#1c1c1c]"
+                    isCheapest
+                      ? "text-[var(--site-signal)]"
+                      : "text-[var(--site-ink)]"
                   }`}
                 >
                   {formatPrice(offer.price)}

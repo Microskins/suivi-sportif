@@ -15,14 +15,19 @@ Direction validée par l'utilisateur parmi 4 propositions ("carnet athlétique",
 | Fond app | `#fff8f2` | fond de page |
 | Cartes | `#ffffff` | panneaux, cartes stats |
 | Encre principale | `#2b241e` | texte, titres |
-| Texte secondaire | `#9c8f83` | labels, métadonnées, sous-titres |
-| Corail (accent 1) | `#ff7a54` | accent principal, CTA, actif |
+| Texte secondaire | `#7a6d61` | labels, métadonnées, sous-titres |
+| Corail (accent 1) | `#ff7a54` | accent principal, CTA, actif — **fonds et décor uniquement** |
+| Corail texte | `#d32f00` | le corail quand il porte du texte, et l'indicateur de focus |
 | Ambre (accent 2) | `#ffb648` | second accent, toujours en dégradé avec le corail |
 | Vert (positif) | `#5fb894` | statuts positifs, "réalisée" |
 | Bleu (info) | `#6a9bd8` | statut "prévue" dans le calendrier |
 | Ligne | `#f0e3d6` | séparateurs, bordures discrètes |
 
-L'accent corail/ambre s'utilise presque toujours en **dégradé diagonal** (`linear-gradient(135deg, corail, ambre)`), jamais en aplat plat — c'est la signature couleur de cette DA. Le panneau "Actions rapides" est le seul bloc en fond sombre (dégradé brun `#2b241e → #3a2f26`), pour créer un point d'ancrage visuel fort en bas de page ; ne pas généraliser le fond sombre ailleurs.
+L'accent corail/ambre s'utilise presque toujours en **dégradé diagonal** (`linear-gradient(135deg, corail, ambre)`), jamais en aplat plat — c'est la signature couleur de cette DA.
+
+⚠️ Le corail `#ff7a54` ne passe qu'à 2,45:1 sur le fond crème, très en dessous des 4,5:1 exigés par WCAG AA. Il reste la couleur de signature pour les **fonds, dégradés et éléments décoratifs**, où le seuil n'est que de 3:1, mais dès qu'il porte du **texte** il faut utiliser `var(--site-accent-text)` (`#d32f00`). Même règle pour l'indicateur de focus, via `var(--site-focus)`.
+
+En pratique : ne pas écrire de couleur en dur dans les composants, utiliser les tokens `var(--site-*)` de `client/src/styles.css`. `npm run check:contrast` vérifie ces seuils. Le panneau "Actions rapides" est le seul bloc en fond sombre (dégradé brun `#2b241e → #3a2f26`), pour créer un point d'ancrage visuel fort en bas de page ; ne pas généraliser le fond sombre ailleurs.
 
 ## Typographie
 
