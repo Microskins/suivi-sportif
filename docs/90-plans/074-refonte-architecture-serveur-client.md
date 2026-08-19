@@ -115,10 +115,10 @@
 - [x] Tooling: ajouter `eslint.config.js` (flat config) et simplifier les
       scripts `lint`. Ecart au plan: une config **par workspace** et non une
       seule a la racine (voir decisions).
-- [ ] Mettre a jour les docs sources de verite si le comportement visible
+- [x] Mettre a jour les docs sources de verite si le comportement visible
       change (`docs/02-architecture/overview.md` si pagination reelle
       change la forme de `meta`).
-- [ ] Verifier typecheck, tests, lint, build (ou noter le blocage
+- [x] Verifier typecheck, tests, lint, build (ou noter le blocage
       environnement si impossible a lancer).
 
 ## Notes de verification
@@ -347,3 +347,44 @@
   bundle (chunk principal de ~789 ko minifie, deja signale par Vite). Un
   decoupage par route aurait un impact bien superieur a celui des polices,
   mais c'est un chantier a part entiere.
+- 2026-08-19: docs sources de verite mises a jour dans
+  `docs/03-api/reference.md`, la pagination changeant le contrat public:
+  - parametres `page`/`limit` documentes avec leurs defauts et le plafond de
+    100, et precision que `meta.total` compte les elements filtres et non la
+    page renvoyee (c'est lui qui indique s'il reste des pages);
+  - codes `409 EMAIL_ALREADY_EXISTS`, `429 RATE_LIMIT_EXCEEDED` et
+    `500 INTERNAL_SERVER_ERROR` ajoutes a la liste des erreurs, avec la
+    regle des `404` prefixes par ressource et l'absence de `NOT_FOUND`
+    generique;
+  - endpoints `POST` et `DELETE /api/workout-templates/:id` ajoutes, le
+    DELETE etant nouveau et le POST simplement absent de la doc.
+
+## Verification finale du 2026-08-19
+
+Toutes les commandes ont ete lancees reellement depuis le depot, apres
+reparation de l'outillage:
+
+| Verification | Resultat |
+| --- | --- |
+| `npm test` (server) | 188 tests sur 188, 5 fichiers |
+| `npm test` (client) | 45 tests sur 45, 12 fichiers |
+| `npm run lint` | sortie 0 (0 erreur, 48 avertissements `any` preexistants) |
+| `npm run build` | sortie 0 (typecheck server + client, puis build Vite) |
+| `npm run check:file-size` | 116 fichiers sous 500 lignes |
+| `npm run check:site-boundaries` | 109 fichiers, aucune frontiere franchie |
+
+Les artefacts `client/dist` et `server/dist` ont ete supprimes apres
+verification.
+
+### Limite connue
+
+La base PostgreSQL n'a pas pu etre demarree pendant ce chantier (port 5432
+ferme). Les chemins qui touchent reellement la base n'ont donc ete verifies
+que par les tests unitaires, qui mockent Prisma. Restent a valider contre une
+vraie base avant mise en production, en priorite:
+
+- la pagination `skip`/`take` et le `count()` sur les 8 domaines de liste;
+- le passage de `EMAIL_ALREADY_EXISTS` a 409 sur `/register` et sur le
+  changement d'email;
+- le nouveau `DELETE /api/workout-templates/:id`, en particulier la cascade
+  sur `workout_template_exercises`.
