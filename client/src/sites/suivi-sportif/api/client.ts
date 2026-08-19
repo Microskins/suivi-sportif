@@ -33,6 +33,16 @@ type ApiEnvelope<T> = {
   code?: string;
 };
 
+type ListMeta = {
+  total: number;
+  page: number;
+  limit: number;
+};
+
+// Plafond applique par l'API (`parsePagination` cote serveur). On demande
+// directement le maximum pour minimiser le nombre d'allers-retours.
+const MAX_PAGE_SIZE = 100;
+
 class ApiClient {
   private token: string | null = null;
 
@@ -52,10 +62,10 @@ class ApiClient {
     return this.token;
   }
 
-  private async request<T>(
+  private async fetchJson(
     endpoint: string,
     options: RequestInit = {},
-  ): Promise<T> {
+  ): Promise<unknown> {
     const headers: HeadersInit = {
       "Content-Type": "application/json",
       ...options.headers,
@@ -79,16 +89,69 @@ class ApiClient {
     }
 
     if (response.status === 204) {
-      return {} as T;
+      return null;
     }
 
-    const result = (await response.json()) as ApiEnvelope<T> | T;
+    return response.json();
+  }
+
+  private async request<T>(
+    endpoint: string,
+    options: RequestInit = {},
+  ): Promise<T> {
+    const result = (await this.fetchJson(endpoint, options)) as
+      | ApiEnvelope<T>
+      | T
+      | null;
+
+    if (result === null) {
+      return {} as T;
+    }
 
     if (typeof result === "object" && result !== null && "data" in result) {
       return (result as ApiEnvelope<T>).data as T;
     }
 
     return result as T;
+  }
+
+  // Recupere une liste complete en parcourant les pages.
+  //
+  // L'API pagine par defaut (20 par page, 100 au maximum). Or les ecrans de
+  // cette application calculent des agregats sur les listes completes
+  // (graphique de poids, regularite hebdomadaire, totaux nutritionnels,
+  // calendrier). Leur servir une page tronquee ne masquerait pas seulement
+  // des lignes: cela produirait des statistiques fausses, sans erreur
+  // visible. On reconstitue donc l'ensemble ici, ce qui laisse au serveur sa
+  // protection contre les requetes non bornees.
+  private async requestList<T>(endpoint: string): Promise<T[]> {
+    const items: T[] = [];
+    let page = 1;
+
+    for (;;) {
+      const separator = endpoint.includes("?") ? "&" : "?";
+      const envelope = (await this.fetchJson(
+        `${endpoint}${separator}page=${page}&limit=${MAX_PAGE_SIZE}`,
+      )) as { data?: T[]; meta?: ListMeta } | null;
+
+      const pageItems = envelope?.data ?? [];
+      items.push(...pageItems);
+
+      const total = envelope?.meta?.total;
+      // Sans `meta.total` exploitable, on s'arrete des qu'une page est
+      // incomplete: c'etait la derniere.
+      if (typeof total !== "number") {
+        if (pageItems.length < MAX_PAGE_SIZE) return items;
+      } else if (items.length >= total) {
+        return items;
+      }
+
+      // Garde-fou: une page vide signifie qu'il n'y a plus rien a lire, meme
+      // si `total` annonce davantage. Evite une boucle infinie.
+      if (pageItems.length === 0) return items;
+
+      page += 1;
+    }
   }
 
   // Auth
@@ -144,7 +207,7 @@ class ApiClient {
 
   // Exercises
   async getExercises() {
-    return this.request<Exercise[]>("/api/exercises");
+    return this.requestList<Exercise>("/api/exercises");
   }
 
   async getExercise(id: string) {
@@ -152,7 +215,7 @@ class ApiClient {
   }
 
   async getExercisesByMuscleGroup(group: string) {
-    return this.request<Exercise[]>(`/api/exercises/muscle/${group}`);
+    return this.requestList<Exercise>(`/api/exercises/muscle/${group}`);
   }
 
   async createExercise(data: ExerciseInput) {
@@ -177,7 +240,7 @@ class ApiClient {
 
   // Workouts
   async getWorkouts() {
-    return this.request<Workout[]>("/api/workouts");
+    return this.requestList<Workout>("/api/workouts");
   }
 
   async getWorkout(id: string) {
@@ -185,7 +248,7 @@ class ApiClient {
   }
 
   async getWorkoutsByDateRange(start: string, end: string) {
-    return this.request<Workout[]>(
+    return this.requestList<Workout>(
       `/api/workouts/range/${encodeURIComponent(start)}/${encodeURIComponent(end)}`,
     );
   }
@@ -212,7 +275,7 @@ class ApiClient {
 
   // Workout templates
   async getWorkoutTemplates() {
-    return this.request<WorkoutTemplate[]>("/api/workout-templates");
+    return this.requestList<WorkoutTemplate>("/api/workout-templates");
   }
 
   async instantiateWorkoutTemplate(id: string, date: string) {
@@ -238,7 +301,7 @@ class ApiClient {
 
   // Foods
   async getFoods() {
-    return this.request<Food[]>("/api/foods");
+    return this.requestList<Food>("/api/foods");
   }
 
   async getFood(id: string) {
@@ -273,7 +336,7 @@ class ApiClient {
 
   // Meals
   async getMeals() {
-    return this.request<Meal[]>("/api/meals");
+    return this.requestList<Meal>("/api/meals");
   }
 
   async getMeal(id: string) {
@@ -281,7 +344,7 @@ class ApiClient {
   }
 
   async getMealsByDateRange(start: string, end: string) {
-    return this.request<Meal[]>(
+    return this.requestList<Meal>(
       `/api/meals/range/${encodeURIComponent(start)}/${encodeURIComponent(end)}`,
     );
   }
@@ -308,7 +371,7 @@ class ApiClient {
 
   // Nutrition goals
   async getNutritionGoals() {
-    return this.request<NutritionGoal[]>("/api/nutrition-goals");
+    return this.requestList<NutritionGoal>("/api/nutrition-goals");
   }
 
   async getActiveNutritionGoal() {
@@ -341,7 +404,7 @@ class ApiClient {
 
   // User goals
   async getUserGoals() {
-    return this.request<UserGoal[]>("/api/user-goals");
+    return this.requestList<UserGoal>("/api/user-goals");
   }
 
   async getUserGoal(id: string) {
@@ -370,7 +433,7 @@ class ApiClient {
 
   // Body measurements
   async getBodyMeasurements() {
-    return this.request<BodyMeasurement[]>("/api/body-measurements");
+    return this.requestList<BodyMeasurement>("/api/body-measurements");
   }
 
   async getLatestBodyMeasurement() {

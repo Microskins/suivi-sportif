@@ -1,4 +1,5 @@
 import type { Meal, MealType } from "../../api/client";
+import { formatDateMedium } from "./dashboard-helpers";
 import { dangerButtonClass, EmptyState, itemCardClass, secondaryButtonClass } from "./shared";
 
 type MealsListProps = {
@@ -15,13 +16,6 @@ const mealTypes: Array<[MealType, string]> = [
   ["snack", "Collation"],
   ["other", "Autre"],
 ];
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("fr-FR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
-}
 
 function labelFromOptions<T extends string>(
   options: Array<[T, string]>,
@@ -43,7 +37,7 @@ export function MealsList({ meals, onEdit, onDuplicate, onDelete }: MealsListPro
             <div>
               <p className="font-semibold">{meal.name}</p>
               <p className="mt-1 text-sm text-slate-600">
-                {formatDate(meal.date)} - {labelFromOptions(mealTypes, meal.mealType)}
+                {formatDateMedium(meal.date)} - {labelFromOptions(mealTypes, meal.mealType)}
               </p>
               <p className="mt-1 text-sm text-slate-500">
                 {meal.totals.caloriesKcal} kcal - {meal.items.length} aliment(s)

@@ -1,4 +1,4 @@
-// filepath: server/src/lib/api-response.ts (copie de reference du fichier reel)
+// filepath: server/src/lib/api-response.ts
 import type { FastifyReply } from "fastify";
 
 export const errorResponseSchema = {

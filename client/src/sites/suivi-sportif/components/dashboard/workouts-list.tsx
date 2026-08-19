@@ -1,4 +1,5 @@
 import type { Workout } from "../../api/client";
+import { formatDateMedium } from "./dashboard-helpers";
 import { dangerButtonClass, EmptyState, itemCardClass, secondaryButtonClass } from "./shared";
 
 type WorkoutsListProps = {
@@ -7,13 +8,6 @@ type WorkoutsListProps = {
   onDuplicate: (item: Workout) => void;
   onDelete: (item: Workout) => void;
 };
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("fr-FR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
-}
 
 export function WorkoutsList({ workouts, onEdit, onDuplicate, onDelete }: WorkoutsListProps) {
   if (!workouts.length) {
@@ -45,7 +39,7 @@ export function WorkoutsList({ workouts, onEdit, onDuplicate, onDelete }: Workou
                 </span>
               </div>
               <p className="mt-1 text-sm text-slate-600">
-                {formatDate(workout.date)} - {workout.duration} min
+                {formatDateMedium(workout.date)} - {workout.duration} min
               </p>
               <p className="mt-1 text-sm text-slate-500">
                 {workout.exercises?.length ?? 0} exercice(s)

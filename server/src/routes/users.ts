@@ -7,15 +7,17 @@ import {
   updateUserSchema,
 } from "../schemas/index.js";
 import { generateToken } from "../plugins/auth.js";
-
-const errorResponseSchema = {
-  type: "object",
-  properties: {
-    error: { type: "string" },
-    code: { type: "string" },
-  },
-  required: ["error", "code"],
-};
+import {
+  errorResponseSchema,
+  sendConflict,
+  sendCreated,
+  sendForbidden,
+  sendInternalError,
+  sendNotFound,
+  sendOk,
+  sendUnauthorized,
+  sendValidationError,
+} from "../lib/api-response.js";
 
 const userSchema = {
   type: "object",
@@ -93,17 +95,10 @@ export async function usersRoutes(fastify: FastifyInstance) {
         return reply.code(200).send({ data: { user, token } });
       } catch (error: any) {
         if (error.name === "ZodError") {
-          return reply.code(400).send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
+          return sendValidationError(reply, error.errors);
         }
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );
@@ -144,6 +139,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
             required: ["data"],
           },
           400: errorResponseSchema,
+          409: errorResponseSchema,
           500: errorResponseSchema,
         },
       },
@@ -154,30 +150,22 @@ export async function usersRoutes(fastify: FastifyInstance) {
 
         const existing = await users.getUserByEmail(parsed.email);
         if (existing) {
-          return reply
-            .code(400)
-            .send({
-              error: "Email déjà utilisé",
-              code: "EMAIL_ALREADY_EXISTS",
-            });
+          return sendConflict(
+            reply,
+            "Email déjà utilisé",
+            "EMAIL_ALREADY_EXISTS",
+          );
         }
 
         const user = await users.createUser(parsed);
         const token = generateToken(fastify, user);
-        return reply.code(201).send({ data: { user, token } });
+        return sendCreated(reply, { user, token });
       } catch (error: any) {
         if (error.name === "ZodError") {
-          return reply.code(400).send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
+          return sendValidationError(reply, error.errors);
         }
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );
@@ -190,10 +178,8 @@ export async function usersRoutes(fastify: FastifyInstance) {
 
     try {
       await request.jwtVerify();
-    } catch (err) {
-      return reply
-        .code(401)
-        .send({ error: "Unauthorized", code: "UNAUTHORIZED" });
+    } catch {
+      return sendUnauthorized(reply);
     }
   });
 
@@ -221,18 +207,13 @@ export async function usersRoutes(fastify: FastifyInstance) {
         const user = await users.getUserById(request.user.id);
 
         if (!user) {
-          return reply
-            .code(404)
-            .send({ error: "User not found", code: "USER_NOT_FOUND" });
+          return sendNotFound(reply, "User not found", "USER_NOT_FOUND");
         }
 
-        return reply.code(200).send({ data: user });
+        return sendOk(reply, user);
       } catch (error) {
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );
@@ -262,6 +243,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
           400: errorResponseSchema,
           401: errorResponseSchema,
           404: errorResponseSchema,
+          409: errorResponseSchema,
           500: errorResponseSchema,
         },
       },
@@ -274,9 +256,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
             ? await users.getUserById(request.user.id)
             : null;
         if ((parsed.email || parsed.password) && !currentUser) {
-          return reply
-            .code(404)
-            .send({ error: "User not found", code: "USER_NOT_FOUND" });
+          return sendNotFound(reply, "User not found", "USER_NOT_FOUND");
         }
 
         const emailChange = Boolean(
@@ -306,12 +286,11 @@ export async function usersRoutes(fastify: FastifyInstance) {
         if (emailChange && parsed.email) {
           const existing = await users.getUserByEmail(parsed.email);
           if (existing && existing.id !== request.user.id) {
-            return reply
-              .code(400)
-              .send({
-                error: "Email deja utilise",
-                code: "EMAIL_ALREADY_EXISTS",
-              });
+            return sendConflict(
+              reply,
+              "Email deja utilise",
+              "EMAIL_ALREADY_EXISTS",
+            );
           }
         }
 
@@ -320,9 +299,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
         const user = await users.updateUser(request.user.id, updateData);
 
         if (!user) {
-          return reply
-            .code(404)
-            .send({ error: "User not found", code: "USER_NOT_FOUND" });
+          return sendNotFound(reply, "User not found", "USER_NOT_FOUND");
         }
 
         if (sensitiveChange) {
@@ -338,56 +315,37 @@ export async function usersRoutes(fastify: FastifyInstance) {
           );
         }
 
-        return reply.code(200).send({ data: user });
+        return sendOk(reply, user);
       } catch (error: any) {
         if (error.name === "ZodError") {
-          return reply.code(400).send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
+          return sendValidationError(reply, error.errors);
         }
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );
 
   fastify.get("/", async (request, reply) => {
-    return reply.code(403).send({
-      error: "Listing users is not available",
-      code: "FORBIDDEN",
-    });
+    return sendForbidden(reply, "Listing users is not available");
   });
 
   fastify.post("/", async (request, reply) => {
-    return reply.code(403).send({
-      error: "Use /api/users/register to create an account",
-      code: "FORBIDDEN",
-    });
+    return sendForbidden(
+      reply,
+      "Use /api/users/register to create an account",
+    );
   });
 
   fastify.get("/:id", async (request, reply) => {
-    return reply.code(403).send({
-      error: "Reading arbitrary users is not available",
-      code: "FORBIDDEN",
-    });
+    return sendForbidden(reply, "Reading arbitrary users is not available");
   });
 
   fastify.put("/:id", async (request, reply) => {
-    return reply.code(403).send({
-      error: "Updating arbitrary users is not available",
-      code: "FORBIDDEN",
-    });
+    return sendForbidden(reply, "Updating arbitrary users is not available");
   });
 
   fastify.delete("/:id", async (request, reply) => {
-    return reply.code(403).send({
-      error: "Deleting users is not available",
-      code: "FORBIDDEN",
-    });
+    return sendForbidden(reply, "Deleting users is not available");
   });
 }

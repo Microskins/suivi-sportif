@@ -142,15 +142,23 @@ export async function createWorkoutTemplate(
   return formatWorkoutTemplate(created as WorkoutTemplateWithDetails);
 }
 
-export async function getWorkoutTemplates(): Promise<
-  WorkoutTemplateResponse[]
-> {
-  const templates = await prisma.workoutTemplate.findMany({
-    orderBy: [{ displayOrder: "asc" }, { name: "asc" }],
-    include: workoutTemplateInclude,
-  });
+export async function getWorkoutTemplates(
+  pagination: { skip: number; take: number },
+): Promise<{ items: WorkoutTemplateResponse[]; total: number }> {
+  const [templates, total] = await Promise.all([
+    prisma.workoutTemplate.findMany({
+      orderBy: [{ displayOrder: "asc" }, { name: "asc" }],
+      skip: pagination.skip,
+      take: pagination.take,
+      include: workoutTemplateInclude,
+    }),
+    prisma.workoutTemplate.count(),
+  ]);
 
-  return (templates as WorkoutTemplateWithDetails[]).map(formatWorkoutTemplate);
+  return {
+    items: (templates as WorkoutTemplateWithDetails[]).map(formatWorkoutTemplate),
+    total,
+  };
 }
 
 export async function instantiateWorkoutTemplate(
@@ -202,6 +210,20 @@ export async function instantiateWorkoutTemplate(
   });
 
   return getWorkoutById(workout.id, userId);
+}
+
+export async function deleteWorkoutTemplate(id: string): Promise<boolean> {
+  const existing = await prisma.workoutTemplate.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+
+  if (!existing) {
+    return false;
+  }
+
+  await prisma.workoutTemplate.delete({ where: { id } });
+  return true;
 }
 
 export async function updateWorkoutTemplate(

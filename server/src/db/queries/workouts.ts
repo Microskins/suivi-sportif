@@ -199,13 +199,22 @@ function inferStatusFromDate(dateIso: string): "PLANNED" | "COMPLETED" {
   return new Date(dateIso).getTime() > Date.now() ? "PLANNED" : "COMPLETED";
 }
 
-export async function getWorkouts(userId: string): Promise<WorkoutResponse[]> {
-  const workouts = await prisma.workout.findMany({
-    where: { userId },
-    orderBy: { date: "desc" },
-    include: workoutDetailsInclude,
-  });
-  return workouts.map(formatWorkout);
+export async function getWorkouts(
+  userId: string,
+  pagination: { skip: number; take: number },
+): Promise<{ items: WorkoutResponse[]; total: number }> {
+  const where = { userId };
+  const [workouts, total] = await Promise.all([
+    prisma.workout.findMany({
+      where,
+      orderBy: { date: "desc" },
+      skip: pagination.skip,
+      take: pagination.take,
+      include: workoutDetailsInclude,
+    }),
+    prisma.workout.count({ where }),
+  ]);
+  return { items: workouts.map(formatWorkout), total };
 }
 
 export async function getWorkoutById(
@@ -224,19 +233,26 @@ export async function getWorkoutsByDateRange(
   userId: string,
   start: string,
   end: string,
-): Promise<WorkoutResponse[]> {
-  const workouts = await prisma.workout.findMany({
-    where: {
-      userId,
-      date: {
-        gte: new Date(start),
-        lte: new Date(end),
-      },
+  pagination: { skip: number; take: number },
+): Promise<{ items: WorkoutResponse[]; total: number }> {
+  const where = {
+    userId,
+    date: {
+      gte: new Date(start),
+      lte: new Date(end),
     },
-    orderBy: { date: "desc" },
-    include: workoutDetailsInclude,
-  });
-  return workouts.map(formatWorkout);
+  };
+  const [workouts, total] = await Promise.all([
+    prisma.workout.findMany({
+      where,
+      orderBy: { date: "desc" },
+      skip: pagination.skip,
+      take: pagination.take,
+      include: workoutDetailsInclude,
+    }),
+    prisma.workout.count({ where }),
+  ]);
+  return { items: workouts.map(formatWorkout), total };
 }
 
 export async function createWorkout(

@@ -113,6 +113,25 @@
 - Moins de declarations et de fontes candidates sur le chemin critique.
 - Conserve l'auto-hebergement et la conformite exacte aux trois DA.
 
+## Mesure du 2026-08-19 (plan 074): gain reel bien plus faible qu'estime
+
+Idee **mesuree puis ecartee**. Le raisonnement d'origine supposait qu'un
+visiteur telecharge les polices des autres sites; ce n'est pas le cas.
+
+- `@fontsource/*` ne fait que declarer des `@font-face`. Un navigateur ne
+  telecharge un fichier de police que si la famille est reellement utilisee
+  par du texte affiche.
+- Verifie sur un build reel: aucun `rel="preload"` de police n'est genere, et
+  les 24 declarations portent toutes `font-display: swap`. Rien ne force donc
+  le telechargement des polices inutilisees.
+- Cout reel sur le chemin critique: 5 644 octets de regles `@font-face`, soit
+  8,2 % d'un CSS de 68 ko, environ 1 ko une fois gzippe.
+
+Le decoupage imposerait un chargement asynchrone des polices, donc un risque
+de FOUT la ou il n'y en a aucun aujourd'hui, pour environ 1 ko gzippe. A ne
+reprendre que si une mesure de performance reelle designe ce point comme
+genant.
+
 ## Complexite
 
 - M

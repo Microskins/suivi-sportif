@@ -39,6 +39,21 @@ Liste:
 }
 ```
 
+Les routes de liste acceptent deux parametres de requete optionnels:
+
+| Parametre | Defaut | Plafond |
+| --- | --- | --- |
+| `page` | `1` | aucun |
+| `limit` | `20` | `100` |
+
+Toute valeur absente, non numerique ou hors bornes retombe sur ces valeurs.
+`meta.total` compte les elements correspondant au filtre, pas la taille de la
+page renvoyee: c'est lui qui permet de savoir s'il reste des pages a lire.
+
+Un client qui a besoin de la collection complete doit donc enchainer les
+pages jusqu'a atteindre `meta.total`; c'est ce que fait la couche
+`client/src/sites/suivi-sportif/api/client.ts`.
+
 Detail, creation ou modification:
 
 ```json
@@ -300,7 +315,9 @@ Toutes les routes sont protegees. Les modeles sont globaux et l'instanciation
 cree une seance personnelle pour l'utilisateur du JWT.
 
 - `GET /api/workout-templates`
+- `POST /api/workout-templates`
 - `PUT /api/workout-templates/:id`
+- `DELETE /api/workout-templates/:id`
 - `POST /api/workout-templates/:id/instantiate`
 
 Mise a jour de modele (body partiel autorise):
@@ -508,3 +525,12 @@ Les valeurs sont stockees avec precision decimale.
 - `401 UNAUTHORIZED`: token manquant ou invalide.
 - `403 FORBIDDEN`: route volontairement indisponible sans role admin.
 - `404 *_NOT_FOUND`: ressource absente ou hors scope utilisateur.
+- `409 EMAIL_ALREADY_EXISTS`: email deja pris, a l'inscription ou au
+  changement d'email.
+- `429 RATE_LIMIT_EXCEEDED`: trop de tentatives sur `/login` ou `/register`.
+- `500 INTERNAL_SERVER_ERROR`: erreur inattendue, sans detail d'implementation.
+
+Le code d'un `404` nomme la ressource (`USER_NOT_FOUND`, `WORKOUT_NOT_FOUND`,
+`MEAL_NOT_FOUND`, ...): il n'existe pas de `NOT_FOUND` generique. Un acces a
+la ressource d'un autre utilisateur renvoie `404` et non `403`, afin de ne pas
+divulguer son existence.

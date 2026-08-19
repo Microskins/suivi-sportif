@@ -5,35 +5,20 @@ import {
   idParamSchema,
   updateNutritionGoalSchema,
 } from "../schemas/index.js";
-
-const errorResponseSchema = {
-  type: "object",
-  properties: {
-    error: { type: "string" },
-    code: { type: "string" },
-  },
-  required: ["error", "code"],
-};
-
-const validationErrorResponseSchema = {
-  type: "object",
-  properties: {
-    error: { type: "string" },
-    code: { type: "string" },
-    details: { type: "array" },
-  },
-  required: ["error", "code", "details"],
-};
-
-const metaSchema = {
-  type: "object",
-  properties: {
-    total: { type: "number" },
-    page: { type: "number" },
-    limit: { type: "number" },
-  },
-  required: ["total", "page", "limit"],
-};
+import {
+  errorResponseSchema,
+  metaSchema,
+  parsePagination,
+  sendCreated,
+  sendInternalError,
+  sendList,
+  sendNoContent,
+  sendNotFound,
+  sendOk,
+  sendValidationError,
+  validationErrorResponseSchema,
+} from "../lib/api-response.js";
+import { authenticate } from "../plugins/auth.js";
 
 const nutritionGoalBodySchema = {
   type: "object",
@@ -97,24 +82,8 @@ const nutritionGoalResponseSchema = {
   required: ["data"],
 };
 
-function validationError(reply: any, error: any) {
-  return reply.code(400).send({
-    error: "Validation failed",
-    code: "VALIDATION_ERROR",
-    details: error.errors,
-  });
-}
-
 export async function nutritionGoalsRoutes(fastify: FastifyInstance) {
-  fastify.addHook("preHandler", async (request, reply) => {
-    try {
-      await request.jwtVerify();
-    } catch {
-      return reply
-        .code(401)
-        .send({ error: "Unauthorized", code: "UNAUTHORIZED" });
-    }
-  });
+  fastify.addHook("preHandler", authenticate);
 
   fastify.get(
     "/",
@@ -132,17 +101,15 @@ export async function nutritionGoalsRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
     try {
-      const result = await nutritionGoals.getNutritionGoals(request.user.id);
-      return reply.code(200).send({
-        data: result,
-        meta: { total: result.length, page: 1, limit: result.length },
-      });
+      const { page, limit } = parsePagination(request.query as Record<string, unknown>);
+      const { items, total } = await nutritionGoals.getNutritionGoals(
+        request.user.id,
+        { skip: (page - 1) * limit, take: limit },
+      );
+      return sendList(reply, items, { total, page, limit });
     } catch (error) {
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -168,19 +135,17 @@ export async function nutritionGoalsRoutes(fastify: FastifyInstance) {
         request.user.id,
       );
       if (!goal) {
-        return reply.code(404).send({
-          error: "Nutrition goal not found",
-          code: "NUTRITION_GOAL_NOT_FOUND",
-        });
+        return sendNotFound(
+          reply,
+          "Nutrition goal not found",
+          "NUTRITION_GOAL_NOT_FOUND",
+        );
       }
 
-      return reply.code(200).send({ data: goal });
+      return sendOk(reply, goal);
     } catch (error) {
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -214,20 +179,18 @@ export async function nutritionGoalsRoutes(fastify: FastifyInstance) {
         request.user.id,
       );
       if (!goal) {
-        return reply.code(404).send({
-          error: "Nutrition goal not found",
-          code: "NUTRITION_GOAL_NOT_FOUND",
-        });
+        return sendNotFound(
+          reply,
+          "Nutrition goal not found",
+          "NUTRITION_GOAL_NOT_FOUND",
+        );
       }
 
-      return reply.code(200).send({ data: goal });
+      return sendOk(reply, goal);
     } catch (error: any) {
-      if (error.name === "ZodError") return validationError(reply, error);
+      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -255,14 +218,11 @@ export async function nutritionGoalsRoutes(fastify: FastifyInstance) {
         request.user.id,
         parsed,
       );
-      return reply.code(201).send({ data: goal });
+      return sendCreated(reply, goal);
     } catch (error: any) {
-      if (error.name === "ZodError") return validationError(reply, error);
+      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -302,20 +262,18 @@ export async function nutritionGoalsRoutes(fastify: FastifyInstance) {
         parsed,
       );
       if (!goal) {
-        return reply.code(404).send({
-          error: "Nutrition goal not found",
-          code: "NUTRITION_GOAL_NOT_FOUND",
-        });
+        return sendNotFound(
+          reply,
+          "Nutrition goal not found",
+          "NUTRITION_GOAL_NOT_FOUND",
+        );
       }
 
-      return reply.code(200).send({ data: goal });
+      return sendOk(reply, goal);
     } catch (error: any) {
-      if (error.name === "ZodError") return validationError(reply, error);
+      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -349,20 +307,18 @@ export async function nutritionGoalsRoutes(fastify: FastifyInstance) {
         request.user.id,
       );
       if (!deleted) {
-        return reply.code(404).send({
-          error: "Nutrition goal not found",
-          code: "NUTRITION_GOAL_NOT_FOUND",
-        });
+        return sendNotFound(
+          reply,
+          "Nutrition goal not found",
+          "NUTRITION_GOAL_NOT_FOUND",
+        );
       }
 
-      return reply.code(204).send();
+      return sendNoContent(reply);
     } catch (error: any) {
-      if (error.name === "ZodError") return validationError(reply, error);
+      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );

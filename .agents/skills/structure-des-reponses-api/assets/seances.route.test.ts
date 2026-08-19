@@ -19,7 +19,21 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../db/queries/seances.js", () => mocks.seances);
 
 const USER_ID = "11111111-1111-1111-1111-111111111111";
+const SEANCE_ID = "22222222-2222-4222-8222-222222222222";
 const JWT_SECRET = "test-only-secret-at-least-32-characters-long";
+
+// Les fixtures doivent respecter le schema de reponse declare dans la route
+// (tous les champs `required`, et les formats comme `uuid`). Fastify serialise
+// la reponse avec ce schema: un objet incomplet fait echouer la serialisation
+// et la route renvoie 500 au lieu de sa reponse normale.
+const seance = {
+  id: SEANCE_ID,
+  userId: USER_ID,
+  title: "Full body",
+  date: "2026-08-18T18:00:00.000Z",
+  status: "PLANNED" as const,
+  notes: null,
+};
 
 function buildTestApp() {
   const app = Fastify({ logger: false });
@@ -59,9 +73,7 @@ describe("Séances - convention de réponses API", () => {
 
   it("GET / renvoie la liste paginée au format { data, meta }", async () => {
     mocks.seances.listSeances.mockResolvedValue({
-      items: [
-        { id: "s1", title: "Full body", date: "2026-08-18T18:00:00.000Z", status: "PLANNED" },
-      ],
+      items: [seance],
       total: 1,
     });
 
@@ -73,14 +85,14 @@ describe("Séances - convention de réponses API", () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({
-      data: [
-        { id: "s1", title: "Full body", date: "2026-08-18T18:00:00.000Z", status: "PLANNED" },
-      ],
+      data: [seance],
       meta: { total: 1, page: 1, limit: 20 },
     });
+    // La couche queries recoit `skip`/`take`, pas `page`/`limit`: c'est la
+    // route qui traduit l'un en l'autre.
     expect(mocks.seances.listSeances).toHaveBeenCalledWith(USER_ID, {
-      page: 1,
-      limit: 20,
+      skip: 0,
+      take: 20,
     });
   });
 
@@ -94,12 +106,12 @@ describe("Séances - convention de réponses API", () => {
     });
 
     expect(mocks.seances.listSeances).toHaveBeenCalledWith(USER_ID, {
-      page: 1,
-      limit: 100,
+      skip: 0,
+      take: 100,
     });
   });
 
-  it("GET /:id renvoie 404 NOT_FOUND si la séance n'existe pas ou n'appartient pas à l'utilisateur", async () => {
+  it("GET /:id renvoie 404 SEANCE_NOT_FOUND si la séance n'existe pas ou n'appartient pas à l'utilisateur", async () => {
     mocks.seances.getSeanceById.mockResolvedValue(null);
 
     const res = await app.inject({
@@ -109,26 +121,24 @@ describe("Séances - convention de réponses API", () => {
     });
 
     expect(res.statusCode).toBe(404);
-    expect(res.json()).toMatchObject({ code: "NOT_FOUND" });
+    expect(res.json()).toMatchObject({ code: "SEANCE_NOT_FOUND" });
   });
 
   it("GET /:id renvoie le détail au format { data }", async () => {
-    const seance = {
-      id: "22222222-2222-2222-2222-222222222222",
-      title: "Course 8km",
-      date: "2026-08-19T07:00:00.000Z",
-      status: "PLANNED",
-    };
     mocks.seances.getSeanceById.mockResolvedValue(seance);
 
     const res = await app.inject({
       method: "GET",
-      url: "/api/seances/22222222-2222-2222-2222-222222222222",
+      url: `/api/seances/${SEANCE_ID}`,
       headers: authHeaders(),
     });
 
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ data: seance });
+    expect(mocks.seances.getSeanceById).toHaveBeenCalledWith(
+      SEANCE_ID,
+      USER_ID,
+    );
   });
 
   it("POST / sans token et avec un corps invalide renvoie 401, pas 400", async () => {
@@ -157,10 +167,9 @@ describe("Séances - convention de réponses API", () => {
 
   it("POST / valide crée la séance et renvoie 201 au format { data }", async () => {
     const created = {
-      id: "s2",
+      ...seance,
       title: "Course 8km",
       date: "2026-08-20T07:00:00.000Z",
-      status: "PLANNED",
     };
     mocks.seances.createSeance.mockResolvedValue(created);
 
@@ -175,7 +184,7 @@ describe("Séances - convention de réponses API", () => {
     expect(res.json()).toEqual({ data: created });
   });
 
-  it("PUT /:id sur une séance introuvable renvoie 404 NOT_FOUND", async () => {
+  it("PUT /:id sur une séance introuvable renvoie 404 SEANCE_NOT_FOUND", async () => {
     mocks.seances.updateSeance.mockResolvedValue(null);
 
     const res = await app.inject({
@@ -186,7 +195,7 @@ describe("Séances - convention de réponses API", () => {
     });
 
     expect(res.statusCode).toBe(404);
-    expect(res.json()).toMatchObject({ code: "NOT_FOUND" });
+    expect(res.json()).toMatchObject({ code: "SEANCE_NOT_FOUND" });
   });
 
   it("DELETE /:id supprimée renvoie 204 sans corps", async () => {
@@ -202,7 +211,7 @@ describe("Séances - convention de réponses API", () => {
     expect(res.body).toBe("");
   });
 
-  it("DELETE /:id sur une séance introuvable renvoie 404 NOT_FOUND", async () => {
+  it("DELETE /:id sur une séance introuvable renvoie 404 SEANCE_NOT_FOUND", async () => {
     mocks.seances.deleteSeance.mockResolvedValue(false);
 
     const res = await app.inject({
@@ -212,6 +221,6 @@ describe("Séances - convention de réponses API", () => {
     });
 
     expect(res.statusCode).toBe(404);
-    expect(res.json()).toMatchObject({ code: "NOT_FOUND" });
+    expect(res.json()).toMatchObject({ code: "SEANCE_NOT_FOUND" });
   });
 });

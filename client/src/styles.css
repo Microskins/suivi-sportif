@@ -16,6 +16,9 @@
 
   html[data-site="suivi-sportif"] {
     --site-accent: #ff7a54;
+    /* Second accent (ambre). La DA de Suivi Sportif utilise le degrade
+       corail -> ambre comme signature; il n'existe que pour ce site. */
+    --site-accent-2: #ffb648;
     --site-background: #fff8f2;
     --site-body: Inter, sans-serif;
     --site-display: Quicksand, sans-serif;
@@ -235,13 +238,13 @@
   }
 
   html[data-site="prix-aliments"] .price-divider {
-    border-top: 1px dashed #d8d4c8;
+    border-top: 1px dashed var(--site-line);
   }
 
   html[data-site="prix-aliments"] .line {
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px dotted #d8d4c8;
+    border-bottom: 1px dotted var(--site-line);
   }
 
   html[data-site="prix-aliments"] .line:last-child {
@@ -249,7 +252,7 @@
   }
 
   html[data-site="prix-aliments"] .section-label {
-    color: #6b6b6b;
+    color: var(--site-muted);
     font-size: 0.62rem;
     font-weight: 600;
     letter-spacing: 0.14em;
@@ -283,12 +286,14 @@
   }
 
   html[data-site="suivi-sportif"] .sport-input {
-    @apply block w-full rounded-[14px] border border-[#f0e3d6] bg-white px-4 py-3 text-sm text-[#2b241e] outline-none transition placeholder:text-[#9c8f83] focus:border-[#ff7a54] focus:ring-4 focus:ring-[#ff7a54]/10;
+    /* `focus:ring-[#ff7a54]/10` garde une valeur litterale: Tailwind ne sait
+       pas deriver une opacite depuis une variable CSS. */
+    @apply block w-full rounded-[14px] border border-[var(--site-line)] bg-white px-4 py-3 text-sm text-[var(--site-ink)] outline-none transition placeholder:text-[var(--site-muted)] focus:border-[var(--site-accent)] focus:ring-4 focus:ring-[#ff7a54]/10;
   }
 
   html[data-site="suivi-sportif"] .sport-primary-button {
     @apply inline-flex min-h-10 items-center justify-center rounded-full px-5 py-2 text-sm font-semibold text-white shadow-[0_5px_14px_rgba(255,122,84,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(255,122,84,0.28)] disabled:cursor-not-allowed disabled:opacity-60;
-    background-image: linear-gradient(135deg, #ff7a54, #ffb648);
+    background-image: linear-gradient(135deg, var(--site-accent), var(--site-accent-2));
   }
 
   html[data-site="suivi-sportif"] .sport-secondary-button {
@@ -306,12 +311,12 @@
 
   html[data-site="suivi-sportif"] .sport-progress::-webkit-progress-value {
     @apply rounded-full;
-    background-image: linear-gradient(135deg, #ff7a54, #ffb648);
+    background-image: linear-gradient(135deg, var(--site-accent), var(--site-accent-2));
   }
 
   html[data-site="suivi-sportif"] .sport-progress::-moz-progress-bar {
     @apply rounded-full;
-    background-image: linear-gradient(135deg, #ff7a54, #ffb648);
+    background-image: linear-gradient(135deg, var(--site-accent), var(--site-accent-2));
   }
 }
 
@@ -334,7 +339,7 @@
   html[data-site="prix-aliments"] .receipt {
     max-width: none;
     overflow: visible;
-    border-color: #1c1c1c;
+    border-color: var(--site-ink);
     box-shadow: none;
   }
 
@@ -348,12 +353,12 @@
 
   html[data-site="prix-aliments"] .best-row {
     break-inside: avoid;
-    border-color: #1c1c1c;
+    border-color: var(--site-ink);
     background: transparent;
   }
 
   html[data-site="prix-aliments"] .best-row :is(.best-tag, .text-\[\#3f7d52\]) {
-    color: #1c1c1c;
+    color: var(--site-ink);
   }
 
   html[data-site="prix-aliments"] article,
@@ -378,7 +383,7 @@
       .border-neutral-200,
       .border-neutral-300
     ) {
-    border-color: #f0e3d6;
+    border-color: var(--site-line);
   }
 
   html[data-site="suivi-sportif"]
@@ -393,7 +398,7 @@
       .text-neutral-950,
       .text-neutral-900
     ) {
-    color: #2b241e;
+    color: var(--site-ink);
   }
 
   html[data-site="suivi-sportif"] :is(.text-slate-700, .text-neutral-700) {
@@ -407,7 +412,7 @@
       .text-neutral-600,
       .text-neutral-500
     ) {
-    color: #9c8f83;
+    color: var(--site-muted);
   }
 
   html[data-site="suivi-sportif"] :is(.bg-emerald-50, .bg-emerald-100) {
@@ -456,7 +461,7 @@
     border-color: transparent;
     border-radius: 999px;
     background-color: transparent;
-    background-image: linear-gradient(135deg, #ff7a54, #ffb648);
+    background-image: linear-gradient(135deg, var(--site-accent), var(--site-accent-2));
     color: white;
   }
 }

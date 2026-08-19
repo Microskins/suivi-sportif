@@ -83,7 +83,8 @@ async function enrichMealDraft(
   const itemNames = getNamedItems(draft.payload);
   if (itemNames.length === 0) return draft;
 
-  const foods = (await foodsQueries.getFoods(options.userId)) ?? [];
+  // Pas de pagination ici : le rapprochement par nom doit voir tout le catalogue.
+  const foods = (await foodsQueries.getFoods(options.userId))?.items ?? [];
   const matches = itemNames
     .map((name) => {
       const match = findByName(foods, name);
@@ -160,7 +161,8 @@ async function enrichWorkoutDraft(draft: AssistantDraft) {
   const exerciseNames = extractExerciseNames(draft);
   if (exerciseNames.length === 0) return draft;
 
-  const exercises = (await exercisesQueries.getExercises()) ?? [];
+  // Pas de pagination ici : le rapprochement par nom doit voir tout le catalogue.
+  const exercises = (await exercisesQueries.getExercises())?.items ?? [];
   const matches = exerciseNames
     .map((name) => {
       const match = findByName(exercises, name);

@@ -155,7 +155,12 @@ Fichiers importants:
 
 Les sites ne s'importent pas entre eux. Un futur dossier `client/src/shared`
 sera cree uniquement lorsqu'un module sera effectivement utilise par au moins
-deux sites.
+deux sites. Le sens autorise est `client/src/app` vers `sites/*`, jamais d'un
+site vers un autre. Le controle se lance avec:
+
+```bash
+npm run check:site-boundaries
+```
 
 Tous les fichiers maintenus dans `client/src` doivent rester a 500 lignes ou
 moins. Le controle se lance avec:

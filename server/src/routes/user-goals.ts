@@ -5,35 +5,20 @@ import {
   idParamSchema,
   updateUserGoalSchema,
 } from "../schemas/index.js";
-
-const errorResponseSchema = {
-  type: "object",
-  properties: {
-    error: { type: "string" },
-    code: { type: "string" },
-  },
-  required: ["error", "code"],
-};
-
-const validationErrorResponseSchema = {
-  type: "object",
-  properties: {
-    error: { type: "string" },
-    code: { type: "string" },
-    details: { type: "array" },
-  },
-  required: ["error", "code", "details"],
-};
-
-const metaSchema = {
-  type: "object",
-  properties: {
-    total: { type: "number" },
-    page: { type: "number" },
-    limit: { type: "number" },
-  },
-  required: ["total", "page", "limit"],
-};
+import {
+  errorResponseSchema,
+  metaSchema,
+  parsePagination,
+  sendCreated,
+  sendInternalError,
+  sendList,
+  sendNoContent,
+  sendNotFound,
+  sendOk,
+  sendValidationError,
+  validationErrorResponseSchema,
+} from "../lib/api-response.js";
+import { authenticate } from "../plugins/auth.js";
 
 const userGoalBodySchema = {
   type: "object",
@@ -110,24 +95,8 @@ const userGoalResponseSchema = {
   required: ["data"],
 };
 
-function validationError(reply: any, error: any) {
-  return reply.code(400).send({
-    error: "Validation failed",
-    code: "VALIDATION_ERROR",
-    details: error.errors,
-  });
-}
-
 export async function userGoalsRoutes(fastify: FastifyInstance) {
-  fastify.addHook("preHandler", async (request, reply) => {
-    try {
-      await request.jwtVerify();
-    } catch {
-      return reply
-        .code(401)
-        .send({ error: "Unauthorized", code: "UNAUTHORIZED" });
-    }
-  });
+  fastify.addHook("preHandler", authenticate);
 
   fastify.get(
     "/",
@@ -145,17 +114,15 @@ export async function userGoalsRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const result = await userGoals.getUserGoals(request.user.id);
-        return reply.code(200).send({
-          data: result,
-          meta: { total: result.length, page: 1, limit: result.length },
+        const { page, limit } = parsePagination(request.query as Record<string, unknown>);
+        const { items, total } = await userGoals.getUserGoals(request.user.id, {
+          skip: (page - 1) * limit,
+          take: limit,
         });
+        return sendList(reply, items, { total, page, limit });
       } catch (error) {
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );
@@ -186,19 +153,18 @@ export async function userGoalsRoutes(fastify: FastifyInstance) {
         const { id } = idParamSchema.parse(request.params);
         const goal = await userGoals.getUserGoalById(id, request.user.id);
         if (!goal) {
-          return reply
-            .code(404)
-            .send({ error: "User goal not found", code: "USER_GOAL_NOT_FOUND" });
+          return sendNotFound(
+            reply,
+            "User goal not found",
+            "USER_GOAL_NOT_FOUND",
+          );
         }
 
-        return reply.code(200).send({ data: goal });
+        return sendOk(reply, goal);
       } catch (error: any) {
-        if (error.name === "ZodError") return validationError(reply, error);
+        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );
@@ -223,14 +189,11 @@ export async function userGoalsRoutes(fastify: FastifyInstance) {
       try {
         const parsed = createUserGoalSchema.parse(request.body);
         const goal = await userGoals.createUserGoal(request.user.id, parsed);
-        return reply.code(201).send({ data: goal });
+        return sendCreated(reply, goal);
       } catch (error: any) {
-        if (error.name === "ZodError") return validationError(reply, error);
+        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );
@@ -263,19 +226,18 @@ export async function userGoalsRoutes(fastify: FastifyInstance) {
         const parsed = updateUserGoalSchema.parse(request.body);
         const goal = await userGoals.updateUserGoal(id, request.user.id, parsed);
         if (!goal) {
-          return reply
-            .code(404)
-            .send({ error: "User goal not found", code: "USER_GOAL_NOT_FOUND" });
+          return sendNotFound(
+            reply,
+            "User goal not found",
+            "USER_GOAL_NOT_FOUND",
+          );
         }
 
-        return reply.code(200).send({ data: goal });
+        return sendOk(reply, goal);
       } catch (error: any) {
-        if (error.name === "ZodError") return validationError(reply, error);
+        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );
@@ -306,19 +268,18 @@ export async function userGoalsRoutes(fastify: FastifyInstance) {
         const { id } = idParamSchema.parse(request.params);
         const deleted = await userGoals.deleteUserGoal(id, request.user.id);
         if (!deleted) {
-          return reply
-            .code(404)
-            .send({ error: "User goal not found", code: "USER_GOAL_NOT_FOUND" });
+          return sendNotFound(
+            reply,
+            "User goal not found",
+            "USER_GOAL_NOT_FOUND",
+          );
         }
 
-        return reply.code(204).send();
+        return sendNoContent(reply);
       } catch (error: any) {
-        if (error.name === "ZodError") return validationError(reply, error);
+        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );

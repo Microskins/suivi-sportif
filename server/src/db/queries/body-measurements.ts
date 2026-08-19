@@ -115,13 +115,20 @@ function measurementData(
 
 export async function getBodyMeasurements(
   userId: string,
-): Promise<BodyMeasurementResponse[]> {
-  const measurements = await prisma.bodyMeasurement.findMany({
-    where: { userId },
-    orderBy: { date: "desc" },
-  });
+  pagination: { skip: number; take: number },
+): Promise<{ items: BodyMeasurementResponse[]; total: number }> {
+  const where = { userId };
+  const [measurements, total] = await Promise.all([
+    prisma.bodyMeasurement.findMany({
+      where,
+      orderBy: { date: "desc" },
+      skip: pagination.skip,
+      take: pagination.take,
+    }),
+    prisma.bodyMeasurement.count({ where }),
+  ]);
 
-  return measurements.map(formatBodyMeasurement);
+  return { items: measurements.map(formatBodyMeasurement), total };
 }
 
 export async function getLatestBodyMeasurement(

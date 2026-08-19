@@ -42,6 +42,7 @@ export function buildExerciseImageUrl(path?: string | null) {
   return `${siteAssetBase}/images/${sanitized}`;
 }
 
+// Format numerique: "18/08/2026 20:05".
 export function formatDate(value: string) {
   return new Date(value).toLocaleString("fr-FR", {
     day: "2-digit",
@@ -50,6 +51,20 @@ export function formatDate(value: string) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+// Format avec le mois en toutes lettres: "18 aout 2026, 20:05".
+//
+// Volontairement distinct de `formatDate` ci-dessus: les deux rendus
+// coexistent aujourd'hui dans l'application (listes de repas et de seances
+// d'un cote, reste du tableau de bord de l'autre). Les unifier changerait
+// l'affichage, ce qui releve d'une decision d'interface et non d'un
+// nettoyage technique.
+export function formatDateMedium(value: string) {
+  return new Intl.DateTimeFormat("fr-FR", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
 }
 
 export function requireString(value: unknown, label: string) {

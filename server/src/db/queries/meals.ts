@@ -146,34 +146,50 @@ async function getAccessibleFoods(userId: string, foodIds: string[]) {
   return foods;
 }
 
-export async function getMeals(userId: string): Promise<MealResponse[]> {
-  const meals = await prisma.meal.findMany({
-    where: { userId },
-    orderBy: { date: "desc" },
-    include: mealInclude,
-  });
+export async function getMeals(
+  userId: string,
+  pagination: { skip: number; take: number },
+): Promise<{ items: MealResponse[]; total: number }> {
+  const where = { userId };
+  const [meals, total] = await Promise.all([
+    prisma.meal.findMany({
+      where,
+      orderBy: { date: "desc" },
+      skip: pagination.skip,
+      take: pagination.take,
+      include: mealInclude,
+    }),
+    prisma.meal.count({ where }),
+  ]);
 
-  return meals.map(formatMeal);
+  return { items: meals.map(formatMeal), total };
 }
 
 export async function getMealsByDateRange(
   userId: string,
   start: string,
   end: string,
-): Promise<MealResponse[]> {
-  const meals = await prisma.meal.findMany({
-    where: {
-      userId,
-      date: {
-        gte: new Date(start),
-        lte: new Date(end),
-      },
+  pagination: { skip: number; take: number },
+): Promise<{ items: MealResponse[]; total: number }> {
+  const where = {
+    userId,
+    date: {
+      gte: new Date(start),
+      lte: new Date(end),
     },
-    orderBy: { date: "desc" },
-    include: mealInclude,
-  });
+  };
+  const [meals, total] = await Promise.all([
+    prisma.meal.findMany({
+      where,
+      orderBy: { date: "desc" },
+      skip: pagination.skip,
+      take: pagination.take,
+      include: mealInclude,
+    }),
+    prisma.meal.count({ where }),
+  ]);
 
-  return meals.map(formatMeal);
+  return { items: meals.map(formatMeal), total };
 }
 
 export async function getMealById(

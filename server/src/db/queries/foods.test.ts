@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
     food: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
+      count: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
     },
@@ -58,13 +59,21 @@ describe("food queries", () => {
       },
     ]);
 
-    const result = await getFoods(USER_ID);
+    mocks.prisma.food.count.mockResolvedValue(2);
+
+    const result = await getFoods(USER_ID, { skip: 0, take: 20 });
 
     expect(mocks.prisma.food.findMany).toHaveBeenCalledWith({
       where: { OR: [{ userId: USER_ID }, { userId: null }] },
       orderBy: [{ userId: "asc" }, { name: "asc" }],
+      skip: 0,
+      take: 20,
     });
-    expect(result).toEqual([
+    expect(mocks.prisma.food.count).toHaveBeenCalledWith({
+      where: { OR: [{ userId: USER_ID }, { userId: null }] },
+    });
+    expect(result.total).toBe(2);
+    expect(result.items).toEqual([
       expect.objectContaining({ id: FOOD_ID, userId: USER_ID, isGlobal: false }),
       expect.objectContaining({
         userId: null,

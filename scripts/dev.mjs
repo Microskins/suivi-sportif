@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const isWindows = process.platform === "win32";
+const npmCommand = isWindows ? "npm.cmd" : "npm";
 
 const processes = [
   { name: "server", args: ["run", "dev", "-w", "server"] },
@@ -23,7 +24,11 @@ function stopAll(exitCode = 0) {
 for (const item of processes) {
   const child = spawn(npmCommand, item.args, {
     env: process.env,
-    shell: false,
+    // Sur Windows, npm est un .cmd et Node refuse de le spawner sans shell
+    // depuis le correctif de la CVE-2024-27980 (erreur EINVAL). Les args
+    // sont des constantes du script, jamais des entrees utilisateur, donc
+    // shell: true ne cree pas de risque d'injection ici.
+    shell: isWindows,
     stdio: "inherit",
   });
 
