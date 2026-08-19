@@ -43,6 +43,17 @@
   public assume: sans ce choix, le frontend actuel (qui n'envoie jamais
   `page`/`limit`) perdrait silencieusement des donnees, par exemple la
   bibliotheque d'exercices qui n'afficherait que 20 entrees sur 163.
+- Adaptation du frontend a la pagination: **pas** de pagination visible dans
+  l'interface (boutons "page suivante" / "charger plus"), mais un parcours
+  transparent des pages dans `api/client.ts` (`requestList`). Raison: les
+  ecrans ne se contentent pas d'afficher les listes, ils calculent des
+  agregats dessus (graphique de poids, regularite hebdomadaire, totaux
+  nutritionnels, calendrier). Une pagination d'affichage classique aurait
+  produit des statistiques *fausses* sur des donnees tronquees, sans aucune
+  erreur visible: un resultat pire que le bug initial. Le serveur conserve
+  sa protection contre les requetes non bornees (100 lignes par requete au
+  maximum), et une vraie pagination d'affichage reste possible plus tard
+  pour les ecrans qui ne font que lister.
 - Le parametre `pagination` des queries est **optionnel**: les routes le
   passent toujours, mais les services internes l'omettent volontairement.
   L'assistant (`services/assistant-orchestrator.ts`) fait du rapprochement
@@ -62,8 +73,9 @@
       la creation de repas (404).
 - [x] Backend: implementer une vraie pagination (page/limit, skip/take
       Prisma) sur les listes.
-- [ ] Frontend: adapter la couche API, les stores et les ecrans a la
-      pagination par defaut (sinon regression: seules 20 entrees affichees).
+- [x] Frontend: adapter la couche API a la pagination par defaut. Choix
+      retenu: parcours transparent des pages dans `api/client.ts`, sans
+      toucher aux stores ni aux ecrans (voir decisions).
 - [x] Backend: ajouter `DELETE /api/workout-templates/:id`.
 - [x] Backend: investiguer les 3 `catch {}` muets dans
       `db/queries/{exercises,users,workouts}.ts` - aucun bug trouve: ce sont
@@ -160,6 +172,24 @@
   attend `.eslintrc` et 9+ attend le flat config `eslint.config.js`. La
   config a ecrire doit viser 10.x et l'invocation doit resoudre le bon
   binaire, sinon on relancera l'erreur sous une autre forme.
+- 2026-08-19: frontend adapte. Les 12 methodes de liste de
+  `api/client.ts` passent par `requestList`, qui demande `limit=100` (le
+  plafond serveur) et enchaine les pages jusqu'a atteindre `meta.total`.
+  Stores et composants inchanges: ils continuent de recevoir des listes
+  completes. Deux garde-fous contre la boucle infinie: arret sur page vide,
+  et arret sur page incomplete quand `meta` est absent.
+- 2026-08-19: 7 tests ajoutes dans `api/client.test.ts`, dont le cas concret
+  des 163 exercices servis en 2 pages, l'URL qui porte deja une query
+  (`/range/...`), le `total` incoherent et la propagation d'erreur.
+- 2026-08-19: bug d'outillage preexistant corrige au passage (introduit par
+  la PR #34, commit `6f8d747`): `vitest run` cote client collectait
+  `client/e2e/price-comparison.visual.spec.ts`, qui est une suite Playwright,
+  et echouait sur "Playwright Test did not expect test.describe() to be
+  called here". `client/vite.config.ts` exclut desormais `e2e/**` des tests
+  Vitest. Effet de bord appreciable: la suite passe de 19,5 s a 2,4 s.
+- 2026-08-19: verifications apres adaptation frontend: client 45 tests sur
+  45 (12 fichiers), typecheck client OK, `check-client-file-size.mjs` OK
+  (116 fichiers sous 500 lignes).
 - 2026-08-18: environnement de travail sans `node`/`npm` sur le PATH (Bash
   et PowerShell testes, tous deux en echec) — les commandes de
   verification (`typecheck`, `test`, `lint`, `build`,
