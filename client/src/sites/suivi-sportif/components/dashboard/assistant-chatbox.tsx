@@ -8,6 +8,9 @@ import type { DashboardResource } from "./resource-header";
 
 type AssistantChatboxProps = {
   isAuthBypassEnabled: boolean;
+  // Conserve volontairement mais non appele: depuis le plan 066 ("chat box
+  // classique sans mutations"), la chatbox n'applique plus de brouillon.
+  // Les tests verifient explicitement que ce callback n'est jamais invoque.
   onApplyDraft: (draft: AssistantDraft) => Promise<void>;
   resource: DashboardResource;
 };
@@ -94,7 +97,6 @@ function TypingBubble() {
 
 export function AssistantChatbox({
   isAuthBypassEnabled,
-  onApplyDraft,
   resource,
 }: AssistantChatboxProps) {
   const [isOpen, setIsOpen] = useState(false);

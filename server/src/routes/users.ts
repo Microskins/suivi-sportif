@@ -178,7 +178,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
 
     try {
       await request.jwtVerify();
-    } catch (err) {
+    } catch {
       return sendUnauthorized(reply);
     }
   });

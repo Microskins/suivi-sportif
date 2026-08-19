@@ -26,7 +26,7 @@ declare module "@fastify/jwt" {
 export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
   try {
     await request.jwtVerify();
-  } catch (err) {
+  } catch {
     return reply
       .code(401)
       .send({ error: "Unauthorized", code: "UNAUTHORIZED" });

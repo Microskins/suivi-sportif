@@ -30,7 +30,6 @@ import {
   type ExerciseCatalogEntry,
 } from "./dashboard/dashboard-helpers";
 import type { DashboardResource } from "./dashboard/resource-header";
-import { labelFromOptions } from "./dashboard/workout-form-utils";
 import { useBodyMeasurementsStore } from "../stores/body-measurements-store";
 import { useExercisesStore } from "../stores/exercises-store";
 import { useFoodsStore } from "../stores/foods-store";

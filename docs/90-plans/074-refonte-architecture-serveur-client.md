@@ -54,6 +54,21 @@
   sa protection contre les requetes non bornees (100 lignes par requete au
   maximum), et une vraie pagination d'affichage reste possible plus tard
   pour les ecrans qui ne font que lister.
+- ESLint: une config flat **par workspace** (`server/eslint.config.js` et
+  `client/eslint.config.js`) plutot qu'une seule a la racine comme prevu
+  initialement. Raison: `@typescript-eslint/eslint-plugin` et `parser` sont
+  installes dans `server/node_modules` et `client/node_modules`, pas a la
+  racine; une config racine ne pourrait pas les resoudre. Node remonte en
+  revanche jusqu'a la racine pour `@eslint/js` et `globals`, qui y sont
+  hoistes.
+- `@typescript-eslint/no-explicit-any` est en `warn` et non en `error`: le
+  code existant utilise `catch (error: any)` de facon systematique (48
+  occurrences). Le passer en erreur aurait transforme la mise en place du
+  lint en chantier de typage. Le lint est ainsi exploitable des maintenant,
+  et les occurrences restent visibles.
+- Pas de regles React dans la config client: `eslint-plugin-react` et
+  `eslint-plugin-react-hooks` ne sont pas installes dans le depot, et les
+  ajouter serait un choix de dependances hors perimetre de ce chantier.
 - Le parametre `pagination` des queries est **optionnel**: les routes le
   passent toujours, mais les services internes l'omettent volontairement.
   L'assistant (`services/assistant-orchestrator.ts`) fait du rapprochement
@@ -92,8 +107,9 @@
       `main.tsx`.
 - [ ] Frontend: ajouter un script de garde-fou anti cross-import entre
       sites.
-- [ ] Tooling: ajouter `eslint.config.js` (flat config) et simplifier les
-      scripts `lint`.
+- [x] Tooling: ajouter `eslint.config.js` (flat config) et simplifier les
+      scripts `lint`. Ecart au plan: une config **par workspace** et non une
+      seule a la racine (voir decisions).
 - [ ] Mettre a jour les docs sources de verite si le comportement visible
       change (`docs/02-architecture/overview.md` si pagination reelle
       change la forme de `meta`).
@@ -190,6 +206,32 @@
 - 2026-08-19: verifications apres adaptation frontend: client 45 tests sur
   45 (12 fichiers), typecheck client OK, `check-client-file-size.mjs` OK
   (116 fichiers sous 500 lignes).
+- 2026-08-19: `npm run lint` fonctionne enfin, apres le blocage traine
+  depuis les plans 070 et 072. Sortie 0 sur les deux workspaces: 0 erreur,
+  48 avertissements `any` preexistants. Les scripts perdent le flag `--ext`,
+  vestige de l'ancienne configuration `.eslintrc` et sans effet en flat
+  config.
+- 2026-08-19: 5 problemes reels remontes par le premier passage du lint,
+  tous corriges:
+  - 2 `catch (err)` ou la variable n'etait pas utilisee (dans du code de ce
+    chantier), remplaces par `catch {}`;
+  - 3 faux positifs `no-undef` sur des types DOM (`RequestInit`,
+    `HeadersInit`): la regle ne connait pas les types TypeScript, elle est
+    desactivee cote client conformement a la recommandation de
+    typescript-eslint (le compilateur couvre deja ce controle);
+  - un import mort de `labelFromOptions` dans `components/dashboard.tsx`;
+  - `onApplyDraft` non utilise dans `AssistantChatbox`. **Pas** supprime:
+    les tests verifient explicitement que ce callback n'est jamais appele,
+    conformement au plan 066 ("chat box classique sans mutations"). Retire
+    seulement du destructuring, le contrat de props est conserve et
+    documente sur place.
+- 2026-08-19: constat au passage, non traite (hors perimetre): la fonction
+  `labelFromOptions` est definie trois fois dans le client
+  (`dashboard/exercises-list.tsx`, `dashboard/meals-list.tsx`, et exportee
+  par `dashboard/workout-form-utils.ts`). Bon candidat pour la tache
+  d'extraction vers `client/src/shared/`.
+- 2026-08-19: validation complete apres ces changements: server 188/188 et
+  typecheck OK, client 45/45 et typecheck OK, `npm run lint` sortie 0.
 - 2026-08-18: environnement de travail sans `node`/`npm` sur le PATH (Bash
   et PowerShell testes, tous deux en echec) — les commandes de
   verification (`typecheck`, `test`, `lint`, `build`,
