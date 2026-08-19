@@ -33,10 +33,13 @@
 - Laisser hors scope la reorganisation des fichiers `dashboard*.tsx` de
   `suivi-sportif` et le renommage du skill `suivi-sportif-app-da` —
   repousses a la phase UX/UI ou documentation.
-- `client/src/shared/` est cree pour la premiere fois a l'occasion de ce
-  chantier, uniquement pour du code deja duplique entre >= 2 sites
-  (formatage fr-FR), conformement a la regle deja documentee dans
-  `docs/02-architecture/project-structure.md`.
+- `client/src/shared/` n'est **pas** cree. L'intention initiale reposait sur
+  une premisse fausse (un formatage `fr-FR` suppose partage entre sites);
+  verification faite, chaque site a des besoins de formatage differents et
+  seule la locale est commune. Le creer aurait couple des sites sans raison,
+  a rebours de la regle de `docs/02-architecture/project-structure.md` et de
+  la tache de garde-fou de ce meme chantier. La duplication reellement
+  trouvee etait interne a suivi-sportif et a ete traitee sur place.
 - Pagination: choix valide par l'utilisateur d'une pagination **par defaut**
   (`limit=20`, plafonne a 100) cote API, avec adaptation du frontend, plutot
   qu'une pagination opt-in retro-compatible. C'est un changement de contrat
@@ -297,3 +300,30 @@
   introduits (import relatif direct et remontee profonde), tous deux
   detectes avec sortie 1 et message actionnable, puis supprimes. Un
   controle qui n'a jamais echoue ne prouve rien.
+- 2026-08-19: tokens CSS dedupliques dans `client/src/styles.css`, mais
+  seulement la ou le remplacement est **prouve equivalent**. Les `--site-*`
+  sont scopes par `html[data-site="..."]`: remplacer un hex par
+  `var(--site-x)` dans une regle non scopee changerait le rendu des autres
+  sites. Neuf occurrences situees dans des blocs deja scopes ont donc ete
+  converties (leur valeur litterale etait exactement celle du token du meme
+  site), et les utilitaires non scopes (`.site-sport-grid`, `.price-barcode`,
+  `.voyage-ticket-stub`) ont ete laisses tels quels.
+- 2026-08-19: ajout de `--site-accent-2` (ambre) dans le bloc suivi-sportif.
+  Le degrade corail -> ambre est la signature de cette DA et etait recopie
+  en dur quatre fois; il s'ecrit desormais
+  `linear-gradient(135deg, var(--site-accent), var(--site-accent-2))`. Le
+  token n'existe que pour ce site, ce qui est sans risque puisque les quatre
+  regles concernees sont scopees sur suivi-sportif.
+- 2026-08-19: deux valeurs restent volontairement litterales, faute de
+  pouvoir faire autrement:
+  - `focus:ring-[#ff7a54]/10` dans `.sport-input`: Tailwind ne sait pas
+    deriver une opacite depuis une variable CSS;
+  - les couleurs de `components/auth/auth-screen.tsx`, qui recopie les
+    couleurs de la DA une dizaine de fois, souvent avec un modificateur
+    d'opacite (`bg-[#ffb648]/15`) ou dans un `<stop stopColor>` SVG. Ce
+    fichier est un candidat pour la phase UX/UI, pas pour ce chantier.
+- 2026-08-19: verifie par un vrai build Vite (sortie 0) et en controlant le
+  CSS produit: les `var(--site-*)` y sont bien presents et le degrade n'y
+  apparait plus en dur (hors `auth-screen.tsx`). Tests client 45/45, lint
+  sortie 0, controle de taille OK. Artefacts `client/dist` supprimes apres
+  verification.
