@@ -20,20 +20,22 @@ declare module "@fastify/jwt" {
   }
 }
 
+// Fonction exportée plutôt que decorate() seul : `authPlugin` est enregistré
+// sans `fastify-plugin`, donc un decorate() ici resterait scopé à ce plugin
+// et ne serait pas visible dans les routes enregistrées comme plugins voisins.
+export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    await request.jwtVerify();
+  } catch (err) {
+    return reply
+      .code(401)
+      .send({ error: "Unauthorized", code: "UNAUTHORIZED" });
+  }
+}
+
 export async function authPlugin(fastify: FastifyInstance) {
   // Helper réutilisable pour les routes protégées.
-  fastify.decorate(
-    "authenticate",
-    async function (request: FastifyRequest, reply: FastifyReply) {
-      try {
-        await request.jwtVerify();
-      } catch (err) {
-        return reply
-          .code(401)
-          .send({ error: "Unauthorized", code: "UNAUTHORIZED" });
-      }
-    },
-  );
+  fastify.decorate("authenticate", authenticate);
 }
 
 // Helper function to generate token

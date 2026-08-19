@@ -2,25 +2,14 @@ import { FastifyInstance } from "fastify";
 import { assistantDraftRequestSchema } from "../schemas/index.js";
 import { createAssistantDraftWithAi } from "../services/assistant-ai.js";
 import { enrichAssistantDraft } from "../services/assistant-orchestrator.js";
-
-const errorResponseSchema = {
-  type: "object",
-  properties: {
-    error: { type: "string" },
-    code: { type: "string" },
-  },
-  required: ["error", "code"],
-};
-
-const validationErrorResponseSchema = {
-  type: "object",
-  properties: {
-    error: { type: "string" },
-    code: { type: "string" },
-    details: { type: "array" },
-  },
-  required: ["error", "code", "details"],
-};
+import {
+  errorResponseSchema,
+  sendInternalError,
+  sendOk,
+  sendValidationError,
+  validationErrorResponseSchema,
+} from "../lib/api-response.js";
+import { authenticate } from "../plugins/auth.js";
 
 const assistantDraftSchema = {
   type: "object",
@@ -67,24 +56,8 @@ const assistantDraftResponseSchema = {
   required: ["data"],
 };
 
-function validationError(reply: any, error: any) {
-  return reply.code(400).send({
-    error: "Validation failed",
-    code: "VALIDATION_ERROR",
-    details: error.errors,
-  });
-}
-
 export async function assistantRoutes(fastify: FastifyInstance) {
-  fastify.addHook("preHandler", async (request, reply) => {
-    try {
-      await request.jwtVerify();
-    } catch {
-      return reply
-        .code(401)
-        .send({ error: "Unauthorized", code: "UNAUTHORIZED" });
-    }
-  });
+  fastify.addHook("preHandler", authenticate);
 
   fastify.post(
     "/draft",
@@ -141,14 +114,11 @@ export async function assistantRoutes(fastify: FastifyInstance) {
         const enrichedDraft = await enrichAssistantDraft(draft, {
           userId: request.user.id,
         });
-        return reply.code(200).send({ data: enrichedDraft });
+        return sendOk(reply, enrichedDraft);
       } catch (error: any) {
-        if (error.name === "ZodError") return validationError(reply, error);
+        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );

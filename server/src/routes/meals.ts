@@ -6,35 +6,20 @@ import {
   idParamSchema,
   updateMealSchema,
 } from "../schemas/index.js";
-
-const errorResponseSchema = {
-  type: "object",
-  properties: {
-    error: { type: "string" },
-    code: { type: "string" },
-  },
-  required: ["error", "code"],
-};
-
-const validationErrorResponseSchema = {
-  type: "object",
-  properties: {
-    error: { type: "string" },
-    code: { type: "string" },
-    details: { type: "array" },
-  },
-  required: ["error", "code", "details"],
-};
-
-const metaSchema = {
-  type: "object",
-  properties: {
-    total: { type: "number" },
-    page: { type: "number" },
-    limit: { type: "number" },
-  },
-  required: ["total", "page", "limit"],
-};
+import {
+  errorResponseSchema,
+  metaSchema,
+  parsePagination,
+  sendCreated,
+  sendInternalError,
+  sendList,
+  sendNoContent,
+  sendNotFound,
+  sendOk,
+  sendValidationError,
+  validationErrorResponseSchema,
+} from "../lib/api-response.js";
+import { authenticate } from "../plugins/auth.js";
 
 const mealItemInputSchema = {
   type: "object",
@@ -155,24 +140,8 @@ const mealResponseSchema = {
   required: ["data"],
 };
 
-function validationError(reply: any, error: any) {
-  return reply.code(400).send({
-    error: "Validation failed",
-    code: "VALIDATION_ERROR",
-    details: error.errors,
-  });
-}
-
 export async function mealsRoutes(fastify: FastifyInstance) {
-  fastify.addHook("preHandler", async (request, reply) => {
-    try {
-      await request.jwtVerify();
-    } catch {
-      return reply
-        .code(401)
-        .send({ error: "Unauthorized", code: "UNAUTHORIZED" });
-    }
-  });
+  fastify.addHook("preHandler", authenticate);
 
   fastify.get(
     "/",
@@ -190,17 +159,15 @@ export async function mealsRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
     try {
-      const result = await meals.getMeals(request.user.id);
-      return reply.code(200).send({
-        data: result,
-        meta: { total: result.length, page: 1, limit: result.length },
+      const { page, limit } = parsePagination(request.query as Record<string, unknown>);
+      const { items, total } = await meals.getMeals(request.user.id, {
+        skip: (page - 1) * limit,
+        take: limit,
       });
+      return sendList(reply, items, { total, page, limit });
     } catch (error) {
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -231,22 +198,18 @@ export async function mealsRoutes(fastify: FastifyInstance) {
     async (request, reply) => {
     try {
       const { start, end } = dateRangeParamSchema.parse(request.params);
-      const result = await meals.getMealsByDateRange(
+      const { page, limit } = parsePagination(request.query as Record<string, unknown>);
+      const { items, total } = await meals.getMealsByDateRange(
         request.user.id,
         start,
         end,
+        { skip: (page - 1) * limit, take: limit },
       );
-      return reply.code(200).send({
-        data: result,
-        meta: { total: result.length, page: 1, limit: result.length },
-      });
+      return sendList(reply, items, { total, page, limit });
     } catch (error: any) {
-      if (error.name === "ZodError") return validationError(reply, error);
+      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -277,19 +240,14 @@ export async function mealsRoutes(fastify: FastifyInstance) {
       const { id } = idParamSchema.parse(request.params);
       const meal = await meals.getMealById(id, request.user.id);
       if (!meal) {
-        return reply
-          .code(404)
-          .send({ error: "Meal not found", code: "MEAL_NOT_FOUND" });
+        return sendNotFound(reply, "Meal not found", "MEAL_NOT_FOUND");
       }
 
-      return reply.code(200).send({ data: meal });
+      return sendOk(reply, meal);
     } catch (error: any) {
-      if (error.name === "ZodError") return validationError(reply, error);
+      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -306,6 +264,7 @@ export async function mealsRoutes(fastify: FastifyInstance) {
           201: mealResponseSchema,
           400: errorResponseSchema,
           401: errorResponseSchema,
+          404: errorResponseSchema,
           500: errorResponseSchema,
         },
       },
@@ -315,19 +274,14 @@ export async function mealsRoutes(fastify: FastifyInstance) {
       const parsed = createMealSchema.parse(request.body);
       const meal = await meals.createMeal(request.user.id, parsed);
       if (!meal) {
-        return reply
-          .code(400)
-          .send({ error: "Food not found", code: "FOOD_NOT_FOUND" });
+        return sendNotFound(reply, "Food not found", "FOOD_NOT_FOUND");
       }
 
-      return reply.code(201).send({ data: meal });
+      return sendCreated(reply, meal);
     } catch (error: any) {
-      if (error.name === "ZodError") return validationError(reply, error);
+      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -363,19 +317,14 @@ export async function mealsRoutes(fastify: FastifyInstance) {
       const parsed = updateMealSchema.parse(request.body);
       const meal = await meals.updateMeal(id, request.user.id, parsed);
       if (!meal) {
-        return reply
-          .code(404)
-          .send({ error: "Meal not found", code: "MEAL_NOT_FOUND" });
+        return sendNotFound(reply, "Meal not found", "MEAL_NOT_FOUND");
       }
 
-      return reply.code(200).send({ data: meal });
+      return sendOk(reply, meal);
     } catch (error: any) {
-      if (error.name === "ZodError") return validationError(reply, error);
+      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -406,19 +355,14 @@ export async function mealsRoutes(fastify: FastifyInstance) {
       const { id } = idParamSchema.parse(request.params);
       const deleted = await meals.deleteMeal(id, request.user.id);
       if (!deleted) {
-        return reply
-          .code(404)
-          .send({ error: "Meal not found", code: "MEAL_NOT_FOUND" });
+        return sendNotFound(reply, "Meal not found", "MEAL_NOT_FOUND");
       }
 
-      return reply.code(204).send();
+      return sendNoContent(reply);
     } catch (error: any) {
-      if (error.name === "ZodError") return validationError(reply, error);
+      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );

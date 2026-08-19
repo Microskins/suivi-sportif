@@ -7,15 +7,19 @@ import {
   idParamSchema,
   updateWorkoutSchema,
 } from "../schemas/index.js";
-
-const errorResponseSchema = {
-  type: "object",
-  properties: {
-    error: { type: "string" },
-    code: { type: "string" },
-  },
-  required: ["error", "code"],
-};
+import {
+  errorResponseSchema,
+  metaSchema,
+  parsePagination,
+  sendCreated,
+  sendInternalError,
+  sendList,
+  sendNoContent,
+  sendNotFound,
+  sendOk,
+  sendValidationError,
+} from "../lib/api-response.js";
+import { authenticate } from "../plugins/auth.js";
 
 const workoutSchema = {
   type: "object",
@@ -74,15 +78,7 @@ const workoutSchema = {
 };
 
 export async function workoutsRoutes(fastify: FastifyInstance) {
-  fastify.addHook("preHandler", async (request, reply) => {
-    try {
-      await request.jwtVerify();
-    } catch (err) {
-      return reply
-        .code(401)
-        .send({ error: "Unauthorized", code: "UNAUTHORIZED" });
-    }
-  });
+  fastify.addHook("preHandler", authenticate);
 
   // GET /api/workouts - List all workouts for user
   fastify.get(
@@ -97,15 +93,7 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
             type: "object",
             properties: {
               data: { type: "array", items: workoutSchema },
-              meta: {
-                type: "object",
-                properties: {
-                  total: { type: "number" },
-                  page: { type: "number" },
-                  limit: { type: "number" },
-                },
-                required: ["total", "page", "limit"],
-              },
+              meta: metaSchema,
             },
             required: ["data", "meta"],
           },
@@ -117,17 +105,15 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
     async (request, reply) => {
     try {
       const userId = request.user.id;
-      const result = await workouts.getWorkouts(userId);
-      return reply.code(200).send({
-        data: result,
-        meta: { total: result.length, page: 1, limit: result.length },
+      const { page, limit } = parsePagination(request.query as Record<string, unknown>);
+      const { items, total } = await workouts.getWorkouts(userId, {
+        skip: (page - 1) * limit,
+        take: limit,
       });
+      return sendList(reply, items, { total, page, limit });
     } catch (error) {
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -153,15 +139,7 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
             type: "object",
             properties: {
               data: { type: "array", items: workoutSchema },
-              meta: {
-                type: "object",
-                properties: {
-                  total: { type: "number" },
-                  page: { type: "number" },
-                  limit: { type: "number" },
-                },
-                required: ["total", "page", "limit"],
-              },
+              meta: metaSchema,
             },
             required: ["data", "meta"],
           },
@@ -175,24 +153,20 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
     try {
       const { start, end } = dateRangeParamSchema.parse(request.params);
       const userId = request.user.id;
-      const result = await workouts.getWorkoutsByDateRange(userId, start, end);
-      return reply.code(200).send({
-        data: result,
-        meta: { total: result.length, page: 1, limit: result.length },
-      });
+      const { page, limit } = parsePagination(request.query as Record<string, unknown>);
+      const { items, total } = await workouts.getWorkoutsByDateRange(
+        userId,
+        start,
+        end,
+        { skip: (page - 1) * limit, take: limit },
+      );
+      return sendList(reply, items, { total, page, limit });
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return reply.code(400).send({
-          error: "Validation failed",
-          code: "VALIDATION_ERROR",
-          details: error.errors,
-        });
+        return sendValidationError(reply, error.errors);
       }
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -230,25 +204,16 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       const workout = await workouts.getWorkoutById(id, userId);
 
       if (!workout) {
-        return reply
-          .code(404)
-          .send({ error: "Workout not found", code: "WORKOUT_NOT_FOUND" });
+        return sendNotFound(reply, "Workout not found", "WORKOUT_NOT_FOUND");
       }
 
-      return reply.code(200).send({ data: workout });
+      return sendOk(reply, workout);
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return reply.code(400).send({
-          error: "Validation failed",
-          code: "VALIDATION_ERROR",
-          details: error.errors,
-        });
+        return sendValidationError(reply, error.errors);
       }
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -318,15 +283,11 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       const userId = request.user.id;
 
       const workout = await workouts.createWorkout(userId, parsed);
-      return reply.code(201).send({ data: workout });
+      return sendCreated(reply, workout);
     } catch (error: any) {
       const workoutError = error?.cause ?? error;
       if (error.name === "ZodError") {
-        return reply.code(400).send({
-          error: "Validation failed",
-          code: "VALIDATION_ERROR",
-          details: error.errors,
-        });
+        return sendValidationError(reply, error.errors);
       }
       const isWorkoutValidationError =
         (typeof workouts.WorkoutValidationError === "function" &&
@@ -335,17 +296,10 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
         workoutError?.message === "Validation failed" ||
         Array.isArray(workoutError?.details);
       if (isWorkoutValidationError) {
-        return reply.code(400).send({
-          error: "Validation failed",
-          code: "VALIDATION_ERROR",
-          details: workoutError?.details ?? [],
-        });
+        return sendValidationError(reply, workoutError?.details ?? []);
       }
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -423,20 +377,14 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       const workout = await workouts.updateWorkout(id, userId, parsed);
 
       if (!workout) {
-        return reply
-          .code(404)
-          .send({ error: "Workout not found", code: "WORKOUT_NOT_FOUND" });
+        return sendNotFound(reply, "Workout not found", "WORKOUT_NOT_FOUND");
       }
 
-      return reply.code(200).send({ data: workout });
+      return sendOk(reply, workout);
     } catch (error: any) {
       const workoutError = error?.cause ?? error;
       if (error.name === "ZodError") {
-        return reply.code(400).send({
-          error: "Validation failed",
-          code: "VALIDATION_ERROR",
-          details: error.errors,
-        });
+        return sendValidationError(reply, error.errors);
       }
       const isWorkoutValidationError =
         (typeof workouts.WorkoutValidationError === "function" &&
@@ -445,17 +393,10 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
         workoutError?.message === "Validation failed" ||
         Array.isArray(workoutError?.details);
       if (isWorkoutValidationError) {
-        return reply.code(400).send({
-          error: "Validation failed",
-          code: "VALIDATION_ERROR",
-          details: workoutError?.details ?? [],
-        });
+        return sendValidationError(reply, workoutError?.details ?? []);
       }
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );
@@ -489,25 +430,16 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       const deleted = await workouts.deleteWorkout(id, userId);
 
       if (!deleted) {
-        return reply
-          .code(404)
-          .send({ error: "Workout not found", code: "WORKOUT_NOT_FOUND" });
+        return sendNotFound(reply, "Workout not found", "WORKOUT_NOT_FOUND");
       }
 
-      return reply.code(204).send();
+      return sendNoContent(reply);
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return reply.code(400).send({
-          error: "Validation failed",
-          code: "VALIDATION_ERROR",
-          details: error.errors,
-        });
+        return sendValidationError(reply, error.errors);
       }
       fastify.log.error(error);
-      return reply.code(500).send({
-        error: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
+      return sendInternalError(reply);
     }
     },
   );

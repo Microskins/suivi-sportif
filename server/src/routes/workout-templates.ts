@@ -6,15 +6,19 @@ import {
   instantiateWorkoutTemplateSchema,
   updateWorkoutTemplateSchema,
 } from "../schemas/index.js";
-
-const errorResponseSchema = {
-  type: "object",
-  properties: {
-    error: { type: "string" },
-    code: { type: "string" },
-  },
-  required: ["error", "code"],
-};
+import {
+  errorResponseSchema,
+  metaSchema,
+  parsePagination,
+  sendCreated,
+  sendInternalError,
+  sendList,
+  sendNoContent,
+  sendNotFound,
+  sendOk,
+  sendValidationError,
+} from "../lib/api-response.js";
+import { authenticate } from "../plugins/auth.js";
 
 const workoutTemplateSchema = {
   type: "object",
@@ -100,15 +104,7 @@ const workoutSchema = {
 };
 
 export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
-  fastify.addHook("preHandler", async (request, reply) => {
-    try {
-      await request.jwtVerify();
-    } catch {
-      return reply
-        .code(401)
-        .send({ error: "Unauthorized", code: "UNAUTHORIZED" });
-    }
-  });
+  fastify.addHook("preHandler", authenticate);
 
   fastify.get(
     "/",
@@ -122,15 +118,7 @@ export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
             type: "object",
             properties: {
               data: { type: "array", items: workoutTemplateSchema },
-              meta: {
-                type: "object",
-                properties: {
-                  total: { type: "number" },
-                  page: { type: "number" },
-                  limit: { type: "number" },
-                },
-                required: ["total", "page", "limit"],
-              },
+              meta: metaSchema,
             },
             required: ["data", "meta"],
           },
@@ -141,17 +129,15 @@ export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const result = await workoutTemplates.getWorkoutTemplates();
-        return reply.code(200).send({
-          data: result,
-          meta: { total: result.length, page: 1, limit: result.length },
+        const { page, limit } = parsePagination(request.query as Record<string, unknown>);
+        const { items, total } = await workoutTemplates.getWorkoutTemplates({
+          skip: (page - 1) * limit,
+          take: limit,
         });
+        return sendList(reply, items, { total, page, limit });
       } catch (error) {
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );
@@ -207,20 +193,11 @@ export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
       try {
         const parsed = createWorkoutTemplateSchema.parse(request.body);
         const template = await workoutTemplates.createWorkoutTemplate(parsed);
-        return reply.code(201).send({ data: template });
+        return sendCreated(reply, template);
       } catch (error: any) {
-        if (error.name === "ZodError") {
-          return reply.code(400).send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
-        }
+        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );
@@ -284,26 +261,61 @@ export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
         const template = await workoutTemplates.updateWorkoutTemplate(id, parsed);
 
         if (!template) {
-          return reply.code(404).send({
-            error: "Workout template not found",
-            code: "WORKOUT_TEMPLATE_NOT_FOUND",
-          });
+          return sendNotFound(
+            reply,
+            "Workout template not found",
+            "WORKOUT_TEMPLATE_NOT_FOUND",
+          );
         }
 
-        return reply.code(200).send({ data: template });
+        return sendOk(reply, template);
       } catch (error: any) {
-        if (error.name === "ZodError") {
-          return reply.code(400).send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
-        }
+        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
+      }
+    },
+  );
+
+  fastify.delete(
+    "/:id",
+    {
+      schema: {
+        tags: ["workout-templates"],
+        summary: "Delete workout template",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: { id: { type: "string", format: "uuid" } },
+          required: ["id"],
+        },
+        response: {
+          204: { type: "null" },
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      try {
+        const { id } = idParamSchema.parse(request.params);
+        const deleted = await workoutTemplates.deleteWorkoutTemplate(id);
+
+        if (!deleted) {
+          return sendNotFound(
+            reply,
+            "Workout template not found",
+            "WORKOUT_TEMPLATE_NOT_FOUND",
+          );
+        }
+
+        return sendNoContent(reply);
+      } catch (error: any) {
+        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+        fastify.log.error(error);
+        return sendInternalError(reply);
       }
     },
   );
@@ -351,26 +363,18 @@ export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
         );
 
         if (!workout) {
-          return reply.code(404).send({
-            error: "Workout template not found",
-            code: "WORKOUT_TEMPLATE_NOT_FOUND",
-          });
+          return sendNotFound(
+            reply,
+            "Workout template not found",
+            "WORKOUT_TEMPLATE_NOT_FOUND",
+          );
         }
 
-        return reply.code(201).send({ data: workout });
+        return sendCreated(reply, workout);
       } catch (error: any) {
-        if (error.name === "ZodError") {
-          return reply.code(400).send({
-            error: "Validation failed",
-            code: "VALIDATION_ERROR",
-            details: error.errors,
-          });
-        }
+        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
         fastify.log.error(error);
-        return reply.code(500).send({
-          error: "Internal Server Error",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+        return sendInternalError(reply);
       }
     },
   );

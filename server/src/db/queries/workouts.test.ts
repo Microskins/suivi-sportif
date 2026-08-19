@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
       findMany: vi.fn(),
       findFirst: vi.fn(),
       findUnique: vi.fn(),
+      count: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
@@ -88,16 +89,20 @@ describe("workout queries", () => {
 
   it("lists workouts scoped to a user and formats nested exercise sets", async () => {
     mocks.prisma.workout.findMany.mockResolvedValue([workoutRecord]);
+    mocks.prisma.workout.count.mockResolvedValue(1);
 
-    const result = await getWorkouts(USER_ID);
+    const result = await getWorkouts(USER_ID, { skip: 0, take: 20 });
 
     expect(mocks.prisma.workout.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { userId: USER_ID },
         orderBy: { date: "desc" },
+        skip: 0,
+        take: 20,
       }),
     );
-    expect(result).toEqual([
+    expect(result.total).toBe(1);
+    expect(result.items).toEqual([
       {
         id: WORKOUT_ID,
         userId: USER_ID,

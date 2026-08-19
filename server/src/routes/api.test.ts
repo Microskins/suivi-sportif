@@ -41,6 +41,7 @@ const mocks = vi.hoisted(() => ({
     getWorkoutTemplates: vi.fn(),
     createWorkoutTemplate: vi.fn(),
     updateWorkoutTemplate: vi.fn(),
+    deleteWorkoutTemplate: vi.fn(),
     instantiateWorkoutTemplate: vi.fn(),
   },
   foods: {
@@ -579,7 +580,7 @@ describe("API", () => {
     });
     const body = response.json();
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(body.code).toBe("EMAIL_ALREADY_EXISTS");
     expect(mocks.users.createUser).not.toHaveBeenCalled();
   });
@@ -628,7 +629,10 @@ describe("API", () => {
         },
       });
 
-      expect(response.statusCode).toBe(400);
+      // 409: l'email est deja pris (getUserByEmail est mocke sur un
+      // utilisateur existant). Ce qui compte ici est que la requete ne soit
+      // pas encore bloquee par le rate limit.
+      expect(response.statusCode).toBe(409);
     }
 
     const response = await app.inject({
@@ -732,7 +736,7 @@ describe("API", () => {
     });
     const body = response.json();
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(body.code).toBe("EMAIL_ALREADY_EXISTS");
     expect(mocks.users.getUserByEmail).toHaveBeenCalledWith(otherUser.email);
     expect(mocks.users.updateUser).not.toHaveBeenCalled();
@@ -883,7 +887,10 @@ describe("API", () => {
   });
 
   it("lists exercises for authenticated users", async () => {
-    mocks.exercises.getExercises.mockResolvedValue([exercise]);
+    mocks.exercises.getExercises.mockResolvedValue({
+      items: [exercise],
+      total: 1,
+    });
 
     const response = await app.inject({
       method: "GET",
@@ -894,7 +901,11 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(200);
     expect(body.data).toEqual([exercise]);
-    expect(body.meta).toEqual({ total: 1, page: 1, limit: 1 });
+    expect(body.meta).toEqual({ total: 1, page: 1, limit: 20 });
+    expect(mocks.exercises.getExercises).toHaveBeenCalledWith({
+      skip: 0,
+      take: 20,
+    });
   });
 
   it("gets an exercise by id", async () => {
@@ -940,7 +951,10 @@ describe("API", () => {
   });
 
   it("lists exercises by a valid muscle group", async () => {
-    mocks.exercises.getExercisesByMuscleGroup.mockResolvedValue([exercise]);
+    mocks.exercises.getExercisesByMuscleGroup.mockResolvedValue({
+      items: [exercise],
+      total: 1,
+    });
 
     const response = await app.inject({
       method: "GET",
@@ -953,11 +967,15 @@ describe("API", () => {
     expect(body.data).toEqual([exercise]);
     expect(mocks.exercises.getExercisesByMuscleGroup).toHaveBeenCalledWith(
       "legs",
+      { skip: 0, take: 20 },
     );
   });
 
   it("accepts any muscle group string (no longer validated by enum)", async () => {
-    mocks.exercises.getExercisesByMuscleGroup.mockResolvedValue([]);
+    mocks.exercises.getExercisesByMuscleGroup.mockResolvedValue({
+      items: [],
+      total: 0,
+    });
 
     const response = await app.inject({
       method: "GET",
@@ -970,6 +988,7 @@ describe("API", () => {
     expect(body.data).toEqual([]);
     expect(mocks.exercises.getExercisesByMuscleGroup).toHaveBeenCalledWith(
       "invalid-group",
+      { skip: 0, take: 20 },
     );
   });
 
@@ -1120,7 +1139,10 @@ describe("API", () => {
   });
 
   it("lists workouts for the authenticated user only", async () => {
-    mocks.workouts.getWorkouts.mockResolvedValue([workout]);
+    mocks.workouts.getWorkouts.mockResolvedValue({
+      items: [workout],
+      total: 1,
+    });
 
     const response = await app.inject({
       method: "GET",
@@ -1131,8 +1153,11 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(200);
     expect(body.data).toEqual([workout]);
-    expect(body.meta).toEqual({ total: 1, page: 1, limit: 1 });
-    expect(mocks.workouts.getWorkouts).toHaveBeenCalledWith(USER_ID);
+    expect(body.meta).toEqual({ total: 1, page: 1, limit: 20 });
+    expect(mocks.workouts.getWorkouts).toHaveBeenCalledWith(USER_ID, {
+      skip: 0,
+      take: 20,
+    });
   });
 
   it("gets a workout by id for the authenticated user only", async () => {
@@ -1181,7 +1206,10 @@ describe("API", () => {
   });
 
   it("lists workouts by a valid date range for the authenticated user", async () => {
-    mocks.workouts.getWorkoutsByDateRange.mockResolvedValue([workout]);
+    mocks.workouts.getWorkoutsByDateRange.mockResolvedValue({
+      items: [workout],
+      total: 1,
+    });
 
     const start = "2026-05-01T00:00:00.000Z";
     const end = "2026-05-31T23:59:59.000Z";
@@ -1198,6 +1226,7 @@ describe("API", () => {
       USER_ID,
       start,
       end,
+      { skip: 0, take: 20 },
     );
   });
 
@@ -1342,9 +1371,10 @@ describe("API", () => {
   });
 
   it("lists workout templates for authenticated users", async () => {
-    mocks.workoutTemplates.getWorkoutTemplates.mockResolvedValue([
-      workoutTemplate,
-    ]);
+    mocks.workoutTemplates.getWorkoutTemplates.mockResolvedValue({
+      items: [workoutTemplate],
+      total: 1,
+    });
 
     const response = await app.inject({
       method: "GET",
@@ -1355,8 +1385,11 @@ describe("API", () => {
 
     expect(response.statusCode).toBe(200);
     expect(body.data).toEqual([workoutTemplate]);
-    expect(body.meta).toEqual({ total: 1, page: 1, limit: 1 });
-    expect(mocks.workoutTemplates.getWorkoutTemplates).toHaveBeenCalledWith();
+    expect(body.meta).toEqual({ total: 1, page: 1, limit: 20 });
+    expect(mocks.workoutTemplates.getWorkoutTemplates).toHaveBeenCalledWith({
+      skip: 0,
+      take: 20,
+    });
   });
 
   it("instantiates a workout template for the authenticated user", async () => {
@@ -1471,6 +1504,48 @@ describe("API", () => {
     expect(response.statusCode).toBe(400);
     expect(body.code).toBe("VALIDATION_ERROR");
     expect(mocks.workoutTemplates.updateWorkoutTemplate).not.toHaveBeenCalled();
+  });
+
+  it("deletes a workout template", async () => {
+    mocks.workoutTemplates.deleteWorkoutTemplate.mockResolvedValue(true);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/workout-templates/${WORKOUT_TEMPLATE_ID}`,
+      headers: authHeaders(),
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.body).toBe("");
+    expect(mocks.workoutTemplates.deleteWorkoutTemplate).toHaveBeenCalledWith(
+      WORKOUT_TEMPLATE_ID,
+    );
+  });
+
+  it("returns 404 when deleting a missing workout template", async () => {
+    mocks.workoutTemplates.deleteWorkoutTemplate.mockResolvedValue(false);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/workout-templates/${WORKOUT_TEMPLATE_ID}`,
+      headers: authHeaders(),
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(body.code).toBe("WORKOUT_TEMPLATE_NOT_FOUND");
+  });
+
+  it("rejects deleting a workout template without a token", async () => {
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/workout-templates/${WORKOUT_TEMPLATE_ID}`,
+    });
+    const body = response.json();
+
+    expect(response.statusCode).toBe(401);
+    expect(body.code).toBe("UNAUTHORIZED");
+    expect(mocks.workoutTemplates.deleteWorkoutTemplate).not.toHaveBeenCalled();
   });
 
   it("updates a workout for the authenticated user only", async () => {
@@ -1621,7 +1696,7 @@ describe("API", () => {
   });
 
   it("lists foods available to the authenticated user", async () => {
-    mocks.foods.getFoods.mockResolvedValue([food]);
+    mocks.foods.getFoods.mockResolvedValue({ items: [food], total: 1 });
 
     const response = await app.inject({
       method: "GET",
@@ -1633,7 +1708,10 @@ describe("API", () => {
     expect(response.statusCode).toBe(200);
     expect(body.data).toEqual([food]);
     expect(body.meta.total).toBe(1);
-    expect(mocks.foods.getFoods).toHaveBeenCalledWith(USER_ID);
+    expect(mocks.foods.getFoods).toHaveBeenCalledWith(USER_ID, {
+      skip: 0,
+      take: 20,
+    });
   });
 
   it("rejects barcode lookup without a token", async () => {
@@ -1894,7 +1972,7 @@ describe("API", () => {
   });
 
   it("lists meals for the authenticated user only", async () => {
-    mocks.meals.getMeals.mockResolvedValue([meal]);
+    mocks.meals.getMeals.mockResolvedValue({ items: [meal], total: 1 });
 
     const response = await app.inject({
       method: "GET",
@@ -1906,7 +1984,10 @@ describe("API", () => {
     expect(response.statusCode).toBe(200);
     expect(body.data).toEqual([meal]);
     expect(body.meta.total).toBe(1);
-    expect(mocks.meals.getMeals).toHaveBeenCalledWith(USER_ID);
+    expect(mocks.meals.getMeals).toHaveBeenCalledWith(USER_ID, {
+      skip: 0,
+      take: 20,
+    });
   });
 
   it("gets a meal by id for the authenticated user only", async () => {
@@ -1988,7 +2069,7 @@ describe("API", () => {
     });
     const body = response.json();
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(404);
     expect(body.code).toBe("FOOD_NOT_FOUND");
   });
 
@@ -2011,7 +2092,10 @@ describe("API", () => {
   });
 
   it("lists meals by date range for the authenticated user", async () => {
-    mocks.meals.getMealsByDateRange.mockResolvedValue([meal]);
+    mocks.meals.getMealsByDateRange.mockResolvedValue({
+      items: [meal],
+      total: 1,
+    });
 
     const start = "2026-05-01T00:00:00.000Z";
     const end = "2026-05-31T23:59:59.000Z";
@@ -2028,6 +2112,7 @@ describe("API", () => {
       USER_ID,
       start,
       end,
+      { skip: 0, take: 20 },
     );
   });
 
@@ -2159,7 +2244,10 @@ describe("API", () => {
   });
 
   it("lists nutrition goals for the authenticated user only", async () => {
-    mocks.nutritionGoals.getNutritionGoals.mockResolvedValue([nutritionGoal]);
+    mocks.nutritionGoals.getNutritionGoals.mockResolvedValue({
+      items: [nutritionGoal],
+      total: 1,
+    });
 
     const response = await app.inject({
       method: "GET",
@@ -2173,6 +2261,7 @@ describe("API", () => {
     expect(body.meta.total).toBe(1);
     expect(mocks.nutritionGoals.getNutritionGoals).toHaveBeenCalledWith(
       USER_ID,
+      { skip: 0, take: 20 },
     );
   });
 
@@ -2413,7 +2502,10 @@ describe("API", () => {
   });
 
   it("lists user goals for the authenticated user only", async () => {
-    mocks.userGoals.getUserGoals.mockResolvedValue([userGoal]);
+    mocks.userGoals.getUserGoals.mockResolvedValue({
+      items: [userGoal],
+      total: 1,
+    });
 
     const response = await app.inject({
       method: "GET",
@@ -2425,7 +2517,10 @@ describe("API", () => {
     expect(response.statusCode).toBe(200);
     expect(body.data).toEqual([userGoal]);
     expect(body.meta.total).toBe(1);
-    expect(mocks.userGoals.getUserGoals).toHaveBeenCalledWith(USER_ID);
+    expect(mocks.userGoals.getUserGoals).toHaveBeenCalledWith(USER_ID, {
+      skip: 0,
+      take: 20,
+    });
   });
 
   it("creates a body user goal for the authenticated user only", async () => {
@@ -2552,9 +2647,10 @@ describe("API", () => {
   });
 
   it("lists body measurements for the authenticated user only", async () => {
-    mocks.bodyMeasurements.getBodyMeasurements.mockResolvedValue([
-      bodyMeasurement,
-    ]);
+    mocks.bodyMeasurements.getBodyMeasurements.mockResolvedValue({
+      items: [bodyMeasurement],
+      total: 1,
+    });
 
     const response = await app.inject({
       method: "GET",
@@ -2568,6 +2664,7 @@ describe("API", () => {
     expect(body.meta.total).toBe(1);
     expect(mocks.bodyMeasurements.getBodyMeasurements).toHaveBeenCalledWith(
       USER_ID,
+      { skip: 0, take: 20 },
     );
   });
 
@@ -2915,14 +3012,17 @@ describe("API", () => {
   });
 
   it("enriches a meal draft with known food ids before confirmation", async () => {
-    mocks.foods.getFoods.mockResolvedValue([
-      { ...food, id: FOOD_ID, name: "Riz" },
-      {
-        ...food,
-        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
-        name: "Poulet",
-      },
-    ]);
+    mocks.foods.getFoods.mockResolvedValue({
+      items: [
+        { ...food, id: FOOD_ID, name: "Riz" },
+        {
+          ...food,
+          id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          name: "Poulet",
+        },
+      ],
+      total: 2,
+    });
 
     const response = await app.inject({
       method: "POST",
@@ -2951,19 +3051,22 @@ describe("API", () => {
   });
 
   it("extracts quantities and enriches a breakfast draft with known foods", async () => {
-    mocks.foods.getFoods.mockResolvedValue([
-      { ...food, id: FOOD_ID, name: "Fromage blanc 0%" },
-      {
-        ...food,
-        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
-        name: "Flocons d'avoine",
-      },
-      {
-        ...food,
-        id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
-        name: "Fruits rouges",
-      },
-    ]);
+    mocks.foods.getFoods.mockResolvedValue({
+      items: [
+        { ...food, id: FOOD_ID, name: "Fromage blanc 0%" },
+        {
+          ...food,
+          id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          name: "Flocons d'avoine",
+        },
+        {
+          ...food,
+          id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          name: "Fruits rouges",
+        },
+      ],
+      total: 3,
+    });
 
     const response = await app.inject({
       method: "POST",
@@ -3139,18 +3242,21 @@ describe("API", () => {
   });
 
   it("enriches a workout draft with known exercise ids before confirmation", async () => {
-    mocks.exercises.getExercises.mockResolvedValue([
-      {
-        ...exercise,
-        id: EXERCISE_ID,
-        name: "Developpe couche",
-      },
-      {
-        ...exercise,
-        id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
-        name: "Dips",
-      },
-    ]);
+    mocks.exercises.getExercises.mockResolvedValue({
+      items: [
+        {
+          ...exercise,
+          id: EXERCISE_ID,
+          name: "Developpe couche",
+        },
+        {
+          ...exercise,
+          id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          name: "Dips",
+        },
+      ],
+      total: 2,
+    });
 
     const response = await app.inject({
       method: "POST",

@@ -42,13 +42,20 @@ function formatNutritionGoal(goal: NutritionGoal): NutritionGoalResponse {
 
 export async function getNutritionGoals(
   userId: string,
-): Promise<NutritionGoalResponse[]> {
-  const goals = await prisma.nutritionGoal.findMany({
-    where: { userId },
-    orderBy: [{ isActive: "desc" }, { startDate: "desc" }],
-  });
+  pagination: { skip: number; take: number },
+): Promise<{ items: NutritionGoalResponse[]; total: number }> {
+  const where = { userId };
+  const [goals, total] = await Promise.all([
+    prisma.nutritionGoal.findMany({
+      where,
+      orderBy: [{ isActive: "desc" }, { startDate: "desc" }],
+      skip: pagination.skip,
+      take: pagination.take,
+    }),
+    prisma.nutritionGoal.count({ where }),
+  ]);
 
-  return goals.map(formatNutritionGoal);
+  return { items: goals.map(formatNutritionGoal), total };
 }
 
 export async function getActiveNutritionGoal(

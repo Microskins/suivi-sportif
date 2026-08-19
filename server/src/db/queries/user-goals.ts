@@ -68,13 +68,20 @@ function userGoalData(data: CreateUserGoalInput | UpdateUserGoalInput) {
 
 export async function getUserGoals(
   userId: string,
-): Promise<UserGoalResponse[]> {
-  const goals = await prisma.userGoal.findMany({
-    where: { userId },
-    orderBy: [{ isActive: "desc" }, { startDate: "desc" }],
-  });
+  pagination: { skip: number; take: number },
+): Promise<{ items: UserGoalResponse[]; total: number }> {
+  const where = { userId };
+  const [goals, total] = await Promise.all([
+    prisma.userGoal.findMany({
+      where,
+      orderBy: [{ isActive: "desc" }, { startDate: "desc" }],
+      skip: pagination.skip,
+      take: pagination.take,
+    }),
+    prisma.userGoal.count({ where }),
+  ]);
 
-  return goals.map(formatUserGoal);
+  return { items: goals.map(formatUserGoal), total };
 }
 
 export async function getUserGoalById(

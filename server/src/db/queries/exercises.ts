@@ -39,32 +39,44 @@ function formatExercise(e: ExerciseRecord): ExerciseResponse {
   };
 }
 
-export async function getExercises(): Promise<ExerciseResponse[]> {
-  const exercises = await prisma.exercise.findMany({
-    orderBy: { name: "asc" },
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      difficulty: true,
-      exerciseType: true,
-      muscles: {
-        select: {
-          muscle: {
-            select: { name: true },
+// `pagination` est optionnel : les routes le passent toujours, les services
+// internes (assistant) l'omettent car ils ont besoin du catalogue complet
+// pour faire du rapprochement par nom.
+export async function getExercises(
+  pagination?: { skip: number; take: number },
+): Promise<{ items: ExerciseResponse[]; total: number }> {
+  const [exercises, total] = await Promise.all([
+    prisma.exercise.findMany({
+      orderBy: { name: "asc" },
+      ...(pagination ? { skip: pagination.skip, take: pagination.take } : {}),
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        difficulty: true,
+        exerciseType: true,
+        muscles: {
+          select: {
+            muscle: {
+              select: { name: true },
+            },
           },
         },
+        createdAt: true,
+        updatedAt: true,
       },
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-  return exercises.map((exercise: ExerciseRowWithMuscles) =>
-    formatExercise({
-      ...exercise,
-      bodyParts: exercise.muscles.map((item: ExerciseMuscleRow) => item.muscle.name),
-    } as ExerciseRecord),
-  );
+    }),
+    prisma.exercise.count(),
+  ]);
+  return {
+    items: exercises.map((exercise: ExerciseRowWithMuscles) =>
+      formatExercise({
+        ...exercise,
+        bodyParts: exercise.muscles.map((item: ExerciseMuscleRow) => item.muscle.name),
+      } as ExerciseRecord),
+    ),
+    total,
+  };
 }
 
 export async function getExerciseById(
@@ -98,42 +110,52 @@ export async function getExerciseById(
 
 export async function getExercisesByMuscleGroup(
   muscleGroup: string,
-): Promise<ExerciseResponse[]> {
+  pagination: { skip: number; take: number },
+): Promise<{ items: ExerciseResponse[]; total: number }> {
   // NOTE: muscleGroup n'existe plus sur Exercise : désormais c'est une relation via ExerciseMuscle.
-  const exercises = await prisma.exercise.findMany({
-    where: {
-      muscles: {
-        some: {
-          muscle: {
-            name: muscleGroup,
-          },
+  const where = {
+    muscles: {
+      some: {
+        muscle: {
+          name: muscleGroup,
         },
       },
     },
-    orderBy: { name: "asc" },
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      difficulty: true,
-      exerciseType: true,
-      muscles: {
-        select: {
-          muscle: {
-            select: { name: true },
+  };
+  const [exercises, total] = await Promise.all([
+    prisma.exercise.findMany({
+      where,
+      orderBy: { name: "asc" },
+      skip: pagination.skip,
+      take: pagination.take,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        difficulty: true,
+        exerciseType: true,
+        muscles: {
+          select: {
+            muscle: {
+              select: { name: true },
+            },
           },
         },
+        createdAt: true,
+        updatedAt: true,
       },
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-  return exercises.map((exercise: ExerciseRowWithMuscles) =>
-    formatExercise({
-      ...exercise,
-      bodyParts: exercise.muscles.map((item: ExerciseMuscleRow) => item.muscle.name),
-    } as ExerciseRecord),
-  );
+    }),
+    prisma.exercise.count({ where }),
+  ]);
+  return {
+    items: exercises.map((exercise: ExerciseRowWithMuscles) =>
+      formatExercise({
+        ...exercise,
+        bodyParts: exercise.muscles.map((item: ExerciseMuscleRow) => item.muscle.name),
+      } as ExerciseRecord),
+    ),
+    total,
+  };
 }
 
 export async function createExercise(

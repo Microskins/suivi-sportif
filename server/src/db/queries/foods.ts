@@ -40,15 +40,24 @@ function formatFood(food: Food): FoodResponse {
   };
 }
 
-export async function getFoods(userId: string): Promise<FoodResponse[]> {
-  const foods = await prisma.food.findMany({
-    where: {
-      OR: [{ userId }, { userId: null }],
-    },
-    orderBy: [{ userId: "asc" }, { name: "asc" }],
-  });
+// `pagination` est optionnel : les routes le passent toujours, les services
+// internes (assistant) l'omettent car ils ont besoin du catalogue complet
+// pour faire du rapprochement par nom.
+export async function getFoods(
+  userId: string,
+  pagination?: { skip: number; take: number },
+): Promise<{ items: FoodResponse[]; total: number }> {
+  const where = { OR: [{ userId }, { userId: null }] };
+  const [foods, total] = await Promise.all([
+    prisma.food.findMany({
+      where,
+      orderBy: [{ userId: "asc" }, { name: "asc" }],
+      ...(pagination ? { skip: pagination.skip, take: pagination.take } : {}),
+    }),
+    prisma.food.count({ where }),
+  ]);
 
-  return foods.map(formatFood);
+  return { items: foods.map(formatFood), total };
 }
 
 export async function getFoodById(
