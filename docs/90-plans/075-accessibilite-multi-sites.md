@@ -82,11 +82,11 @@ pale (1,49), qui est un choix assume de la DA.
 - [x] Ajouter un lien d'evitement (les cinq en manquaient, voir notes).
 - [x] Corriger les tokens de contraste simples et moderes.
 - [x] Ajouter `--site-accent-text` pour le corail et l'ambre.
-- [ ] Verifier la navigation au clavier et la visibilite du focus.
-- [ ] Mettre a jour les cinq skills de DA avec les nouvelles couleurs.
-- [ ] Automatiser le controle de contraste des tokens.
-- [ ] Etendre `docs/07-qualite` aux cinq sites.
-- [ ] Verifier: tests, lint, build, controles, et nouvelle mesure de contraste.
+- [x] Verifier la navigation au clavier et la visibilite du focus.
+- [x] Mettre a jour les cinq skills de DA avec les nouvelles couleurs.
+- [x] Automatiser le controle de contraste des tokens (`npm run check:contrast`).
+- [x] Etendre `docs/07-qualite` aux cinq sites.
+- [x] Verifier: tests, lint, build, controles, et nouvelle mesure de contraste.
 
 ## Notes de verification
 
@@ -146,3 +146,60 @@ pale (1,49), qui est un choix assume de la DA.
   degrade, dont le fond n'est pas calculable de facon fiable.
 - 2026-08-19: verifie apres ces changements: typecheck client OK, 45 tests
   sur 45, lint sortie 0.
+- 2026-08-19: l'indicateur de focus lui-meme etait non conforme sur
+  suivi-sportif. Il utilise `--site-accent`, soit le corail, a 2,45:1 pour un
+  minimum de 3:1 (WCAG 1.4.11). La regle `:focus-visible` accepte desormais
+  un `--site-focus` optionnel, que ce seul site redefinit sur sa variante
+  assombrie: le contour passe de 2,45 a 4,78. Les quatre autres sites etaient
+  deja conformes (4,39 a 6,19).
+- 2026-08-19: ordre de tabulation verifie: le lien d'evitement arrive en
+  premier et aucun `tabindex` positif ne vient casser l'ordre du document.
+- 2026-08-19: `npm run check:contrast` ajoute
+  (`scripts/check-contrast.mjs`), sur le modele des controles existants. Il
+  lit les tokens et verifie 4,5:1 pour le texte, 3:1 pour le focus, contre le
+  fond du site et contre le blanc des cartes.
+  Verifie **en le faisant echouer**, comme le garde-fou du plan 074: en
+  remettant l'ancien sepia de trekking, le controle sort en 1 avec les deux
+  combinaisons fautives; restaure, il repasse au vert (36 combinaisons, 5
+  sites).
+- 2026-08-19: le controle a d'abord signale deux faux positifs sur
+  prix-aliments, en testant contre le fond de page alors que le texte de ce
+  site vit sur le papier du ticket. Un token `--site-surface` rend cette
+  surface explicite et sert desormais de reference; il remplace au passage
+  une valeur en dur dans `.receipt`.
+- 2026-08-19: les commentaires ajoutes ont pousse `styles.css` a 513 lignes,
+  au-dela de la limite du depot. Les tokens sont extraits dans
+  `client/src/tokens.css` (charge avant `styles.css` depuis `main.tsx`), ce
+  qui ramene les deux fichiers sous la limite et isole ce que le controle de
+  contraste analyse. Verifie apres separation: les tokens sont bien appliques
+  dans le navigateur et le contraste reste conforme.
+- 2026-08-19: les cinq skills de DA sont mis a jour avec les nouvelles
+  valeurs et la regle "fond ou texte" pour le corail et l'ambre. Sans cela
+  ils auraient documente des couleurs absentes du code, exactement l'erreur
+  corrigee par le plan 074 sur `structure-des-reponses-api`.
+
+## Verification finale du 2026-08-19
+
+| Verification | Resultat |
+| --- | --- |
+| `npm test` (server) | 188 / 188 |
+| `npm test` (client) | 45 / 45 |
+| `npm run lint` | sortie 0 |
+| `npm run build` | sortie 0 |
+| `npm run check:file-size` | 118 fichiers sous 500 lignes |
+| `npm run check:site-boundaries` | 109 fichiers, aucune violation |
+| `npm run check:contrast` | 36 combinaisons, 5 sites |
+| Mesure dans le navigateur | zero echec sur les cinq sites |
+
+### Limites connues
+
+- Le tableau de bord de Suivi Sportif n'a pas pu etre parcouru, faute de base
+  PostgreSQL. Ses couleurs sont passees aux tokens conformes et le typecheck
+  passe, mais le parcours lui-meme reste a verifier une fois la base
+  demarree.
+- L'activation du lien d'evitement par la touche Entree n'a pas pu etre
+  reproduite avec des evenements synthetiques; le mecanisme a ete valide par
+  un clic. A confirmer par un test humain.
+- Le controle automatise porte sur les tokens, pas sur le rendu: il
+  n'attrapera pas une couleur ecrite en dur dans un composant. C'est la
+  raison pour laquelle les couleurs de texte ont ete migrees vers les tokens.

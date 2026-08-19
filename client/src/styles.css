@@ -3,86 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --site-accent: #a63d2f;
-    --site-background: #efe7d8;
-    --site-body: "Source Serif 4", Georgia, serif;
-    --site-display: "Barlow Condensed", "Arial Narrow", sans-serif;
-    --site-ink: #1b2a3d;
-    --site-label: "Barlow Condensed", "Arial Narrow", sans-serif;
-    --site-line: #c9bfa8;
-    --site-muted: #5b6474;
-  }
-
-  html[data-site="suivi-sportif"] {
-    --site-accent: #ff7a54;
-    /* Second accent (ambre). La DA de Suivi Sportif utilise le degrade
-       corail -> ambre comme signature; il n'existe que pour ce site. */
-    --site-accent-2: #ffb648;
-    /* Variante assombrie du corail, reservee au TEXTE. Le corail d'origine
-       plafonne a 2,45:1 sur le fond creme, tres en dessous des 4,5:1 exiges
-       par WCAG AA. L'assombrir partout aurait transforme la signature de la
-       DA en rouge brique; il reste donc inchange pour les fonds, degrades et
-       elements decoratifs, ou le seuil n'est que de 3:1. */
-    --site-accent-text: #d32f00;
-    --site-background: #fff8f2;
-    --site-body: Inter, sans-serif;
-    --site-display: Quicksand, sans-serif;
-    --site-ink: #2b241e;
-    --site-label: Inter, sans-serif;
-    --site-line: #f0e3d6;
-    /* #9c8f83 a l'origine: 2,99:1, insuffisant pour du texte secondaire. */
-    --site-muted: #7a6d61;
-  }
-
-  html[data-site="trekking"] {
-    /* #5c7350 a l'origine: 4,08:1 sur le parchemin, juste sous le seuil. */
-    --site-accent: #566c4b;
-    --site-background: #f1e2c4;
-    --site-body: "IBM Plex Sans", sans-serif;
-    --site-display: Fraunces, Georgia, serif;
-    --site-ink: #332f26;
-    --site-label: "IBM Plex Mono", monospace;
-    --site-line: #e0c99e;
-    /* #b0794c a l'origine: 2,89:1, nettement insuffisant. Le sepia reste
-       reconnaissable, simplement assombri. */
-    --site-muted: #865c3a;
-  }
-
-  html[data-site="voyage"] {
-    --site-accent: #1c4ed8;
-    /* Ambre du statut "a venir". Comme le corail de Suivi Sportif, l'amener
-       a 4,5:1 le transformerait en brun; il garde donc sa valeur pour les
-       pastilles et fonds, et cette variante sert quand il porte du texte. */
-    --site-accent-2: #e08a1e;
-    --site-accent-2-text: #9e6215;
-    --site-background: #f4f6f8;
-    --site-body: "Space Grotesk", sans-serif;
-    --site-display: "Space Grotesk", sans-serif;
-    --site-ink: #0f1b2b;
-    --site-label: "JetBrains Mono", monospace;
-    --site-line: #dfe4ea;
-    /* #6b7684 a l'origine: 4,26:1, juste sous le seuil. */
-    --site-muted: #687280;
-  }
-
-  html[data-site="prix-aliments"] {
-    --site-accent: #c1362b;
-    /* Signal exclusif "meilleur prix" de la DA. #3f7d52 a l'origine, qui
-       passait sur le papier du ticket (4,51:1) mais pas sur l'encadre vert
-       clair du meilleur prix (4,34:1). Cette valeur legerement plus sombre
-       est conforme dans les deux contextes, pour un ecart imperceptible. */
-    --site-signal: #3e7a50;
-    --site-signal-background: #eaf3ec;
-    --site-background: #e9e6dc;
-    --site-body: "JetBrains Mono", monospace;
-    --site-display: "JetBrains Mono", monospace;
-    --site-ink: #1c1c1c;
-    --site-label: "JetBrains Mono", monospace;
-    --site-line: #d8d4c8;
-    --site-muted: #6b6b6b;
-  }
-
   html {
     background: var(--site-background);
   }
@@ -112,8 +32,12 @@
     font: inherit;
   }
 
+  /* L'indicateur de focus doit atteindre 3:1 avec ce qui l'entoure
+     (WCAG 1.4.11). L'accent convient sur quatre sites, mais le corail de
+     Suivi Sportif plafonne a 2,45:1: ce site redefinit donc `--site-focus`
+     sur sa variante assombrie. */
   :focus-visible {
-    outline: 3px solid var(--site-accent);
+    outline: 3px solid var(--site-focus, var(--site-accent));
     outline-offset: 3px;
   }
 
@@ -264,7 +188,7 @@
     overflow: hidden;
     border-top: 3px dashed #b8b3a0;
     border-bottom: 3px dashed #b8b3a0;
-    background: #f7f5ef;
+    background: var(--site-surface);
     box-shadow: 0 18px 45px rgba(28, 28, 28, 0.12);
   }
 

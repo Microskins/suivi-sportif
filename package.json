@@ -18,6 +18,7 @@
     "lint": "npm run lint -w server && npm run lint -w client",
     "check:file-size": "node scripts/check-client-file-size.mjs",
     "check:site-boundaries": "node scripts/check-site-boundaries.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
     "mcp:dev": "npm run dev -w mcp",
     "mcp:build": "npm run build -w mcp",
     "mcp:start": "npm run start -w mcp",
