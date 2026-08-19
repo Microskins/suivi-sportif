@@ -102,6 +102,25 @@ commencera a orchestrer plusieurs decisions metier.
 - Erreur: `{ error, code }`
 - Suppression: `204`
 
+Ces reponses sont construites par les helpers de `server/src/lib/api-response.ts`
+(`sendOk`, `sendList`, `sendCreated`, `sendNoContent`, `sendNotFound`,
+`sendConflict`, `sendValidationError`, `sendInternalError`), qui exportent aussi
+les schemas JSON partages. Ne pas reconstruire un corps de reponse a la main
+dans une route.
+
+Les routes de liste sont **paginees**: `page` (defaut 1) et `limit` (defaut 20,
+plafond 100), normalises par `parsePagination`. `meta.total` vient d'un `count()`
+Prisma sur le meme filtre, il decrit donc l'ensemble et non la page renvoyee.
+Cote `db/queries`, une fonction de liste prend une pagination **optionnelle**
+`{ skip, take }` et renvoie `{ items, total }`: le parametre est optionnel parce
+que l'assistant a besoin du catalogue complet pour son rapprochement par nom.
+
+Un client qui veut la collection entiere enchaine les pages jusqu'a `meta.total`;
+c'est ce que fait `client/src/sites/suivi-sportif/api/client.ts`.
+
+Le detail de la convention, dont le catalogue des codes d'erreur, vit dans le
+skill `structure-des-reponses-api`.
+
 ### Authentification
 
 Routes publiques:
@@ -124,6 +143,22 @@ Routes protegees:
 
 Les mots de passe sont hashes avec `bcrypt`. Les ressources utilisateur utilisent
 `request.user.id`, issu du token JWT.
+
+Les routes protegees installent le hook partage exporte par
+`server/src/plugins/auth.ts`:
+
+```ts
+import { authenticate } from "../plugins/auth.js";
+
+fastify.addHook("preHandler", authenticate);
+```
+
+Ne pas compter sur le decorateur `fastify.authenticate`: `authPlugin` est
+enregistre sans `fastify-plugin`, donc son `decorate()` reste encapsule dans le
+scope du plugin et n'est pas visible depuis les routes voisines. C'est la raison
+pour laquelle ce decorateur n'avait jamais servi. `users.ts` fait exception avec
+son propre hook, `/login` et `/register` devant rester publics sous le meme
+prefixe.
 
 ### Donnees
 
@@ -166,7 +201,10 @@ Organisation actuelle:
 client/src/
 |-- app/
 |   |-- site-identities.ts
-|   `-- site-router.tsx
+|   |-- site-router.tsx
+|   `-- skip-link.tsx
+|-- tokens.css
+|-- styles.css
 |-- main.tsx
 `-- sites/
     |-- portfolio/
@@ -184,6 +222,25 @@ client/src/
 `client/src/app/site-router.tsx` ne porte aucune logique metier: il choisit le
 site selon le chemin courant. Chaque site possede ses composants et son etat,
 sans import direct vers les fichiers internes d'un autre site.
+
+`client/src/app/skip-link.tsx` est rendu par le routeur avant le site: c'est le
+premier element focusable de toute page. Il vit dans la couche `app` parce que
+c'est le seul endroit commun aux cinq identites, et ses couleurs passent par les
+tokens, donc il adopte la direction artistique du site affiche. Sa cible, le
+`<main id="contenu-principal">` de chaque site, porte `tabIndex={-1}` sans quoi
+le focus ne s'y deplacerait pas.
+
+`client/src/tokens.css` regroupe les tokens de couleur et de typographie, un jeu
+par site, appliques via `html[data-site="..."]`. Ils sont separes de
+`styles.css` parce que c'est ce fichier que lit `npm run check:contrast`, et
+pour tenir la limite de 500 lignes. Les composants ne doivent pas ecrire de
+couleur en dur: passer par `var(--site-*)`.
+
+Certains tokens existent en deux variantes, une pour les fonds et une pour le
+texte (`--site-accent` et `--site-accent-text`). Deux couleurs de signature, le
+corail de Suivi Sportif et l'ambre de Voyage, ne peuvent pas atteindre les
+4,5:1 exiges pour du texte sans changer de nature; elles restent donc
+inchangees la ou le seuil n'est que de 3:1.
 
 `client/src/app/site-identities.ts` porte uniquement le registre transversal
 des identites. Il applique avant le rendu React le titre, la description, la

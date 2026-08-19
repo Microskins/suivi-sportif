@@ -114,6 +114,22 @@ npm run mcp:typecheck
 npm run test -w mcp
 ```
 
+Lint des deux workspaces:
+
+```bash
+npm run lint
+```
+
+Controles propres au depot, a lancer avant d'ouvrir une PR:
+
+```bash
+npm run check:file-size         # 500 lignes maximum par fichier de client/src
+npm run check:site-boundaries   # un site n'importe jamais un autre site
+npm run check:contrast          # les couleurs de DA respectent WCAG AA
+```
+
+Chacun sort en 1 et nomme le fichier fautif en cas de manquement.
+
 ## 6. Tester l'API manuellement
 
 Health:

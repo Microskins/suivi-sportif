@@ -79,6 +79,7 @@ Index chronologique des chantiers planifies et executes.
 73. [Idees IA ticket comparateur](./073-idees-ia-ticket-comparateur.md)
 74. [Refonte architecture serveur et client](./074-refonte-architecture-serveur-client.md)
 75. [Accessibilite des cinq sites](./075-accessibilite-multi-sites.md)
+76. [Mise a jour des docs sources de verite](./076-mise-a-jour-docs-sources-verite.md)
 
 ## Convention
 

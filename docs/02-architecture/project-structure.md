@@ -54,15 +54,24 @@ server/
     |-- db/
     |   |-- index.ts
     |   `-- queries/
+    |-- lib/
+    |   `-- api-response.ts
     |-- plugins/
     |-- routes/
-    `-- schemas/
+    |-- schemas/
+    `-- services/
 ```
 
 Fichiers importants:
 
 - `server/src/app.ts`: construction de l'app Fastify.
 - `server/src/server.ts`: demarrage reseau.
+- `server/src/lib/api-response.ts`: helpers de reponse et schemas JSON
+  partages, plus `parsePagination`. Toute route passe par la.
+- `server/src/plugins/auth.ts`: hook `authenticate` partage par les routes
+  protegees.
+- `server/src/services/*`: logique metier de l'assistant et connecteurs
+  externes.
 - `server/src/routes/api.test.ts`: tests API principaux.
 - `server/src/db/queries/*`: acces Prisma.
 - `server/prisma/schema.prisma`: schema PostgreSQL/Prisma.
@@ -141,6 +150,11 @@ Fichiers importants:
 - `client/src/app/site-router.tsx`: choisit le site a partir de l'URL.
 - `client/src/app/site-identities.ts`: applique les metadonnees et le favicon
   propres au site courant.
+- `client/src/app/skip-link.tsx`: lien d'evitement commun aux cinq sites,
+  premier element focusable de chaque page.
+- `client/src/tokens.css`: tokens de couleur et de typographie, un jeu par
+  site. C'est le fichier lu par `npm run check:contrast`.
+- `client/src/styles.css`: styles de base, utilitaires et composants.
 - `client/src/sites/portfolio/`: page d'accueil et catalogue de projets.
 - `client/src/sites/prix-aliments/`: recherche locale et comparaison des offres
   alimentaires de demonstration, filtres partageables, partage natif et ticket
@@ -168,6 +182,17 @@ moins. Le controle se lance avec:
 ```bash
 npm run check:file-size
 ```
+
+Les couleurs des directions artistiques doivent respecter les seuils WCAG AA.
+Le controle porte sur les tokens de `client/src/tokens.css`:
+
+```bash
+npm run check:contrast
+```
+
+Il ne voit que les tokens, pas le rendu: une couleur ecrite en dur dans un
+composant lui echappe. C'est pourquoi les composants doivent utiliser
+`var(--site-*)` plutot qu'une valeur litterale.
 
 ## MCP
 
