@@ -106,9 +106,10 @@
 - [x] Frontend: dedupliquer le formatage de dates. **`client/src/shared/`
       n'a finalement pas ete cree**: l'analyse initiale etait fausse (voir
       notes de verification).
-- [ ] Frontend: dedupliquer les tokens CSS en dur dans `client/src/styles.css`.
-- [ ] Frontend: charger les polices par site plutot que globalement dans
-      `main.tsx`.
+- [x] Frontend: dedupliquer les tokens CSS en dur dans `client/src/styles.css`
+      (uniquement la ou le remplacement est prouve equivalent, voir notes).
+- [x] Frontend: polices par site — **mesure puis ecarte volontairement**, la
+      premisse etant fausse (voir notes). `main.tsx` est inchange.
 - [x] Frontend: ajouter un script de garde-fou anti cross-import entre
       sites (`npm run check:site-boundaries`).
 - [x] Tooling: ajouter `eslint.config.js` (flat config) et simplifier les
@@ -327,3 +328,22 @@
   apparait plus en dur (hors `auth-screen.tsx`). Tests client 45/45, lint
   sortie 0, controle de taille OK. Artefacts `client/dist` supprimes apres
   verification.
+- 2026-08-19: chargement des polices par site **mesure puis ecarte**, et
+  `main.tsx` laisse inchange. La premisse de cette tache (reprise d'une idee
+  du plan 070) etait fausse: un visiteur ne telecharge pas les polices des
+  autres sites. `@fontsource/*` se contente de declarer des `@font-face`, et
+  un navigateur ne recupere un fichier de police que si la famille sert
+  reellement a afficher du texte.
+  Verifie sur un build reel: aucun `rel="preload"` de police n'est genere et
+  les 24 declarations portent toutes `font-display: swap`. Le cout reel sur
+  le chemin critique est de 5 644 octets de regles `@font-face`, soit 8,2 %
+  d'un CSS de 68 ko, environ 1 ko gzippe.
+  Le decoupage imposerait un chargement asynchrone des polices, donc un
+  risque de FOUT la ou il n'y en a aucun, pour un gain d'environ 1 ko. La
+  mesure a ete reportee dans `docs/06-idees/90-ia-idees.md` pour que
+  l'analyse ne soit pas refaite.
+- 2026-08-19: constat lie, non traite: `client/src/app/site-router.tsx`
+  importe les 5 sites statiquement, donc tout se retrouve dans un seul
+  bundle (chunk principal de ~789 ko minifie, deja signale par Vite). Un
+  decoupage par route aurait un impact bien superieur a celui des polices,
+  mais c'est un chantier a part entiere.
