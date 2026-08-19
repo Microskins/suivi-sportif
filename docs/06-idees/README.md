@@ -6,7 +6,7 @@ pourraient etre integrees au projet.
 ## Index
 
 1. [Calendrier: seances et poids](./01-calendrier-suivi.md)
-2. [Chatbox IA](./06-%20chatbox-ia.md)
+2. [Chatbox IA](./06-chatbox-ia.md)
 3. [IA Idees](./90-ia-idees.md)
 4. [Archive des idees realisees](./archive/README.md)
 
