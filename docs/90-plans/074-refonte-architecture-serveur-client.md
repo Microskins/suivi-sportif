@@ -98,7 +98,7 @@
       l'erreur P2025" pour renvoyer `false` (donc 404 en amont) quand
       l'enregistrement n'existe pas. Les autres domaines font un `findFirst`
       prealable a la place; les deux patterns sont valides, rien a corriger.
-- [ ] Backend: mettre a jour le skill `structure-des-reponses-api` et ses
+- [x] Backend: mettre a jour le skill `structure-des-reponses-api` et ses
       assets pour refleter la convention reelle.
 - [ ] Frontend: creer `client/src/shared/format.ts` et migrer les 5
       reimplementations fr-FR dupliquees.
@@ -232,7 +232,28 @@
   d'extraction vers `client/src/shared/`.
 - 2026-08-19: validation complete apres ces changements: server 188/188 et
   typecheck OK, client 45/45 et typecheck OK, `npm run lint` sortie 0.
-- 2026-08-18: environnement de travail sans `node`/`npm` sur le PATH (Bash
+- 2026-08-19: skill `structure-des-reponses-api` remis en accord avec le
+  code. Ecarts corriges dans la doc:
+  - codes 404 prefixes par ressource (`USER_NOT_FOUND`, ...) au lieu d'un
+    `NOT_FOUND` generique, et `INTERNAL_SERVER_ERROR` au lieu de
+    `INTERNAL_ERROR`;
+  - `details` contient `error.errors` (tableau de `ZodIssue`) et **pas**
+    `zodError.flatten()` comme le skill le recommandait. Point important:
+    les schemas de reponse declarent `details: { type: "array" }`, or
+    `flatten()` renvoie un objet; suivre l'ancienne consigne aurait fait
+    disparaitre le champ a la serialisation;
+  - documentation du hook `authenticate` partage et de la raison pour
+    laquelle `fastify.authenticate` ne fonctionne pas ici;
+  - documentation de la pagination reelle, y compris le `pagination`
+    optionnel cote queries et la traduction `page`/`limit` -> `skip`/`take`.
+- 2026-08-19: les assets du skill ont ete **executes**, pas seulement relus:
+  copies temporairement dans `server/src` avec un stub de queries, ils
+  echouaient d'abord sur 3 tests (500 au lieu de 200/201). Cause: les
+  fixtures de test omettaient des champs `required` du schema de reponse
+  (`userId`, `notes`) et utilisaient un `id` non-uuid, ce qui fait echouer
+  la serialisation Fastify. Corrige, l'exemple passe 11 tests sur 11. Le
+  piege est desormais explique en commentaire dans l'asset, car c'est une
+  erreur facile a reproduire dans une vraie route.
   et PowerShell testes, tous deux en echec) — les commandes de
   verification (`typecheck`, `test`, `lint`, `build`,
   `check-client-file-size.mjs`) ne pourront pas etre executees depuis cet
