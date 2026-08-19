@@ -100,8 +100,9 @@
       prealable a la place; les deux patterns sont valides, rien a corriger.
 - [x] Backend: mettre a jour le skill `structure-des-reponses-api` et ses
       assets pour refleter la convention reelle.
-- [ ] Frontend: creer `client/src/shared/format.ts` et migrer les 5
-      reimplementations fr-FR dupliquees.
+- [x] Frontend: dedupliquer le formatage de dates. **`client/src/shared/`
+      n'a finalement pas ete cree**: l'analyse initiale etait fausse (voir
+      notes de verification).
 - [ ] Frontend: dedupliquer les tokens CSS en dur dans `client/src/styles.css`.
 - [ ] Frontend: charger les polices par site plutot que globalement dans
       `main.tsx`.
@@ -254,10 +255,32 @@
   la serialisation Fastify. Corrige, l'exemple passe 11 tests sur 11. Le
   piege est desormais explique en commentaire dans l'asset, car c'est une
   erreur facile a reproduire dans une vraie route.
-  et PowerShell testes, tous deux en echec) — les commandes de
-  verification (`typecheck`, `test`, `lint`, `build`,
-  `check-client-file-size.mjs`) ne pourront pas etre executees depuis cet
-  environnement; a lancer par un humain ou un environnement avec Node
-  avant de merger. Le plan 073 confirme que ces commandes fonctionnent
-  normalement dans l'environnement de developpement habituel du projet —
-  le blocage est propre a cette session, pas au projet.
+- 2026-08-19: la premisse de ce plan sur le formatage `fr-FR` etait
+  **inexacte**, et l'inspection du code l'a invalidee. Il n'existe pas de
+  fonction partagee entre >= 2 sites: seule la locale `"fr-FR"` est commune.
+  prix-aliments formate une devise EUR et une date `dateStyle: "long"`,
+  suivi-sportif formate des dates courtes et des nombres. Ce sont des
+  besoins differents, pas une duplication.
+  `client/src/shared/` n'a donc **pas** ete cree: le faire aurait introduit
+  un couplage entre sites la ou il n'y en a pas, en contradiction avec la
+  regle de `docs/02-architecture/project-structure.md` (n'extraire dans
+  `shared/` qu'un code reellement utilise par au moins deux sites), et avec
+  la tache de garde-fou anti cross-import de ce meme chantier.
+- 2026-08-19: la vraie duplication etait **interne a suivi-sportif**:
+  `meals-list.tsx` et `workouts-list.tsx` redefinissaient chacun un
+  `formatDate` identique alors que `dashboard/dashboard-helpers.ts` exportait
+  deja un `formatDate`. Les copies locales sont supprimees au profit d'un
+  `formatDateMedium` unique dans `dashboard-helpers.ts`.
+- 2026-08-19: attention, les deux fonctions ne sont **pas** interchangeables
+  et n'ont volontairement pas ete fusionnees. Verifie en les executant:
+  - `formatDate` -> `18/08/2026 20:05`
+  - `formatDateMedium` -> `18 aout 2026, 20:05`
+  L'application affiche donc deux formats de date selon les ecrans. Les
+  unifier changerait l'affichage: c'est une decision d'interface, qui releve
+  de la phase UX/UI et non de ce chantier technique. Les deux fonctions sont
+  documentees sur place pour que le choix se fasse en connaissance de cause.
+- 2026-08-19: la note du 2026-08-18 sur l'absence de `node`/`npm` est
+  **caduque**. L'outillage fonctionne desormais dans cette session (voir les
+  notes du 2026-08-19 sur `npm install`, `prisma generate` et les shims
+  Windows), et toutes les verifications de ce chantier ont pu etre lancees
+  reellement: tests, typecheck, lint et controle de taille des fichiers.
