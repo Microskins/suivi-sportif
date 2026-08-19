@@ -63,7 +63,7 @@ export function BodyMeasurementTrends({ measurements }: { measurements: BodyMeas
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <h3 className="site-display font-bold text-[#2b241e]">Tendances corporelles</h3>
-          <p className="mt-1 text-sm text-[#9c8f83]">Poids, IMC, masse grasse et taille abdominale.</p>
+          <p className="mt-1 text-sm text-[var(--site-muted)]">Poids, IMC, masse grasse et taille abdominale.</p>
         </div>
         <div className="flex flex-wrap gap-1 rounded-full bg-[#fdf6ef] p-1">
           {bodyTrendPeriods.map((item) => (
@@ -74,7 +74,7 @@ export function BodyMeasurementTrends({ measurements }: { measurements: BodyMeas
               className={`rounded-full px-3 py-2 text-sm font-medium transition ${
                 period === item.key
                   ? "bg-[linear-gradient(135deg,#ff7a54,#ffb648)] text-white"
-                  : "text-[#806f61] hover:bg-white"
+                  : "text-[var(--site-muted)] hover:bg-white"
               }`}
             >
               {item.label}
@@ -107,7 +107,7 @@ export function BodyMeasurementTrends({ measurements }: { measurements: BodyMeas
           </div>
         </>
       ) : (
-        <div className="mt-4 flex h-56 items-center justify-center rounded-[16px] bg-[#fdf6ef] px-4 text-center text-sm text-[#9c8f83]">
+        <div className="mt-4 flex h-56 items-center justify-center rounded-[16px] bg-[#fdf6ef] px-4 text-center text-sm text-[var(--site-muted)]">
           Deux mesures sur la période sont nécessaires pour afficher une tendance.
         </div>
       )}

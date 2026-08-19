@@ -287,7 +287,7 @@ export function Dashboard({
   }
 
   return (
-    <main className="site-sport-grid min-h-screen text-[#2b241e]">
+    <main id="contenu-principal" tabIndex={-1} className="site-sport-grid min-h-screen text-[#2b241e]">
       <section className="min-h-screen md:pl-[230px]">
         <aside className="border-b border-[#f0e3d6] bg-white p-4 md:fixed md:inset-y-0 md:left-0 md:z-10 md:w-[230px] md:overflow-y-auto md:border-b-0 md:border-r md:p-5">
           <DashboardTopBar

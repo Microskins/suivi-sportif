@@ -3,13 +3,13 @@ import { getConsentPolicyVersion } from "../../consent/consent-manager";
 
 export function CookiePolicyPage() {
   return (
-    <main className="site-sport-grid min-h-screen px-6 py-10 text-[#2b241e]">
+    <main id="contenu-principal" tabIndex={-1} className="site-sport-grid min-h-screen px-6 py-10 text-[#2b241e]">
       <section className="panel mx-auto max-w-3xl p-6 sm:p-9">
-        <a href="/suivi-sportif" className="text-sm font-semibold text-[#e85f3c] underline decoration-[#ffb648] decoration-2 underline-offset-4">
+        <a href="/suivi-sportif" className="text-sm font-semibold text-[var(--site-accent-text)] underline decoration-[#ffb648] decoration-2 underline-offset-4">
           Retour à l&apos;application
         </a>
         <h1 className="site-display mt-5 text-3xl font-bold">Politique de cookies</h1>
-        <p className="mt-2 text-sm text-[#9c8f83]">
+        <p className="mt-2 text-sm text-[var(--site-muted)]">
           Version de la politique : {getConsentPolicyVersion()}
         </p>
 

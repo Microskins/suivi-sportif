@@ -27,7 +27,7 @@ export function BodyInterpretation({
     <section className="panel p-5">
       <div>
         <h3 className="site-display font-bold text-[#2b241e]">Lecture des indicateurs</h3>
-        <p className="mt-1 text-sm text-[#9c8f83]">Repère simple pour transformer les mesures en décisions.</p>
+        <p className="mt-1 text-sm text-[var(--site-muted)]">Repère simple pour transformer les mesures en décisions.</p>
       </div>
       <div className="mt-4 grid gap-3 md:grid-cols-3">
         <div className="rounded-[16px] bg-[#fdf6ef] p-3">

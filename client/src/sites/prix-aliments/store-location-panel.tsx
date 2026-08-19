@@ -20,7 +20,7 @@ export function StoreLocationPanel() {
         <div className="flex items-center gap-2 text-right">
           <LocationIcon className="h-5 w-5 text-[#c1362b]" />
           <div>
-            <p className="text-[0.58rem] uppercase text-[#6b6b6b]">Zone</p>
+            <p className="text-[0.58rem] uppercase text-[var(--site-muted)]">Zone</p>
             <p className="text-sm font-bold">{COMPARISON_AREA.postalCode}</p>
           </div>
         </div>
@@ -34,13 +34,13 @@ export function StoreLocationPanel() {
                 <h3 className="text-xs font-semibold uppercase leading-5">
                   {store.displayName}
                 </h3>
-                <span className="border border-[#b8b3a0] px-1.5 py-0.5 text-[0.55rem] font-semibold text-[#6b6b6b]">
+                <span className="border border-[#b8b3a0] px-1.5 py-0.5 text-[0.55rem] font-semibold text-[var(--site-muted)]">
                   {store.countryCode}
                 </span>
               </div>
               <address
                 aria-label={`${store.address}, ${store.postalCode} ${store.city}`}
-                className="mt-1 text-[0.68rem] not-italic leading-5 text-[#6b6b6b]"
+                className="mt-1 text-[0.68rem] not-italic leading-5 text-[var(--site-muted)]"
               >
                 {store.address} · {store.postalCode} {store.city}
               </address>

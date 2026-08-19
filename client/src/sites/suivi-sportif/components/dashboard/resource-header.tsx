@@ -60,7 +60,7 @@ export function ResourceHeader({
         <h2 className="site-display mt-1 text-2xl font-bold text-[#2b241e]">
           {titles[resource]}
         </h2>
-        {isLoading && <p className="mt-1 text-sm text-[#9c8f83]">Chargement…</p>}
+        {isLoading && <p className="mt-1 text-sm text-[var(--site-muted)]">Chargement…</p>}
       </div>
       <div className="flex flex-wrap gap-2">
         {onCreateFromTemplate && (

@@ -52,7 +52,7 @@ function ContourDivider() {
       viewBox="0 0 1200 80"
       preserveAspectRatio="none"
       aria-hidden="true"
-      className="h-16 w-full text-[#b0794c]/55"
+      className="h-16 w-full text-[var(--site-muted)]/55"
     >
       <path
         d="M0 51c108-46 187 18 299-11 108-29 173-5 274 18 112 26 188-37 297-22 114 16 203 29 330-18M0 67c103-35 184 25 300-1 103-23 187-1 281 13 111 16 190-31 294-21 112 11 199 22 325-10"
@@ -68,7 +68,7 @@ function RouteItinerary({ route }: { route: TrekRouteContent }) {
   return (
     <div className="grid gap-8 bg-[#f7ecd5]/70 p-6 lg:grid-cols-[0.8fr_1.2fr] lg:p-10">
       <div className="border-b border-[#e0c99e] pb-8 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
-        <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[#b0794c]">
+        <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[var(--site-muted)]">
           Itinéraire sélectionné
         </p>
         <h3 className="site-display mt-3 text-4xl font-semibold leading-none text-[#332f26]">
@@ -86,7 +86,7 @@ function RouteItinerary({ route }: { route: TrekRouteContent }) {
         {route.stages.map((stage, itemIndex) => (
           <li key={stage.day} className="grid grid-cols-[2.75rem_1fr] gap-4">
             <div className="flex flex-col items-center">
-              <span className="site-label grid h-10 w-10 place-items-center rounded-full border border-[#5c7350] text-xs font-medium text-[#5c7350]">
+              <span className="site-label grid h-10 w-10 place-items-center rounded-full border border-[#5c7350] text-xs font-medium text-[var(--site-accent)]">
                 {stage.day}
               </span>
               {itemIndex < route.stages.length - 1 && (
@@ -97,7 +97,7 @@ function RouteItinerary({ route }: { route: TrekRouteContent }) {
               <p className="site-display text-2xl font-semibold text-[#332f26]">
                 {stage.title}
               </p>
-              <p className="site-label mt-2 text-xs font-medium uppercase tracking-[0.06em] text-[#b0794c]">
+              <p className="site-label mt-2 text-xs font-medium uppercase tracking-[0.06em] text-[var(--site-muted)]">
                 {stage.distance} · {stage.elevation} · {stage.duration}
               </p>
             </div>
@@ -116,11 +116,11 @@ function Stages({ route }: { route: TrekRouteContent }) {
           key={stage.day}
           className="grid gap-5 border-b border-[#e0c99e] p-6 last:border-b-0 md:grid-cols-[64px_1fr] lg:grid-cols-[64px_1fr_auto] lg:p-8"
         >
-          <span className="site-label grid h-14 w-14 place-items-center rounded-full border border-[#5c7350] text-sm font-medium text-[#5c7350]">
+          <span className="site-label grid h-14 w-14 place-items-center rounded-full border border-[#5c7350] text-sm font-medium text-[var(--site-accent)]">
             {stage.day}
           </span>
           <div>
-            <p className="site-label text-[0.68rem] font-medium uppercase tracking-[0.14em] text-[#b0794c]">
+            <p className="site-label text-[0.68rem] font-medium uppercase tracking-[0.14em] text-[var(--site-muted)]">
               Jour {stage.day}
             </p>
             <h3 className="site-display mt-2 text-3xl font-semibold leading-none text-[#332f26]">
@@ -132,13 +132,13 @@ function Stages({ route }: { route: TrekRouteContent }) {
             <ul className="mt-5 grid gap-x-6 gap-y-2 border-t border-[#e0c99e] pt-4 text-sm text-[#5f584c] sm:grid-cols-2">
               {stage.points.map((point) => (
                 <li key={point} className="flex gap-2">
-                  <span aria-hidden="true" className="text-[#5c7350]">→</span>
+                  <span aria-hidden="true" className="text-[var(--site-accent)]">→</span>
                   {point}
                 </li>
               ))}
             </ul>
           </div>
-          <dl className="site-label grid grid-cols-2 gap-x-6 gap-y-3 border-t border-[#e0c99e] pt-4 text-xs font-medium uppercase tracking-[0.05em] text-[#b0794c] lg:block lg:min-w-48 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+          <dl className="site-label grid grid-cols-2 gap-x-6 gap-y-3 border-t border-[#e0c99e] pt-4 text-xs font-medium uppercase tracking-[0.05em] text-[var(--site-muted)] lg:block lg:min-w-48 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
             {[stage.distance, stage.elevation, stage.duration, stage.difficulty].map(
               (metric) => (
                 <div key={metric} className="lg:mb-4">
@@ -218,7 +218,7 @@ export function VosgesWildSite() {
     TREK_ROUTES.find((route) => route.id === routeId) ?? TREK_ROUTES[0];
 
   return (
-    <main className="site-topography min-h-screen bg-[#f1e2c4] text-[#332f26]">
+    <main id="contenu-principal" tabIndex={-1} className="site-topography min-h-screen bg-[#f1e2c4] text-[#332f26]">
       <section className="relative isolate min-h-[48rem] overflow-hidden">
         <img
           src="/sites/trekking/vosges-wild-hero.png"
@@ -240,11 +240,11 @@ export function VosgesWildSite() {
           </header>
 
           <div className="mt-auto max-w-5xl pb-28 pt-24 text-white">
-            <p className="site-label inline-flex rounded-full border border-white/40 bg-[#b0794c]/55 px-4 py-2 text-[0.68rem] font-medium uppercase tracking-[0.14em] backdrop-blur-sm">
+            <p className="site-label inline-flex rounded-full border border-white/40 bg-[#865c3a]/90 px-4 py-2 text-[0.68rem] font-medium uppercase tracking-[0.14em] backdrop-blur-sm">
               🏔 Micro-aventure · 3 jours / 2 nuits
             </p>
             <h1 className="site-display mt-6 text-[clamp(3.8rem,8vw,6.8rem)] font-semibold leading-[0.9]">
-              Les Vosges
+              Les Vosges{" "}
               <br />
               comme horizon.
             </h1>
@@ -271,11 +271,11 @@ export function VosgesWildSite() {
         <section id="itineraire" className="pb-20 pt-8 sm:pb-28">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
             <div>
-              <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[#b0794c]">
+              <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[var(--site-muted)]">
                 Préparer le terrain
               </p>
               <h2 className="site-display mt-4 text-5xl font-semibold leading-[0.94] sm:text-6xl">
-                Deux traces,
+                Deux traces,{" "}
                 <br />
                 un même massif.
               </h2>
@@ -303,11 +303,11 @@ export function VosgesWildSite() {
                       : "text-[#6b6254] hover:bg-white/35 hover:text-[#332f26]"
                   }`}
                 >
-                  <span className="site-label grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#5c7350] text-xs font-medium text-[#5c7350]">
+                  <span className="site-label grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#5c7350] text-xs font-medium text-[var(--site-accent)]">
                     {route.id === "trace-01" ? "01" : "02"}
                   </span>
                   <span>
-                    <span className="site-label block text-[0.6rem] font-medium uppercase tracking-[0.14em] text-[#b0794c]">
+                    <span className="site-label block text-[0.6rem] font-medium uppercase tracking-[0.14em] text-[var(--site-muted)]">
                       Parcours
                     </span>
                     <span className="site-display mt-1 block text-xl font-semibold">
@@ -353,7 +353,7 @@ export function VosgesWildSite() {
 
         <section className="grid border-y border-[#332f26] md:grid-cols-2">
           <article className="border-b border-[#332f26] bg-white/25 p-7 md:border-b-0 md:border-r sm:p-10">
-            <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[#5c7350]">
+            <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[var(--site-accent)]">
               Bivouac
             </p>
             <h2 className="site-display mt-4 text-4xl font-semibold leading-none">
@@ -381,7 +381,7 @@ export function VosgesWildSite() {
         </section>
 
         <section className="py-20 sm:py-28">
-          <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[#b0794c]">
+          <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[var(--site-muted)]">
             Décision avant départ
           </p>
           <h2 className="site-display mt-4 max-w-3xl text-5xl font-semibold leading-[0.94] sm:text-6xl">

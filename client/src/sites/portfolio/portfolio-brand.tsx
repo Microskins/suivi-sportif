@@ -11,7 +11,7 @@ export function PortfolioBrand() {
         <span className="site-display block text-xl font-bold uppercase leading-none tracking-[-0.01em]">
           Portfolio
         </span>
-        <span className="site-label mt-1 block text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[#5b6474]">
+        <span className="site-label mt-1 block text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-[var(--site-muted)]">
           Projets choisis
         </span>
       </span>

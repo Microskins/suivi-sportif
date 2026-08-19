@@ -68,7 +68,7 @@ export function PriceTicketQr({ qrCodeUrl, ticketNumber }: PriceTicketQrProps) {
         src={qrCodeUrl}
         width="160"
       />
-      <figcaption className="mt-2 text-[0.54rem] leading-4 text-[#6b6b6b]">
+      <figcaption className="mt-2 text-[0.54rem] leading-4 text-[var(--site-muted)]">
         Scannez pour rouvrir le ticket {ticketNumber}
       </figcaption>
     </figure>

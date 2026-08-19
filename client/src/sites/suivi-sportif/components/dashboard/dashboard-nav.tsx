@@ -20,8 +20,8 @@ const nutritionLinks: Array<[DashboardResource, string]> = [
 function navButtonClass(isActive: boolean) {
   return `mb-1 block w-full rounded-[12px] px-3 py-2.5 text-left text-sm font-semibold transition ${
     isActive
-      ? "bg-[linear-gradient(135deg,#fff0e6,#ffe8d6)] text-[#e85f3c]"
-      : "text-[#806f61] hover:bg-[#fff8f2] hover:text-[#2b241e]"
+      ? "bg-[linear-gradient(135deg,#fff0e6,#ffe8d6)] text-[var(--site-accent-text)]"
+      : "text-[var(--site-muted)] hover:bg-[#fff8f2] hover:text-[#2b241e]"
   }`;
 }
 

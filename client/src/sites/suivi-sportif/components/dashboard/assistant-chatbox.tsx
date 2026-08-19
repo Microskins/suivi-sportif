@@ -83,7 +83,7 @@ function ChatBubble({
 function TypingBubble() {
   return (
     <div className="flex justify-start">
-      <div className="rounded-[1.5rem] rounded-bl-sm bg-[#fdf6ef] px-4 py-3 text-[#806f61]">
+      <div className="rounded-[1.5rem] rounded-bl-sm bg-[#fdf6ef] px-4 py-3 text-[var(--site-muted)]">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 animate-pulse rounded-full bg-[#ff7a54]" />
           <span className="h-2 w-2 animate-pulse rounded-full bg-[#ff9a50] [animation-delay:120ms]" />
@@ -191,7 +191,7 @@ export function AssistantChatbox({
                 <h2 className="site-display mt-1 text-lg font-bold text-[#2b241e]">
                   Coach de poche
                 </h2>
-                <p className="mt-1 text-xs leading-relaxed text-[#806f61]">
+                <p className="mt-1 text-xs leading-relaxed text-[var(--site-muted)]">
                   Pose une question, demande un résumé ou une explication. Je
                   réponds dans le fil.
                 </p>
@@ -220,7 +220,7 @@ export function AssistantChatbox({
                         key={example}
                         type="button"
                         onClick={() => setMessage(example)}
-                        className="rounded-full border border-[#f0e3d6] bg-white px-3 py-1.5 text-left text-[0.72rem] text-[#806f61] transition hover:border-[#ffb899] hover:text-[#e85f3c]"
+                        className="rounded-full border border-[#f0e3d6] bg-white px-3 py-1.5 text-left text-[0.72rem] text-[var(--site-muted)] transition hover:border-[#ffb899] hover:text-[var(--site-accent-text)]"
                       >
                         {example}
                       </button>
@@ -252,7 +252,7 @@ export function AssistantChatbox({
                   type="button"
                   onClick={() => setMessage(example)}
                   disabled={isAuthBypassEnabled || isBusy}
-                  className="rounded-full border border-[#f0e3d6] bg-white px-3 py-1.5 text-left text-[0.7rem] text-[#806f61] transition hover:border-[#ffb899] hover:text-[#e85f3c] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-full border border-[#f0e3d6] bg-white px-3 py-1.5 text-left text-[0.7rem] text-[var(--site-muted)] transition hover:border-[#ffb899] hover:text-[var(--site-accent-text)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {example}
                 </button>
@@ -301,7 +301,7 @@ export function AssistantChatbox({
         onClick={() => setIsOpen((value) => !value)}
         className="ml-auto flex min-h-14 items-center gap-3 rounded-full bg-[linear-gradient(135deg,#ff7a54,#ffb648)] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_26px_rgba(255,122,84,0.3)] transition hover:-translate-y-0.5"
       >
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-[#e85f3c]">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-[var(--site-accent-text)]">
           IA
         </span>
         Chat IA

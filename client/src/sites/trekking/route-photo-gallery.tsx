@@ -14,7 +14,7 @@ export function RoutePhotoGallery({ route }: { route: TrekRoute }) {
     >
       <div className="flex flex-wrap items-end justify-between gap-5 border-b border-[#e0c99e] pb-6">
         <div>
-          <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[#b0794c]">
+          <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[var(--site-muted)]">
             Carnet photo
           </p>
           <h3

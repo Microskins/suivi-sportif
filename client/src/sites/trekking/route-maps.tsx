@@ -16,7 +16,7 @@ export function RouteMaps({ route }: { route: TrekRoute }) {
     >
       <div className="flex flex-wrap items-start justify-between gap-5 border-b border-[#e0c99e] pb-6">
         <div>
-          <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[#b0794c]">
+          <p className="site-label text-xs font-medium uppercase tracking-[0.15em] text-[var(--site-muted)]">
             Carte de la trace
           </p>
           <h3
@@ -47,7 +47,7 @@ export function RouteMaps({ route }: { route: TrekRoute }) {
           />
         </div>
         <div className="border-t border-[#332f26] p-5">
-          <p className="site-label text-xs font-medium uppercase tracking-[0.14em] text-[#b0794c]">
+          <p className="site-label text-xs font-medium uppercase tracking-[0.14em] text-[var(--site-muted)]">
             Légende du tracé
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
