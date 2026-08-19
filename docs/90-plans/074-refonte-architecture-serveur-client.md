@@ -106,8 +106,8 @@
 - [ ] Frontend: dedupliquer les tokens CSS en dur dans `client/src/styles.css`.
 - [ ] Frontend: charger les polices par site plutot que globalement dans
       `main.tsx`.
-- [ ] Frontend: ajouter un script de garde-fou anti cross-import entre
-      sites.
+- [x] Frontend: ajouter un script de garde-fou anti cross-import entre
+      sites (`npm run check:site-boundaries`).
 - [x] Tooling: ajouter `eslint.config.js` (flat config) et simplifier les
       scripts `lint`. Ecart au plan: une config **par workspace** et non une
       seule a la racine (voir decisions).
@@ -284,3 +284,16 @@
   notes du 2026-08-19 sur `npm install`, `prisma generate` et les shims
   Windows), et toutes les verifications de ce chantier ont pu etre lancees
   reellement: tests, typecheck, lint et controle de taille des fichiers.
+- 2026-08-19: garde-fou anti cross-import ajoute
+  (`scripts/check-site-boundaries.mjs`, `npm run check:site-boundaries`),
+  calque sur le script de controle de taille existant. La regle "un site
+  n'importe jamais un autre site" etait documentee depuis le plan 069 mais
+  ne reposait que sur la discipline; elle est desormais verifiable.
+  Le controle resout les chemins reels plutot que de filtrer du texte, pour
+  attraper aussi bien `../autre-site/x` qu'une remontee profonde
+  `../../sites/autre-site/x`. Le sens `app` -> `sites/*` reste autorise.
+- 2026-08-19: le garde-fou a ete verifie **en le faisant echouer**, et pas
+  seulement en le voyant passer: deux fichiers sondes temporaires ont ete
+  introduits (import relatif direct et remontee profonde), tous deux
+  detectes avec sortie 1 et message actionnable, puis supprimes. Un
+  controle qui n'a jamais echoue ne prouve rien.
