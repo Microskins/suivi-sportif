@@ -80,6 +80,7 @@ Index chronologique des chantiers planifies et executes.
 74. [Refonte architecture serveur et client](./074-refonte-architecture-serveur-client.md)
 75. [Accessibilite des cinq sites](./075-accessibilite-multi-sites.md)
 76. [Mise a jour des docs sources de verite](./076-mise-a-jour-docs-sources-verite.md)
+77. [Fix 502 proxy Home Assistant](./077-fix-502-proxy-home-assistant.md)
 
 ## Convention
 

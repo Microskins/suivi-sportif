@@ -117,6 +117,15 @@ pas encore, les generer d'abord avec Certbot:
 sudo certbot certonly --nginx -d suivi-sportif.fr
 ```
 
+Depuis le plan 077, `scripts/deploy-production.sh` refait ce `cp`/`ln -sf`
+automatiquement a chaque deploiement qui touche `client/nginx/` ou
+`deploy/nginx/`. Les commandes ci-dessus restent utiles pour la premiere
+installation ou une reparation manuelle. Verifier apres coup que
+`/etc/nginx/sites-enabled/suivi-sportif.fr` est bien un symlink vers
+`sites-available/` (`ls -la /etc/nginx/sites-enabled/`) et pas une copie
+independante: une copie divergente a cause un `502 Bad Gateway` silencieux
+malgre des deploiements reussis (voir plan 077).
+
 ## 5. Arreter PM2
 
 Seulement apres validation de Docker et Nginx:

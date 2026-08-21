@@ -79,13 +79,17 @@ CURRENT_COMMIT="$(git rev-parse HEAD)"
 git rev-parse --short HEAD
 
 if ! git diff --quiet "$PREVIOUS_COMMIT" "$CURRENT_COMMIT" -- client/nginx deploy/nginx; then
-  log "Validate and reload Nginx"
+  log "Sync and reload Nginx"
   git diff --name-only "$PREVIOUS_COMMIT" "$CURRENT_COMMIT" -- client/nginx deploy/nginx
   if sudo -n true >/dev/null 2>&1; then
+    # Copie systematique depot -> site actif: /etc/nginx/sites-enabled ne doit
+    # jamais deriver silencieusement du fichier versionne (voir plan 077).
+    sudo -n cp deploy/nginx/suivi-sportif.fr.conf /etc/nginx/sites-available/suivi-sportif.fr
+    sudo -n ln -sf /etc/nginx/sites-available/suivi-sportif.fr /etc/nginx/sites-enabled/suivi-sportif.fr
     sudo -n nginx -t
     sudo -n systemctl reload nginx
   else
-    log "Skip Nginx reload (passwordless sudo unavailable)"
+    log "Skip Nginx sync/reload (passwordless sudo unavailable)"
   fi
 else
   log "Skip Nginx reload"
