@@ -9,12 +9,15 @@
 //
 // Traces GPS: deposer les GPX (export Strava: activite > ... > "Exporter le
 // GPX") dans `client/public/sites/voyage/ecosse-2026/traces/` puis les
-// referencer dans `gpx`. Un GPX "trajet" remplace le trace reconstitue de
-// l'etape; un GPX "activite" (randonnee, course...) s'y ajoute.
+// referencer dans `gpx`. Deux types de trace:
+// - "trajet": la route de A a B. Remplace le trace reconstitue de l'etape;
+//   seule la distance reelle est affichee.
+// - "randonnee": s'ajoute a l'etape, coloree par altitude, avec distance,
+//   denivele, duree et profil altimetrique.
 
 export type LngLat = [number, number];
 
-export type TrackKind = "trajet" | "activite";
+export type TrackKind = "trajet" | "randonnee";
 
 export type TripTrackFile = {
   kind: TrackKind;
@@ -258,18 +261,6 @@ export function routeLengthKm(route: LngLat[]) {
   );
 }
 
-// Le trace polyligne simplifie sous-estime la route reelle (virages, cols):
-// la distance affichee est arrondie a la dizaine et presentee comme approchee.
-export function stageDistanceLabel(stage: TripStage) {
-  if (stage.route.length < 2) {
-    return "Base";
-  }
-  return `≈ ${Math.round(routeLengthKm(stage.route) / 10) * 10} km`;
-}
-
 export const ecosseFullRoute: LngLat[] = ecosseStages.flatMap((stage, index) =>
   index === 0 ? [stage.position] : stage.route.slice(1),
 );
-
-export const ecosseTotalKm =
-  Math.round(routeLengthKm(ecosseFullRoute) / 10) * 10;

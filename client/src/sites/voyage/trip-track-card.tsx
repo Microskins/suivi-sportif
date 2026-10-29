@@ -14,29 +14,34 @@ type TripTrackCardProps = {
   track: GpxTrack;
 };
 
-// Resume d'une trace GPS facon Strava: distance, denivele, duree et profil
-// altimetrique. Le graphique est decoratif; les chiffres portent l'info.
+// Resume d'une trace GPS. Un trajet (route de A a B) ne montre que sa
+// distance; une randonnee montre aussi denivele, duree et profil, facon
+// Strava. Le graphique est decoratif; les chiffres portent l'info.
 export function TripTrackCard({ track }: TripTrackCardProps) {
   // useId produit des ":" invalides dans une reference url(#...).
   const gradientId = `profil-${useId().replace(/:/g, "")}`;
   const stats = trackStats(track.points);
-  const profile = elevationProfile(track.points);
-  const figures = [
-    [
-      "Distance",
-      `${stats.distanceKm.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} km`,
-    ],
-    ["Dénivelé +", stats.ascentM === null ? "—" : `${stats.ascentM} m`],
-    [
-      "Durée",
-      stats.durationMs === null ? "—" : formatDuration(stats.durationMs),
-    ],
+  const isHike = track.kind === "randonnee";
+  const profile = isHike ? elevationProfile(track.points) : [];
+  const distance: [string, string] = [
+    "Distance",
+    `${stats.distanceKm.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} km`,
   ];
+  const figures: [string, string][] = isHike
+    ? [
+        distance,
+        ["Dénivelé +", stats.ascentM === null ? "—" : `${stats.ascentM} m`],
+        [
+          "Durée",
+          stats.durationMs === null ? "—" : formatDuration(stats.durationMs),
+        ],
+      ]
+    : [distance];
 
   return (
     <article className="rounded-lg border border-[#dfe4ea] p-3">
       <p className="site-label text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--site-muted)]">
-        GPS · {track.kind === "trajet" ? "Trajet" : "Activité"}
+        GPS · {isHike ? "Randonnée" : "Trajet"}
       </p>
       <h4 className="site-display mt-1 text-base font-semibold leading-snug">
         {track.name}
@@ -63,7 +68,7 @@ export function TripTrackCard({ track }: TripTrackCardProps) {
               <defs>
                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#e08a1e" stopOpacity={0.55} />
-                  <stop offset="100%" stopColor="#1c4ed8" stopOpacity={0.12} />
+                  <stop offset="100%" stopColor="#0e9f9a" stopOpacity={0.12} />
                 </linearGradient>
               </defs>
               <XAxis
@@ -89,7 +94,7 @@ export function TripTrackCard({ track }: TripTrackCardProps) {
               <Area
                 dataKey="eleM"
                 type="monotone"
-                stroke="#1c4ed8"
+                stroke="#0e9f9a"
                 strokeWidth={1.5}
                 fill={`url(#${gradientId})`}
                 isAnimationActive={false}

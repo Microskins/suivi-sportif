@@ -37,12 +37,16 @@
 - [x] Tests (routeur, page, continuite du trace), typecheck, lint, build,
   controles taille / frontieres / contraste.
 - [x] Verification navigateur desktop et mobile avec la CSP de production.
-- [x] Support des traces GPS (GPX Strava, Garmin, Komoot...): trait plein
-  colore par altitude, profil altimetrique, distance, D+ et duree; le trace
-  reconstitue reste en tirets pour les etapes sans GPX.
+- [x] Support des traces GPS (GPX Strava, Garmin, Komoot...), en deux types:
+  - `trajet` (route de A a B): trait plein bleu qui remplace le trace
+    reconstitue de l'etape; seule la distance reelle est affichee, et elle
+    alimente la distance de l'etape et du voyage;
+  - `randonnee`: trait plein colore par altitude (sarcelle -> orange),
+    cadrage sur la boucle, distance, D+, duree et profil altimetrique.
+  Les etapes sans trajet GPS gardent le trace reconstitue en tirets.
 - [ ] Deposer les GPX dans `client/public/sites/voyage/ecosse-2026/traces/`
-  et les referencer dans `gpx` (`trajet` remplace le trace de l'etape,
-  `activite` s'y ajoute).
+  et les referencer dans `gpx` de l'etape concernee. Les fichiers sont
+  publies tels quels (pas de depart depuis le domicile a masquer).
 - [ ] Remplacer l'itineraire provisoire par le trajet reel (etapes, dates).
 - [ ] Deposer les photos dans `client/public/sites/voyage/ecosse-2026/` et les
   referencer dans `photos`.

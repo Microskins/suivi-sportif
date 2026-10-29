@@ -321,7 +321,7 @@ export function createTripMap({
         button.setAttribute("aria-current", isActive ? "step" : "false");
       });
       const settings = mapModels[model];
-      // Une activite GPS (randonnee...) est cadree en entier: un zoom fixe
+      // Une randonnee GPS est cadree en entier: un zoom fixe
       // sur le point d'etape la couperait ou la rendrait minuscule.
       const stageActivities = activities.filter(
         (track) => track.stageIndex === index,
@@ -436,7 +436,7 @@ export function createTripMap({
     setTracks(tracks: GpxTrack[]) {
       stopReplay();
       paths = buildPaths(stages, tracks);
-      activities = tracks.filter((track) => track.kind === "activite");
+      activities = tracks.filter((track) => track.kind === "randonnee");
       tripBounds = boundsOf([
         ...fullRoute,
         ...tracks.flatMap((track) => track.points.map((p) => p.position)),

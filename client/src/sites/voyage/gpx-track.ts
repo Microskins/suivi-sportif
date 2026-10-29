@@ -1,8 +1,8 @@
 // Lecture des traces GPS (GPX exporte depuis Strava, Garmin, Komoot...) et
 // calcul des statistiques affichees dans le carnet. Aucune dependance: le
 // GPX est un XML simple que DOMParser lit directement dans le navigateur.
-import type { LngLat, TrackKind } from "./ecosse-2026-data";
-import { distanceKm } from "./ecosse-2026-data";
+import type { LngLat, TrackKind, TripStage } from "./ecosse-2026-data";
+import { distanceKm, routeLengthKm } from "./ecosse-2026-data";
 
 export type TrackPoint = {
   ele: number | null;
@@ -132,9 +132,10 @@ export function elevationProfile(points: TrackPoint[], samples = 200) {
 
 // Rampe d'altitude a paliers vifs: un melange direct bleu -> ambre passerait
 // par un gris-violet terne a mi-hauteur.
+// Le bleu accent est reserve aux trajets: la rampe des randonnees commence au
+// sarcelle pour que les deux types de trace ne se confondent pas.
 const ELEVATION_RAMP = [
-  [28, 78, 216], // bleu accent: fond de vallee
-  [14, 159, 154], // sarcelle
+  [14, 159, 154], // sarcelle: fond de vallee
   [224, 138, 30], // ambre
   [217, 72, 15], // orange brule: cretes
 ];
@@ -150,7 +151,7 @@ function mix(ratio: number) {
 }
 
 // Decoupe une trace en petits troncons colores selon l'altitude, a la maniere
-// des cartes de chaleur Strava: bleu en fond de vallee, orange sur les cretes.
+// des cartes de chaleur Strava: sarcelle en fond de vallee, orange sur les cretes.
 export function elevationSegments(
   tracks: GpxTrack[],
   chunkSize = 8,
@@ -177,7 +178,7 @@ export function elevationSegments(
         properties: {
           color: elevations.length
             ? mix((meanEle - min) / range)
-            : "rgb(28, 78, 216)",
+            : "rgb(14, 159, 154)",
         },
         geometry: {
           type: "LineString",
@@ -197,4 +198,52 @@ export function formatDuration(durationMs: number) {
   return hours
     ? `${hours} h ${String(minutes).padStart(2, "0")}`
     : `${minutes} min`;
+}
+
+export type StageDistance = { exact: boolean; km: number } | null;
+
+// Distance de route d'une etape: celle des trajets GPS quand il y en a
+// (exacte), sinon celle du trace reconstitue, qui sous-estime la route reelle
+// (virages, cols) et reste donc presentee comme approchee. Les randonnees ne
+// comptent pas: elles s'ajoutent a l'etape sans en etre le deplacement.
+export function stageDistance(
+  stage: TripStage,
+  stageIndex: number,
+  tracks: GpxTrack[],
+): StageDistance {
+  const drives = tracks.filter(
+    (track) => track.stageIndex === stageIndex && track.kind === "trajet",
+  );
+  if (drives.length > 0) {
+    return {
+      exact: true,
+      km: drives.reduce(
+        (sum, track) => sum + trackStats(track.points).distanceKm,
+        0,
+      ),
+    };
+  }
+  if (stage.route.length < 2) {
+    return null;
+  }
+  return { exact: false, km: routeLengthKm(stage.route) };
+}
+
+export function formatDistance(distance: StageDistance) {
+  if (distance === null) {
+    return "Base";
+  }
+  return distance.exact
+    ? `${Math.round(distance.km).toLocaleString("fr-FR")} km`
+    : `≈ ${(Math.round(distance.km / 10) * 10).toLocaleString("fr-FR")} km`;
+}
+
+export function tripDistance(stages: TripStage[], tracks: GpxTrack[]) {
+  const distances = stages.map((stage, index) =>
+    stageDistance(stage, index, tracks),
+  );
+  return formatDistance({
+    exact: distances.every((distance) => distance === null || distance.exact),
+    km: distances.reduce((sum, distance) => sum + (distance?.km ?? 0), 0),
+  });
 }

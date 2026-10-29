@@ -5,6 +5,8 @@ import { distanceKm, routeLengthKm } from "./ecosse-2026-data";
 import type { GpxTrack } from "./gpx-track";
 import { elevationSegments } from "./gpx-track";
 
+const DRIVE_COLOR = "#1c4ed8";
+
 export type MapStage = {
   code: string;
   position: LngLat;
@@ -57,16 +59,16 @@ export function collection(
   return { type: "FeatureCollection", features };
 }
 
-// Repartit chaque etape entre trace GPS (trait plein colore) et trace
-// reconstitue (tirets), et construit le chemin parcouru par le rejeu.
+// Repartit chaque etape entre trajet GPS (trait plein bleu), randonnee GPS
+// (trait plein colore par altitude) et trace reconstitue (tirets), et
+// construit le chemin parcouru par le rejeu.
 export function buildPaths(stages: MapStage[], tracks: GpxTrack[]) {
   const reconstructed: GeoJSON.Feature<GeoJSON.LineString>[] = [];
+  const drives = tracks.filter((track) => track.kind === "trajet");
   const stagePaths = stages.map((stage, index) => {
-    const drives = tracks.filter(
-      (track) => track.stageIndex === index && track.kind === "trajet",
-    );
-    if (drives.length > 0) {
-      return drives.flatMap((track) =>
+    const stageDrives = drives.filter((track) => track.stageIndex === index);
+    if (stageDrives.length > 0) {
+      return stageDrives.flatMap((track) =>
         track.points.map((point) => point.position),
       );
     }
@@ -85,7 +87,14 @@ export function buildPaths(stages: MapStage[], tracks: GpxTrack[]) {
   });
 
   return {
-    gps: elevationSegments(tracks),
+    gps: collection([
+      ...drives.map((track) => ({
+        ...lineFeature(track.points.map((point) => point.position)),
+        properties: { color: DRIVE_COLOR },
+      })),
+      ...elevationSegments(tracks.filter((track) => track.kind === "randonnee"))
+        .features,
+    ]),
     reconstructed: collection(reconstructed),
     replay,
     stageEnds,

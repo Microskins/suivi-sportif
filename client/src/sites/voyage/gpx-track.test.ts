@@ -1,11 +1,14 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it } from "vitest";
+import { ecosseStages } from "./ecosse-2026-data";
 import {
   elevationProfile,
   elevationSegments,
+  formatDistance,
   formatDuration,
   parseGpx,
+  stageDistance,
   trackStats,
 } from "./gpx-track";
 
@@ -48,7 +51,7 @@ describe("traces GPX", () => {
   it("produit un profil et des troncons colores par altitude", () => {
     const { points } = parseGpx(gpx, "x");
     const track = {
-      kind: "activite" as const,
+      kind: "randonnee" as const,
       name: "x",
       points,
       stageIndex: 3,
@@ -71,5 +74,28 @@ describe("traces GPX", () => {
 
   it("refuse un fichier qui n'est pas du XML", () => {
     expect(() => parseGpx("pas un gpx <", "casse.gpx")).toThrow(/illisible/);
+  });
+
+  it("affiche la distance reelle d'un trajet GPS et ignore les randonnees", () => {
+    const glencoe = ecosseStages[1];
+    const { points } = parseGpx(gpx, "x");
+    const hike = {
+      kind: "randonnee" as const,
+      name: "R",
+      points,
+      stageIndex: 1,
+    };
+    const drive = { kind: "trajet" as const, name: "T", points, stageIndex: 1 };
+
+    // Sans trajet GPS: distance du trace reconstitue, arrondie et approchee.
+    expect(formatDistance(stageDistance(glencoe, 1, [hike]))).toMatch(
+      /^≈ \d+ km$/,
+    );
+    // Avec trajet GPS: distance exacte du fichier.
+    expect(stageDistance(glencoe, 1, [hike, drive])).toEqual({
+      exact: true,
+      km: trackStats(points).distanceKm,
+    });
+    expect(formatDistance(stageDistance(ecosseStages[0], 0, []))).toBe("Base");
   });
 });

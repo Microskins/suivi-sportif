@@ -1,26 +1,24 @@
 import { BoardingTicket } from "./boarding-ticket";
-import {
-  ecosseFullRoute,
-  ecosseStages,
-  ecosseTotalKm,
-  stageDistanceLabel,
-} from "./ecosse-2026-data";
+import { ecosseFullRoute, ecosseStages } from "./ecosse-2026-data";
+import { formatDistance, stageDistance, tripDistance } from "./gpx-track";
 import { TripPhotoFrame } from "./trip-photo-frame";
 import { TripRouteMap } from "./trip-route-map";
+import { useGpxTracks } from "./use-gpx-tracks";
 import { VoyageBrand } from "./voyage-brand";
-
-const tripStats = [
-  ["Distance", `≈ ${ecosseTotalKm.toLocaleString("fr-FR")} km`],
-  ["Durée", "9 jours"],
-  ["Étapes", `${ecosseStages.length} étapes`],
-  ["Période", "Oct. 2026"],
-];
 
 const photos = ecosseStages.flatMap((stage) =>
   stage.photos.map((photo) => ({ ...photo, stage: stage.title })),
 );
 
 export function EcosseTripSite() {
+  const tracks = useGpxTracks(ecosseStages);
+  const tripStats = [
+    ["Distance", tripDistance(ecosseStages, tracks)],
+    ["Durée", "9 jours"],
+    ["Étapes", `${ecosseStages.length} étapes`],
+    ["Période", "Oct. 2026"],
+  ];
+
   return (
     <main
       id="contenu-principal"
@@ -89,7 +87,11 @@ export function EcosseTripSite() {
               3D. Cliquez sur une étape ou rejouez le trajet complet.
             </p>
           </div>
-          <TripRouteMap fullRoute={ecosseFullRoute} stages={ecosseStages} />
+          <TripRouteMap
+            fullRoute={ecosseFullRoute}
+            stages={ecosseStages}
+            tracks={tracks}
+          />
         </section>
 
         <section className="border-t border-[#dfe4ea] py-14 sm:py-16">
@@ -108,7 +110,7 @@ export function EcosseTripSite() {
           </div>
 
           <ol className="mt-8 border-t border-[#dfe4ea]">
-            {ecosseStages.map((stage) => (
+            {ecosseStages.map((stage, index) => (
               <li
                 key={stage.id}
                 className="grid gap-4 border-b border-[#dfe4ea] py-6 sm:grid-cols-[6rem_1fr_auto] sm:items-center sm:gap-8"
@@ -130,7 +132,7 @@ export function EcosseTripSite() {
                   </p>
                 </div>
                 <p className="site-label text-xs font-semibold uppercase tracking-[0.1em] text-[#0f1b2b]">
-                  {stageDistanceLabel(stage)}
+                  {formatDistance(stageDistance(stage, index, tracks))}
                 </p>
               </li>
             ))}

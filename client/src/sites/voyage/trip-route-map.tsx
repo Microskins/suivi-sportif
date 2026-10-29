@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { LngLat, TripStage } from "./ecosse-2026-data";
-import { stageDistanceLabel } from "./ecosse-2026-data";
 import type { MapModelId, TripMapHandle } from "./trip-map-engine";
 import { TripPhotoFrame } from "./trip-photo-frame";
 import { TripTrackCard } from "./trip-track-card";
-import { useGpxTracks } from "./use-gpx-tracks";
+import type { GpxTrack } from "./gpx-track";
+import { formatDistance, stageDistance } from "./gpx-track";
 
 const modelOptions: { id: MapModelId; label: string; hint: string }[] = [
   { id: "plan", label: "Plan 2D", hint: "Lecture à plat, routes et villes" },
@@ -40,17 +40,16 @@ function prefersReducedMotion() {
 type TripRouteMapProps = {
   fullRoute: LngLat[];
   stages: TripStage[];
+  tracks: GpxTrack[];
 };
 
-export function TripRouteMap({ fullRoute, stages }: TripRouteMapProps) {
+export function TripRouteMap({ fullRoute, stages, tracks }: TripRouteMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<TripMapHandle | null>(null);
   const [status, setStatus] = useState<MapStatus>("loading");
   const [model, setModel] = useState<MapModelId>("relief");
   const [activeIndex, setActiveIndex] = useState(0);
   const [isReplaying, setIsReplaying] = useState(false);
-
-  const tracks = useGpxTracks(stages);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -234,7 +233,7 @@ export function TripRouteMap({ fullRoute, stages }: TripRouteMapProps) {
           <div className="flex flex-1 flex-col p-5">
             <p className="site-label text-xs font-semibold text-[#0f1b2b]">
               {String(activeIndex + 1).padStart(2, "0")} / {stage.code} ·{" "}
-              {stageDistanceLabel(stage)}
+              {formatDistance(stageDistance(stage, activeIndex, tracks))}
             </p>
             <h3 className="site-display mt-2 text-2xl font-semibold tracking-[-0.02em]">
               {stage.title}
@@ -276,7 +275,7 @@ export function TripRouteMap({ fullRoute, stages }: TripRouteMapProps) {
 
       <p className="site-label border-t border-[#dfe4ea] px-5 py-4 text-[0.62rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)]">
         {tracks.length > 0
-          ? "Trait plein : traces GPS enregistrées, colorées par altitude — tirets : tracé reconstitué."
+          ? "Trait plein bleu : trajets GPS — dégradé : randonnées colorées par altitude — tirets : tracé reconstitué."
           : "Tracé reconstitué à partir des étapes — pas une trace GPX enregistrée."}
       </p>
     </div>
