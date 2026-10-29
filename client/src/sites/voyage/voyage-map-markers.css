@@ -70,15 +70,16 @@
   outline-offset: 2px;
 }
 
+/* Simple point: les aeroports de depart sont souvent voisins (Charleroi,
+   Beauvais, Orly) et des badges textuels se chevaucheraient. */
 .voyage-globe-origin {
-  padding: 0.2rem 0.45rem;
+  display: block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 2px solid #ffffff;
   border-radius: 999px;
   background: #0f1b2b;
-  color: #ffffff;
-  font-family: var(--site-label);
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  box-shadow: 0 2px 6px rgba(15, 27, 43, 0.3);
 }
 
 .voyage-globe-plane {

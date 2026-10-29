@@ -19,7 +19,7 @@ function arrivalStage(trip: TripDetail): TripStage {
     coordinates: arrival.coordinates,
     dateLabel: formatTripDates(trip.startDate, trip.endDate) ?? trip.country,
     dayLabel: "Arrivée",
-    detail: `Atterrissage à ${arrival.name}.`,
+    detail: `Arrivée : ${arrival.name}.`,
     highlights: [],
     id: `arrivee-${arrival.code}`,
     photos: [],

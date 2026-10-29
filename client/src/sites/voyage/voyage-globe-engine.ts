@@ -224,7 +224,7 @@ export function createVoyageGlobe({
   const originMarkers = [...origins].map(([code, position]) => {
     const dot = document.createElement("span");
     dot.className = "voyage-globe-origin";
-    dot.textContent = code;
+    dot.title = code;
     dot.setAttribute("aria-hidden", "true");
     return new Marker({ element: dot, opacityWhenCovered: "0" })
       .setLngLat(position)
