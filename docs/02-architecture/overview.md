@@ -277,7 +277,10 @@ Le client sert aussi de point d'entree de portfolio:
 - `/trekking/vosges-wild` affiche le carnet de preparation Vosges 2027; sa
   checklist est conservee localement dans le navigateur via un store Zustand.
   Ses deux traces Google My Maps restent inactives jusqu'au clic du visiteur.
-- `/voyage` affiche le catalogue des carnets de voyage.
+- `/voyage` affiche un globe 3D (MapLibre, projection globe) avec l'arc de
+  chaque vol; cliquer un arc ou sa destination plonge vers le pays puis ouvre
+  le carnet. Le catalogue vit dans `client/src/sites/voyage/voyage-trips.ts`
+  (un ou plusieurs vols par voyage). Les billets restent listes sous le globe.
 - `/voyage/islande-2026` affiche le carnet de preparation Islande 2026, sans
   reference de reservation privee dans le bundle public.
 - `/voyage/ecosse-2026` affiche le carnet du voyage realise en Ecosse

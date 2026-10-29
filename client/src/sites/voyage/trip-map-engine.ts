@@ -13,6 +13,7 @@ import {
   type StyleSpecification,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import "./voyage-map-markers.css";
 // Le worker est servi depuis notre propre origine: la CSP peut rester sur
 // `worker-src 'self'` au lieu d'autoriser les workers `blob:`.
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
@@ -130,9 +131,8 @@ export function createTripMap({
   map.addControl(new FullscreenControl(), "top-right");
   map.addControl(new ScaleControl({ unit: "metric" }), "bottom-left");
 
-  let hasLoaded = false;
+  let styleLoaded = false;
   map.on("load", () => {
-    hasLoaded = true;
     // Le cadrage initial ignore l'inclinaison: on recadre une fois le
     // conteneur mesure pour que toute la boucle tienne, meme sur mobile.
     overview(0);
@@ -140,7 +140,7 @@ export function createTripMap({
   map.on("error", () => {
     // Une tuile manquante ne doit pas masquer la carte; seul l'echec du style
     // initial (reseau coupe, CSP) bascule sur le repli textuel.
-    if (!hasLoaded) {
+    if (!styleLoaded) {
       onError();
     }
   });
@@ -236,7 +236,10 @@ export function createTripMap({
     });
   }
 
-  map.on("style.load", addTripLayers);
+  map.on("style.load", () => {
+    styleLoaded = true;
+    addTripLayers();
+  });
 
   // Marqueurs HTML: de vrais boutons, atteignables au clavier et persistants
   // d'un changement de style a l'autre. Un lieu visite deux fois (retour a

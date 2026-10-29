@@ -16,15 +16,18 @@ beforeAll(() => {
 });
 
 describe("pages Voyage", () => {
-  it("relie le billet du catalogue au carnet Islande", () => {
+  it("presente le globe et relie chaque billet a son carnet", () => {
     render(<VoyageHomeSite />);
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       /Partir avec\s*un plan clair\./,
     );
-    expect(screen.getByText("CDG")).toBeTruthy();
+    // Un billet par voyage du catalogue, sous le globe.
+    expect(screen.getAllByText("CDG")).toHaveLength(2);
     expect(screen.getByText("KEF")).toBeTruthy();
-    expect(screen.getAllByText("EDI")).toHaveLength(1);
+    expect(screen.getByText("EDI")).toBeTruthy();
+    // Sans WebGL, le globe s'efface et renvoie vers les billets.
+    expect(screen.getByRole("status")).toHaveTextContent(/billets/i);
     expect(
       screen.getByRole("link", { name: /ouvrir/i }).getAttribute("href"),
     ).toBe("/voyage/islande-2026");
@@ -61,7 +64,10 @@ describe("pages Voyage", () => {
     expect(screen.getByRole("radio", { name: "Relief 3D" })).toBeChecked();
     expect(screen.getByRole("status")).toHaveTextContent(/indisponible/i);
     expect(
-      screen.getByRole("heading", { level: 3, name: "Stirling, Loch Lomond et Glencoe" }),
+      screen.getByRole("heading", {
+        level: 3,
+        name: "Stirling, Loch Lomond et Glencoe",
+      }),
     ).toBeTruthy();
   });
 

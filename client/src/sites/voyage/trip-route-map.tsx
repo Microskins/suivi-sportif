@@ -3,6 +3,7 @@ import type { LngLat, TripStage } from "./ecosse-2026-data";
 import type { MapModelId, TripMapHandle } from "./trip-map-engine";
 import { TripPhotoFrame } from "./trip-photo-frame";
 import { TripTrackCard } from "./trip-track-card";
+import { prefersReducedMotion, supportsWebGL } from "./webgl-support";
 import type { GpxTrack } from "./gpx-track";
 import { formatDistance, stageDistance } from "./gpx-track";
 
@@ -21,21 +22,6 @@ const modelOptions: { id: MapModelId; label: string; hint: string }[] = [
 ];
 
 type MapStatus = "loading" | "ready" | "unavailable";
-
-function supportsWebGL() {
-  try {
-    const canvas = document.createElement("canvas");
-    return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
-  } catch {
-    return false;
-  }
-}
-
-function prefersReducedMotion() {
-  return (
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
-  );
-}
 
 type TripRouteMapProps = {
   fullRoute: LngLat[];
