@@ -1,19 +1,43 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BoardingTicket } from "./boarding-ticket";
+import { formatTripDates } from "./trip-format";
+import type { TripSummary } from "./trip-types";
+import { tripHref } from "./trip-types";
 import { VoyageBrand } from "./voyage-brand";
+import { fetchTrips } from "./voyage-api";
 import type { VoyageGlobeControls } from "./voyage-globe";
 import { VoyageGlobe } from "./voyage-globe";
-import { trips } from "./voyage-trips";
 
-const completedCount = trips.filter((trip) => trip.status === "realise").length;
-const flightCount = trips.reduce(
-  (count, trip) => count + trip.flights.length,
-  0,
-);
+type Catalogue =
+  | { state: "loading" }
+  | { state: "error" }
+  | { state: "ready"; trips: TripSummary[] };
+
+const pad = (count: number) => String(count).padStart(2, "0");
 
 export function VoyageHomeSite() {
   const globeRef = useRef<VoyageGlobeControls>(null);
   const [hoveredTrip, setHoveredTrip] = useState<string | null>(null);
+  const [catalogue, setCatalogue] = useState<Catalogue>({ state: "loading" });
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchTrips()
+      .then((trips) => !cancelled && setCatalogue({ state: "ready", trips }))
+      .catch(() => !cancelled && setCatalogue({ state: "error" }));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const trips = catalogue.state === "ready" ? catalogue.trips : [];
+  const completedCount = trips.filter(
+    (trip) => trip.status === "realise",
+  ).length;
+  const flightCount = trips.reduce(
+    (count, trip) => count + trip.flights.length,
+    0,
+  );
 
   function highlight(tripId: string | null) {
     setHoveredTrip(tripId);
@@ -54,19 +78,17 @@ export function VoyageHomeSite() {
             <div>
               <dt className="text-[var(--site-muted)]">Carnets</dt>
               <dd className="mt-1 text-lg font-semibold">
-                {String(trips.length).padStart(2, "0")}
+                {pad(trips.length)}
               </dd>
             </div>
             <div>
               <dt className="text-[var(--site-muted)]">Vols</dt>
-              <dd className="mt-1 text-lg font-semibold">
-                {String(flightCount).padStart(2, "0")}
-              </dd>
+              <dd className="mt-1 text-lg font-semibold">{pad(flightCount)}</dd>
             </div>
             <div>
               <dt className="text-[var(--site-muted)]">Réalisés</dt>
               <dd className="mt-1 text-lg font-semibold">
-                {String(completedCount).padStart(2, "0")}
+                {pad(completedCount)}
               </dd>
             </div>
           </dl>
@@ -78,11 +100,22 @@ export function VoyageHomeSite() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-[46%] bg-gradient-to-r from-[#f4f6f8] via-[#f4f6f8]/80 to-transparent lg:block"
           />
-          <VoyageGlobe
-            ref={globeRef}
-            trips={trips}
-            onHoverTrip={setHoveredTrip}
-          />
+          {catalogue.state === "ready" ? (
+            <VoyageGlobe
+              ref={globeRef}
+              trips={catalogue.trips}
+              onHoverTrip={setHoveredTrip}
+            />
+          ) : (
+            <p
+              role="status"
+              className="site-label absolute inset-0 grid place-items-center p-8 text-center text-[0.68rem] font-medium uppercase leading-6 tracking-[0.1em] text-[var(--site-muted)]"
+            >
+              {catalogue.state === "loading"
+                ? "Chargement des voyages…"
+                : "Voyages indisponibles pour le moment — réessayez dans un instant."}
+            </p>
+          )}
           <div className="site-label pointer-events-none absolute bottom-5 left-5 z-[2] flex flex-wrap items-center gap-x-4 gap-y-2 rounded-full bg-white/90 px-4 py-2 text-[0.6rem] font-semibold uppercase tracking-[0.11em] text-[var(--site-muted)] sm:left-9 lg:left-14">
             <span className="flex items-center gap-2">
               <span className="h-[3px] w-5 rounded-full bg-[#1c4ed8]" />
@@ -107,10 +140,15 @@ export function VoyageHomeSite() {
               </h2>
             </div>
             <p className="site-label text-xs font-medium uppercase tracking-[0.12em] text-[var(--site-muted)]">
-              {String(trips.length).padStart(2, "0")} billets
+              {pad(trips.length)} billets
             </p>
           </div>
 
+          {catalogue.state === "ready" && trips.length === 0 && (
+            <p className="leading-7 text-[var(--site-muted)]">
+              Aucun voyage publié pour l’instant.
+            </p>
+          )}
           <div className="grid gap-6">
             {trips.map((trip) => (
               <div
@@ -126,12 +164,17 @@ export function VoyageHomeSite() {
                 }`}
               >
                 <BoardingTicket
-                  actionHref={trip.href}
+                  actionHref={tripHref(trip.slug)}
                   actionLabel={trip.status === "realise" ? "Revivre" : "Ouvrir"}
                   arrivalCode={trip.flights[0].to.code}
                   departureCode={trip.flights[0].from.code}
                   description={trip.description}
-                  eyebrow={`${trip.dates} · ${trip.country}`}
+                  eyebrow={[
+                    formatTripDates(trip.startDate, trip.endDate),
+                    trip.country,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
                   status={trip.status}
                   stubLabel={trip.stubLabel}
                   title={trip.title}

@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
-import type { TripStage } from "./ecosse-2026-data";
 import type { GpxTrack } from "./gpx-track";
 import { parseGpx } from "./gpx-track";
+import type { TripStage } from "./trip-types";
+import { apiFileUrl } from "./voyage-api";
 
-// Charge les GPX declares sur les etapes. Un fichier absent ou illisible est
-// ignore: l'etape garde alors son trace reconstitue au lieu de casser la page.
+// Charge les GPX des etapes. Un fichier absent ou illisible est ignore:
+// l'etape garde alors son trace reconstitue au lieu de casser la page.
 export function useGpxTracks(stages: TripStage[]) {
   const [tracks, setTracks] = useState<GpxTrack[]>([]);
 
   useEffect(() => {
     const files = stages.flatMap((stage, stageIndex) =>
-      stage.gpx.map((file) => ({ ...file, stageIndex })),
+      stage.tracks.map((file) => ({ ...file, stageIndex })),
     );
     if (files.length === 0) {
+      setTracks([]);
       return;
     }
     let cancelled = false;
@@ -20,17 +22,19 @@ export function useGpxTracks(stages: TripStage[]) {
     Promise.all(
       files.map(async (file) => {
         try {
-          const response = await fetch(file.src);
+          const response = await fetch(apiFileUrl(file.url));
           if (!response.ok) {
             return null;
           }
-          const fallbackName = file.src.split("/").pop() ?? file.src;
-          const { name, points } = parseGpx(
-            await response.text(),
-            fallbackName,
-          );
+          const { points } = parseGpx(await response.text(), file.name);
+          // Le nom saisi dans l'admin prime sur celui contenu dans le GPX.
           return points.length > 1
-            ? { kind: file.kind, name, points, stageIndex: file.stageIndex }
+            ? {
+                kind: file.kind,
+                name: file.name,
+                points,
+                stageIndex: file.stageIndex,
+              }
             : null;
         } catch {
           return null;

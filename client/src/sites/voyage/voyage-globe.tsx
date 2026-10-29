@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import type { VoyageGlobeHandle } from "./voyage-globe-engine";
-import type { TripSummary } from "./voyage-trips";
+import type { TripSummary } from "./trip-types";
 import { prefersReducedMotion, supportsWebGL } from "./webgl-support";
 
 type GlobeStatus = "loading" | "ready" | "unavailable";

@@ -3,8 +3,7 @@ import { PriceComparisonSite } from "../sites/prix-aliments/price-comparison-sit
 import { SuiviSportifSite } from "../sites/suivi-sportif/suivi-sportif-site";
 import { TrekkingHomeSite } from "../sites/trekking/trekking-home-site";
 import { VosgesWildSite } from "../sites/trekking/vosges-wild-site";
-import { EcosseTripSite } from "../sites/voyage/ecosse-trip-site";
-import { IslandeTripSite } from "../sites/voyage/islande-trip-site";
+import { TripSite } from "../sites/voyage/trip-site";
 import { VoyageHomeSite } from "../sites/voyage/voyage-home-site";
 import { normalizePathname, siteIdFromPath } from "./site-identities";
 import { SkipLink } from "./skip-link";
@@ -12,8 +11,6 @@ import { SkipLink } from "./skip-link";
 const TREKKING_PATH = "/trekking";
 const VOSGES_WILD_PATH = `${TREKKING_PATH}/vosges-wild`;
 const VOYAGE_PATH = "/voyage";
-const ISLANDE_PATH = `${VOYAGE_PATH}/islande-2026`;
-const ECOSSE_PATH = `${VOYAGE_PATH}/ecosse-2026`;
 
 function siteForPath(currentPath: string) {
   const siteId = siteIdFromPath(currentPath);
@@ -35,10 +32,13 @@ function siteForPath(currentPath: string) {
   }
 
   if (siteId === "voyage") {
-    if (currentPath === ISLANDE_PATH) {
-      return <IslandeTripSite />;
-    }
-    return currentPath === ECOSSE_PATH ? <EcosseTripSite /> : <VoyageHomeSite />;
+    // /voyage/<slug>: un carnet charge depuis l'API.
+    const slug = currentPath.slice(VOYAGE_PATH.length + 1);
+    return slug ? (
+      <TripSite slug={decodeURIComponent(slug)} />
+    ) : (
+      <VoyageHomeSite />
+    );
   }
 
   return <PortfolioSite />;

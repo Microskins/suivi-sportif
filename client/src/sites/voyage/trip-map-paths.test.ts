@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { LngLat } from "./ecosse-2026-data";
-import { distanceKm } from "./ecosse-2026-data";
+import { distanceKm } from "./trip-geometry";
+import type { LngLat } from "./trip-types";
 import { buildPaths, resample } from "./trip-map-paths";
 
 const a: LngLat = [-4, 56];
@@ -8,9 +8,9 @@ const b: LngLat = [-4, 56.1];
 const c: LngLat = [-4.2, 56.2];
 
 const stages = [
-  { code: "A", position: a, route: [], title: "A" },
-  { code: "B", position: b, route: [a, b], title: "B" },
-  { code: "C", position: c, route: [b, c], title: "C" },
+  { code: "A", coordinates: a, route: [], title: "A" },
+  { code: "B", coordinates: b, route: [a, b], title: "B" },
+  { code: "C", coordinates: c, route: [b, c], title: "C" },
 ];
 
 describe("geometrie du trace", () => {

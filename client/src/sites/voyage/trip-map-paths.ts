@@ -1,7 +1,7 @@
 // Geometrie du trace de voyage, sans dependance a MapLibre: decoupage entre
 // traces GPS et reconstituees, chemin du rejeu et orientation de la camera.
-import type { LngLat } from "./ecosse-2026-data";
-import { distanceKm, routeLengthKm } from "./ecosse-2026-data";
+import { distanceKm, routeLengthKm } from "./trip-geometry";
+import type { LngLat } from "./trip-types";
 import type { GpxTrack } from "./gpx-track";
 import { elevationSegments } from "./gpx-track";
 
@@ -9,7 +9,7 @@ const DRIVE_COLOR = "#1c4ed8";
 
 export type MapStage = {
   code: string;
-  position: LngLat;
+  coordinates: LngLat;
   route: LngLat[];
   title: string;
 };

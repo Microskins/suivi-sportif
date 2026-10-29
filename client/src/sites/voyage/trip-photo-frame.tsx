@@ -1,4 +1,5 @@
-import type { TripPhoto } from "./ecosse-2026-data";
+import type { TripPhoto } from "./trip-types";
+import { apiFileUrl } from "./voyage-api";
 
 type TripPhotoFrameProps =
   | { code?: never; photo: TripPhoto }
@@ -11,7 +12,7 @@ export function TripPhotoFrame({ code, photo }: TripPhotoFrameProps) {
     return (
       <figure className="overflow-hidden rounded-lg border border-[#dfe4ea] bg-[#eef2f6]">
         <img
-          src={photo.src}
+          src={apiFileUrl(photo.url)}
           alt={photo.alt}
           loading="lazy"
           className="aspect-[4/3] w-full object-cover"

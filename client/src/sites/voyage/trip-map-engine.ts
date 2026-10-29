@@ -17,7 +17,7 @@ import "./voyage-map-markers.css";
 // Le worker est servi depuis notre propre origine: la CSP peut rester sur
 // `worker-src 'self'` au lieu d'autoriser les workers `blob:`.
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
-import type { LngLat } from "./ecosse-2026-data";
+import type { LngLat } from "./trip-types";
 import type { GpxTrack } from "./gpx-track";
 import type { MapStage } from "./trip-map-paths";
 import {
@@ -121,7 +121,7 @@ export function createTripMap({
     bearing: mapModels[model].bearing,
     bounds: tripBounds,
     container,
-    fitBoundsOptions: { padding: 48 },
+    fitBoundsOptions: { maxZoom: 9, padding: 48 },
     maxPitch: 75,
     pitch: mapModels[model].pitch,
     style: mapModels[model].style,
@@ -246,7 +246,7 @@ export function createTripMap({
   // Edimbourg) ne recoit qu'un seul marqueur.
   const seen = new Set<string>();
   const markers = stages.flatMap((stage, index) => {
-    const key = stage.position.join(",");
+    const key = stage.coordinates.join(",");
     if (seen.has(key)) {
       return [];
     }
@@ -262,7 +262,7 @@ export function createTripMap({
       onSelectStage(index);
     });
     const marker = new Marker({ element: button, anchor: "center" })
-      .setLngLat(stage.position)
+      .setLngLat(stage.coordinates)
       .addTo(map);
     return [{ button, index, marker }];
   });
@@ -295,6 +295,20 @@ export function createTripMap({
     stopReplay();
     const settings = mapModels[model];
     const padding = container.clientWidth < 640 ? 28 : 56;
+    // Un carnet sans etapes se reduit a un point (l'aeroport): on montre le
+    // pays autour plutot que de zoomer au maximum sur ce point.
+    const sw = tripBounds.getSouthWest();
+    const ne = tripBounds.getNorthEast();
+    if (ne.lng - sw.lng < 0.05 && ne.lat - sw.lat < 0.05) {
+      map.easeTo({
+        bearing: settings.bearing,
+        center: tripBounds.getCenter(),
+        duration,
+        pitch: settings.pitch,
+        zoom: 6.4,
+      });
+      return;
+    }
     map.fitBounds(tripBounds, {
       bearing: settings.bearing,
       duration,
@@ -319,8 +333,8 @@ export function createTripMap({
       markers.forEach(({ button, index: markerIndex }) => {
         const isActive =
           markerIndex === index ||
-          stages[index].position.join(",") ===
-            stages[markerIndex].position.join(",");
+          stages[index].coordinates.join(",") ===
+            stages[markerIndex].coordinates.join(",");
         button.setAttribute("aria-current", isActive ? "step" : "false");
       });
       const settings = mapModels[model];
@@ -347,7 +361,7 @@ export function createTripMap({
       }
       map.flyTo({
         bearing: settings.bearing,
-        center: stages[index].position,
+        center: stages[index].coordinates,
         essential: true,
         pitch: settings.pitch,
         zoom: settings.terrain ? 10.2 : 9.4,

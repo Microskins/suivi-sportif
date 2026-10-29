@@ -1,8 +1,8 @@
 // Lecture des traces GPS (GPX exporte depuis Strava, Garmin, Komoot...) et
 // calcul des statistiques affichees dans le carnet. Aucune dependance: le
 // GPX est un XML simple que DOMParser lit directement dans le navigateur.
-import type { LngLat, TrackKind, TripStage } from "./ecosse-2026-data";
-import { distanceKm, routeLengthKm } from "./ecosse-2026-data";
+import { distanceKm, routeLengthKm } from "./trip-geometry";
+import type { LngLat, TrackKind, TripStage } from "./trip-types";
 
 export type TrackPoint = {
   ele: number | null;

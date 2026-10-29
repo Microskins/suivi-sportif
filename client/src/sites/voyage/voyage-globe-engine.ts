@@ -14,9 +14,9 @@ import {
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./voyage-map-markers.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
-import type { LngLat } from "./ecosse-2026-data";
+import type { LngLat, TripSummary } from "./trip-types";
+import { tripHref } from "./trip-types";
 import { greatCircle, headingBetween } from "./great-circle";
-import type { TripSummary } from "./voyage-trips";
 
 setWorkerUrl(workerUrl);
 
@@ -47,12 +47,18 @@ export function createVoyageGlobe({
 }: GlobeOptions) {
   const flights = trips.flatMap((trip) =>
     trip.flights.map((flight) => ({
-      arc: greatCircle(flight.from.position, flight.to.position),
+      arc: greatCircle(flight.from.coordinates, flight.to.coordinates),
       flight,
       trip,
     })),
   );
-  const allPoints = flights.flatMap(({ arc }) => arc);
+  // Sans vol (catalogue vide), le globe se cadre sur l'Europe.
+  const allPoints: LngLat[] = flights.length
+    ? flights.flatMap(({ arc }) => arc)
+    : [
+        [-10, 36],
+        [25, 60],
+      ];
   const bounds = allPoints.reduce(
     (box, point) => box.extend(point),
     new LngLatBounds(allPoints[0], allPoints[0]),
@@ -146,7 +152,7 @@ export function createVoyageGlobe({
       duration: reducedMotion ? 0 : 2200,
       // Zoom plafonne: on doit encore voir la courbure du globe, meme
       // quand tous les vols tiennent dans l'Europe.
-      maxZoom: container.clientWidth < 640 ? 1.3 : 2.1,
+      maxZoom: container.clientWidth < 640 ? 1.6 : 2.8,
       // Sur grand ecran le titre occupe la gauche: le globe se decale a droite.
       padding:
         container.clientWidth >= 1024
@@ -194,7 +200,7 @@ export function createVoyageGlobe({
   // carnet comme un clic sur l'arc.
   const destinationMarkers = flights.map(({ flight, trip }) => {
     const button = document.createElement("a");
-    button.href = trip.href;
+    button.href = tripHref(trip.slug);
     button.className = "voyage-globe-destination";
     button.dataset.status = trip.status;
     button.textContent = flight.to.code;
@@ -206,14 +212,14 @@ export function createVoyageGlobe({
     button.addEventListener("mouseenter", () => onHoverTrip(trip.id));
     button.addEventListener("mouseleave", () => onHoverTrip(null));
     const marker = new Marker({ element: button, opacityWhenCovered: "0" })
-      .setLngLat(flight.to.position)
+      .setLngLat(flight.to.coordinates)
       .addTo(map);
     return { button, marker, trip };
   });
 
   const origins = new Map<string, LngLat>();
   flights.forEach(({ flight }) =>
-    origins.set(flight.from.code, flight.from.position),
+    origins.set(flight.from.code, flight.from.coordinates),
   );
   const originMarkers = [...origins].map(([code, position]) => {
     const dot = document.createElement("span");
@@ -279,12 +285,13 @@ export function createVoyageGlobe({
 
   // Plongee vers le pays, puis ouverture du carnet et de sa carte detaillee.
   function openTrip(trip: TripSummary) {
-    const destination = trip.flights[0].to.position;
+    const destination = trip.flights[0].to.coordinates;
+    const href = tripHref(trip.slug);
     if (reducedMotion) {
-      window.location.assign(trip.href);
+      window.location.assign(href);
       return;
     }
-    map.once("moveend", () => window.location.assign(trip.href));
+    map.once("moveend", () => window.location.assign(href));
     map.flyTo({
       center: destination,
       duration: 1600,

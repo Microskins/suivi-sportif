@@ -1,6 +1,6 @@
 // Trajectoire d'un vol: l'arc de grand cercle entre deux aeroports, le plus
 // court chemin sur le globe, comme la route reelle d'un avion de ligne.
-import type { LngLat } from "./ecosse-2026-data";
+import type { LngLat } from "./trip-types";
 
 const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 const toDegrees = (radians: number) => (radians * 180) / Math.PI;

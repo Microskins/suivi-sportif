@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { LngLat, TripStage } from "./ecosse-2026-data";
+import type { LngLat, TripStage } from "./trip-types";
 import type { MapModelId, TripMapHandle } from "./trip-map-engine";
 import { TripPhotoFrame } from "./trip-photo-frame";
 import { TripTrackCard } from "./trip-track-card";
@@ -25,11 +25,17 @@ type MapStatus = "loading" | "ready" | "unavailable";
 
 type TripRouteMapProps = {
   fullRoute: LngLat[];
+  label: string;
   stages: TripStage[];
   tracks: GpxTrack[];
 };
 
-export function TripRouteMap({ fullRoute, stages, tracks }: TripRouteMapProps) {
+export function TripRouteMap({
+  fullRoute,
+  label,
+  stages,
+  tracks,
+}: TripRouteMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<TripMapHandle | null>(null);
   const [status, setStatus] = useState<MapStatus>("loading");
@@ -154,7 +160,8 @@ export function TripRouteMap({ fullRoute, stages, tracks }: TripRouteMapProps) {
           <button
             type="button"
             onClick={toggleReplay}
-            disabled={!mapReady}
+            // Rien a rejouer sans trace (carnet sans etapes).
+            disabled={!mapReady || fullRoute.length < 2}
             aria-pressed={isReplaying}
             className="site-label rounded-full bg-[#1c4ed8] px-3.5 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.11em] text-white transition hover:bg-[#1740b0] disabled:opacity-40"
           >
@@ -172,7 +179,7 @@ export function TripRouteMap({ fullRoute, stages, tracks }: TripRouteMapProps) {
               ref={containerRef}
               className="h-full w-full"
               role="region"
-              aria-label="Carte interactive du trajet en Écosse"
+              aria-label={label}
             />
           </div>
           {status !== "ready" && (
@@ -193,7 +200,7 @@ export function TripRouteMap({ fullRoute, stages, tracks }: TripRouteMapProps) {
         >
           <div className="flex items-center justify-between gap-3 border-b border-[#dfe4ea] px-5 py-3">
             <p className="site-label text-[0.62rem] font-semibold uppercase tracking-[0.13em] text-[#1c4ed8]">
-              {stage.day} · {stage.date}
+              {stage.dayLabel} · {stage.dateLabel}
             </p>
             <div className="flex gap-1">
               <button
@@ -249,7 +256,7 @@ export function TripRouteMap({ fullRoute, stages, tracks }: TripRouteMapProps) {
                 stage.photos
                   .slice(0, 4)
                   .map((photo) => (
-                    <TripPhotoFrame key={photo.src} photo={photo} />
+                    <TripPhotoFrame key={photo.id} photo={photo} />
                   ))
               ) : (
                 <TripPhotoFrame code={stage.code} />

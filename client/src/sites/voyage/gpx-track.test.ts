@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it } from "vitest";
-import { ecosseStages } from "./ecosse-2026-data";
+import type { TripStage } from "./trip-types";
 import {
   elevationProfile,
   elevationSegments,
@@ -25,6 +25,20 @@ const gpx = `<?xml version="1.0" encoding="UTF-8"?>
     </trkseg>
   </trk>
 </gpx>`;
+
+const stageFixture = (route: TripStage["route"]): TripStage => ({
+  code: "GLC",
+  coordinates: route.at(-1) ?? [-3.19, 55.95],
+  dateLabel: "21 oct.",
+  dayLabel: "J03",
+  detail: "",
+  highlights: [],
+  id: "etape",
+  photos: [],
+  route,
+  title: "Glencoe",
+  tracks: [],
+});
 
 describe("traces GPX", () => {
   it("lit le nom, les positions, altitudes et horodatages d'un export Strava", () => {
@@ -77,7 +91,11 @@ describe("traces GPX", () => {
   });
 
   it("affiche la distance reelle d'un trajet GPS et ignore les randonnees", () => {
-    const glencoe = ecosseStages[1];
+    const glencoe = stageFixture([
+      [-3.19, 55.95],
+      [-3.95, 56.12],
+      [-5.1, 56.68],
+    ]);
     const { points } = parseGpx(gpx, "x");
     const hike = {
       kind: "randonnee" as const,
@@ -96,6 +114,6 @@ describe("traces GPX", () => {
       exact: true,
       km: trackStats(points).distanceKm,
     });
-    expect(formatDistance(stageDistance(ecosseStages[0], 0, []))).toBe("Base");
+    expect(formatDistance(stageDistance(stageFixture([]), 0, []))).toBe("Base");
   });
 });

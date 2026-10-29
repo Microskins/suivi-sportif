@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { distanceKm } from "./ecosse-2026-data";
+import { distanceKm } from "./trip-geometry";
 import { greatCircle, headingBetween } from "./great-circle";
-import { trips } from "./voyage-trips";
 
 describe("arcs de vol", () => {
   it("relie les deux aeroports par le plus court chemin", () => {
@@ -24,12 +23,5 @@ describe("arcs de vol", () => {
   it("oriente l'avion vers sa destination", () => {
     expect(headingBetween([0, 0], [0, 10])).toBeCloseTo(0);
     expect(headingBetween([0, 0], [10, 0])).toBeCloseTo(90);
-  });
-
-  it("donne a chaque voyage au moins un vol et un carnet", () => {
-    trips.forEach((trip) => {
-      expect(trip.flights.length).toBeGreaterThan(0);
-      expect(trip.href).toMatch(/^\/voyage\//);
-    });
   });
 });
