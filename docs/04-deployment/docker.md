@@ -13,6 +13,14 @@ le meme point d'entree Nginx.
   - `API_PUBLIC_BASE_URL` (recommande: `https://suivi-sportif.fr`)
   - `MCP_AUTH_TOKEN`
   - `ANTHROPIC_API_KEY` (optionnel, active les reponses IA du chat assistant)
+  - `VOYAGE_ADMIN_EMAILS` (site Voyage: e-mails autorises a l'ecran d'admin
+    `/voyage/admin`, separes par des virgules, sans distinction de casse; en
+    production `thomas.cochart@outlook.fr`). Vide ou absent: aucune ecriture
+    possible sur le site Voyage, la lecture publique reste disponible.
+  - `VOYAGE_WRITE_RATE_LIMIT_MAX` (optionnel, defaut `60`): nombre maximal
+    d'ecritures et d'envois admin Voyage par minute.
+- `UPLOAD_DIR` n'est pas a mettre dans `.env`: `docker-compose.yml` le fixe a
+  `/app/uploads`, monte sur le volume nomme `voyage-uploads` (voir section 7).
 - Nginx installe sur la machine hote.
 
 ## 2. Construire et demarrer les conteneurs
@@ -99,6 +107,52 @@ Apres ce seed, utiliser `docs/03-api/data-entry.md` pour saisir rapidement des
 donnees de production tant que l'interface frontend de creation n'est pas
 terminee.
 
+### Mise en production du site Voyage (plan 080)
+
+Les voyages ne sont plus dans le bundle client: le globe `/voyage` et les
+carnets `/voyage/:slug` lisent `GET /api/voyages`. Ordre des etapes pour la
+premiere mise en production:
+
+1. Avant de pousser sur `main`, ajouter au `.env` de production:
+
+   ```env
+   VOYAGE_ADMIN_EMAILS="thomas.cochart@outlook.fr"
+   ```
+
+   Sans cette variable, l'ecran d'admin repond `403 VOYAGE_ADMIN_REQUIRED` et
+   la reprise des voyages refuse de s'executer. Si elle est ajoutee apres le
+   deploiement, recreer le conteneur pour qu'il la lise:
+   `docker compose up -d api`.
+2. Pousser sur `main`. Le deploiement automatise (section 6) synchronise la
+   conf Nginx (elle change: `client_max_body_size 16m` sur
+   `/api/voyages/admin/`), reconstruit les images, applique
+   `prisma migrate deploy` (migration `20261029120000_add_voyages`) puis
+   `docker compose up -d`, qui cree le volume `voyage-uploads`. En deploiement
+   manuel, la commande de migration est celle de la section 3.
+3. Verifier l'API: `curl -sS https://suivi-sportif.fr/api/voyages` renvoie
+   `{"data":[]}`. Tant que l'etape 5 n'est pas faite, le globe affiche un
+   catalogue vide.
+4. Si le compte admin n'existe pas encore, l'inscrire avec l'e-mail de
+   `VOYAGE_ADMIN_EMAILS` depuis l'ecran de connexion de `/suivi-sportif` (ou
+   `POST /api/users/register`). Les voyages repris lui seront rattaches.
+5. Reprendre les voyages existants (aeroports, Ecosse avec ses 7 etapes,
+   Albanie, Roumanie, Grande Canarie):
+
+   ```bash
+   docker compose exec -T api npm run db:seed:voyages -w server
+   ```
+
+   Le script lit `server/prisma/voyages-seed.json` (copie dans l'image avec
+   `server/`). Il est relancable: les aeroports sont crees ou mis a jour, un
+   voyage dont le slug existe deja n'est pas touche (`= <slug> existe deja,
+   laisse intact`), un voyage absent est cree (`+ <slug> cree`). Il echoue si
+   `VOYAGE_ADMIN_EMAILS` est vide ou si le compte du premier e-mail de la
+   liste n'existe pas.
+6. Verifier `https://suivi-sportif.fr/voyage` (4 arcs sur le globe) et
+   `https://suivi-sportif.fr/voyage/ecosse-2026`, puis se connecter sur
+   `/voyage/admin` pour envoyer les traces GPX et les photos.
+7. Ajouter le volume `voyage-uploads` aux sauvegardes (section 7).
+
 ## 4. Bascule Nginx
 
 Utiliser `deploy/nginx/suivi-sportif.fr.conf` comme configuration de site.
@@ -119,8 +173,11 @@ sudo certbot certonly --nginx -d suivi-sportif.fr
 
 Depuis le plan 077, `scripts/deploy-production.sh` refait ce `cp`/`ln -sf`
 automatiquement a chaque deploiement qui touche `client/nginx/` ou
-`deploy/nginx/`. Les commandes ci-dessus restent utiles pour la premiere
-installation ou une reparation manuelle. Verifier apres coup que
+`deploy/nginx/` (sudo sans mot de passe requis; sinon le script l'indique par
+`Skip Nginx sync/reload` et la copie est a faire a la main). Il lance
+`nginx -t` et restaure la conf precedente si elle est invalide. Les commandes
+ci-dessus restent utiles pour la premiere installation ou une reparation
+manuelle. Verifier apres coup que
 `/etc/nginx/sites-enabled/suivi-sportif.fr` est bien un symlink vers
 `sites-available/` (`ls -la /etc/nginx/sites-enabled/`) et pas une copie
 independante: une copie divergente a cause un `502 Bad Gateway` silencieux
@@ -281,6 +338,11 @@ docker compose build
 docker compose up -d
 ```
 
+Ne jamais utiliser `docker compose down -v`: l'option supprime le volume
+`voyage-uploads`, donc les traces GPX et photos du site Voyage. Le
+`docker system prune -af` du script de deploiement ne touche pas aux volumes
+nommes (il faudrait `--volumes`).
+
 ## 7. Sauvegardes PostgreSQL
 
 Les sauvegardes sont lancees depuis l'hote applicatif et lisent `DATABASE_URL`
@@ -337,6 +399,40 @@ Controles operationnels:
 sudo ls -lh /var/backups/suivi-sportif/postgres
 sudo tail -50 /var/log/suivi-sportif-postgres-backup.log
 ```
+
+### Fichiers du site Voyage
+
+Les traces GPX et photos envoyees depuis `/voyage/admin` ne sont pas en base:
+la base ne garde que leur nom genere (`<uuid>.gpx|jpg|png|webp`). Les fichiers
+vivent dans le volume Docker nomme `voyage-uploads`, monte sur `/app/uploads`
+du conteneur `api` (`UPLOAD_DIR=/app/uploads`, fichiers sous
+`/app/uploads/voyages/`). Le script `postgres-backup.sh` ne les sauvegarde
+pas: une restauration de la base sans ce volume donne des carnets dont les
+traces et photos repondent `404 TRIP_FILE_NOT_FOUND`.
+
+Sauvegarde manuelle du volume (le nom reel est prefixe par le projet Compose,
+le verifier avec `docker volume ls`):
+
+```bash
+cd /var/www/suivi-sportif
+sudo mkdir -p /var/backups/suivi-sportif/voyage-uploads
+docker run --rm \
+  -v suivi-sportif_voyage-uploads:/data:ro \
+  -v /var/backups/suivi-sportif/voyage-uploads:/backup \
+  alpine tar czf "/backup/voyage-uploads_$(date +%Y%m%d%H%M%S).tar.gz" -C /data .
+```
+
+Restauration (conteneur `api` arrete):
+
+```bash
+docker run --rm \
+  -v suivi-sportif_voyage-uploads:/data \
+  -v /var/backups/suivi-sportif/voyage-uploads:/backup:ro \
+  alpine tar xzf /backup/voyage-uploads_<timestamp>.tar.gz -C /data
+```
+
+Sauvegarder le volume en meme temps que la base, pour que les noms de
+fichiers references en base existent sur disque.
 
 ## 8. Notes production maison: Freebox + Cloudflare + Certbot
 
@@ -532,7 +628,7 @@ Resultat public attendu:
 
 - `/` retourne le portfolio avec une reponse frontend `200`;
 - `/suivi-sportif` retourne l'application de suivi sportif;
-- `/voyage` retourne le catalogue des carnets de voyage;
+- `/voyage` retourne le globe des voyages, lu depuis `/api/voyages`;
 - `/prix-aliments` retourne le comparateur alimentaire Prix Frais;
 - `/health` retourne le JSON de sante de l'API;
 - `/mcp` sans token retourne `401 Unauthorized`, pas une `404` Fastify.

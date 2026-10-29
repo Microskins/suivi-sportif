@@ -32,6 +32,14 @@ jobs:
       - name: Install dependencies
         run: npm ci --include=dev
 
+      # npm ci ne laisse qu'un client Prisma vide (sans modeles): le generer
+      # depuis le schema, comme le fait server/Dockerfile, avant typecheck et
+      # tests. L'URL est factice: la generation ne se connecte pas a la base.
+      - name: Generate Prisma client
+        run: npm run db:generate -w server
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/suivi_sportif
+
       - name: Server typecheck
         run: npm run typecheck -w server
 

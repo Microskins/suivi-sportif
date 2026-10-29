@@ -1,0 +1,89 @@
+/* Marqueurs des cartes du site Voyage (carnets et globe d'accueil).
+   Charge avec les moteurs MapLibre, donc seulement sur les pages a carte. */
+
+/* Marqueur d'etape de la carte MapLibre: depart en encre, etapes en bleu. */
+.voyage-map-marker {
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  place-items: center;
+  border: 3px solid #ffffff;
+  border-radius: 999px;
+  background: #1c4ed8;
+  box-shadow: 0 6px 16px rgba(15, 27, 43, 0.28);
+  color: #ffffff;
+  cursor: pointer;
+  font-family: var(--site-label);
+  font-size: 0.68rem;
+  font-weight: 600;
+  transition: transform 160ms ease;
+}
+
+.voyage-map-marker[data-start="true"] {
+  background: #0f1b2b;
+}
+
+.voyage-map-marker:hover,
+.voyage-map-marker[aria-current="step"] {
+  transform: scale(1.18);
+}
+
+.voyage-map-marker[aria-current="step"] {
+  outline: 3px solid rgba(28, 78, 216, 0.35);
+  outline-offset: 2px;
+}
+
+.voyage-map-marker:focus-visible {
+  outline: 3px solid #0f1b2b;
+  outline-offset: 2px;
+}
+
+/* Globe d'accueil: destinations cliquables, aeroports de depart, avions. */
+.voyage-globe-destination {
+  padding: 0.35rem 0.6rem;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  background: #1c4ed8;
+  box-shadow: 0 6px 16px rgba(15, 27, 43, 0.25);
+  color: #ffffff;
+  font-family: var(--site-label);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  transition: scale 160ms ease;
+}
+
+/* Ambre en fond seulement: le texte reste en encre pour le contraste. */
+.voyage-globe-destination[data-status="a-venir"] {
+  background: #e08a1e;
+  color: #0f1b2b;
+}
+
+.voyage-globe-destination:hover,
+.voyage-globe-destination[data-active] {
+  scale: 1.15;
+}
+
+.voyage-globe-destination:focus-visible {
+  outline: 3px solid #0f1b2b;
+  outline-offset: 2px;
+}
+
+/* Simple point: les aeroports de depart sont souvent voisins (Charleroi,
+   Beauvais, Orly) et des badges textuels se chevaucheraient. */
+.voyage-globe-origin {
+  display: block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  background: #0f1b2b;
+  box-shadow: 0 2px 6px rgba(15, 27, 43, 0.3);
+}
+
+.voyage-globe-plane {
+  display: block;
+  filter: drop-shadow(0 2px 3px rgba(255, 255, 255, 0.9));
+  pointer-events: none;
+}

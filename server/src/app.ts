@@ -14,6 +14,7 @@ import { bodyMeasurementsRoutes } from "./routes/body-measurements.js";
 import { assistantRoutes } from "./routes/assistant.js";
 import { workoutsRoutes } from "./routes/workouts.js";
 import { workoutTemplatesRoutes } from "./routes/workout-templates.js";
+import { voyagesRoutes } from "./routes/voyages.js";
 import { authPlugin } from "./plugins/auth.js";
 
 const DEVELOPMENT_JWT_SECRET = "development-only-secret-at-least-32-characters";
@@ -97,6 +98,22 @@ export function buildApp(options: FastifyServerOptions = { logger: true }) {
       });
     }
 
+    // Corps refuse par Fastify avant la route (trop gros, type non gere):
+    // c'est une erreur du client, pas une panne du serveur.
+    if (error.statusCode === 413) {
+      return reply.code(413).send({
+        error: "Contenu trop volumineux",
+        code: "PAYLOAD_TOO_LARGE",
+      });
+    }
+
+    if (error.statusCode === 415) {
+      return reply.code(415).send({
+        error: "Type de contenu non pris en charge",
+        code: "UNSUPPORTED_MEDIA_TYPE",
+      });
+    }
+
     if (error.statusCode === 429) {
       return reply.code(429).send({
         error: "Trop de tentatives, reessayez plus tard",
@@ -175,6 +192,7 @@ export function buildApp(options: FastifyServerOptions = { logger: true }) {
     prefix: "/api/body-measurements",
   });
   fastify.register(assistantRoutes, { prefix: "/api/assistant" });
+  fastify.register(voyagesRoutes, { prefix: "/api/voyages" });
   fastify.register(swaggerUi, {
     routePrefix: "/docs",
     uiConfig: {

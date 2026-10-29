@@ -46,6 +46,11 @@ enum BodySilhouette {
   FEMALE
 }
 
+enum TripTrackKind {
+  TRAJET
+  RANDONNEE
+}
+
 enum UserGoalDomain {
   SPORT
   BODY
@@ -71,13 +76,13 @@ enum UserGoalDirection {
 // ============== User Model ==============
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String
+  id          String    @id @default(uuid())
+  email       String    @unique
+  password    String
+  name        String
   dateOfBirth DateTime? @map("date_of_birth")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
   foods            Food[]
   meals            Meal[]
@@ -85,6 +90,7 @@ model User {
   userGoals        UserGoal[]
   workouts         Workout[]
   bodyMeasurements BodyMeasurement[]
+  trips            Trip[]
 
   @@map("users")
 }
@@ -456,29 +462,29 @@ model UserGoal {
 // ============== Body Measurement Model ==============
 
 model BodyMeasurement {
-  id             String   @id @default(uuid())
-  userId         String   @map("user_id")
-  date           DateTime
-  silhouette     BodySilhouette @default(MALE)
-  isActiveLifestyle Boolean? @map("is_active_lifestyle")
-  weightKg       Decimal? @map("weight_kg") @db.Decimal(10, 2)
-  heightCm       Decimal? @map("height_cm") @db.Decimal(10, 2)
-  chestCm        Decimal? @map("chest_cm") @db.Decimal(10, 2)
-  waistCm        Decimal? @map("waist_cm") @db.Decimal(10, 2)
-  hipsCm         Decimal? @map("hips_cm") @db.Decimal(10, 2)
-  neckCm         Decimal? @map("neck_cm") @db.Decimal(10, 2)
-  shouldersCm    Decimal? @map("shoulders_cm") @db.Decimal(10, 2)
-  leftArmCm      Decimal? @map("left_arm_cm") @db.Decimal(10, 2)
-  rightArmCm     Decimal? @map("right_arm_cm") @db.Decimal(10, 2)
-  leftForearmCm  Decimal? @map("left_forearm_cm") @db.Decimal(10, 2)
-  rightForearmCm Decimal? @map("right_forearm_cm") @db.Decimal(10, 2)
-  leftThighCm    Decimal? @map("left_thigh_cm") @db.Decimal(10, 2)
-  rightThighCm   Decimal? @map("right_thigh_cm") @db.Decimal(10, 2)
-  leftCalfCm     Decimal? @map("left_calf_cm") @db.Decimal(10, 2)
-  rightCalfCm    Decimal? @map("right_calf_cm") @db.Decimal(10, 2)
-  notes          String?  @db.Text
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  id                String         @id @default(uuid())
+  userId            String         @map("user_id")
+  date              DateTime
+  silhouette        BodySilhouette @default(MALE)
+  isActiveLifestyle Boolean?       @map("is_active_lifestyle")
+  weightKg          Decimal?       @map("weight_kg") @db.Decimal(10, 2)
+  heightCm          Decimal?       @map("height_cm") @db.Decimal(10, 2)
+  chestCm           Decimal?       @map("chest_cm") @db.Decimal(10, 2)
+  waistCm           Decimal?       @map("waist_cm") @db.Decimal(10, 2)
+  hipsCm            Decimal?       @map("hips_cm") @db.Decimal(10, 2)
+  neckCm            Decimal?       @map("neck_cm") @db.Decimal(10, 2)
+  shouldersCm       Decimal?       @map("shoulders_cm") @db.Decimal(10, 2)
+  leftArmCm         Decimal?       @map("left_arm_cm") @db.Decimal(10, 2)
+  rightArmCm        Decimal?       @map("right_arm_cm") @db.Decimal(10, 2)
+  leftForearmCm     Decimal?       @map("left_forearm_cm") @db.Decimal(10, 2)
+  rightForearmCm    Decimal?       @map("right_forearm_cm") @db.Decimal(10, 2)
+  leftThighCm       Decimal?       @map("left_thigh_cm") @db.Decimal(10, 2)
+  rightThighCm      Decimal?       @map("right_thigh_cm") @db.Decimal(10, 2)
+  leftCalfCm        Decimal?       @map("left_calf_cm") @db.Decimal(10, 2)
+  rightCalfCm       Decimal?       @map("right_calf_cm") @db.Decimal(10, 2)
+  notes             String?        @db.Text
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -488,3 +494,115 @@ model BodyMeasurement {
 
 // Note: Prisma uses Decimal for precise numeric values
 // In the application, convert to number for calculations
+
+// ============== Voyage Models ==============
+// Le statut "realise / a venir" n'est pas stocke: il se deduit des dates.
+
+model Airport {
+  code      String   @id @db.VarChar(3)
+  city      String
+  name      String
+  latitude  Float
+  longitude Float
+  createdAt DateTime @default(now()) @map("created_at")
+
+  departures TripFlight[] @relation("FlightFrom")
+  arrivals   TripFlight[] @relation("FlightTo")
+
+  @@map("airports")
+}
+
+model Trip {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  slug        String    @unique
+  title       String
+  country     String
+  description String    @db.Text
+  stubLabel   String    @map("stub_label")
+  startDate   DateTime? @map("start_date") @db.Date
+  endDate     DateTime? @map("end_date") @db.Date
+  published   Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Restrict: supprimer un compte ne doit pas effacer les voyages publies
+  // (ni laisser leurs fichiers orphelins sur le disque).
+  user    User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  flights TripFlight[]
+  stages  TripStage[]
+
+  @@index([userId])
+  @@index([published])
+  @@map("trips")
+}
+
+model TripFlight {
+  id       String @id @default(uuid())
+  tripId   String @map("trip_id")
+  position Int
+  fromCode String @map("from_code") @db.VarChar(3)
+  toCode   String @map("to_code") @db.VarChar(3)
+
+  trip Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  from Airport @relation("FlightFrom", fields: [fromCode], references: [code])
+  to   Airport @relation("FlightTo", fields: [toCode], references: [code])
+
+  @@unique([tripId, position])
+  @@map("trip_flights")
+}
+
+model TripStage {
+  id         String   @id @default(uuid())
+  tripId     String   @map("trip_id")
+  position   Int
+  code       String   @db.VarChar(4)
+  dayLabel   String   @map("day_label")
+  dateLabel  String   @map("date_label")
+  title      String
+  detail     String   @db.Text
+  highlights String[] @default([])
+  latitude   Float
+  longitude  Float
+  // Trace reconstitue pour arriver a l'etape: tableau de [longitude, latitude].
+  route      Json     @default("[]")
+
+  trip   Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tracks TripTrack[]
+  photos TripPhoto[]
+
+  @@unique([tripId, position])
+  @@map("trip_stages")
+}
+
+model TripTrack {
+  id        String        @id @default(uuid())
+  stageId   String        @map("stage_id")
+  kind      TripTrackKind
+  name      String
+  fileName  String        @unique @map("file_name")
+  byteSize  Int           @map("byte_size")
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  stage TripStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@index([stageId])
+  @@map("trip_tracks")
+}
+
+model TripPhoto {
+  id        String   @id @default(uuid())
+  stageId   String   @map("stage_id")
+  position  Int      @default(0)
+  fileName  String   @unique @map("file_name")
+  mimeType  String   @map("mime_type")
+  byteSize  Int      @map("byte_size")
+  alt       String
+  caption   String   @default("")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  stage TripStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@index([stageId])
+  @@map("trip_photos")
+}

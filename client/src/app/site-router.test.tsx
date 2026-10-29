@@ -22,8 +22,12 @@ vi.mock("../sites/trekking/vosges-wild-site", () => ({
 vi.mock("../sites/voyage/voyage-home-site", () => ({
   VoyageHomeSite: () => <p>Catalogue Voyage</p>,
 }));
-vi.mock("../sites/voyage/islande-trip-site", () => ({
-  IslandeTripSite: () => <p>Carnet Islande</p>,
+vi.mock("../sites/voyage/trip-site", () => ({
+  TripSite: ({ slug }: { slug: string }) => <p>Carnet {slug}</p>,
+}));
+
+vi.mock("../sites/voyage/admin-site", () => ({
+  default: () => <p>Administration Voyage</p>,
 }));
 
 afterEach(() => {
@@ -39,11 +43,19 @@ describe("routes du site Voyage", () => {
     expect(screen.getByText("Catalogue Voyage")).toBeTruthy();
   });
 
-  it("affiche le carnet Islande", () => {
-    window.history.replaceState({}, "", "/voyage/islande-2026");
+  it("ouvre le carnet designe par le slug", () => {
+    window.history.replaceState({}, "", "/voyage/ecosse-2026");
     render(<SiteRouter />);
 
-    expect(screen.getByText("Carnet Islande")).toBeTruthy();
+    expect(screen.getByText("Carnet ecosse-2026")).toBeTruthy();
+  });
+
+  it("ouvre l'administration plutot qu'un carnet nomme admin", async () => {
+    window.history.replaceState({}, "", "/voyage/admin");
+    render(<SiteRouter />);
+
+    expect(await screen.findByText("Administration Voyage")).toBeTruthy();
+    expect(screen.queryByText("Carnet admin")).toBeNull();
   });
 });
 

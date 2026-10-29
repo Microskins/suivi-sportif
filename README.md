@@ -22,8 +22,12 @@ Disponible:
 - Exercices: CRUD + filtre par groupe musculaire
 - Seances: CRUD + recherche par plage de dates
 - Nutrition: aliments, repas, objectifs nutritionnels
+- Voyages: lecture publique `GET /api/voyages` et administration
+  `/api/voyages/admin/*` (voyages, vols, aeroports, etapes, traces GPX,
+  photos) reservee aux e-mails de `VOYAGE_ADMIN_EMAILS`
 - Frontend React multi-sites avec portfolio, Prix Frais, Voyage, Trekking et
-  Suivi Sportif
+  Suivi Sportif; le site Voyage (globe `/voyage`, carnets `/voyage/:slug`,
+  admin `/voyage/admin`) lit ses donnees depuis l'API
 - Tests API avec `fastify.inject()`
 - Assets Docker de production et runbook Nginx
 - Serveur MCP de debug
@@ -59,6 +63,19 @@ NODE_ENV="development"
 CORS_ORIGIN="http://localhost:5173"
 ```
 
+Site Voyage (optionnel):
+
+```env
+# Comptes autorises sur /voyage/admin, separes par des virgules.
+VOYAGE_ADMIN_EMAILS="moi@example.com"
+# Dossier des GPX et photos envoyes (defaut: uploads, relatif au dossier de
+# lancement de l'API, soit server/uploads avec npm run dev).
+UPLOAD_DIR="uploads"
+```
+
+Puis, apres inscription du compte admin, reprendre les voyages existants:
+`npm run db:seed:voyages -w server`.
+
 Preparer Prisma:
 
 ```bash
@@ -73,7 +90,9 @@ Mode frontend local sans auth/API:
 VITE_BYPASS_AUTH="true"
 ```
 
-Cette variable se place dans `client/.env` et charge des donnees mockees.
+Cette variable se place dans `client/.env` et charge des donnees mockees pour
+Suivi Sportif. Le site Voyage n'a pas de jeu de demonstration: il lui faut
+l'API et la base.
 
 ## Developpement
 
