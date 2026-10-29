@@ -195,7 +195,7 @@ export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
         const template = await workoutTemplates.createWorkoutTemplate(parsed);
         return sendCreated(reply, template);
       } catch (error: any) {
-        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+        if (error.name === "ZodError") return sendValidationError(reply, error.issues);
         fastify.log.error(error);
         return sendInternalError(reply);
       }
@@ -270,7 +270,7 @@ export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
 
         return sendOk(reply, template);
       } catch (error: any) {
-        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+        if (error.name === "ZodError") return sendValidationError(reply, error.issues);
         fastify.log.error(error);
         return sendInternalError(reply);
       }
@@ -313,7 +313,7 @@ export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
 
         return sendNoContent(reply);
       } catch (error: any) {
-        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+        if (error.name === "ZodError") return sendValidationError(reply, error.issues);
         fastify.log.error(error);
         return sendInternalError(reply);
       }
@@ -372,7 +372,7 @@ export async function workoutTemplatesRoutes(fastify: FastifyInstance) {
 
         return sendCreated(reply, workout);
       } catch (error: any) {
-        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+        if (error.name === "ZodError") return sendValidationError(reply, error.issues);
         fastify.log.error(error);
         return sendInternalError(reply);
       }

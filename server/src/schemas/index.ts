@@ -1,5 +1,21 @@
 import { z } from "zod";
 
+type WithoutDefaults<T extends z.ZodRawShape> = {
+  [K in keyof T]: T[K] extends z.ZodDefault<infer Inner> ? Inner : T[K];
+};
+
+// zod v4 applique les .default() meme dans .partial(): un PATCH qui omet un
+// champ le reinitialiserait. On retire donc les defaults avant .partial().
+function partialWithoutDefaults<T extends z.ZodRawShape>(schema: z.ZodObject<T>) {
+  const shape = Object.fromEntries(
+    Object.entries(schema.shape).map(([key, field]) => [
+      key,
+      field instanceof z.ZodDefault ? field.unwrap() : field,
+    ]),
+  ) as WithoutDefaults<T>;
+  return z.object(shape).partial();
+}
+
 export const idParamSchema = z.object({
   id: z.string().uuid("ID invalide"),
 });
@@ -35,7 +51,7 @@ export const assistantDraftResponseSchema = z.object({
   action: assistantDraftActionSchema,
   confidence: z.enum(["low", "medium", "high"]),
   missingFields: z.array(z.string()),
-  payload: z.record(z.unknown()),
+  payload: z.record(z.string(), z.unknown()),
   reply: z.string().optional(),
   requiresConfirmation: z.boolean(),
   summary: z.string(),
@@ -104,7 +120,7 @@ export const createExerciseSchema = z.object({
   bodyParts: z.array(z.string().min(1).max(100)).optional(),
 });
 
-export const updateExerciseSchema = createExerciseSchema.partial();
+export const updateExerciseSchema = partialWithoutDefaults(createExerciseSchema);
 
 // NOTE: muscleGroup n'est plus une colonne de Exercise (relation via muscles)
 // on garde ce schema pour le endpoint /by-muscle-group/:group.
@@ -269,7 +285,7 @@ export const createFoodSchema = z.object({
   servingUnit: z.enum(["g", "unit"]).default("g"),
 });
 
-export const updateFoodSchema = createFoodSchema.partial();
+export const updateFoodSchema = partialWithoutDefaults(createFoodSchema);
 
 export const barcodeParamSchema = z.object({
   barcode: z.string().trim().min(3, "Code-barres requis").max(100),
@@ -305,7 +321,7 @@ export const createMealSchema = z.object({
   items: z.array(createMealItemSchema).min(1, "Au moins un aliment requis"),
 });
 
-export const updateMealSchema = createMealSchema.partial().extend({
+export const updateMealSchema = partialWithoutDefaults(createMealSchema).extend({
   items: z.array(createMealItemSchema).min(1).optional(),
 });
 
@@ -364,8 +380,7 @@ export const createNutritionGoalSchema = nutritionGoalBaseSchema.refine(
   },
 );
 
-export const updateNutritionGoalSchema = nutritionGoalBaseSchema
-  .partial()
+export const updateNutritionGoalSchema = partialWithoutDefaults(nutritionGoalBaseSchema)
   .refine(
     (goal) =>
       !goal.startDate ||
@@ -457,8 +472,7 @@ export const createUserGoalSchema = userGoalBaseSchema
     },
   );
 
-export const updateUserGoalSchema = userGoalBaseSchema
-  .partial()
+export const updateUserGoalSchema = partialWithoutDefaults(userGoalBaseSchema)
   .refine(isMetricInDomain, {
     message: "La metrique doit correspondre au domaine",
     path: ["metric"],
@@ -522,7 +536,7 @@ const bodyMeasurementBaseSchema = z.object({
 });
 
 export const createBodyMeasurementSchema = bodyMeasurementBaseSchema;
-export const updateBodyMeasurementSchema = bodyMeasurementBaseSchema.partial();
+export const updateBodyMeasurementSchema = partialWithoutDefaults(bodyMeasurementBaseSchema);
 
 export const bodyMeasurementResponseSchema = z.object({
   id: z.string().uuid(),
