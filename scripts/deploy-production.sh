@@ -108,6 +108,13 @@ else
   log "Skip Nginx reload"
 fi
 
+# Avant toute reconstruction: si la migration ou le redemarrage tourne mal,
+# les traces GPX et photos du site Voyage restent recuperables.
+log "Back up Voyage uploads"
+if ! bash scripts/voyage-uploads-backup.sh; then
+  echo "Voyage uploads backup failed; deploy continues." >&2
+fi
+
 log "Build images"
 log "Prune unused Docker data"
 docker system prune -af
@@ -140,6 +147,14 @@ log "Health checks"
 health_check "API" "http://127.0.0.1:3001/health"
 health_check "Client" "http://127.0.0.1:5173"
 health_check "MCP" "http://127.0.0.1:3033/health"
+
+# Reprise des voyages: relancable, elle ne touche jamais un voyage deja en
+# base (modifie depuis l'admin). Non bloquante: elle echoue tant que le compte
+# de VOYAGE_ADMIN_EMAILS n'est pas inscrit, sans que le site soit en cause.
+log "Seed Voyage trips"
+if ! docker compose exec -T api npm run db:seed:voyages -w server; then
+  echo "Voyage seed skipped (VOYAGE_ADMIN_EMAILS empty or account not registered yet)." >&2
+fi
 
 log "Recent logs"
 docker compose logs api --tail 50

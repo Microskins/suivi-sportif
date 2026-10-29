@@ -75,6 +75,10 @@ jobs:
         env:
           DOCKER_BUILDKIT: "1"
           COMPOSE_DOCKER_CLI_BUILD: "1"
+          # Comptes admin du site Voyage. Exportee, elle prime sur le .env du
+          # serveur pour docker compose: plus rien a saisir a la main.
+          # Variable d'environnement GitHub `production` pour la changer.
+          VOYAGE_ADMIN_EMAILS: ${{ vars.VOYAGE_ADMIN_EMAILS || 'thomas.cochart@outlook.fr' }}
         run: |
           set -euo pipefail
           PROJECT_DIR="${{ vars.PROD_PROJECT_DIR || '/var/www/suivi-sportif' }}" BRANCH_NAME=main bash scripts/deploy-production.sh
