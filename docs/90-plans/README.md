@@ -83,6 +83,7 @@ Index chronologique des chantiers planifies et executes.
 77. [Fix 502 proxy Home Assistant](./077-fix-502-proxy-home-assistant.md)
 78. [Carnet Ecosse et carte 3D](./078-carnet-ecosse-carte-3d.md)
 79. [Accueil Voyage en globe 3D](./079-accueil-voyage-globe.md)
+80. [Voyages en base et ecran d'admin](./080-voyages-en-base.md)
 
 ## Convention
 
