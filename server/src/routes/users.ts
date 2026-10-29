@@ -95,7 +95,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
         return reply.code(200).send({ data: { user, token } });
       } catch (error: any) {
         if (error.name === "ZodError") {
-          return sendValidationError(reply, error.errors);
+          return sendValidationError(reply, error.issues);
         }
         fastify.log.error(error);
         return sendInternalError(reply);
@@ -162,7 +162,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
         return sendCreated(reply, { user, token });
       } catch (error: any) {
         if (error.name === "ZodError") {
-          return sendValidationError(reply, error.errors);
+          return sendValidationError(reply, error.issues);
         }
         fastify.log.error(error);
         return sendInternalError(reply);
@@ -318,7 +318,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
         return sendOk(reply, user);
       } catch (error: any) {
         if (error.name === "ZodError") {
-          return sendValidationError(reply, error.errors);
+          return sendValidationError(reply, error.issues);
         }
         fastify.log.error(error);
         return sendInternalError(reply);

@@ -207,7 +207,7 @@ export async function mealsRoutes(fastify: FastifyInstance) {
       );
       return sendList(reply, items, { total, page, limit });
     } catch (error: any) {
-      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+      if (error.name === "ZodError") return sendValidationError(reply, error.issues);
       fastify.log.error(error);
       return sendInternalError(reply);
     }
@@ -245,7 +245,7 @@ export async function mealsRoutes(fastify: FastifyInstance) {
 
       return sendOk(reply, meal);
     } catch (error: any) {
-      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+      if (error.name === "ZodError") return sendValidationError(reply, error.issues);
       fastify.log.error(error);
       return sendInternalError(reply);
     }
@@ -279,7 +279,7 @@ export async function mealsRoutes(fastify: FastifyInstance) {
 
       return sendCreated(reply, meal);
     } catch (error: any) {
-      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+      if (error.name === "ZodError") return sendValidationError(reply, error.issues);
       fastify.log.error(error);
       return sendInternalError(reply);
     }
@@ -322,7 +322,7 @@ export async function mealsRoutes(fastify: FastifyInstance) {
 
       return sendOk(reply, meal);
     } catch (error: any) {
-      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+      if (error.name === "ZodError") return sendValidationError(reply, error.issues);
       fastify.log.error(error);
       return sendInternalError(reply);
     }
@@ -360,7 +360,7 @@ export async function mealsRoutes(fastify: FastifyInstance) {
 
       return sendNoContent(reply);
     } catch (error: any) {
-      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+      if (error.name === "ZodError") return sendValidationError(reply, error.issues);
       fastify.log.error(error);
       return sendInternalError(reply);
     }

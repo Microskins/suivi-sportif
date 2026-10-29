@@ -227,7 +227,7 @@ export async function bodyMeasurementsRoutes(fastify: FastifyInstance) {
 
         return sendOk(reply, measurement);
       } catch (error: any) {
-        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+        if (error.name === "ZodError") return sendValidationError(reply, error.issues);
         fastify.log.error(error);
         return sendInternalError(reply);
       }
@@ -259,7 +259,7 @@ export async function bodyMeasurementsRoutes(fastify: FastifyInstance) {
         );
         return sendCreated(reply, measurement);
       } catch (error: any) {
-        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+        if (error.name === "ZodError") return sendValidationError(reply, error.issues);
         fastify.log.error(error);
         return sendInternalError(reply);
       }
@@ -307,7 +307,7 @@ export async function bodyMeasurementsRoutes(fastify: FastifyInstance) {
 
         return sendOk(reply, measurement);
       } catch (error: any) {
-        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+        if (error.name === "ZodError") return sendValidationError(reply, error.issues);
         fastify.log.error(error);
         return sendInternalError(reply);
       }
@@ -352,7 +352,7 @@ export async function bodyMeasurementsRoutes(fastify: FastifyInstance) {
 
         return sendNoContent(reply);
       } catch (error: any) {
-        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+        if (error.name === "ZodError") return sendValidationError(reply, error.issues);
         fastify.log.error(error);
         return sendInternalError(reply);
       }

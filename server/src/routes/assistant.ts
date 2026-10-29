@@ -116,7 +116,7 @@ export async function assistantRoutes(fastify: FastifyInstance) {
         });
         return sendOk(reply, enrichedDraft);
       } catch (error: any) {
-        if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+        if (error.name === "ZodError") return sendValidationError(reply, error.issues);
         fastify.log.error(error);
         return sendInternalError(reply);
       }

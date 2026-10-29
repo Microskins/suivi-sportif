@@ -163,7 +163,7 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       return sendList(reply, items, { total, page, limit });
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return sendValidationError(reply, error.errors);
+        return sendValidationError(reply, error.issues);
       }
       fastify.log.error(error);
       return sendInternalError(reply);
@@ -210,7 +210,7 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       return sendOk(reply, workout);
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return sendValidationError(reply, error.errors);
+        return sendValidationError(reply, error.issues);
       }
       fastify.log.error(error);
       return sendInternalError(reply);
@@ -287,7 +287,7 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
     } catch (error: any) {
       const workoutError = error?.cause ?? error;
       if (error.name === "ZodError") {
-        return sendValidationError(reply, error.errors);
+        return sendValidationError(reply, error.issues);
       }
       const isWorkoutValidationError =
         (typeof workouts.WorkoutValidationError === "function" &&
@@ -384,7 +384,7 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
     } catch (error: any) {
       const workoutError = error?.cause ?? error;
       if (error.name === "ZodError") {
-        return sendValidationError(reply, error.errors);
+        return sendValidationError(reply, error.issues);
       }
       const isWorkoutValidationError =
         (typeof workouts.WorkoutValidationError === "function" &&
@@ -436,7 +436,7 @@ export async function workoutsRoutes(fastify: FastifyInstance) {
       return sendNoContent(reply);
     } catch (error: any) {
       if (error.name === "ZodError") {
-        return sendValidationError(reply, error.errors);
+        return sendValidationError(reply, error.issues);
       }
       fastify.log.error(error);
       return sendInternalError(reply);

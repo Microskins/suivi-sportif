@@ -188,7 +188,7 @@ export async function nutritionGoalsRoutes(fastify: FastifyInstance) {
 
       return sendOk(reply, goal);
     } catch (error: any) {
-      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+      if (error.name === "ZodError") return sendValidationError(reply, error.issues);
       fastify.log.error(error);
       return sendInternalError(reply);
     }
@@ -220,7 +220,7 @@ export async function nutritionGoalsRoutes(fastify: FastifyInstance) {
       );
       return sendCreated(reply, goal);
     } catch (error: any) {
-      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+      if (error.name === "ZodError") return sendValidationError(reply, error.issues);
       fastify.log.error(error);
       return sendInternalError(reply);
     }
@@ -271,7 +271,7 @@ export async function nutritionGoalsRoutes(fastify: FastifyInstance) {
 
       return sendOk(reply, goal);
     } catch (error: any) {
-      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+      if (error.name === "ZodError") return sendValidationError(reply, error.issues);
       fastify.log.error(error);
       return sendInternalError(reply);
     }
@@ -316,7 +316,7 @@ export async function nutritionGoalsRoutes(fastify: FastifyInstance) {
 
       return sendNoContent(reply);
     } catch (error: any) {
-      if (error.name === "ZodError") return sendValidationError(reply, error.errors);
+      if (error.name === "ZodError") return sendValidationError(reply, error.issues);
       fastify.log.error(error);
       return sendInternalError(reply);
     }
