@@ -64,7 +64,12 @@ export const tripInputSchema = z
     published: z.boolean().default(false),
     flights: z
       .array(
-        z.object({ fromCode: airportCodeSchema, toCode: airportCodeSchema }),
+        z.object({
+          fromCode: airportCodeSchema,
+          toCode: airportCodeSchema,
+          // Avion par defaut: les clients d'avant le mode n'envoient rien.
+          mode: z.enum(["avion", "voiture"]).default("avion"),
+        }),
       )
       .min(1, "Au moins un vol")
       .max(10),

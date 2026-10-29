@@ -228,3 +228,13 @@ et controles du depot verts.
   tenant compte de la casse (un compte inscrit en `Thomas.Cochart@...` ne se
   connecte pas en minuscules), alors que `VOYAGE_ADMIN_EMAILS` l'ignore.
   Comportement anterieur au chantier, laisse tel quel.
+- 2026-10-29: trajets en avion ou en voiture. Colonne `trip_flights.mode`
+  (`TravelMode`: `AVION` par defaut, `VOITURE`), migration
+  `20261029150000_add_travel_mode`; les trajets existants restent en avion.
+  L'API accepte et renvoie `mode` (`avion` par defaut si absent). Le
+  referentiel `airports` sert de referentiel de lieux: une ville se saisit
+  comme un aeroport (code a 3 lettres, ex. LIL). Globe: trajet en voiture en
+  tirets avec une voiture animee; legende Avion / Voiture. Admin: selecteur de
+  transport par trajet. Verifie de bout en bout: lieux LIL et GER ajoutes et
+  voyage LIL -> GER en voiture cree depuis l'admin, visible sur le globe, puis
+  supprime.

@@ -155,10 +155,49 @@ describe("administration des voyages", () => {
     expect(mocks.createTrip).toHaveBeenCalledWith(
       ADMIN.id,
       expect.objectContaining({
-        flights: [{ fromCode: "BVA", toCode: "TIA" }],
+        flights: [{ fromCode: "BVA", toCode: "TIA", mode: "avion" }],
         stages: [],
       }),
     );
+  });
+
+  it("accepte un trajet en voiture", async () => {
+    mocks.createTrip.mockResolvedValue({ slug: "vosges" });
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/voyages/admin/trips",
+      headers: { authorization: tokenFor(ADMIN) },
+      payload: {
+        slug: "vosges",
+        title: "Vosges",
+        country: "France",
+        stubLabel: "VOS",
+        flights: [{ fromCode: "LIL", toCode: "GER", mode: "voiture" }],
+      },
+    });
+
+    expect(response.statusCode).toBe(201);
+    expect(mocks.createTrip.mock.calls[0][1].flights).toEqual([
+      { fromCode: "LIL", toCode: "GER", mode: "voiture" },
+    ]);
+  });
+
+  it("refuse un mode de transport inconnu", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/voyages/admin/trips",
+      headers: { authorization: tokenFor(ADMIN) },
+      payload: {
+        slug: "x",
+        title: "X",
+        country: "X",
+        stubLabel: "X",
+        flights: [{ fromCode: "LIL", toCode: "GER", mode: "train" }],
+      },
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(mocks.createTrip).not.toHaveBeenCalled();
   });
 
   it("refuse un fichier qui n'est pas un GPX", async () => {

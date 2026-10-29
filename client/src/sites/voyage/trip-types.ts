@@ -14,7 +14,10 @@ export type Airport = {
   name: string;
 };
 
-export type Flight = { from: Airport; to: Airport };
+export type TravelMode = "avion" | "voiture";
+
+// Un trajet du voyage (un arc du globe): un vol, ou un trajet en voiture.
+export type Flight = { from: Airport; mode: TravelMode; to: Airport };
 
 export type TripTrackFile = {
   id: string;

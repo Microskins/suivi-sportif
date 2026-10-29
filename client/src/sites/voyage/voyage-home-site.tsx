@@ -71,8 +71,8 @@ export function VoyageHomeSite() {
             un plan clair.
           </h1>
           <p className="mt-5 max-w-sm leading-7 text-[var(--site-muted)]">
-            Chaque arc est un vol. Cliquez-le pour plonger dans le pays et
-            ouvrir le carnet du voyage.
+            Chaque arc est un trajet, en avion ou en voiture. Cliquez-le pour
+            plonger dans le pays et ouvrir le carnet du voyage.
           </p>
           <dl className="site-label mt-6 flex gap-8 text-xs font-medium uppercase tracking-[0.12em]">
             <div>
@@ -82,7 +82,7 @@ export function VoyageHomeSite() {
               </dd>
             </div>
             <div>
-              <dt className="text-[var(--site-muted)]">Vols</dt>
+              <dt className="text-[var(--site-muted)]">Trajets</dt>
               <dd className="mt-1 text-lg font-semibold">{pad(flightCount)}</dd>
             </div>
             <div>
@@ -123,6 +123,15 @@ export function VoyageHomeSite() {
             </span>
             <span className="flex items-center gap-2">
               <span className="h-[3px] w-5 rounded-full bg-[#e08a1e]" />À venir
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="h-[3px] w-5 rounded-full bg-[#0f1b2b]" />
+              Avion
+            </span>
+            <span className="flex items-center gap-2">
+              {/* Tirets, comme le trajet en voiture sur le globe. */}
+              <span className="h-[3px] w-5 bg-[repeating-linear-gradient(90deg,#0f1b2b_0_5px,transparent_5px_8px)]" />
+              Voiture
             </span>
           </div>
         </div>

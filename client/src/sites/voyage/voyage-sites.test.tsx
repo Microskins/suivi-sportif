@@ -24,7 +24,7 @@ const ecosse: TripSummary = {
   country: "Écosse",
   description: "Neuf jours d’automne d’Édimbourg à l’île de Skye.",
   endDate: "2026-10-27",
-  flights: [{ from: charleroi, to: edinburgh }],
+  flights: [{ from: charleroi, mode: "avion", to: edinburgh }],
   id: "1",
   published: true,
   slug: "ecosse-2026",
