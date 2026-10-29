@@ -70,7 +70,7 @@ export const VoyageGlobe = forwardRef<VoyageGlobeControls, VoyageGlobeProps>(
           ref={containerRef}
           className={`h-full w-full ${status === "unavailable" ? "invisible" : ""}`}
           role="region"
-          aria-label="Globe des voyages : chaque arc est un vol, cliquez-le pour ouvrir le carnet"
+          aria-label="Globe des voyages : chaque arc est un trajet, en avion ou en voiture ; cliquez-le pour ouvrir le carnet"
         />
         {status !== "ready" && (
           <p
