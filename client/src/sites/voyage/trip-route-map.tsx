@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { LngLat, TripStage } from "./trip-types";
 import type { MapModelId, TripMapHandle } from "./trip-map-engine";
 import { TripPhotoFrame } from "./trip-photo-frame";
-import { TripTrackCard } from "./trip-track-card";
+import { TripHikesSummary, TripTrackCard } from "./trip-track-card";
 import { prefersReducedMotion, supportsWebGL } from "./webgl-support";
 import type { GpxTrack } from "./gpx-track";
 import { formatDistance, stageDistance } from "./gpx-track";
@@ -246,8 +246,10 @@ export function TripRouteMap({
             </ul>
             {stageTracks.length > 0 && (
               <div className="mt-5 grid gap-2">
-                {stageTracks.map((track) => (
-                  <TripTrackCard key={track.name} track={track} />
+                <TripHikesSummary tracks={stageTracks} />
+                {/* Cle par position: deux traces peuvent porter le meme nom. */}
+                {stageTracks.map((track, index) => (
+                  <TripTrackCard key={`${index}-${track.name}`} track={track} />
                 ))}
               </div>
             )}
