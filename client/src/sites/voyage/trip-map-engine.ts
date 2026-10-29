@@ -17,17 +17,18 @@ import "maplibre-gl/dist/maplibre-gl.css";
 // `worker-src 'self'` au lieu d'autoriser les workers `blob:`.
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import type { LngLat } from "./ecosse-2026-data";
-import { distanceKm } from "./ecosse-2026-data";
+import type { GpxTrack } from "./gpx-track";
+import type { MapStage } from "./trip-map-paths";
+import {
+  bearingBetween,
+  buildPaths,
+  collection,
+  lineFeature,
+} from "./trip-map-paths";
 
 setWorkerUrl(workerUrl);
 
 export type MapModelId = "plan" | "relief" | "satellite";
-
-export type MapStage = {
-  code: string;
-  position: LngLat;
-  title: string;
-};
 
 type MapModel = {
   bearing: number;
@@ -81,55 +82,11 @@ export const mapModels: Record<MapModelId, MapModel> = {
   },
 };
 
-// Points intermediaires tous les ~2 km: l'animation de rejeu avance a vitesse
-// reguliere au lieu de sauter d'un sommet de polyligne a l'autre.
-function densify(route: LngLat[], stepKm = 2) {
-  const points: LngLat[] = [];
-  route.forEach((point, index) => {
-    if (index === 0) {
-      points.push(point);
-      return;
-    }
-    const previous = route[index - 1];
-    const steps = Math.max(1, Math.ceil(distanceKm(previous, point) / stepKm));
-    for (let step = 1; step <= steps; step += 1) {
-      const ratio = step / steps;
-      points.push([
-        previous[0] + (point[0] - previous[0]) * ratio,
-        previous[1] + (point[1] - previous[1]) * ratio,
-      ]);
-    }
-  });
-  return points;
-}
-
-function lineFeature(
-  coordinates: LngLat[],
-): GeoJSON.Feature<GeoJSON.LineString> {
-  return {
-    type: "Feature",
-    properties: {},
-    geometry: { type: "LineString", coordinates },
-  };
-}
-
 function boundsOf(route: LngLat[]) {
   return route.reduce(
     (bounds, point) => bounds.extend(point),
     new LngLatBounds(route[0], route[0]),
   );
-}
-
-function bearingBetween([lng1, lat1]: LngLat, [lng2, lat2]: LngLat) {
-  const y =
-    Math.sin(((lng2 - lng1) * Math.PI) / 180) *
-    Math.cos((lat2 * Math.PI) / 180);
-  const x =
-    Math.cos((lat1 * Math.PI) / 180) * Math.sin((lat2 * Math.PI) / 180) -
-    Math.sin((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.cos(((lng2 - lng1) * Math.PI) / 180);
-  return (Math.atan2(y, x) * 180) / Math.PI;
 }
 
 type TripMapOptions = {
@@ -140,7 +97,6 @@ type TripMapOptions = {
   onSelectStage: (index: number) => void;
   // Appele pendant le rejeu, sans recentrer la camera.
   onStageReached: (index: number) => void;
-  stageRouteEnds: number[];
   stages: MapStage[];
 };
 
@@ -151,14 +107,13 @@ export function createTripMap({
   onError,
   onSelectStage,
   onStageReached,
-  stageRouteEnds,
   stages,
 }: TripMapOptions) {
   let model = initialModel;
   let animationFrame = 0;
-  let drawnRoute: LngLat[] = fullRoute;
-  const denseRoute = densify(fullRoute);
-  const tripBounds = boundsOf(fullRoute);
+  let paths = buildPaths(stages, []);
+  let activities: GpxTrack[] = [];
+  let tripBounds = boundsOf(fullRoute);
 
   const map = new MapLibreMap({
     attributionControl: { compact: true },
@@ -232,16 +187,27 @@ export function createTripMap({
 
     map.addSource("trip-route", {
       type: "geojson",
-      data: lineFeature(drawnRoute),
+      data: paths.reconstructed,
     });
-    map.addLayer({
-      id: "trip-route-casing",
-      type: "line",
-      source: "trip-route",
-      layout: { "line-cap": "round", "line-join": "round" },
-      paint: { "line-color": "#ffffff", "line-width": 7, "line-opacity": 0.85 },
+    map.addSource("trip-gps", { type: "geojson", data: paths.gps });
+    map.addSource("trip-replay", {
+      type: "geojson",
+      data: collection([]),
     });
-    // Trace en tirets, comme la ligne perforee du billet (DA Boarding Pass).
+    for (const source of ["trip-route", "trip-gps", "trip-replay"]) {
+      map.addLayer({
+        id: `${source}-casing`,
+        type: "line",
+        source,
+        layout: { "line-cap": "round", "line-join": "round" },
+        paint: {
+          "line-color": "#ffffff",
+          "line-width": source === "trip-gps" ? 8 : 7,
+          "line-opacity": 0.85,
+        },
+      });
+    }
+    // Trace reconstitue en tirets, comme la ligne perforee du billet.
     map.addLayer({
       id: "trip-route",
       type: "line",
@@ -252,6 +218,21 @@ export function createTripMap({
         "line-width": 4,
         "line-dasharray": [2, 1.6],
       },
+    });
+    // Trace GPS reelle en trait plein, coloree par altitude (facon Strava).
+    map.addLayer({
+      id: "trip-gps",
+      type: "line",
+      source: "trip-gps",
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": ["get", "color"], "line-width": 5 },
+    });
+    map.addLayer({
+      id: "trip-replay",
+      type: "line",
+      source: "trip-replay",
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": ACCENT, "line-width": 4.5 },
     });
   }
 
@@ -283,16 +264,27 @@ export function createTripMap({
     return [{ button, index, marker }];
   });
 
-  function setDrawnRoute(route: LngLat[]) {
-    drawnRoute = route;
-    map.getSource<GeoJSONSource>("trip-route")?.setData(lineFeature(route));
+  function setSourceData(
+    id: string,
+    data: GeoJSON.FeatureCollection<GeoJSON.LineString>,
+  ) {
+    map.getSource<GeoJSONSource>(id)?.setData(data);
+  }
+
+  // Pendant le rejeu, seul le trace en cours de dessin reste visible.
+  function showFinalRoute(visible: boolean) {
+    setSourceData("trip-route", visible ? paths.reconstructed : collection([]));
+    setSourceData("trip-gps", visible ? paths.gps : collection([]));
+    if (visible) {
+      setSourceData("trip-replay", collection([]));
+    }
   }
 
   function stopReplay() {
     if (animationFrame) {
       cancelAnimationFrame(animationFrame);
       animationFrame = 0;
-      setDrawnRoute(fullRoute);
+      showFinalRoute(true);
     }
   }
 
@@ -329,6 +321,27 @@ export function createTripMap({
         button.setAttribute("aria-current", isActive ? "step" : "false");
       });
       const settings = mapModels[model];
+      // Une activite GPS (randonnee...) est cadree en entier: un zoom fixe
+      // sur le point d'etape la couperait ou la rendrait minuscule.
+      const stageActivities = activities.filter(
+        (track) => track.stageIndex === index,
+      );
+      if (stageActivities.length > 0) {
+        map.fitBounds(
+          boundsOf(
+            stageActivities.flatMap((track) =>
+              track.points.map((point) => point.position),
+            ),
+          ),
+          {
+            bearing: settings.bearing,
+            maxZoom: 14,
+            padding: container.clientWidth < 640 ? 32 : 72,
+            pitch: settings.pitch,
+          },
+        );
+        return;
+      }
       map.flyTo({
         bearing: settings.bearing,
         center: stages[index].position,
@@ -353,13 +366,19 @@ export function createTripMap({
       const settings = mapModels[model];
       const pitch = Math.max(settings.pitch, 50);
 
+      const denseRoute = paths.replay;
+      showFinalRoute(false);
+
       const step = (now: number) => {
         const progress = Math.min(1, (now - startedAt) / durationMs);
         const head = Math.max(
           1,
           Math.floor(progress * (denseRoute.length - 1)),
         );
-        setDrawnRoute(denseRoute.slice(0, head + 1));
+        setSourceData(
+          "trip-replay",
+          collection([lineFeature(denseRoute.slice(0, head + 1))]),
+        );
 
         const lookAhead =
           denseRoute[Math.min(denseRoute.length - 1, head + 12)];
@@ -373,7 +392,7 @@ export function createTripMap({
 
         const travelled = head / (denseRoute.length - 1);
         let reached = -1;
-        stageRouteEnds.forEach((end, index) => {
+        paths.stageEnds.forEach((end, index) => {
           if (travelled >= end) {
             reached = index;
           }
@@ -387,6 +406,7 @@ export function createTripMap({
           animationFrame = requestAnimationFrame(step);
         } else {
           animationFrame = 0;
+          showFinalRoute(true);
           overview();
           onDone();
         }
@@ -409,6 +429,19 @@ export function createTripMap({
         pitch: settings.pitch,
         duration: 900,
       });
+    },
+
+    // Les GPX arrivent apres la creation de la carte: on remplace les
+    // traces reconstituees concernees et on recadre sur l'ensemble.
+    setTracks(tracks: GpxTrack[]) {
+      stopReplay();
+      paths = buildPaths(stages, tracks);
+      activities = tracks.filter((track) => track.kind === "activite");
+      tripBounds = boundsOf([
+        ...fullRoute,
+        ...tracks.flatMap((track) => track.points.map((p) => p.position)),
+      ]);
+      showFinalRoute(true);
     },
 
     stopReplay,

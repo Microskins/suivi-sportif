@@ -6,8 +6,20 @@
 //
 // Photos: deposer les fichiers dans `client/public/sites/voyage/ecosse-2026/`
 // puis les referencer dans `photos` avec un chemin `/sites/voyage/ecosse-2026/...`.
+//
+// Traces GPS: deposer les GPX (export Strava: activite > ... > "Exporter le
+// GPX") dans `client/public/sites/voyage/ecosse-2026/traces/` puis les
+// referencer dans `gpx`. Un GPX "trajet" remplace le trace reconstitue de
+// l'etape; un GPX "activite" (randonnee, course...) s'y ajoute.
 
 export type LngLat = [number, number];
+
+export type TrackKind = "trajet" | "activite";
+
+export type TripTrackFile = {
+  kind: TrackKind;
+  src: string;
+};
 
 export type TripPhoto = {
   alt: string;
@@ -20,6 +32,7 @@ export type TripStage = {
   date: string;
   day: string;
   detail: string;
+  gpx: TripTrackFile[];
   highlights: string[];
   id: string;
   photos: TripPhoto[];
@@ -40,6 +53,7 @@ export const ecosseStages: TripStage[] = [
     day: "J01—02",
     detail:
       "Arrivée à Édimbourg, Royal Mile, château puis lever de soleil sur Arthur’s Seat.",
+    gpx: [],
     highlights: ["Royal Mile", "Château d’Édimbourg", "Arthur’s Seat"],
     id: "edimbourg",
     photos: [],
@@ -54,6 +68,7 @@ export const ecosseStages: TripStage[] = [
     day: "J03",
     detail:
       "Château de Stirling, rives du Loch Lomond puis traversée de Rannoch Moor jusqu’à Glencoe.",
+    gpx: [],
     highlights: ["Stirling", "Loch Lomond", "Buachaille Etive Mòr"],
     id: "glencoe",
     photos: [],
@@ -84,6 +99,7 @@ export const ecosseStages: TripStage[] = [
     day: "J04",
     detail:
       "Fort William, viaduc de Glenfinnan, Road to the Isles puis ferry de Mallaig vers Skye.",
+    gpx: [],
     highlights: ["Glenfinnan", "Mallaig — Armadale", "Portree"],
     id: "portree",
     photos: [],
@@ -115,6 +131,7 @@ export const ecosseStages: TripStage[] = [
     day: "J05",
     detail:
       "Boucle du Trotternish : Old Man of Storr à l’aube, Kilt Rock et les falaises du Quiraing.",
+    gpx: [],
     highlights: ["Old Man of Storr", "Kilt Rock", "Quiraing"],
     id: "quiraing",
     photos: [],
@@ -137,6 +154,7 @@ export const ecosseStages: TripStage[] = [
     day: "J06",
     detail:
       "Ouest de l’île : phare de Neist Point, Fairy Pools au pied des Cuillin et distillerie Talisker.",
+    gpx: [],
     highlights: ["Neist Point", "Fairy Pools", "Talisker"],
     id: "neist-point",
     photos: [],
@@ -159,6 +177,7 @@ export const ecosseStages: TripStage[] = [
     day: "J07",
     detail:
       "Retour sur le continent par Eilean Donan, puis la rive du Loch Ness et le château d’Urquhart.",
+    gpx: [],
     highlights: ["Eilean Donan", "Urquhart Castle", "Inverness"],
     id: "inverness",
     photos: [],
@@ -191,6 +210,7 @@ export const ecosseStages: TripStage[] = [
     day: "J08—09",
     detail:
       "Descente par les Cairngorms et Pitlochry, dernière soirée à Édimbourg avant le vol retour.",
+    gpx: [],
     highlights: ["Cairngorms", "Pitlochry", "Forth Bridges"],
     id: "retour-edimbourg",
     photos: [],

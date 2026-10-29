@@ -37,6 +37,12 @@
 - [x] Tests (routeur, page, continuite du trace), typecheck, lint, build,
   controles taille / frontieres / contraste.
 - [x] Verification navigateur desktop et mobile avec la CSP de production.
+- [x] Support des traces GPS (GPX Strava, Garmin, Komoot...): trait plein
+  colore par altitude, profil altimetrique, distance, D+ et duree; le trace
+  reconstitue reste en tirets pour les etapes sans GPX.
+- [ ] Deposer les GPX dans `client/public/sites/voyage/ecosse-2026/traces/`
+  et les referencer dans `gpx` (`trajet` remplace le trace de l'etape,
+  `activite` s'y ajoute).
 - [ ] Remplacer l'itineraire provisoire par le trajet reel (etapes, dates).
 - [ ] Deposer les photos dans `client/public/sites/voyage/ecosse-2026/` et les
   referencer dans `photos`.
@@ -50,3 +56,8 @@
   production: relief 3D, zoom sur etape, rejeu anime et cadrage mobile OK.
   Le bac a sable bloquait OpenFreeMap et Esri: le fond vectoriel et
   l'imagerie satellite n'ont pas pu etre vus, le terrain AWS si.
+- 2026-10-29: traces GPS ajoutees. Les services de calcul d'itineraire
+  (OSRM, Valhalla) sont bloques dans le bac a sable: impossible d'y caler le
+  trace sur les routes, d'ou le choix des GPX reels. Rendu verifie avec deux
+  GPX de demonstration non commites (trajet et randonnee).
+

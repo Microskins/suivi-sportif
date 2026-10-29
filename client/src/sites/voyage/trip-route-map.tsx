@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { LngLat, TripStage } from "./ecosse-2026-data";
-import { routeLengthKm, stageDistanceLabel } from "./ecosse-2026-data";
+import { stageDistanceLabel } from "./ecosse-2026-data";
 import type { MapModelId, TripMapHandle } from "./trip-map-engine";
 import { TripPhotoFrame } from "./trip-photo-frame";
+import { TripTrackCard } from "./trip-track-card";
+import { useGpxTracks } from "./use-gpx-tracks";
 
 const modelOptions: { id: MapModelId; label: string; hint: string }[] = [
   { id: "plan", label: "Plan 2D", hint: "Lecture à plat, routes et villes" },
@@ -48,16 +50,7 @@ export function TripRouteMap({ fullRoute, stages }: TripRouteMapProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isReplaying, setIsReplaying] = useState(false);
 
-  // Part du trajet total parcourue a l'arrivee de chaque etape: sert a
-  // synchroniser le panneau d'etape pendant le rejeu anime.
-  const stageRouteEnds = useMemo(() => {
-    const total = routeLengthKm(fullRoute);
-    let travelled = 0;
-    return stages.map((stage) => {
-      travelled += routeLengthKm(stage.route);
-      return total ? travelled / total : 0;
-    });
-  }, [fullRoute, stages]);
+  const tracks = useGpxTracks(stages);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -83,7 +76,6 @@ export function TripRouteMap({ fullRoute, stages }: TripRouteMapProps) {
             setIsReplaying(false);
           },
           onStageReached: setActiveIndex,
-          stageRouteEnds,
           stages,
         });
         setStatus("ready");
@@ -101,6 +93,14 @@ export function TripRouteMap({ fullRoute, stages }: TripRouteMapProps) {
     };
     // La carte est creee une seule fois; le modele change ensuite via setModel.
   }, []);
+
+  // Les GPX peuvent arriver avant ou apres la carte: on les pousse des que
+  // les deux sont prets.
+  useEffect(() => {
+    if (status === "ready" && tracks.length > 0) {
+      mapRef.current?.setTracks(tracks);
+    }
+  }, [status, tracks]);
 
   function chooseModel(next: MapModelId) {
     setModel(next);
@@ -129,6 +129,9 @@ export function TripRouteMap({ fullRoute, stages }: TripRouteMapProps) {
   }
 
   const stage = stages[activeIndex];
+  const stageTracks = tracks.filter(
+    (track) => track.stageIndex === activeIndex,
+  );
   const mapReady = status === "ready";
 
   return (
@@ -249,6 +252,13 @@ export function TripRouteMap({ fullRoute, stages }: TripRouteMapProps) {
                 </li>
               ))}
             </ul>
+            {stageTracks.length > 0 && (
+              <div className="mt-5 grid gap-2">
+                {stageTracks.map((track) => (
+                  <TripTrackCard key={track.name} track={track} />
+                ))}
+              </div>
+            )}
             <div className="mt-5 grid grid-cols-2 gap-2">
               {stage.photos.length > 0 ? (
                 stage.photos
@@ -265,7 +275,9 @@ export function TripRouteMap({ fullRoute, stages }: TripRouteMapProps) {
       </div>
 
       <p className="site-label border-t border-[#dfe4ea] px-5 py-4 text-[0.62rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)]">
-        Tracé reconstitué à partir des étapes — pas une trace GPX enregistrée.
+        {tracks.length > 0
+          ? "Trait plein : traces GPS enregistrées, colorées par altitude — tirets : tracé reconstitué."
+          : "Tracé reconstitué à partir des étapes — pas une trace GPX enregistrée."}
       </p>
     </div>
   );
