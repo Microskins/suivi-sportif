@@ -160,8 +160,9 @@ et controles du depot verts.
 - [x] Phase 3 - reprise des voyages (Ecosse, Albanie, Roumanie, Grande
   Canarie; Islande retiree)
 - [x] Phase 4 - site public branche sur l'API
-- [ ] Phase 5 - ecran d'admin
-- [ ] Phase 6 - deploiement, docs, verification de bout en bout
+- [x] Phase 5 - ecran d'admin
+- [x] Phase 6 - deploiement, docs, verification de bout en bout
+- [ ] Mise en production (procedure: `docs/04-deployment/docker.md`)
   (Docker, Nginx et docs faits le 2026-10-29; reste la verification de bout
   en bout et la mise en production)
 
@@ -217,3 +218,13 @@ et controles du depot verts.
   migration non encore deployee donc corrigee sur place). Reste hors scope:
   sans `trustProxy`, les limites de debit voient toutes les requetes venir de
   Nginx (127.0.0.1); defaut anterieur, commun a toute l'API.
+- 2026-10-29: ecran `/voyage/admin` livre (fichiers `admin-*`, charge a la
+  demande, 34,7 kB minifie). Verifie de bout en bout dans Chromium contre
+  l'API et la base locales: connexion, creation d'un voyage publie avec un
+  vol BVA -> TIA et une etape, envoi d'un GPX et d'une photo JPEG, carnet
+  public affichant la trace et la photo, puis suppression du voyage (API
+  publique -> 404, dossier des fichiers revenu a vide).
+- 2026-10-29: constat hors scope: `POST /api/users/login` compare l'e-mail en
+  tenant compte de la casse (un compte inscrit en `Thomas.Cochart@...` ne se
+  connecte pas en minuscules), alors que `VOYAGE_ADMIN_EMAILS` l'ignore.
+  Comportement anterieur au chantier, laisse tel quel.

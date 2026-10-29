@@ -26,6 +26,10 @@ vi.mock("../sites/voyage/trip-site", () => ({
   TripSite: ({ slug }: { slug: string }) => <p>Carnet {slug}</p>,
 }));
 
+vi.mock("../sites/voyage/admin-site", () => ({
+  default: () => <p>Administration Voyage</p>,
+}));
+
 afterEach(() => {
   cleanup();
   window.history.replaceState({}, "", "/");
@@ -44,6 +48,14 @@ describe("routes du site Voyage", () => {
     render(<SiteRouter />);
 
     expect(screen.getByText("Carnet ecosse-2026")).toBeTruthy();
+  });
+
+  it("ouvre l'administration plutot qu'un carnet nomme admin", async () => {
+    window.history.replaceState({}, "", "/voyage/admin");
+    render(<SiteRouter />);
+
+    expect(await screen.findByText("Administration Voyage")).toBeTruthy();
+    expect(screen.queryByText("Carnet admin")).toBeNull();
   });
 });
 
