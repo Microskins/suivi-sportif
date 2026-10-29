@@ -280,6 +280,11 @@ Le client sert aussi de point d'entree de portfolio:
 - `/voyage` affiche le catalogue des carnets de voyage.
 - `/voyage/islande-2026` affiche le carnet de preparation Islande 2026, sans
   reference de reservation privee dans le bundle public.
+- `/voyage/ecosse-2026` affiche le carnet du voyage realise en Ecosse
+  (19-27 octobre 2026): carte interactive MapLibre chargee a la demande, avec
+  trois modeles a comparer (plan 2D, relief 3D, satellite 3D), etapes
+  cliquables, rejeu anime du trajet et emplacements photos. Toutes les donnees
+  viennent de `client/src/sites/voyage/ecosse-2026-data.ts`.
 - `/prix-aliments` affiche le comparateur alimentaire Prix Frais. Son catalogue
   local est un jeu de demonstration explicitement identifie comme tel; aucune
   donnee magasin en direct n'est encore collectee. La configuration locale

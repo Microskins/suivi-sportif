@@ -25,6 +25,9 @@ vi.mock("../sites/voyage/voyage-home-site", () => ({
 vi.mock("../sites/voyage/islande-trip-site", () => ({
   IslandeTripSite: () => <p>Carnet Islande</p>,
 }));
+vi.mock("../sites/voyage/ecosse-trip-site", () => ({
+  EcosseTripSite: () => <p>Carnet Ecosse</p>,
+}));
 
 afterEach(() => {
   cleanup();
@@ -44,6 +47,13 @@ describe("routes du site Voyage", () => {
     render(<SiteRouter />);
 
     expect(screen.getByText("Carnet Islande")).toBeTruthy();
+  });
+
+  it("affiche le carnet Ecosse", () => {
+    window.history.replaceState({}, "", "/voyage/ecosse-2026");
+    render(<SiteRouter />);
+
+    expect(screen.getByText("Carnet Ecosse")).toBeTruthy();
   });
 });
 

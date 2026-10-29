@@ -2,6 +2,7 @@ import { BoardingTicket } from "./boarding-ticket";
 import { VoyageBrand } from "./voyage-brand";
 
 const ISLANDE_PATH = "/voyage/islande-2026";
+const ECOSSE_PATH = "/voyage/ecosse-2026";
 
 export function VoyageHomeSite() {
   return (
@@ -38,7 +39,7 @@ export function VoyageHomeSite() {
               <div>
                 <dt className="text-[var(--site-muted)]">Carnets</dt>
                 <dd className="mt-2 text-lg font-semibold text-[#0f1b2b]">
-                  01
+                  02
                 </dd>
               </div>
               <div>
@@ -62,7 +63,7 @@ export function VoyageHomeSite() {
               </h2>
             </div>
             <p className="site-label text-xs font-medium uppercase tracking-[0.12em] text-[var(--site-muted)]">
-              01 billet / 01
+              01 billet / 02
             </p>
           </div>
 
@@ -76,6 +77,34 @@ export function VoyageHomeSite() {
             status="a-venir"
             stubLabel="ISL / 2026"
             title="Islande — Route du Sud"
+          />
+        </section>
+
+        <section className="border-t border-[#dfe4ea] py-14 sm:py-16">
+          <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="site-label text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--site-muted)]">
+                Billets compostés
+              </p>
+              <h2 className="site-display mt-2 text-3xl font-semibold sm:text-4xl">
+                Déjà parcourus
+              </h2>
+            </div>
+            <p className="site-label text-xs font-medium uppercase tracking-[0.12em] text-[var(--site-muted)]">
+              02 billet / 02
+            </p>
+          </div>
+
+          <BoardingTicket
+            actionHref={ECOSSE_PATH}
+            actionLabel="Revivre"
+            arrivalCode="SKY"
+            departureCode="EDI"
+            description="Neuf jours d’automne d’Édimbourg à l’île de Skye, à revivre sur une carte 3D interactive."
+            eyebrow="19—27 octobre 2026 · Écosse"
+            status="realise"
+            stubLabel="SCO / 2026"
+            title="Écosse — Boucle des Highlands"
           />
         </section>
 

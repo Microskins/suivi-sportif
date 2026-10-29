@@ -102,6 +102,43 @@
     position: relative;
   }
 
+  /* Marqueur d'etape de la carte MapLibre: depart en encre, etapes en bleu. */
+  .voyage-map-marker {
+    display: grid;
+    width: 2.1rem;
+    height: 2.1rem;
+    place-items: center;
+    border: 3px solid #ffffff;
+    border-radius: 999px;
+    background: #1c4ed8;
+    box-shadow: 0 6px 16px rgba(15, 27, 43, 0.28);
+    color: #ffffff;
+    cursor: pointer;
+    font-family: var(--site-label);
+    font-size: 0.68rem;
+    font-weight: 600;
+    transition: transform 160ms ease;
+  }
+
+  .voyage-map-marker[data-start="true"] {
+    background: #0f1b2b;
+  }
+
+  .voyage-map-marker:hover,
+  .voyage-map-marker[aria-current="step"] {
+    transform: scale(1.18);
+  }
+
+  .voyage-map-marker[aria-current="step"] {
+    outline: 3px solid rgba(28, 78, 216, 0.35);
+    outline-offset: 2px;
+  }
+
+  .voyage-map-marker:focus-visible {
+    outline: 3px solid #0f1b2b;
+    outline-offset: 2px;
+  }
+
   .price-counter {
     background-image:
       radial-gradient(

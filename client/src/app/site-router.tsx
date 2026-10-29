@@ -3,6 +3,7 @@ import { PriceComparisonSite } from "../sites/prix-aliments/price-comparison-sit
 import { SuiviSportifSite } from "../sites/suivi-sportif/suivi-sportif-site";
 import { TrekkingHomeSite } from "../sites/trekking/trekking-home-site";
 import { VosgesWildSite } from "../sites/trekking/vosges-wild-site";
+import { EcosseTripSite } from "../sites/voyage/ecosse-trip-site";
 import { IslandeTripSite } from "../sites/voyage/islande-trip-site";
 import { VoyageHomeSite } from "../sites/voyage/voyage-home-site";
 import { normalizePathname, siteIdFromPath } from "./site-identities";
@@ -12,6 +13,7 @@ const TREKKING_PATH = "/trekking";
 const VOSGES_WILD_PATH = `${TREKKING_PATH}/vosges-wild`;
 const VOYAGE_PATH = "/voyage";
 const ISLANDE_PATH = `${VOYAGE_PATH}/islande-2026`;
+const ECOSSE_PATH = `${VOYAGE_PATH}/ecosse-2026`;
 
 function siteForPath(currentPath: string) {
   const siteId = siteIdFromPath(currentPath);
@@ -33,11 +35,10 @@ function siteForPath(currentPath: string) {
   }
 
   if (siteId === "voyage") {
-    return currentPath === ISLANDE_PATH ? (
-      <IslandeTripSite />
-    ) : (
-      <VoyageHomeSite />
-    );
+    if (currentPath === ISLANDE_PATH) {
+      return <IslandeTripSite />;
+    }
+    return currentPath === ECOSSE_PATH ? <EcosseTripSite /> : <VoyageHomeSite />;
   }
 
   return <PortfolioSite />;

@@ -2,11 +2,18 @@
 
 import { cleanup, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { routeLengthKm, ecosseStages } from "./ecosse-2026-data";
+import { EcosseTripSite } from "./ecosse-trip-site";
 import { IslandeTripSite } from "./islande-trip-site";
 import { VoyageHomeSite } from "./voyage-home-site";
 
 afterEach(cleanup);
+
+// jsdom n'implemente pas WebGL: la carte doit alors basculer sur son repli.
+beforeAll(() => {
+  vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
+});
 
 describe("pages Voyage", () => {
   it("relie le billet du catalogue au carnet Islande", () => {
@@ -17,9 +24,13 @@ describe("pages Voyage", () => {
     );
     expect(screen.getByText("CDG")).toBeTruthy();
     expect(screen.getByText("KEF")).toBeTruthy();
+    expect(screen.getAllByText("EDI")).toHaveLength(1);
     expect(
       screen.getByRole("link", { name: /ouvrir/i }).getAttribute("href"),
     ).toBe("/voyage/islande-2026");
+    expect(
+      screen.getByRole("link", { name: /revivre/i }).getAttribute("href"),
+    ).toBe("/voyage/ecosse-2026");
   });
 
   it("presente la carte et les reservations sans lien prive", () => {
@@ -36,5 +47,29 @@ describe("pages Voyage", () => {
     ).toBeTruthy();
     expect(screen.getByText("Airbnb — nuits 1 à 2")).toBeTruthy();
     expect(screen.getByText(/aucun lien privé/i)).toBeTruthy();
+  });
+
+  it("presente le carnet Ecosse avec une carte en repli sans WebGL", () => {
+    render(<EcosseTripSite />);
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Écosse — Boucle des Highlands",
+      }),
+    ).toBeTruthy();
+    expect(screen.getByRole("radio", { name: "Relief 3D" })).toBeChecked();
+    expect(screen.getByRole("status")).toHaveTextContent(/indisponible/i);
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Stirling, Loch Lomond et Glencoe" }),
+    ).toBeTruthy();
+  });
+
+  it("enchaine chaque troncon sur l'etape precedente", () => {
+    ecosseStages.slice(1).forEach((stage, index) => {
+      expect(stage.route[0]).toEqual(ecosseStages[index].position);
+      expect(stage.route.at(-1)).toEqual(stage.position);
+      expect(routeLengthKm(stage.route)).toBeGreaterThan(0);
+    });
   });
 });
