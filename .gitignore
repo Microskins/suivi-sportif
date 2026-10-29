@@ -4,7 +4,7 @@ yarn.lock
 pnpm-lock.yaml
 
 # Production
-/dist
+dist/
 /build
 out/
 
@@ -59,4 +59,3 @@ coverage/
 
 # Build outputs
 *.tsbuildinfo
-mcp/dist/
