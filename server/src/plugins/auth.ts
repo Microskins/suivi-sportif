@@ -45,3 +45,30 @@ export function generateToken(
 ) {
   return fastify.jwt.sign({ id: user.id, email: user.email, name: user.name });
 }
+
+// Comptes autorises a modifier le site Voyage: liste d'e-mails separes par des
+// virgules dans VOYAGE_ADMIN_EMAILS. L'inscription publique ne doit pas
+// suffire pour publier sur le site Voyage.
+export function isVoyageAdmin(email: string | undefined) {
+  const admins = (process.env.VOYAGE_ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean);
+  return email !== undefined && admins.includes(email.toLowerCase());
+}
+
+export async function authenticateVoyageAdmin(
+  request: FastifyRequest,
+  reply: FastifyReply,
+) {
+  await authenticate(request, reply);
+  if (reply.sent) {
+    return;
+  }
+  if (!isVoyageAdmin(request.user?.email)) {
+    return reply.code(403).send({
+      error: "Acces reserve aux administrateurs du site Voyage",
+      code: "VOYAGE_ADMIN_REQUIRED",
+    });
+  }
+}

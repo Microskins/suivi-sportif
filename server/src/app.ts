@@ -14,6 +14,7 @@ import { bodyMeasurementsRoutes } from "./routes/body-measurements.js";
 import { assistantRoutes } from "./routes/assistant.js";
 import { workoutsRoutes } from "./routes/workouts.js";
 import { workoutTemplatesRoutes } from "./routes/workout-templates.js";
+import { voyagesRoutes } from "./routes/voyages.js";
 import { authPlugin } from "./plugins/auth.js";
 
 const DEVELOPMENT_JWT_SECRET = "development-only-secret-at-least-32-characters";
@@ -175,6 +176,7 @@ export function buildApp(options: FastifyServerOptions = { logger: true }) {
     prefix: "/api/body-measurements",
   });
   fastify.register(assistantRoutes, { prefix: "/api/assistant" });
+  fastify.register(voyagesRoutes, { prefix: "/api/voyages" });
   fastify.register(swaggerUi, {
     routePrefix: "/docs",
     uiConfig: {
