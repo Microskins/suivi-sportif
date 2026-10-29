@@ -30,6 +30,11 @@ const FLIGHT_MS = 5200;
 const PLANE_SVG =
   '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>';
 
+// Voiture vue de dessus, capot vers le haut comme l'avion: la rotation par
+// cap s'applique de la meme facon.
+const CAR_SVG =
+  '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8.5 2.5h7a2.5 2.5 0 0 1 2.5 2.5v14a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 6 19V5a2.5 2.5 0 0 1 2.5-2.5z"/><path fill="#ffffff" d="M8.6 7.2h6.8l-1 2.6H9.6zM9.4 15.6h5.2l.9 2.4H8.5z"/></svg>';
+
 type GlobeOptions = {
   container: HTMLElement;
   onError: () => void;
@@ -106,9 +111,13 @@ export function createVoyageGlobe({
       promoteId: "tripId",
       data: {
         type: "FeatureCollection",
-        features: flights.map(({ arc, trip }) => ({
+        features: flights.map(({ arc, flight, trip }) => ({
           type: "Feature",
-          properties: { status: trip.status, tripId: trip.id },
+          properties: {
+            mode: flight.mode,
+            status: trip.status,
+            tripId: trip.id,
+          },
           geometry: { type: "LineString", coordinates: arc },
         })),
       },
@@ -128,14 +137,34 @@ export function createVoyageGlobe({
         "line-width": ["case", isHover, 9, 6],
       },
     });
+    const statusColor: ExpressionSpecification = [
+      "match",
+      ["get", "status"],
+      "a-venir",
+      AMBER,
+      ACCENT,
+    ];
+    // Avion: trait plein. Voiture: tirets, comme une route sur une carte.
     map.addLayer({
       id: "flights",
       type: "line",
       source: "flights",
+      filter: ["!=", ["get", "mode"], "voiture"],
       layout: { "line-cap": "round" },
       paint: {
-        "line-color": ["match", ["get", "status"], "a-venir", AMBER, ACCENT],
+        "line-color": statusColor,
         "line-width": ["case", isHover, 5, 3],
+      },
+    });
+    map.addLayer({
+      id: "drives",
+      type: "line",
+      source: "flights",
+      filter: ["==", ["get", "mode"], "voiture"],
+      paint: {
+        "line-color": statusColor,
+        "line-dasharray": [1.4, 1.1],
+        "line-width": ["case", isHover, 5, 3.5],
       },
     });
     // Zone de clic large et invisible: un arc de 3 px est dur a viser.
@@ -231,13 +260,13 @@ export function createVoyageGlobe({
       .addTo(map);
   });
 
-  // Un avion par vol, qui parcourt son arc en boucle; immobile a mi-parcours
-  // si l'utilisateur prefere limiter les animations.
-  const planes = flights.map(({ arc, trip }) => {
+  // Un avion (ou une voiture) par trajet, qui parcourt son arc en boucle;
+  // immobile a mi-parcours si l'utilisateur prefere limiter les animations.
+  const planes = flights.map(({ arc, flight, trip }) => {
     const element = document.createElement("span");
     element.className = "voyage-globe-plane";
     element.style.color = trip.status === "a-venir" ? AMBER : INK;
-    element.innerHTML = PLANE_SVG;
+    element.innerHTML = flight.mode === "voiture" ? CAR_SVG : PLANE_SVG;
     const marker = new Marker({
       element,
       opacityWhenCovered: "0",

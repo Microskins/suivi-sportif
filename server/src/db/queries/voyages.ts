@@ -75,6 +75,7 @@ function formatSummary(trip: TripSummaryRow) {
     published: trip.published,
     status: tripStatus(trip.endDate),
     flights: trip.flights.map((flight) => ({
+      mode: flight.mode === "VOITURE" ? "voiture" : "avion",
       from: formatAirport(flight.from),
       to: formatAirport(flight.to),
     })),
@@ -222,6 +223,15 @@ async function assertSlugAvailable(
   }
 }
 
+function flightRow(flight: TripInput["flights"][number], position: number) {
+  return {
+    position,
+    fromCode: flight.fromCode,
+    toCode: flight.toCode,
+    mode: flight.mode === "voiture" ? ("VOITURE" as const) : ("AVION" as const),
+  };
+}
+
 function tripFields(input: TripInput) {
   return {
     slug: input.slug,
@@ -259,10 +269,9 @@ export async function createTrip(userId: string, input: TripInput) {
         ...tripFields(input),
         userId,
         flights: {
-          create: input.flights.map((flight, position) => ({
-            position,
-            ...flight,
-          })),
+          create: input.flights.map((flight, position) =>
+            flightRow(flight, position),
+          ),
         },
         stages: {
           create: input.stages.map((stage, position) =>
@@ -331,10 +340,9 @@ export async function updateTrip(id: string, input: TripInput) {
       data: {
         ...tripFields(input),
         flights: {
-          create: input.flights.map((flight, position) => ({
-            position,
-            ...flight,
-          })),
+          create: input.flights.map((flight, position) =>
+            flightRow(flight, position),
+          ),
         },
       },
     });

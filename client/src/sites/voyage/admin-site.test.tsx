@@ -36,7 +36,7 @@ const ecosse: TripSummary = {
   country: "Écosse",
   description: "Neuf jours d’automne.",
   endDate: "2026-10-27",
-  flights: [{ from: charleroi, to: edinburgh }],
+  flights: [{ from: charleroi, mode: "avion", to: edinburgh }],
   id: TRIP_ID,
   published: true,
   slug: "ecosse-2026",
@@ -240,7 +240,7 @@ describe("édition d'un voyage", () => {
           data: {
             ...ecosseDetail,
             ...JSON.parse(call.body as string),
-            flights: [{ from: charleroi, to: edinburgh }],
+            flights: [{ from: charleroi, mode: "avion", to: edinburgh }],
             stages: [{ ...ecosseDetail.stages[0] }],
           },
         },
@@ -261,8 +261,8 @@ describe("édition d'un voyage", () => {
     typeIn("Date de début", "2026-10-19");
     typeIn("Date de fin", "2026-10-27");
     fireEvent.click(screen.getByLabelText(/^Publié/));
-    typeIn("Vol 1 — départ", "CRL");
-    typeIn("Vol 1 — arrivée", "EDI");
+    typeIn("Trajet 1 — départ", "CRL");
+    typeIn("Trajet 1 — arrivée", "EDI");
 
     fireEvent.click(screen.getByRole("button", { name: "Ajouter une étape" }));
     const stage = within(screen.getAllByRole("listitem").at(-1)!);
@@ -294,7 +294,7 @@ describe("édition d'un voyage", () => {
       startDate: "2026-10-19",
       endDate: "2026-10-27",
       published: true,
-      flights: [{ fromCode: "CRL", toCode: "EDI" }],
+      flights: [{ fromCode: "CRL", toCode: "EDI", mode: "avion" }],
       stages: [
         {
           code: "edi",

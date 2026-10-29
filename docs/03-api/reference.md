@@ -635,7 +635,7 @@ Sur les routes avec `:id`, un voyage inconnu repond `404 TRIP_NOT_FOUND`.
   "startDate": "2026-10-19",
   "endDate": "2026-10-27",
   "published": false,
-  "flights": [{ "fromCode": "CRL", "toCode": "EDI" }],
+  "flights": [{ "fromCode": "CRL", "toCode": "EDI", "mode": "avion" }],
   "stages": [
     {
       "id": "uuid d'une etape existante, a omettre pour une nouvelle etape",
@@ -661,9 +661,12 @@ Regles de validation:
 - `startDate` et `endDate`: `AAAA-MM-JJ` ou `null` (defaut); si les deux sont
   presentes, `endDate` ne precede pas `startDate`.
 - `published` vaut `false` par defaut.
-- `flights`: 1 a 10 vols, codes IATA a 3 lettres (mis en majuscules); chaque
-  aeroport doit exister (`400 AIRPORT_NOT_FOUND`). Un retour depuis une autre
-  ville se declare comme un second vol.
+- `flights`: 1 a 10 trajets, codes a 3 lettres (mis en majuscules) d'un lieu
+  du referentiel `airports` (aeroport ou ville); chaque lieu doit exister
+  (`400 AIRPORT_NOT_FOUND`). `mode`: `avion` (defaut si absent) ou `voiture`;
+  le globe trace un trajet en voiture en tirets, avec une voiture au lieu
+  d'un avion. Un retour depuis une autre ville se declare comme un second
+  trajet. Les reponses portent aussi `mode` sur chaque element de `flights`.
 - `stages`: 60 max, ordre du tableau = ordre de l'itineraire. `code` 2 a 4
   caracteres (mis en majuscules), `dayLabel` (20), `dateLabel` (40), `title`
   (120) obligatoires; `detail` (2000), `highlights` (12 x 60 caracteres) et

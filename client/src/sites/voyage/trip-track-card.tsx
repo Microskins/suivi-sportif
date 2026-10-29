@@ -106,3 +106,60 @@ export function TripTrackCard({ track }: TripTrackCardProps) {
     </article>
   );
 }
+
+// Recapitulatif d'une journee a plusieurs randonnees: total de la distance
+// et du denivele, la duree seulement si toutes les traces en ont une.
+export function TripHikesSummary({ tracks }: { tracks: GpxTrack[] }) {
+  const hikes = tracks
+    .filter((track) => track.kind === "randonnee")
+    .map((track) => trackStats(track.points));
+  if (hikes.length < 2) {
+    return null;
+  }
+  const distanceKm = hikes.reduce((sum, stats) => sum + stats.distanceKm, 0);
+  const ascents = hikes.flatMap((stats) =>
+    stats.ascentM === null ? [] : [stats.ascentM],
+  );
+  const durations = hikes.flatMap((stats) =>
+    stats.durationMs === null ? [] : [stats.durationMs],
+  );
+  const figures: [string, string][] = [
+    [
+      "Distance",
+      `${distanceKm.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} km`,
+    ],
+    [
+      "Dénivelé +",
+      ascents.length ? `${ascents.reduce((sum, m) => sum + m, 0)} m` : "—",
+    ],
+    [
+      "Durée",
+      durations.length === hikes.length
+        ? formatDuration(durations.reduce((sum, ms) => sum + ms, 0))
+        : "—",
+    ],
+  ];
+
+  return (
+    <section
+      aria-label={`Total des ${hikes.length} randonnées de l’étape`}
+      className="rounded-lg bg-[#eef2f6] p-3"
+    >
+      <p className="site-label text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[#0f1b2b]">
+        {hikes.length} randonnées · total de la journée
+      </p>
+      <dl className="mt-2 grid grid-cols-3 gap-2">
+        {figures.map(([label, value]) => (
+          <div key={label}>
+            <dt className="site-label text-[0.55rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)]">
+              {label}
+            </dt>
+            <dd className="site-label mt-0.5 text-sm font-semibold text-[#0f1b2b]">
+              {value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}

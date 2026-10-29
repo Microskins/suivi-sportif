@@ -3,6 +3,7 @@
 import type { StagePayload, TripPayload } from "./admin-api";
 import type {
   LngLat,
+  TravelMode,
   TripDetail,
   TripPhoto,
   TripTrackFile,
@@ -27,7 +28,12 @@ export type StageDraft = {
   tracks: TripTrackFile[];
 };
 
-export type FlightDraft = { fromCode: string; key: string; toCode: string };
+export type FlightDraft = {
+  fromCode: string;
+  key: string;
+  mode: TravelMode;
+  toCode: string;
+};
 
 export type TripDraft = {
   country: string;
@@ -48,6 +54,7 @@ export const localKey = () => `local-${(nextKey += 1)}`;
 export const emptyFlight = (): FlightDraft => ({
   fromCode: "",
   key: localKey(),
+  mode: "avion",
   toCode: "",
 });
 
@@ -87,6 +94,7 @@ export function tripToDraft(trip: TripDetail): TripDraft {
     flights: trip.flights.map((flight) => ({
       fromCode: flight.from.code,
       key: localKey(),
+      mode: flight.mode,
       toCode: flight.to.code,
     })),
     published: trip.published,
@@ -167,9 +175,10 @@ export function draftToPayload(draft: TripDraft): TripPayload {
     startDate: draft.startDate || null,
     endDate: draft.endDate || null,
     published: draft.published,
-    flights: draft.flights.map(({ fromCode, toCode }) => ({
+    flights: draft.flights.map(({ fromCode, mode, toCode }) => ({
       fromCode,
       toCode,
+      mode,
     })),
     stages: draft.stages.map(stageToPayload),
   };
