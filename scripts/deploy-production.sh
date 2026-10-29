@@ -84,9 +84,22 @@ if ! git diff --quiet "$PREVIOUS_COMMIT" "$CURRENT_COMMIT" -- client/nginx deplo
   if sudo -n true >/dev/null 2>&1; then
     # Copie systematique depot -> site actif: /etc/nginx/sites-enabled ne doit
     # jamais deriver silencieusement du fichier versionne (voir plan 077).
-    sudo -n cp deploy/nginx/suivi-sportif.fr.conf /etc/nginx/sites-available/suivi-sportif.fr
-    sudo -n ln -sf /etc/nginx/sites-available/suivi-sportif.fr /etc/nginx/sites-enabled/suivi-sportif.fr
-    sudo -n nginx -t
+    NGINX_SITE="/etc/nginx/sites-available/suivi-sportif.fr"
+    NGINX_BACKUP="$(mktemp)"
+    sudo -n cat "$NGINX_SITE" >"$NGINX_BACKUP" 2>/dev/null || : >"$NGINX_BACKUP"
+    sudo -n cp deploy/nginx/suivi-sportif.fr.conf "$NGINX_SITE"
+    sudo -n ln -sf "$NGINX_SITE" /etc/nginx/sites-enabled/suivi-sportif.fr
+    # Une conf invalide ne doit pas rester en place: le prochain reload/reboot
+    # ferait tomber tous les sites servis par ce Nginx.
+    if ! sudo -n nginx -t; then
+      if [ -s "$NGINX_BACKUP" ]; then
+        sudo -n cp "$NGINX_BACKUP" "$NGINX_SITE"
+        echo "nginx -t failed, previous config restored." >&2
+      fi
+      rm -f "$NGINX_BACKUP"
+      exit 1
+    fi
+    rm -f "$NGINX_BACKUP"
     sudo -n systemctl reload nginx
   else
     log "Skip Nginx sync/reload (passwordless sudo unavailable)"
