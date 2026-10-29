@@ -526,7 +526,9 @@ model Trip {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Restrict: supprimer un compte ne doit pas effacer les voyages publies
+  // (ni laisser leurs fichiers orphelins sur le disque).
+  user    User         @relation(fields: [userId], references: [id], onDelete: Restrict)
   flights TripFlight[]
   stages  TripStage[]
 

@@ -47,7 +47,9 @@ server/
 |   |-- migrations/
 |   |-- prod-seed.mjs
 |   |-- schema.prisma
-|   `-- seed.ts
+|   |-- seed-voyages.mjs
+|   |-- seed.ts
+|   `-- voyages-seed.json
 `-- src/
     |-- app.ts
     |-- server.ts
@@ -55,7 +57,8 @@ server/
     |   |-- index.ts
     |   `-- queries/
     |-- lib/
-    |   `-- api-response.ts
+    |   |-- api-response.ts
+    |   `-- voyage-files.ts
     |-- plugins/
     |-- routes/
     |-- schemas/
@@ -69,7 +72,13 @@ Fichiers importants:
 - `server/src/lib/api-response.ts`: helpers de reponse et schemas JSON
   partages, plus `parsePagination`. Toute route passe par la.
 - `server/src/plugins/auth.ts`: hook `authenticate` partage par les routes
-  protegees.
+  protegees, et `authenticateVoyageAdmin` (JWT + `VOYAGE_ADMIN_EMAILS`) pour
+  l'administration du site Voyage.
+- `server/src/routes/voyages.ts`, `server/src/schemas/voyages.ts`,
+  `server/src/db/queries/voyages.ts`: API du site Voyage (lecture publique et
+  administration).
+- `server/src/lib/voyage-files.ts`: stockage des traces GPX et photos sous
+  `$UPLOAD_DIR/voyages/`, noms generes, format verifie au contenu.
 - `server/src/services/*`: logique metier de l'assistant et connecteurs
   externes.
 - `server/src/routes/api.test.ts`: tests API principaux.
@@ -77,6 +86,8 @@ Fichiers importants:
 - `server/prisma/schema.prisma`: schema PostgreSQL/Prisma.
 - `server/prisma/seed.ts`: catalogue de developpement.
 - `server/prisma/prod-seed.mjs`: seed du compte initial et catalogues de production.
+- `server/prisma/seed-voyages.mjs` + `voyages-seed.json`: reprise idempotente
+  des voyages existants (`npm run db:seed:voyages -w server`).
 
 ## Frontend
 
@@ -129,9 +140,13 @@ client/
         |   `-- vosges-wild-site.tsx
         |-- voyage/
         |   |-- boarding-ticket.tsx
-        |   |-- islande-route-map.tsx
-        |   |-- islande-trip-site.tsx
+        |   |-- gpx-track.ts
+        |   |-- trip-geometry.ts
+        |   |-- trip-route-map.tsx
+        |   |-- trip-site.tsx
+        |   |-- voyage-api.ts
         |   |-- voyage-brand.tsx
+        |   |-- voyage-globe.tsx
         |   `-- voyage-home-site.tsx
         `-- suivi-sportif/
             |-- api/
@@ -161,7 +176,9 @@ Fichiers importants:
   imprime avec QR code local.
 - `client/e2e/`: controles Playwright des rendus desktop, mobile et print.
 - `client/src/sites/trekking/`: catalogue, carnets de trek et etat local.
-- `client/src/sites/voyage/`: billets, itineraires et reservations publiques.
+- `client/src/sites/voyage/`: globe, billets et carnet generique
+  `/voyage/:slug`, alimentes par l'API (`voyage-api.ts`); aucune donnee de
+  voyage en dur.
 - `client/src/sites/*/*-brand.tsx`: signature visuelle locale a chaque site.
 - `client/src/sites/suivi-sportif/api/client.ts`: client HTTP de Suivi Sportif.
 - `client/src/sites/suivi-sportif/stores/`: etat metier de Suivi Sportif.

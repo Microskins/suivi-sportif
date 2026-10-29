@@ -33,6 +33,9 @@ import {
 } from "../schemas/voyages.js";
 
 const TRIP_NOT_FOUND = "Voyage introuvable";
+// Un voyage complet (jusqu'a 60 etapes et leurs traces reconstituees) peut
+// depasser la limite JSON par defaut de Fastify (1 Mo).
+const TRIP_BODY_LIMIT = 8 * 1024 * 1024;
 
 const writeRateLimit = {
   max: Number(process.env.VOYAGE_WRITE_RATE_LIMIT_MAX ?? 60),
@@ -177,6 +180,7 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
   fastify.post(
     "/trips",
     {
+      bodyLimit: TRIP_BODY_LIMIT,
       config: { rateLimit: writeRateLimit },
       schema: { ...admin, summary: "Create a trip" },
     },
@@ -196,6 +200,7 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
   fastify.put(
     "/trips/:id",
     {
+      bodyLimit: TRIP_BODY_LIMIT,
       config: { rateLimit: writeRateLimit },
       schema: { ...admin, summary: "Update a trip" },
     },
@@ -285,12 +290,10 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
           });
         }
         if (body.length > GPX_MAX_BYTES) {
-          return reply
-            .code(413)
-            .send({
-              error: "GPX trop volumineux (10 Mo max)",
-              code: "UPLOAD_TOO_LARGE",
-            });
+          return reply.code(413).send({
+            error: "GPX trop volumineux (10 Mo max)",
+            code: "UPLOAD_TOO_LARGE",
+          });
         }
         if (!(await voyages.stageExists(id))) {
           return sendNotFound(reply, "Etape introuvable", "STAGE_NOT_FOUND");

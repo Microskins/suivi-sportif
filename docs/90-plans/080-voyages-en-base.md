@@ -39,7 +39,9 @@
   `fileName`, `byteSize`. Le GPX reste un fichier; le client le lit et le
   parse comme aujourd'hui (`gpx-track.ts` reutilise tel quel).
 - `TripPhoto`: `stageId`, `position`, `fileName`, `alt`, `caption`, `mimeType`.
-- Suppressions en cascade depuis `Trip`; noms de colonnes en snake_case
+- Suppressions en cascade depuis `Trip` (vols, etapes, traces, photos); un
+  compte proprietaire ne peut pas etre supprime tant qu'il a des voyages
+  (`RESTRICT`); noms de colonnes en snake_case
   (`@map`), comme le reste du schema.
 - **Statut calcule, jamais stocke**: "a venir" si `endDate` est dans le
   futur, sinon "realise". Corrige d'office le cas de l'Islande.
@@ -153,9 +155,65 @@ et controles du depot verts.
 
 ## Todo
 
-- [ ] Phase 1 - modele et migration
-- [ ] Phase 2 - API et fichiers
-- [ ] Phase 3 - reprise Ecosse / Islande
-- [ ] Phase 4 - site public branche sur l'API
+- [x] Phase 1 - modele et migration
+- [x] Phase 2 - API et fichiers
+- [x] Phase 3 - reprise des voyages (Ecosse, Albanie, Roumanie, Grande
+  Canarie; Islande retiree)
+- [x] Phase 4 - site public branche sur l'API
 - [ ] Phase 5 - ecran d'admin
 - [ ] Phase 6 - deploiement, docs, verification de bout en bout
+  (Docker, Nginx et docs faits le 2026-10-29; reste la verification de bout
+  en bout et la mise en production)
+
+## Notes de verification
+
+- 2026-10-29: migration `20261029120000_add_voyages` generee avec
+  `prisma migrate diff`. Le diff proposait aussi de supprimer les colonnes
+  historiques `exercises.equipment` et `exercises.muscle_group`, gardees en
+  base depuis `exercise_relations_refactor` mais absentes du schema Prisma:
+  ces `DROP COLUMN` ont ete retires a la main. La migration ne fait que creer
+  l'enum `TripTrackKind`, les tables des voyages, leurs index et leurs cles
+  etrangeres.
+- 2026-10-29: Islande retiree. Il n'y a pas eu de voyage en Islande: ni
+  aeroport KEF, ni voyage, ni page `islande-trip-site.tsx`. Le point "statut
+  de l'Islande" du plan 079 tombe avec.
+- 2026-10-29: 4 voyages repris dans `server/prisma/voyages-seed.json`, tous
+  publies: Ecosse CRL -> EDI (19-27 octobre 2026, 7 etapes et leurs traces
+  reconstituees; l'aeroport de depart est Charleroi, plus CDG), Albanie
+  BVA -> TIA, Roumanie CRL -> OTP et Grande Canarie ORY -> LPA. Ces trois
+  derniers n'ont ni dates ni etapes et sont comptes "realises".
+- 2026-10-29: dates rendues facultatives (`start_date` / `end_date`
+  nullables, `null` accepte par l'API). Un voyage sans date de fin est
+  "realise"; il est classe apres les voyages dates.
+- 2026-10-29: le seed est `seed-voyages.mjs` (et non `.ts`), pour tourner
+  tel quel dans l'image de production comme `prod-seed.mjs`. Il ne fait pas
+  d'`upsert` des voyages: un slug deja present est laisse intact, pour ne
+  jamais ecraser une modification faite depuis l'admin. Il exige que le compte
+  du premier e-mail de `VOYAGE_ADMIN_EMAILS` existe. Admin de production:
+  `thomas.cochart@outlook.fr`.
+- 2026-10-29: `VITE_BYPASS_AUTH` n'a pas de jeu de demonstration pour le site
+  Voyage. Idee abandonnee: elle aurait reintroduit des donnees de voyage en dur
+  dans le client. Sans API, le globe et le carnet affichent leur etat
+  d'erreur.
+- 2026-10-29: routes reellement livrees (voir `docs/03-api/reference.md`):
+  `GET /api/voyages/admin/trips` (et non `/api/voyages/admin`),
+  `GET/PUT /api/voyages/admin/airports` (creation ou mise a jour par code, pas
+  de suppression), `POST /api/voyages/admin/stages/:id/tracks|photos`,
+  `DELETE /api/voyages/admin/tracks/:id` et `.../photos/:id`. Au `PUT` d'un
+  voyage, une etape envoyee avec son `id` garde ses traces et ses photos.
+- 2026-10-29: deploiement prepare: volume `voyage-uploads` monte sur
+  `/app/uploads` (`UPLOAD_DIR=/app/uploads`) et `VOYAGE_ADMIN_EMAILS` dans
+  `docker-compose.yml`; `client_max_body_size 16m` sur
+  `location /api/voyages/admin/` dans `deploy/nginx/suivi-sportif.fr.conf`
+  (la limite Nginx par defaut de 1 Mo bloquait les envois). La CSP ne change
+  pas. Ordre de mise en production dans `docs/04-deployment/docker.md`.
+- 2026-10-29: relecture du deploiement, trois defauts corriges dans l'API:
+  un corps refuse par Fastify avant la route (photo de plus de 15 Mo,
+  `Content-Type` non gere) repondait `500` au lieu de `413` / `415`
+  (`app.ts` gere desormais ces deux statuts); le JSON d'un voyage etait
+  limite a 1 Mo (route `bodyLimit` porte a 8 Mo); et `trips.user_id` etait en
+  `ON DELETE CASCADE`, si bien que supprimer le compte admin effacait tous les
+  voyages en laissant leurs fichiers sur le disque (passe en `RESTRICT`,
+  migration non encore deployee donc corrigee sur place). Reste hors scope:
+  sans `trustProxy`, les limites de debit voient toutes les requetes venir de
+  Nginx (127.0.0.1); defaut anterieur, commun a toute l'API.

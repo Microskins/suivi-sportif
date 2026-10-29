@@ -68,3 +68,6 @@
   navigateur ne peut pas demarrer car la metadonnee `sandboxPolicy` manque
   dans l'environnement. Aucun moteur alternatif n'a ete utilise conformement
   aux instructions du skill.
+- 2026-10-29: `/voyage/islande-2026` n'existe plus. Il n'y a pas eu de voyage
+  en Islande; les voyages sont en base et servis par la page generique
+  `/voyage/:slug` (plan 080).

@@ -65,8 +65,12 @@ server/src/
 |       |-- nutrition-goals.ts
 |       |-- user-goals.ts
 |       |-- users.ts
+|       |-- voyages.ts
 |       |-- workouts.ts
 |       `-- workout-templates.ts
+|-- lib/
+|   |-- api-response.ts
+|   `-- voyage-files.ts
 |-- plugins/
 |   `-- auth.ts
 |-- routes/
@@ -78,10 +82,12 @@ server/src/
 |   |-- nutrition-goals.ts
 |   |-- user-goals.ts
 |   |-- users.ts
+|   |-- voyages.ts
 |   |-- workouts.ts
 |   `-- workout-templates.ts
 `-- schemas/
-    `-- index.ts
+    |-- index.ts
+    `-- voyages.ts
 ```
 
 ### MVC pragmatique
@@ -127,6 +133,8 @@ Routes publiques:
 
 - `POST /api/users/register`
 - `POST /api/users/login`
+- `GET /api/voyages`, `GET /api/voyages/:slug`,
+  `GET /api/voyages/files/:fileName` (voyages publies du site Voyage)
 
 Routes protegees:
 
@@ -140,6 +148,8 @@ Routes protegees:
 - CRUD objectifs nutritionnels
 - CRUD objectifs sport/corps
 - CRUD mensurations corporelles
+- administration du site Voyage (`/api/voyages/admin/*`), reservee en plus aux
+  e-mails listes dans `VOYAGE_ADMIN_EMAILS`
 
 Les mots de passe sont hashes avec `bcrypt`. Les ressources utilisateur utilisent
 `request.user.id`, issu du token JWT.
@@ -160,6 +170,12 @@ pour laquelle ce decorateur n'avait jamais servi. `users.ts` fait exception avec
 son propre hook, `/login` et `/register` devant rester publics sous le meme
 prefixe.
 
+Le site Voyage n'a pas de colonne `role`: `authenticateVoyageAdmin` (meme
+fichier) verifie le JWT puis la presence de son e-mail dans
+`VOYAGE_ADMIN_EMAILS` (liste separee par des virgules, sans casse), et repond
+`403 VOYAGE_ADMIN_REQUIRED` sinon. Un compte inscrit publiquement ne peut donc
+pas ecrire sur le site Voyage.
+
 ### Donnees
 
 Prisma utilise PostgreSQL via `DATABASE_URL`.
@@ -176,6 +192,14 @@ Modeles principaux:
 - `MealItem`
 - `NutritionGoal`
 
+Le site Voyage a ses propres modeles: `Airport` (referentiel par code IATA),
+`Trip`, `TripFlight`, `TripStage`, `TripTrack` (trace GPX) et `TripPhoto`.
+Le statut realise / a venir d'un voyage n'est pas stocke: l'API le calcule
+depuis `endDate`. Les GPX et photos sont des fichiers ecrits par
+`server/src/lib/voyage-files.ts` dans `$UPLOAD_DIR/voyages/` (defaut
+`uploads`, volume Docker `voyage-uploads` en production) sous un nom genere;
+la base ne garde que ce nom.
+
 Les repas stockent des snapshots nutritionnels par item pour conserver
 l'historique meme si un aliment est modifie ensuite. Un objectif nutritionnel
 actif desactive les autres objectifs actifs du meme utilisateur.
@@ -191,6 +215,7 @@ npm run test -w server -- --run
 Tests importants:
 
 - `server/src/routes/api.test.ts`
+- `server/src/routes/voyages.test.ts`
 - `server/src/db/queries/workouts.test.ts`
 
 ## Frontend
@@ -279,15 +304,20 @@ Le client sert aussi de point d'entree de portfolio:
   Ses deux traces Google My Maps restent inactives jusqu'au clic du visiteur.
 - `/voyage` affiche un globe 3D (MapLibre, projection globe) avec l'arc de
   chaque vol; cliquer un arc ou sa destination plonge vers le pays puis ouvre
-  le carnet. Le catalogue vit dans `client/src/sites/voyage/voyage-trips.ts`
-  (un ou plusieurs vols par voyage). Les billets restent listes sous le globe.
-- `/voyage/islande-2026` affiche le carnet de preparation Islande 2026, sans
-  reference de reservation privee dans le bundle public.
-- `/voyage/ecosse-2026` affiche le carnet du voyage realise en Ecosse
-  (19-27 octobre 2026): carte interactive MapLibre chargee a la demande, avec
-  trois modeles a comparer (plan 2D, relief 3D, satellite 3D), etapes
-  cliquables, rejeu anime du trajet et emplacements photos. Toutes les donnees
-  viennent de `client/src/sites/voyage/ecosse-2026-data.ts`.
+  le carnet. Le catalogue (voyages publies, un ou plusieurs vols chacun) est
+  lu depuis `GET /api/voyages`. Les billets restent listes sous le globe.
+- `/voyage/:slug` affiche le carnet generique d'un voyage publie
+  (`trip-site.tsx`), lu depuis `GET /api/voyages/:slug`: billet, statistiques,
+  carte interactive MapLibre chargee a la demande (plan 2D, relief 3D,
+  satellite 3D), etapes cliquables, traces GPS, rejeu anime du trajet et
+  photos. Exemple: `/voyage/ecosse-2026`.
+- `/voyage/admin` est l'ecran d'administration du site Voyage (plan 080):
+  connexion par `POST /api/users/login`, voyages, vols, aeroports, etapes,
+  envoi de traces GPX et de photos. Il appelle `/api/voyages/admin/*`.
+- Aucune donnee de voyage n'est dans le bundle client:
+  `client/src/sites/voyage/voyage-api.ts` est le client HTTP propre au site
+  Voyage (base `VITE_API_URL`). Le mode `VITE_BYPASS_AUTH=true` n'a pas de jeu
+  de demonstration pour Voyage: sans API, le site affiche son etat d'erreur.
 - `/prix-aliments` affiche le comparateur alimentaire Prix Frais. Son catalogue
   local est un jeu de demonstration explicitement identifie comme tel; aucune
   donnee magasin en direct n'est encore collectee. La configuration locale

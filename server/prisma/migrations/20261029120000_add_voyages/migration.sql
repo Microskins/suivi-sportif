@@ -119,7 +119,7 @@ CREATE UNIQUE INDEX "trip_photos_file_name_key" ON "trip_photos"("file_name");
 CREATE INDEX "trip_photos_stage_id_idx" ON "trip_photos"("stage_id");
 
 -- AddForeignKey
-ALTER TABLE "trips" ADD CONSTRAINT "trips_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "trips" ADD CONSTRAINT "trips_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "trip_flights" ADD CONSTRAINT "trip_flights_trip_id_fkey" FOREIGN KEY ("trip_id") REFERENCES "trips"("id") ON DELETE CASCADE ON UPDATE CASCADE;

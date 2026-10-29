@@ -98,6 +98,22 @@ export function buildApp(options: FastifyServerOptions = { logger: true }) {
       });
     }
 
+    // Corps refuse par Fastify avant la route (trop gros, type non gere):
+    // c'est une erreur du client, pas une panne du serveur.
+    if (error.statusCode === 413) {
+      return reply.code(413).send({
+        error: "Contenu trop volumineux",
+        code: "PAYLOAD_TOO_LARGE",
+      });
+    }
+
+    if (error.statusCode === 415) {
+      return reply.code(415).send({
+        error: "Type de contenu non pris en charge",
+        code: "UNSUPPORTED_MEDIA_TYPE",
+      });
+    }
+
     if (error.statusCode === 429) {
       return reply.code(429).send({
         error: "Trop de tentatives, reessayez plus tard",

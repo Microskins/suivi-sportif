@@ -40,3 +40,9 @@
   capture utilisait un fond de substitution (ombrage du relief AWS).
 - Corrige au passage: un echec de tuile avant la fin du chargement faisait
   basculer la carte des carnets sur son repli; seul l'echec du style compte.
+- 2026-10-29: `voyage-trips.ts` est supprime (plan 080). Le globe lit
+  desormais le catalogue depuis `GET /api/voyages`; les voyages passes
+  (Albanie, Roumanie, Grande Canarie) et le depart reel de l'Ecosse (CRL)
+  sont repris en base par `npm run db:seed:voyages -w server`. Il n'y a pas
+  eu de voyage en Islande: il est retire, la question de son statut ne se
+  pose plus. Les trois derniers points du Todo sont traites par le plan 080.

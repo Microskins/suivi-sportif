@@ -14,6 +14,12 @@ services:
       NODE_ENV: production
       API_PORT: 3001
       API_HOST: 0.0.0.0
+      # Site Voyage: comptes autorises a l'ecran d'admin, et fichiers envoyes
+      # (traces GPX, photos) ecrits dans $UPLOAD_DIR/voyages/.
+      VOYAGE_ADMIN_EMAILS: ${VOYAGE_ADMIN_EMAILS:-}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - voyage-uploads:/app/uploads
     ports:
       - "127.0.0.1:3001:3001"
     healthcheck:
@@ -63,3 +69,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+
+volumes:
+  # Traces GPX et photos du site Voyage: a inclure dans les sauvegardes.
+  voyage-uploads:

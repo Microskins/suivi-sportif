@@ -64,4 +64,9 @@
   (OSRM, Valhalla) sont bloques dans le bac a sable: impossible d'y caler le
   trace sur les routes, d'ou le choix des GPX reels. Rendu verifie avec deux
   GPX de demonstration non commites (trajet et randonnee).
+- 2026-10-29: depuis le plan 080, les donnees du carnet sont en base et non
+  plus dans `ecosse-2026-data.ts` (supprime; ses calculs de distance vivent
+  dans `trip-geometry.ts`). GPX et photos s'envoient depuis `/voyage/admin`, plus
+  dans `client/public/sites/voyage/ecosse-2026/`: les points du Todo qui
+  citent ces dossiers sont remplaces par cet envoi.
 

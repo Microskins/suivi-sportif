@@ -178,6 +178,70 @@ describe("administration des voyages", () => {
   });
 });
 
+describe("corps refuses avant la route", () => {
+  const photoUrl =
+    "/api/voyages/admin/stages/8c6c3f1e-6b8a-4a51-9d55-3c2d0b7c1a11/photos?alt=Photo";
+
+  it("repond 415 pour un type de fichier non gere, pas 500", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: photoUrl,
+      headers: { authorization: tokenFor(ADMIN), "content-type": "image/gif" },
+      payload: Buffer.from("GIF89a"),
+    });
+
+    expect(response.statusCode).toBe(415);
+    expect(response.json().code).toBe("UNSUPPORTED_MEDIA_TYPE");
+  });
+
+  it("repond 413 pour une photo trop lourde, pas 500", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: photoUrl,
+      headers: { authorization: tokenFor(ADMIN), "content-type": "image/jpeg" },
+      payload: Buffer.alloc(16 * 1024 * 1024),
+    });
+
+    expect(response.statusCode).toBe(413);
+    expect(response.json().code).toBe("PAYLOAD_TOO_LARGE");
+  });
+
+  it("accepte un voyage de plus de 1 Mo (traces reconstituees)", async () => {
+    mocks.createTrip.mockResolvedValue({ slug: "long" });
+    const route = Array.from({ length: 5000 }, (_, index) => [
+      -3 - index / 10000,
+      55 + index / 10000,
+    ]);
+    const payload = {
+      slug: "long",
+      title: "Long",
+      country: "Écosse",
+      stubLabel: "SCO",
+      flights: [{ fromCode: "CRL", toCode: "EDI" }],
+      stages: Array.from({ length: 15 }, (_, index) => ({
+        code: "EDI",
+        dayLabel: `J0${index}`,
+        dateLabel: "oct.",
+        title: "Etape",
+        coordinates: [-3.2, 55.9],
+        route,
+      })),
+    };
+    expect(Buffer.byteLength(JSON.stringify(payload))).toBeGreaterThan(
+      1024 * 1024,
+    );
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/voyages/admin/trips",
+      headers: { authorization: tokenFor(ADMIN) },
+      payload,
+    });
+
+    expect(response.statusCode).toBe(201);
+  });
+});
+
 describe("regles metier des voyages", () => {
   it("deduit le statut des dates, un voyage sans date etant un souvenir", () => {
     const now = new Date("2026-10-29T12:00:00Z");

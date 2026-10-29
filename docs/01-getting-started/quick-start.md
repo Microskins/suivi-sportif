@@ -29,6 +29,17 @@ ANTHROPIC_MODEL="claude-haiku-4-5-20251001"
 Si `ANTHROPIC_API_KEY` est absent, le chat garde une reponse locale
 deterministe.
 
+Option site Voyage (ecran `/voyage/admin` et envoi de fichiers):
+
+```env
+VOYAGE_ADMIN_EMAILS="test@example.com"
+UPLOAD_DIR="uploads"
+```
+
+`VOYAGE_ADMIN_EMAILS` liste les comptes autorises a modifier les voyages
+(separes par des virgules). `UPLOAD_DIR` (defaut `uploads`, relatif au dossier
+de lancement de l'API) recoit les GPX et photos sous `voyages/`.
+
 Option frontend sans API locale, dans `client/.env`:
 
 ```env
@@ -46,6 +57,13 @@ Optionnel: charger le catalogue de developpement.
 
 ```bash
 npm run db:seed -w server
+```
+
+Optionnel: reprendre les voyages du site Voyage. Le compte du premier e-mail de
+`VOYAGE_ADMIN_EMAILS` doit deja exister (inscription, voir section 6):
+
+```bash
+npm run db:seed:voyages -w server
 ```
 
 Pour des changements de schema versionnes, utiliser ensuite:
@@ -88,6 +106,9 @@ URLs:
 - Suivi Sportif: http://localhost:5173/suivi-sportif
 - Trekking: http://localhost:5173/trekking
 - Vosges 2027: http://localhost:5173/trekking/vosges-2027
+- Voyage: http://localhost:5173/voyage (lit l'API, pas de mode sans base)
+- Carnet Ecosse: http://localhost:5173/voyage/ecosse-2026
+- Admin Voyage: http://localhost:5173/voyage/admin
 - MCP: http://127.0.0.1:3033/mcp
 
 ## 5. Verifier
@@ -163,6 +184,7 @@ curl http://localhost:3001/api/workouts \
 
 ## Notes
 
-- Les routes metier sont protegees par JWT.
+- Les routes metier sont protegees par JWT. Exception: la lecture des
+  voyages publies (`GET /api/voyages*`) est publique.
 - Les ressources utilisateur utilisent l'id issu du token.
 - Les anciennes docs de setup ne sont plus la reference.

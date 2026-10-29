@@ -1,9 +1,10 @@
 # Checklist UI et accessibilite
 
 Cette checklist couvre les **cinq sites** du depot, pas seulement Suivi
-Sportif. Les quatre sites publics (portfolio, trekking, voyage,
-prix-aliments) fonctionnent sur donnees locales: ils se verifient sans base
-de donnees, contrairement au tableau de bord.
+Sportif. Trois sites publics (portfolio, trekking, prix-aliments)
+fonctionnent sur donnees locales: ils se verifient sans base de donnees,
+contrairement au tableau de bord. Depuis le plan 080, le site Voyage lit ses
+voyages depuis l'API: il demande l'API et la base, comme Suivi Sportif.
 
 ## Parcours critiques
 
@@ -16,11 +17,16 @@ de donnees, contrairement au tableau de bord.
 - Mensurations et objectifs sport/corps.
 - Profil utilisateur.
 
+### Voyage (necessite l'API et la base)
+
+- Accueil: globe, arcs de vol et billets.
+- Carnet `/voyage/ecosse-2026`: carte, etapes, traces GPS et photos.
+- Admin `/voyage/admin`: connexion, formulaire voyage, envoi de GPX et photos.
+
 ### Sites publics (verifiables sans base)
 
 - Portfolio: accueil et liens vers les quatre projets.
 - Trekking: accueil et carnet Vosges.
-- Voyage: accueil et carnet Islande.
 - Prix Frais: recherche, comparaison, ticket partageable et vue impression.
 
 ## Accessibilite: seuils a tenir
