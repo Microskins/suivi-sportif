@@ -110,48 +110,39 @@ terminee.
 ### Mise en production du site Voyage (plan 080)
 
 Les voyages ne sont plus dans le bundle client: le globe `/voyage` et les
-carnets `/voyage/:slug` lisent `GET /api/voyages`. Ordre des etapes pour la
-premiere mise en production:
+carnets `/voyage/:slug` lisent `GET /api/voyages`.
 
-1. Avant de pousser sur `main`, ajouter au `.env` de production:
+Tout est joue par le deploiement automatise (section 6), a chaque push sur
+`main`:
 
-   ```env
-   VOYAGE_ADMIN_EMAILS="thomas.cochart@outlook.fr"
-   ```
+- `VOYAGE_ADMIN_EMAILS` est fournie par le workflow
+  (`thomas.cochart@outlook.fr` par defaut, ou la variable GitHub
+  `VOYAGE_ADMIN_EMAILS` de l'environnement `production`). Exportee dans le
+  shell du deploiement, elle prime sur le `.env` du serveur: rien a y ajouter.
+- Avant la reconstruction des images, `scripts/voyage-uploads-backup.sh`
+  archive le volume `voyage-uploads` (voir plus bas). Un echec est signale
+  sans bloquer le deploiement.
+- Apres le redemarrage, `npm run db:seed:voyages -w server` reprend les
+  voyages (aeroports, Ecosse avec ses 7 etapes, Albanie, Roumanie, Grande
+  Canarie). Le script est relancable: les aeroports sont crees ou mis a jour,
+  un voyage dont le slug existe deja n'est pas touche (`= <slug> existe deja,
+  laisse intact`), un voyage absent est cree (`+ <slug> cree`). Il est non
+  bloquant: tant que le compte du premier e-mail de `VOYAGE_ADMIN_EMAILS`
+  n'existe pas, il est saute avec un message dans les logs du deploiement.
 
-   Sans cette variable, l'ecran d'admin repond `403 VOYAGE_ADMIN_REQUIRED` et
-   la reprise des voyages refuse de s'executer. Si elle est ajoutee apres le
-   deploiement, recreer le conteneur pour qu'il la lise:
-   `docker compose up -d api`.
-2. Pousser sur `main`. Le deploiement automatise (section 6) synchronise la
-   conf Nginx (elle change: `client_max_body_size 16m` sur
-   `/api/voyages/admin/`), reconstruit les images, applique
-   `prisma migrate deploy` (migration `20261029120000_add_voyages`) puis
-   `docker compose up -d`, qui cree le volume `voyage-uploads`. En deploiement
-   manuel, la commande de migration est celle de la section 3.
-3. Verifier l'API: `curl -sS https://suivi-sportif.fr/api/voyages` renvoie
-   `{"data":[]}`. Tant que l'etape 5 n'est pas faite, le globe affiche un
-   catalogue vide.
-4. Si le compte admin n'existe pas encore, l'inscrire avec l'e-mail de
-   `VOYAGE_ADMIN_EMAILS` depuis l'ecran de connexion de `/suivi-sportif` (ou
-   `POST /api/users/register`). Les voyages repris lui seront rattaches.
-5. Reprendre les voyages existants (aeroports, Ecosse avec ses 7 etapes,
-   Albanie, Roumanie, Grande Canarie):
+Seule action manuelle, une fois: inscrire le compte admin avec l'e-mail de
+`VOYAGE_ADMIN_EMAILS` depuis l'ecran de connexion de `/suivi-sportif` (ou
+`POST /api/users/register`). Le deploiement suivant rattache les voyages a ce
+compte. Pour ne pas attendre un push, relancer le workflow
+(`workflow_dispatch`) ou, sur le serveur:
 
-   ```bash
-   docker compose exec -T api npm run db:seed:voyages -w server
-   ```
+```bash
+docker compose exec -T api npm run db:seed:voyages -w server
+```
 
-   Le script lit `server/prisma/voyages-seed.json` (copie dans l'image avec
-   `server/`). Il est relancable: les aeroports sont crees ou mis a jour, un
-   voyage dont le slug existe deja n'est pas touche (`= <slug> existe deja,
-   laisse intact`), un voyage absent est cree (`+ <slug> cree`). Il echoue si
-   `VOYAGE_ADMIN_EMAILS` est vide ou si le compte du premier e-mail de la
-   liste n'existe pas.
-6. Verifier `https://suivi-sportif.fr/voyage` (4 arcs sur le globe) et
-   `https://suivi-sportif.fr/voyage/ecosse-2026`, puis se connecter sur
-   `/voyage/admin` pour envoyer les traces GPX et les photos.
-7. Ajouter le volume `voyage-uploads` aux sauvegardes (section 7).
+Verifier ensuite `https://suivi-sportif.fr/voyage` (4 arcs sur le globe) et
+`https://suivi-sportif.fr/voyage/ecosse-2026`, puis se connecter sur
+`/voyage/admin` pour envoyer les traces GPX et les photos.
 
 ## 4. Bascule Nginx
 
@@ -207,10 +198,15 @@ sur `main`. Le workflow:
 3. lance le job de deploiement sur le runner self-hosted de production;
 4. execute `scripts/deploy-production.sh` localement sur l'hote production.
 
-Variable GitHub optionnelle:
+Le script sauvegarde aussi le volume `voyage-uploads` avant la reconstruction
+et relance la reprise des voyages apres le redemarrage (section 3, « Mise en
+production du site Voyage »).
+
+Variables GitHub optionnelles (environnement `production`):
 
 ```text
 PROD_PROJECT_DIR=/var/www/suivi-sportif
+VOYAGE_ADMIN_EMAILS=thomas.cochart@outlook.fr
 ```
 
 Aucun secret SSH de production n'est requis dans GitHub Actions. L'hote de
@@ -410,16 +406,19 @@ du conteneur `api` (`UPLOAD_DIR=/app/uploads`, fichiers sous
 pas: une restauration de la base sans ce volume donne des carnets dont les
 traces et photos repondent `404 TRIP_FILE_NOT_FOUND`.
 
-Sauvegarde manuelle du volume (le nom reel est prefixe par le projet Compose,
-le verifier avec `docker volume ls`):
+Chaque deploiement en fait une archive avec `scripts/voyage-uploads-backup.sh`
+dans `/var/backups/suivi-sportif/voyage-uploads/`
+(`voyage-uploads_<timestamp>.tar.gz`, lien `latest.tar.gz`, 14 jours de
+retention). Le script retrouve seul le nom reel du volume (prefixe par le
+projet Compose) sur le conteneur `api`. Les fichiers envoyes entre deux
+deploiements ne sont couverts que par une sauvegarde planifiee, a lancer avec
+celle de la base:
 
 ```bash
-cd /var/www/suivi-sportif
-sudo mkdir -p /var/backups/suivi-sportif/voyage-uploads
-docker run --rm \
-  -v suivi-sportif_voyage-uploads:/data:ro \
-  -v /var/backups/suivi-sportif/voyage-uploads:/backup \
-  alpine tar czf "/backup/voyage-uploads_$(date +%Y%m%d%H%M%S).tar.gz" -C /data .
+sudo install -m 0750 scripts/voyage-uploads-backup.sh /usr/local/bin/suivi-sportif-voyage-uploads-backup
+echo '25 3 * * * root /usr/local/bin/suivi-sportif-voyage-uploads-backup >> /var/log/suivi-sportif-voyage-uploads-backup.log 2>&1' \
+  | sudo tee /etc/cron.d/suivi-sportif-voyage-uploads-backup >/dev/null
+sudo chmod 644 /etc/cron.d/suivi-sportif-voyage-uploads-backup
 ```
 
 Restauration (conteneur `api` arrete):
