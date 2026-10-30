@@ -198,6 +198,30 @@ sur `main`. Le workflow:
 3. lance le job de deploiement sur le runner self-hosted de production;
 4. execute `scripts/deploy-production.sh` localement sur l'hote production.
 
+Conf Nginx de l'hote: a chaque deploiement, le script compare
+`deploy/nginx/suivi-sportif.fr.conf` au site actif
+`/etc/nginx/sites-available/suivi-sportif.fr`; s'ils different, il copie, teste
+(`nginx -t`, retour a l'ancienne conf en cas d'echec) et recharge Nginx. Le
+compte `deploy` n'a pas besoin d'etre sudoer: on lui autorise ce seul helper,
+une fois, sur l'hote:
+
+```bash
+cd /var/www/suivi-sportif
+sudo install -o root -g root -m 0755 scripts/nginx-sync.sh /usr/local/sbin/suivi-sportif-nginx-sync
+echo 'deploy ALL=(root) NOPASSWD: /usr/local/sbin/suivi-sportif-nginx-sync' \
+  | sudo tee /etc/sudoers.d/suivi-sportif-nginx-sync >/dev/null
+sudo chmod 440 /etc/sudoers.d/suivi-sportif-nginx-sync
+sudo visudo -cf /etc/sudoers.d/suivi-sportif-nginx-sync
+sudo /usr/local/sbin/suivi-sportif-nginx-sync
+```
+
+Le helper ne prend aucun argument et lit toujours
+`/var/www/suivi-sportif/deploy/nginx/suivi-sportif.fr.conf`. Sans ce droit, le
+deploiement continue mais affiche l'avertissement « Nginx non synchronise »
+dans le resume du run GitHub: la conf active est alors perimee (par exemple une
+CSP qui bloque les tuiles des cartes du site Voyage). Apres une modification de
+`scripts/nginx-sync.sh`, relancer la commande `install` ci-dessus.
+
 Le script sauvegarde aussi le volume `voyage-uploads` avant la reconstruction
 et relance la reprise des voyages apres le redemarrage (section 3, « Mise en
 production du site Voyage »).

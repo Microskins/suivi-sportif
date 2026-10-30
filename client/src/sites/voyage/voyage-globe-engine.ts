@@ -198,10 +198,13 @@ export function createVoyageGlobe({
   let hovered: string | null = null;
   function setHover(tripId: string | null) {
     if (hovered === tripId) return;
-    if (hovered)
+    // Survol d'un billet avant la fin du chargement (ou style bloque): la
+    // source des arcs n'existe pas encore, MapLibre leverait une erreur.
+    const arcsReady = Boolean(map.getSource("flights"));
+    if (hovered && arcsReady)
       map.setFeatureState({ source: "flights", id: hovered }, { hover: false });
     hovered = tripId;
-    if (tripId)
+    if (tripId && arcsReady)
       map.setFeatureState({ source: "flights", id: tripId }, { hover: true });
     destinationMarkers.forEach(({ button, trip }) =>
       button.toggleAttribute("data-active", trip.id === tripId),

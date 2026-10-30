@@ -62,8 +62,6 @@ log "Enter project"
 cd "$PROJECT_DIR"
 pwd
 
-PREVIOUS_COMMIT="$(git rev-parse HEAD)"
-
 log "Check repository state"
 if [ -n "$(git status --porcelain)" ]; then
   git status --short
@@ -75,37 +73,26 @@ log "Fetch and update"
 git fetch "$REMOTE_NAME" "$BRANCH_NAME"
 git checkout "$BRANCH_NAME"
 git pull --ff-only "$REMOTE_NAME" "$BRANCH_NAME"
-CURRENT_COMMIT="$(git rev-parse HEAD)"
 git rev-parse --short HEAD
 
-if ! git diff --quiet "$PREVIOUS_COMMIT" "$CURRENT_COMMIT" -- client/nginx deploy/nginx; then
+# On compare au site actif plutot qu'au commit precedent: une synchro sautee
+# (sudo absent) est retentee a chaque deploiement au lieu d'etre oubliee.
+# client/nginx n'est pas concerne: il est copie dans l'image client.
+NGINX_SITE="/etc/nginx/sites-available/suivi-sportif.fr"
+NGINX_SYNC_HELPER="/usr/local/sbin/suivi-sportif-nginx-sync"
+if ! cmp -s deploy/nginx/suivi-sportif.fr.conf "$NGINX_SITE"; then
   log "Sync and reload Nginx"
-  git diff --name-only "$PREVIOUS_COMMIT" "$CURRENT_COMMIT" -- client/nginx deploy/nginx
-  if sudo -n true >/dev/null 2>&1; then
-    # Copie systematique depot -> site actif: /etc/nginx/sites-enabled ne doit
-    # jamais deriver silencieusement du fichier versionne (voir plan 077).
-    NGINX_SITE="/etc/nginx/sites-available/suivi-sportif.fr"
-    NGINX_BACKUP="$(mktemp)"
-    sudo -n cat "$NGINX_SITE" >"$NGINX_BACKUP" 2>/dev/null || : >"$NGINX_BACKUP"
-    sudo -n cp deploy/nginx/suivi-sportif.fr.conf "$NGINX_SITE"
-    sudo -n ln -sf "$NGINX_SITE" /etc/nginx/sites-enabled/suivi-sportif.fr
-    # Une conf invalide ne doit pas rester en place: le prochain reload/reboot
-    # ferait tomber tous les sites servis par ce Nginx.
-    if ! sudo -n nginx -t; then
-      if [ -s "$NGINX_BACKUP" ]; then
-        sudo -n cp "$NGINX_BACKUP" "$NGINX_SITE"
-        echo "nginx -t failed, previous config restored." >&2
-      fi
-      rm -f "$NGINX_BACKUP"
-      exit 1
-    fi
-    rm -f "$NGINX_BACKUP"
-    sudo -n systemctl reload nginx
+  if sudo -n -l "$NGINX_SYNC_HELPER" >/dev/null 2>&1; then
+    sudo -n "$NGINX_SYNC_HELPER"
+  elif sudo -n true >/dev/null 2>&1; then
+    sudo -n env PROJECT_DIR="$PWD" bash scripts/nginx-sync.sh
   else
-    log "Skip Nginx sync/reload (passwordless sudo unavailable)"
+    # Annotation visible dans le resume du run GitHub: sans elle, la conf
+    # active derive en silence (CSP perimee, limite d'envoi trop basse).
+    echo "::warning title=Nginx non synchronise::$NGINX_SITE differe de deploy/nginx/suivi-sportif.fr.conf et le compte $(id -un) n'a pas le droit sudo pour $NGINX_SYNC_HELPER (voir docs/04-deployment/docker.md, section 6)."
   fi
 else
-  log "Skip Nginx reload"
+  log "Nginx config up to date"
 fi
 
 # Avant toute reconstruction: si la migration ou le redemarrage tourne mal,
