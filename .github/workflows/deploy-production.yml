@@ -52,6 +52,9 @@ jobs:
       - name: Client typecheck
         run: npm run typecheck -w client
 
+      - name: Client tests
+        run: npm run test -w client -- --run
+
       - name: Client build
         run: npm run build -w client
 
