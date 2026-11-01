@@ -38,7 +38,6 @@ const CAR_SVG =
 type GlobeOptions = {
   container: HTMLElement;
   onError: () => void;
-  onHoverTrip: (tripId: string | null) => void;
   reducedMotion: boolean;
   trips: TripSummary[];
 };
@@ -46,7 +45,6 @@ type GlobeOptions = {
 export function createVoyageGlobe({
   container,
   onError,
-  onHoverTrip,
   reducedMotion,
   trips,
 }: GlobeOptions) {
@@ -215,12 +213,10 @@ export function createVoyageGlobe({
     const tripId = event.features?.[0]?.properties?.tripId ?? null;
     map.getCanvas().style.cursor = "pointer";
     setHover(tripId);
-    onHoverTrip(tripId);
   });
   map.on("mouseleave", "flights-hit", () => {
     map.getCanvas().style.cursor = "";
     setHover(null);
-    onHoverTrip(null);
   });
   map.on("click", "flights-hit", (event: MapLayerMouseEvent) => {
     const tripId = event.features?.[0]?.properties?.tripId;
@@ -241,8 +237,11 @@ export function createVoyageGlobe({
       event.preventDefault();
       openTrip(trip);
     });
-    button.addEventListener("mouseenter", () => onHoverTrip(trip.id));
-    button.addEventListener("mouseleave", () => onHoverTrip(null));
+    // La bulle et son arc se mettent en avant ensemble.
+    button.addEventListener("mouseenter", () => setHover(trip.id));
+    button.addEventListener("mouseleave", () => setHover(null));
+    button.addEventListener("focus", () => setHover(trip.id));
+    button.addEventListener("blur", () => setHover(null));
     const marker = new Marker({ element: button, opacityWhenCovered: "0" })
       .setLngLat(flight.to.coordinates)
       .addTo(map);
@@ -341,7 +340,6 @@ export function createVoyageGlobe({
         .forEach((marker) => marker.remove());
       map.remove();
     },
-    highlight: setHover,
     openTrip,
   };
 }

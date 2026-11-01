@@ -10,7 +10,6 @@ import {
   ScaleControl,
   setWorkerUrl,
   type GeoJSONSource,
-  type StyleSpecification,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./voyage-map-markers.css";
@@ -20,68 +19,14 @@ import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import type { LngLat } from "./trip-types";
 import type { GpxTrack } from "./gpx-track";
 import type { MapStage } from "./trip-map-paths";
-import {
-  bearingBetween,
-  buildPaths,
-  collection,
-  lineFeature,
-} from "./trip-map-paths";
+import { buildPaths, collection, lineFeature } from "./trip-map-paths";
 
 setWorkerUrl(workerUrl);
 
-export type MapModelId = "plan" | "relief" | "satellite";
-
-type MapModel = {
-  bearing: number;
-  pitch: number;
-  style: string | StyleSpecification;
-  terrain: boolean;
-};
-
-const INK = "#0f1b2b";
+// Plan 2D seul, a plat et nord en haut: les marqueurs d'etape restent
+// colles a la carte et le trace se lit d'un coup d'oeil.
+const STYLE_URL = "https://tiles.openfreemap.org/styles/positron";
 const ACCENT = "#1c4ed8";
-
-const TERRAIN_TILES =
-  "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
-const TERRAIN_ATTRIBUTION =
-  '<a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md">Mapzen Terrain Tiles</a>';
-
-const satelliteStyle: StyleSpecification = {
-  version: 8,
-  sources: {
-    satellite: {
-      type: "raster",
-      tiles: [
-        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      ],
-      tileSize: 256,
-      maxzoom: 18,
-      attribution: "Imagerie © Esri, Maxar, Earthstar Geographics",
-    },
-  },
-  layers: [{ id: "satellite", type: "raster", source: "satellite" }],
-};
-
-export const mapModels: Record<MapModelId, MapModel> = {
-  plan: {
-    bearing: 0,
-    pitch: 0,
-    style: "https://tiles.openfreemap.org/styles/positron",
-    terrain: false,
-  },
-  relief: {
-    bearing: -12,
-    pitch: 58,
-    style: "https://tiles.openfreemap.org/styles/liberty",
-    terrain: true,
-  },
-  satellite: {
-    bearing: -12,
-    pitch: 62,
-    style: satelliteStyle,
-    terrain: true,
-  },
-};
 
 function boundsOf(route: LngLat[]) {
   return route.reduce(
@@ -93,7 +38,6 @@ function boundsOf(route: LngLat[]) {
 type TripMapOptions = {
   container: HTMLElement;
   fullRoute: LngLat[];
-  model: MapModelId;
   onError: () => void;
   onSelectStage: (index: number) => void;
   // Appele pendant le rejeu, sans recentrer la camera.
@@ -104,13 +48,11 @@ type TripMapOptions = {
 export function createTripMap({
   container,
   fullRoute,
-  model: initialModel,
   onError,
   onSelectStage,
   onStageReached,
   stages,
 }: TripMapOptions) {
-  let model = initialModel;
   let animationFrame = 0;
   let paths = buildPaths(stages, []);
   let activities: GpxTrack[] = [];
@@ -118,16 +60,19 @@ export function createTripMap({
 
   const map = new MapLibreMap({
     attributionControl: { compact: true },
-    bearing: mapModels[model].bearing,
     bounds: tripBounds,
     container,
+    dragRotate: false,
     fitBoundsOptions: { maxZoom: 9, padding: 48 },
-    maxPitch: 75,
-    pitch: mapModels[model].pitch,
-    style: mapModels[model].style,
+    maxPitch: 0,
+    pitchWithRotate: false,
+    style: STYLE_URL,
+    touchPitch: false,
   });
+  // Pas de rotation au pincement: la carte reste nord en haut.
+  map.touchZoomRotate.disableRotation();
 
-  map.addControl(new NavigationControl({ visualizePitch: true }), "top-right");
+  map.addControl(new NavigationControl({ showCompass: false }), "top-right");
   map.addControl(new FullscreenControl(), "top-right");
   map.addControl(new ScaleControl({ unit: "metric" }), "bottom-left");
 
@@ -146,45 +91,6 @@ export function createTripMap({
   });
 
   function addTripLayers() {
-    const settings = mapModels[model];
-    if (settings.terrain) {
-      map.addSource("terrain-dem", {
-        type: "raster-dem",
-        tiles: [TERRAIN_TILES],
-        encoding: "terrarium",
-        tileSize: 256,
-        maxzoom: 14,
-        attribution: TERRAIN_ATTRIBUTION,
-      });
-      // Source distincte pour l'ombrage: MapLibre recommande de ne pas
-      // partager la meme source raster-dem entre terrain et hillshade.
-      map.addSource("hillshade-dem", {
-        type: "raster-dem",
-        tiles: [TERRAIN_TILES],
-        encoding: "terrarium",
-        tileSize: 256,
-        maxzoom: 14,
-      });
-      map.addLayer({
-        id: "trip-hillshade",
-        type: "hillshade",
-        source: "hillshade-dem",
-        paint: {
-          "hillshade-exaggeration": model === "satellite" ? 0.15 : 0.45,
-          "hillshade-shadow-color": INK,
-        },
-      });
-      map.setTerrain({ source: "terrain-dem", exaggeration: 1.6 });
-      map.setSky({
-        "sky-color": "#9bb5ff",
-        "horizon-color": "#eef2f6",
-        "fog-color": "#f4f6f8",
-        "sky-horizon-blend": 0.6,
-        "horizon-fog-blend": 0.5,
-        "fog-ground-blend": 0.4,
-      });
-    }
-
     map.addSource("trip-route", {
       type: "geojson",
       data: paths.reconstructed,
@@ -241,8 +147,7 @@ export function createTripMap({
     addTripLayers();
   });
 
-  // Marqueurs HTML: de vrais boutons, atteignables au clavier et persistants
-  // d'un changement de style a l'autre. Un lieu visite deux fois (retour a
+  // Marqueurs HTML: de vrais boutons, atteignables au clavier. Un lieu visite deux fois (retour a
   // Edimbourg) ne recoit qu'un seul marqueur.
   const seen = new Set<string>();
   const markers = stages.flatMap((stage, index) => {
@@ -293,28 +198,16 @@ export function createTripMap({
 
   function overview(duration?: number) {
     stopReplay();
-    const settings = mapModels[model];
     const padding = container.clientWidth < 640 ? 28 : 56;
     // Un carnet sans etapes se reduit a un point (l'aeroport): on montre le
     // pays autour plutot que de zoomer au maximum sur ce point.
     const sw = tripBounds.getSouthWest();
     const ne = tripBounds.getNorthEast();
     if (ne.lng - sw.lng < 0.05 && ne.lat - sw.lat < 0.05) {
-      map.easeTo({
-        bearing: settings.bearing,
-        center: tripBounds.getCenter(),
-        duration,
-        pitch: settings.pitch,
-        zoom: 6.4,
-      });
+      map.easeTo({ center: tripBounds.getCenter(), duration, zoom: 6.4 });
       return;
     }
-    map.fitBounds(tripBounds, {
-      bearing: settings.bearing,
-      duration,
-      padding,
-      pitch: settings.pitch,
-    });
+    map.fitBounds(tripBounds, { duration, padding });
   }
 
   // Toute interaction manuelle reprend la main sur la camera.
@@ -337,7 +230,6 @@ export function createTripMap({
             stages[markerIndex].coordinates.join(",");
         button.setAttribute("aria-current", isActive ? "step" : "false");
       });
-      const settings = mapModels[model];
       // Une randonnee GPS est cadree en entier: un zoom fixe
       // sur le point d'etape la couperait ou la rendrait minuscule.
       const stageActivities = activities.filter(
@@ -351,20 +243,16 @@ export function createTripMap({
             ),
           ),
           {
-            bearing: settings.bearing,
             maxZoom: 14,
             padding: container.clientWidth < 640 ? 32 : 72,
-            pitch: settings.pitch,
           },
         );
         return;
       }
       map.flyTo({
-        bearing: settings.bearing,
         center: stages[index].coordinates,
         essential: true,
-        pitch: settings.pitch,
-        zoom: settings.terrain ? 10.2 : 9.4,
+        zoom: 9.4,
       });
     },
 
@@ -380,8 +268,6 @@ export function createTripMap({
       const durationMs = 26000;
       const startedAt = performance.now();
       let lastStage = -1;
-      const settings = mapModels[model];
-      const pitch = Math.max(settings.pitch, 50);
 
       const denseRoute = paths.replay;
       showFinalRoute(false);
@@ -397,15 +283,8 @@ export function createTripMap({
           collection([lineFeature(denseRoute.slice(0, head + 1))]),
         );
 
-        const lookAhead =
-          denseRoute[Math.min(denseRoute.length - 1, head + 12)];
-        const current = denseRoute[head];
-        map.jumpTo({
-          bearing: bearingBetween(current, lookAhead),
-          center: current,
-          pitch,
-          zoom: 9.2,
-        });
+        // La camera suit la tete du trace, toujours a plat et nord en haut.
+        map.jumpTo({ center: denseRoute[head], zoom: 9.2 });
 
         const travelled = head / (denseRoute.length - 1);
         let reached = -1;
@@ -429,23 +308,6 @@ export function createTripMap({
         }
       };
       animationFrame = requestAnimationFrame(step);
-    },
-
-    setModel(next: MapModelId) {
-      if (next === model) {
-        return;
-      }
-      stopReplay();
-      model = next;
-      const settings = mapModels[next];
-      // Le terrain de l'ancien style reference une source qui va disparaitre.
-      map.setTerrain(null);
-      map.setStyle(settings.style);
-      map.easeTo({
-        bearing: settings.bearing,
-        pitch: settings.pitch,
-        duration: 900,
-      });
     },
 
     // Les GPX arrivent apres la creation de la carte: on remplace les

@@ -100,15 +100,3 @@ export function buildPaths(stages: MapStage[], tracks: GpxTrack[]) {
     stageEnds,
   };
 }
-
-export function bearingBetween([lng1, lat1]: LngLat, [lng2, lat2]: LngLat) {
-  const y =
-    Math.sin(((lng2 - lng1) * Math.PI) / 180) *
-    Math.cos((lat2 * Math.PI) / 180);
-  const x =
-    Math.cos((lat1 * Math.PI) / 180) * Math.sin((lat2 * Math.PI) / 180) -
-    Math.sin((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.cos(((lng2 - lng1) * Math.PI) / 180);
-  return (Math.atan2(y, x) * 180) / Math.PI;
-}
