@@ -37,7 +37,7 @@ export function VoyageHomeSite() {
     <main
       id="contenu-principal"
       tabIndex={-1}
-      className="min-h-screen bg-[#f4f6f8] text-[#0f1b2b]"
+      className="flex min-h-screen flex-col bg-[#f4f6f8] text-[#0f1b2b]"
     >
       <header className="bg-[#0f1b2b] text-white">
         <div className="mx-auto flex max-w-[78rem] items-center justify-between gap-6 px-5 py-5 sm:px-9 lg:px-14">
@@ -50,7 +50,9 @@ export function VoyageHomeSite() {
         </div>
       </header>
 
-      <section className="relative">
+      {/* Le globe occupe toute la hauteur restante: le pied de page reste
+          colle en bas de l'ecran, quelle que soit sa taille. */}
+      <section className="relative flex flex-1 flex-col">
         <div className="mx-auto max-w-[78rem] px-5 pt-10 sm:px-9 lg:pointer-events-none lg:absolute lg:inset-x-0 lg:top-0 lg:z-10 lg:px-14 lg:pt-14">
           <p className="site-label text-xs font-semibold uppercase tracking-[0.17em] text-[#1c4ed8]">
             Carnet d’embarquement
@@ -83,7 +85,7 @@ export function VoyageHomeSite() {
           </dl>
         </div>
 
-        <div className="relative mt-6 h-[30rem] bg-[radial-gradient(ellipse_at_62%_55%,#ffffff_0%,#eef2f6_55%,#f4f6f8_80%)] sm:h-[38rem] lg:mt-0 lg:h-[min(52rem,88vh)]">
+        <div className="relative mt-6 min-h-[30rem] flex-1 bg-[radial-gradient(ellipse_at_62%_55%,#ffffff_0%,#eef2f6_55%,#f4f6f8_80%)] sm:min-h-[38rem] lg:mt-0 lg:min-h-[36rem]">
           {/* Voile clair a gauche: garde le titre lisible sur le globe. */}
           <div
             aria-hidden="true"
