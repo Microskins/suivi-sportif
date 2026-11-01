@@ -98,7 +98,7 @@ beforeAll(() => {
 });
 
 describe("accueil Voyage", () => {
-  it("affiche le globe et un billet par voyage de l'API", async () => {
+  it("n'affiche que le globe, avec les carnets en repli sans WebGL", async () => {
     mockApi({ "/api/voyages": { body: { data: [ecosse] } } });
     render(<VoyageHomeSite />);
 
@@ -107,12 +107,14 @@ describe("accueil Voyage", () => {
     );
     expect(screen.getByRole("status")).toHaveTextContent(/chargement/i);
 
-    const link = await screen.findByRole("link", { name: /revivre/i });
-    expect(link.getAttribute("href")).toBe("/voyage/ecosse-2026");
-    expect(screen.getByText("CRL")).toBeTruthy();
-    expect(screen.getByText("19—27 octobre 2026 · Écosse")).toBeTruthy();
-    // Sans WebGL, le globe s'efface et renvoie vers les billets.
+    // Plus de billets sous le globe: sans WebGL, une liste de liens les
+    // remplace pour que chaque carnet reste atteignable.
     expect(await screen.findByText(/globe 3d indisponible/i)).toBeTruthy();
+    const link = screen.getByRole("link", {
+      name: "Écosse — Boucle des Highlands",
+    });
+    expect(link.getAttribute("href")).toBe("/voyage/ecosse-2026");
+    expect(screen.queryByText("Les billets")).toBeNull();
   });
 
   it("previent quand l'API ne repond pas", async () => {
@@ -134,7 +136,8 @@ describe("carnet de voyage", () => {
         name: "Écosse — Boucle des Highlands",
       }),
     ).toBeTruthy();
-    expect(screen.getByRole("radio", { name: "Relief 3D" })).toBeChecked();
+    // Plan 2D seul: plus de choix de modele de carte.
+    expect(screen.queryByRole("radio")).toBeNull();
     expect(
       screen.getByRole("heading", {
         level: 3,

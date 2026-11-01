@@ -1,11 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { BoardingTicket } from "./boarding-ticket";
-import { formatTripDates } from "./trip-format";
+import { useEffect, useState } from "react";
 import type { TripSummary } from "./trip-types";
-import { tripHref } from "./trip-types";
 import { VoyageBrand } from "./voyage-brand";
 import { fetchTrips } from "./voyage-api";
-import type { VoyageGlobeControls } from "./voyage-globe";
 import { VoyageGlobe } from "./voyage-globe";
 
 type Catalogue =
@@ -16,8 +12,6 @@ type Catalogue =
 const pad = (count: number) => String(count).padStart(2, "0");
 
 export function VoyageHomeSite() {
-  const globeRef = useRef<VoyageGlobeControls>(null);
-  const [hoveredTrip, setHoveredTrip] = useState<string | null>(null);
   const [catalogue, setCatalogue] = useState<Catalogue>({ state: "loading" });
 
   useEffect(() => {
@@ -38,11 +32,6 @@ export function VoyageHomeSite() {
     (count, trip) => count + trip.flights.length,
     0,
   );
-
-  function highlight(tripId: string | null) {
-    setHoveredTrip(tripId);
-    globeRef.current?.highlight(tripId);
-  }
 
   return (
     <main
@@ -101,11 +90,7 @@ export function VoyageHomeSite() {
             className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-[46%] bg-gradient-to-r from-[#f4f6f8] via-[#f4f6f8]/80 to-transparent lg:block"
           />
           {catalogue.state === "ready" ? (
-            <VoyageGlobe
-              ref={globeRef}
-              trips={catalogue.trips}
-              onHoverTrip={setHoveredTrip}
-            />
+            <VoyageGlobe trips={catalogue.trips} />
           ) : (
             <p
               role="status"
@@ -136,63 +121,6 @@ export function VoyageHomeSite() {
           </div>
         </div>
       </section>
-
-      <div className="mx-auto max-w-[78rem] px-5 pb-20 sm:px-9 lg:px-14">
-        <section className="border-t border-[#dfe4ea] py-14 sm:py-16">
-          <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="site-label text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--site-muted)]">
-                Départs enregistrés
-              </p>
-              <h2 className="site-display mt-2 text-3xl font-semibold sm:text-4xl">
-                Les billets
-              </h2>
-            </div>
-            <p className="site-label text-xs font-medium uppercase tracking-[0.12em] text-[var(--site-muted)]">
-              {pad(trips.length)} billets
-            </p>
-          </div>
-
-          {catalogue.state === "ready" && trips.length === 0 && (
-            <p className="leading-7 text-[var(--site-muted)]">
-              Aucun voyage publié pour l’instant.
-            </p>
-          )}
-          <div className="grid gap-6">
-            {trips.map((trip) => (
-              <div
-                key={trip.id}
-                onMouseEnter={() => highlight(trip.id)}
-                onMouseLeave={() => highlight(null)}
-                onFocus={() => highlight(trip.id)}
-                onBlur={() => highlight(null)}
-                className={`rounded-xl transition ${
-                  hoveredTrip === trip.id
-                    ? "ring-2 ring-[#1c4ed8] ring-offset-4 ring-offset-[#f4f6f8]"
-                    : ""
-                }`}
-              >
-                <BoardingTicket
-                  actionHref={tripHref(trip.slug)}
-                  actionLabel={trip.status === "realise" ? "Revivre" : "Ouvrir"}
-                  arrivalCode={trip.flights[0].to.code}
-                  departureCode={trip.flights[0].from.code}
-                  description={trip.description}
-                  eyebrow={[
-                    formatTripDates(trip.startDate, trip.endDate),
-                    trip.country,
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                  status={trip.status}
-                  stubLabel={trip.stubLabel}
-                  title={trip.title}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
 
       <footer className="border-t border-[#dfe4ea] bg-white">
         <div className="site-label mx-auto flex max-w-[78rem] flex-col gap-2 px-5 py-5 text-[0.65rem] font-medium uppercase tracking-[0.14em] text-[var(--site-muted)] sm:flex-row sm:justify-between sm:px-9 lg:px-14">

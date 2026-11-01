@@ -1,25 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { LngLat, TripStage } from "./trip-types";
-import type { MapModelId, TripMapHandle } from "./trip-map-engine";
+import type { TripMapHandle } from "./trip-map-engine";
 import { TripPhotoFrame } from "./trip-photo-frame";
 import { TripHikesSummary, TripTrackCard } from "./trip-track-card";
 import { prefersReducedMotion, supportsWebGL } from "./webgl-support";
 import type { GpxTrack } from "./gpx-track";
 import { formatDistance, stageDistance } from "./gpx-track";
-
-const modelOptions: { id: MapModelId; label: string; hint: string }[] = [
-  { id: "plan", label: "Plan 2D", hint: "Lecture à plat, routes et villes" },
-  {
-    id: "relief",
-    label: "Relief 3D",
-    hint: "Terrain et ombrage des Highlands",
-  },
-  {
-    id: "satellite",
-    label: "Satellite 3D",
-    hint: "Imagerie drapée sur le relief",
-  },
-];
 
 type MapStatus = "loading" | "ready" | "unavailable";
 
@@ -39,7 +25,6 @@ export function TripRouteMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<TripMapHandle | null>(null);
   const [status, setStatus] = useState<MapStatus>("loading");
-  const [model, setModel] = useState<MapModelId>("relief");
   const [activeIndex, setActiveIndex] = useState(0);
   const [isReplaying, setIsReplaying] = useState(false);
 
@@ -59,7 +44,6 @@ export function TripRouteMap({
         mapRef.current = createTripMap({
           container,
           fullRoute,
-          model,
           onError: () => setStatus("unavailable"),
           onSelectStage: (index) => {
             setActiveIndex(index);
@@ -82,7 +66,7 @@ export function TripRouteMap({
       mapRef.current?.destroy();
       mapRef.current = null;
     };
-    // La carte est creee une seule fois; le modele change ensuite via setModel.
+    // La carte est creee une seule fois pour le carnet.
   }, []);
 
   // Les GPX peuvent arriver avant ou apres la carte: on les pousse des que
@@ -92,12 +76,6 @@ export function TripRouteMap({
       mapRef.current?.setTracks(tracks);
     }
   }, [status, tracks]);
-
-  function chooseModel(next: MapModelId) {
-    setModel(next);
-    setIsReplaying(false);
-    mapRef.current?.setModel(next);
-  }
 
   function selectStage(index: number) {
     setActiveIndex(index);
@@ -128,26 +106,9 @@ export function TripRouteMap({
   return (
     <div className="overflow-hidden rounded-xl border border-[#dfe4ea] bg-white">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#dfe4ea] p-3 sm:p-4">
-        <fieldset className="flex flex-wrap gap-1.5" disabled={!mapReady}>
-          <legend className="sr-only">Modèle de carte</legend>
-          {modelOptions.map((option) => (
-            <label
-              key={option.id}
-              title={option.hint}
-              className="site-label cursor-pointer rounded-full border border-[#dfe4ea] px-3.5 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.11em] text-[var(--site-muted)] transition has-[:checked]:border-[#0f1b2b] has-[:checked]:bg-[#0f1b2b] has-[:checked]:text-white has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#1c4ed8]"
-            >
-              <input
-                type="radio"
-                name="modele-carte"
-                value={option.id}
-                checked={model === option.id}
-                onChange={() => chooseModel(option.id)}
-                className="sr-only"
-              />
-              {option.label}
-            </label>
-          ))}
-        </fieldset>
+        <p className="site-label text-[0.62rem] font-semibold uppercase tracking-[0.11em] text-[var(--site-muted)]">
+          Plan · {stages.length} étapes
+        </p>
         <div className="flex gap-2">
           <button
             type="button"
@@ -189,7 +150,7 @@ export function TripRouteMap({
             >
               {status === "loading"
                 ? "Chargement de la carte…"
-                : "Carte 3D indisponible sur cet appareil — la feuille de route reste consultable."}
+                : "Carte indisponible sur cet appareil — la feuille de route reste consultable."}
             </p>
           )}
         </div>

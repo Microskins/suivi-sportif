@@ -97,7 +97,7 @@ export function TripCarnet({ trip }: { trip: TripDetail }) {
           </div>
           <p className="max-w-md leading-7 text-[var(--site-muted)]">
             {hasStages
-              ? "Trois modèles de carte à comparer — plan, relief et satellite en 3D. Cliquez sur une étape ou rejouez le trajet complet."
+              ? "Le trajet sur le plan, étape par étape. Cliquez sur une étape ou rejouez le voyage complet."
               : "Les étapes de ce carnet restent à écrire ; la carte montre déjà le pays autour de l’aéroport d’arrivée."}
           </p>
         </div>

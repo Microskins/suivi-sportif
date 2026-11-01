@@ -1,7 +1,13 @@
 /* Marqueurs des cartes du site Voyage (carnets et globe d'accueil).
    Charge avec les moteurs MapLibre, donc seulement sur les pages a carte. */
 
-/* Marqueur d'etape de la carte MapLibre: depart en encre, etapes en bleu. */
+/* Marqueur d'etape de la carte MapLibre: depart en encre, etapes en bleu.
+
+   MapLibre positionne chaque marqueur par `transform` sur l'element lui-meme,
+   recalcule a chaque image quand la carte bouge. Ni transition ni `transform`
+   / `scale` ici: une transition faisait trainer les marqueurs derriere la
+   carte, et un agrandissement au survol les decalait. Les etats ne jouent
+   que sur les couleurs et le contour. */
 .voyage-map-marker {
   display: grid;
   width: 2.1rem;
@@ -16,20 +22,25 @@
   font-family: var(--site-label);
   font-size: 0.68rem;
   font-weight: 600;
-  transition: transform 160ms ease;
+  transition:
+    background-color 160ms ease,
+    outline-color 160ms ease;
 }
 
 .voyage-map-marker[data-start="true"] {
   background: #0f1b2b;
 }
 
-.voyage-map-marker:hover,
-.voyage-map-marker[aria-current="step"] {
-  transform: scale(1.18);
+.voyage-map-marker:hover {
+  background: #1740b0;
+}
+
+.voyage-map-marker[data-start="true"]:hover {
+  background: #26364d;
 }
 
 .voyage-map-marker[aria-current="step"] {
-  outline: 3px solid rgba(28, 78, 216, 0.35);
+  outline: 3px solid rgba(28, 78, 216, 0.45);
   outline-offset: 2px;
 }
 
@@ -51,7 +62,10 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-decoration: none;
-  transition: scale 160ms ease;
+  /* Couleurs seulement: voir la note sur les marqueurs d'etape. */
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
 }
 
 /* Ambre en fond seulement: le texte reste en encre pour le contraste. */
@@ -60,9 +74,11 @@
   color: #0f1b2b;
 }
 
+/* Survol de la bulle ou de son arc: la destination passe en encre. */
 .voyage-globe-destination:hover,
 .voyage-globe-destination[data-active] {
-  scale: 1.15;
+  background: #0f1b2b;
+  color: #ffffff;
 }
 
 .voyage-globe-destination:focus-visible {
