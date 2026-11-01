@@ -3,7 +3,6 @@
 // carnet. Charge a la demande, comme la carte des carnets.
 import {
   FullscreenControl,
-  LngLatBounds,
   Map as MapLibreMap,
   Marker,
   NavigationControl,
@@ -24,6 +23,8 @@ const STYLE_URL = "https://tiles.openfreemap.org/styles/positron";
 const ACCENT = "#1c4ed8";
 const AMBER = "#e08a1e";
 const INK = "#0f1b2b";
+// Centre de la France metropolitaine, point de depart du globe.
+const FRANCE: LngLat = [2.4, 46.6];
 // Un aller simple prend ~5 s: assez lent pour suivre l'avion des yeux.
 const FLIGHT_MS = 5200;
 
@@ -55,21 +56,9 @@ export function createVoyageGlobe({
       trip,
     })),
   );
-  // Sans vol (catalogue vide), le globe se cadre sur l'Europe.
-  const allPoints: LngLat[] = flights.length
-    ? flights.flatMap(({ arc }) => arc)
-    : [
-        [-10, 36],
-        [25, 60],
-      ];
-  const bounds = allPoints.reduce(
-    (box, point) => box.extend(point),
-    new LngLatBounds(allPoints[0], allPoints[0]),
-  );
-
   const map = new MapLibreMap({
     attributionControl: { compact: true },
-    center: bounds.getCenter(),
+    center: FRANCE,
     container,
     maxZoom: 7,
     style: STYLE_URL,
@@ -175,11 +164,13 @@ export function createVoyageGlobe({
   });
 
   map.on("load", () => {
-    map.fitBounds(bounds, {
+    // On part de la maison: la France au centre de la partie visible du
+    // globe, a un zoom qui laisse voir les destinations autour et la
+    // courbure de la Terre.
+    map.easeTo({
+      center: FRANCE,
       duration: reducedMotion ? 0 : 2200,
-      // Zoom plafonne: on doit encore voir la courbure du globe, meme
-      // quand tous les vols tiennent dans l'Europe.
-      maxZoom: container.clientWidth < 640 ? 1.6 : 2.8,
+      zoom: container.clientWidth < 640 ? 1.9 : 2.6,
       // Sur grand ecran le titre occupe la gauche: le globe se decale a droite.
       padding:
         container.clientWidth >= 1024
