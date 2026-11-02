@@ -149,6 +149,23 @@ export function hasPosition(stage: Pick<StageDraft, "lat" | "lng">) {
   );
 }
 
+// Nouvelle position d'une etape: son trace (depuis la precedente) et celui de
+// l'etape suivante (qui partait d'ici) ne relient plus les bonnes etapes. Ils
+// sont effaces; « Tracer par la route » les recalcule.
+export function placeStage(
+  stages: StageDraft[],
+  key: string,
+  [lng, lat]: LngLat,
+): StageDraft[] {
+  const index = stages.findIndex((stage) => stage.key === key);
+  return stages.map((stage, i) => {
+    if (i === index) {
+      return { ...stage, lng: String(lng), lat: String(lat), route: [] };
+    }
+    return i === index + 1 && index >= 0 ? { ...stage, route: [] } : stage;
+  });
+}
+
 export const splitHighlights = (value: string) =>
   value
     .split(",")

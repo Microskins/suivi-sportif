@@ -3,6 +3,7 @@
 
 import type { Prisma } from "@prisma/client";
 import prisma from "../index.js";
+import { consistentRoutes } from "../../lib/stage-routes.js";
 import type { AirportInput, LngLat, TripInput } from "../../schemas/voyages.js";
 
 export type TripStatus = "realise" | "a-venir";
@@ -85,30 +86,34 @@ function formatSummary(trip: TripSummaryRow) {
 function formatDetail(trip: TripDetailRow) {
   return {
     ...formatSummary(trip),
-    stages: trip.stages.map((stage) => ({
-      id: stage.id,
-      code: stage.code,
-      dayLabel: stage.dayLabel,
-      dateLabel: stage.dateLabel,
-      title: stage.title,
-      detail: stage.detail,
-      highlights: stage.highlights,
-      coordinates: [stage.longitude, stage.latitude] as LngLat,
-      route: stage.route as LngLat[],
-      lodgingUrl: stage.lodgingUrl,
-      tracks: stage.tracks.map((track) => ({
-        id: track.id,
-        kind: track.kind === "TRAJET" ? "trajet" : "randonnee",
-        name: track.name,
-        url: `${FILE_ROUTE}/${track.fileName}`,
+    // Lecture: un trace perime (etape deplacee ou retiree) n'est jamais
+    // affiche, meme s'il est encore en base.
+    stages: consistentRoutes(
+      trip.stages.map((stage) => ({
+        id: stage.id,
+        code: stage.code,
+        dayLabel: stage.dayLabel,
+        dateLabel: stage.dateLabel,
+        title: stage.title,
+        detail: stage.detail,
+        highlights: stage.highlights,
+        coordinates: [stage.longitude, stage.latitude] as LngLat,
+        route: stage.route as LngLat[],
+        lodgingUrl: stage.lodgingUrl,
+        tracks: stage.tracks.map((track) => ({
+          id: track.id,
+          kind: track.kind === "TRAJET" ? "trajet" : "randonnee",
+          name: track.name,
+          url: `${FILE_ROUTE}/${track.fileName}`,
+        })),
+        photos: stage.photos.map((photo) => ({
+          id: photo.id,
+          url: `${FILE_ROUTE}/${photo.fileName}`,
+          alt: photo.alt,
+          caption: photo.caption,
+        })),
       })),
-      photos: stage.photos.map((photo) => ({
-        id: photo.id,
-        url: `${FILE_ROUTE}/${photo.fileName}`,
-        alt: photo.alt,
-        caption: photo.caption,
-      })),
-    })),
+    ),
   };
 }
 
@@ -276,7 +281,7 @@ export async function createTrip(userId: string, input: TripInput) {
           ),
         },
         stages: {
-          create: input.stages.map((stage, position) =>
+          create: consistentRoutes(input.stages).map((stage, position) =>
             stageFields(stage, position),
           ),
         },
@@ -348,7 +353,8 @@ export async function updateTrip(id: string, input: TripInput) {
         },
       },
     });
-    for (const [position, stage] of input.stages.entries()) {
+    // Ecriture: les traces perimes sont retires de la base.
+    for (const [position, stage] of consistentRoutes(input.stages).entries()) {
       if (stage.id) {
         await tx.tripStage.update({
           where: { id: stage.id },

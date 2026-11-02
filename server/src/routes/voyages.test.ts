@@ -12,6 +12,7 @@ import { buildApp } from "../app.js";
 import { generateToken } from "../plugins/auth.js";
 import { tripStatus } from "../db/queries/voyages.js";
 import { detectPhotoExtension, looksLikeGpx } from "../lib/voyage-files.js";
+import { consistentRoutes } from "../lib/stage-routes.js";
 import { tripStageInputSchema } from "../schemas/voyages.js";
 
 const mocks = vi.hoisted(() => ({
@@ -407,5 +408,48 @@ describe("recherche d'adresse (geocodage)", () => {
       headers: { authorization: tokenFor(OTHER) },
     });
     expect(response.statusCode).toBe(403);
+  });
+});
+
+describe("coherence des traces d'etapes", () => {
+  const edi: [number, number] = [-3.1883, 55.9533];
+  const sky: [number, number] = [-6.1964, 57.4125];
+  const neist: [number, number] = [-6.788, 57.4233];
+  const inv: [number, number] = [-4.2247, 57.4778];
+
+  it("ecarte un trace qui passe encore par une etape retiree", () => {
+    // Neist Point a ete retire: Inverness garde son trace depuis Neist Point.
+    const stages = consistentRoutes([
+      { coordinates: edi, route: [] },
+      { coordinates: sky, route: [edi, [-5, 56.8], sky] },
+      { coordinates: inv, route: [neist, [-5.6, 57.3], inv] },
+    ]);
+
+    expect(stages[1].route).toHaveLength(3);
+    expect(stages[2].route).toEqual([]);
+  });
+
+  it("garde un itineraire routier dont les extremites sont proches des etapes", () => {
+    const [, stage] = consistentRoutes([
+      { coordinates: edi, route: [] },
+      // ~1 km d'ecart: le depart et l'arrivee se calent sur la route.
+      {
+        coordinates: sky,
+        route: [
+          [-3.2, 55.96],
+          [-5, 56.8],
+          [-6.2, 57.42],
+        ],
+      },
+    ]);
+    expect(stage.route).toHaveLength(3);
+  });
+
+  it("ecarte le trace de la premiere etape et un logement deplace", () => {
+    const stages = consistentRoutes([
+      { coordinates: edi, route: [sky, edi] },
+      { coordinates: neist, route: [edi, sky] },
+    ]);
+    expect(stages.map((stage) => stage.route)).toEqual([[], []]);
   });
 });
