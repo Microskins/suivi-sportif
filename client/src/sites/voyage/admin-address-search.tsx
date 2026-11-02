@@ -98,7 +98,7 @@ export function AdminAddressSearch({
       <div className="mt-1.5 flex flex-wrap gap-2">
         <input
           id={`${id}-adresse`}
-          className={`${inputClass} !mt-0 min-w-0 flex-1`}
+          className={`${inputClass} !mt-0 min-w-0 flex-1 basis-56`}
           value={address}
           disabled={disabled}
           maxLength={300}

@@ -7,7 +7,7 @@ import { AdminMealPhoto } from "./admin-meal-photo";
 import type { AuthErrorHandler } from "./admin-api";
 import type { MealDraft } from "./admin-form";
 import { emptyMeal, hasPosition } from "./admin-form";
-import { TextField, buttonClass, labelClass } from "./admin-ui";
+import { TextField, buttonClass } from "./admin-ui";
 
 const MAX_MEALS = 20;
 
@@ -35,21 +35,16 @@ export function AdminStageMeals({
     );
 
   return (
-    <fieldset className="sm:col-span-6">
-      <legend className={labelClass}>Repas (facultatif)</legend>
-      <p className="mt-1 text-xs leading-5 text-[var(--site-muted)]">
-        Restaurants, pubs ou cafés où vous avez mangé, avec une photo si vous en
-        avez : chacun apparaît comme un point sur la carte de l’étape.
-      </p>
+    <div>
       {meals.length > 0 && (
-        <ol className="mt-3 grid gap-3">
+        <ol className="mb-3 grid gap-3">
           {meals.map((meal, index) => {
             const mealPrefix = `${prefix}meals.${index}.`;
             const name = meal.name.trim() || `Repas ${index + 1}`;
             return (
               <li
                 key={meal.key}
-                className="grid gap-3 rounded-[8px] border border-[#dfe4ea] p-3 sm:grid-cols-2"
+                className="grid gap-3 rounded-[8px] border border-[#dfe4ea] bg-white p-3 sm:grid-cols-2"
               >
                 <TextField
                   label={`Lieu du repas ${index + 1}`}
@@ -116,13 +111,13 @@ export function AdminStageMeals({
       )}
       <button
         type="button"
-        className={`${buttonClass.small} mt-3`}
+        className={buttonClass.small}
         disabled={disabled || meals.length >= MAX_MEALS}
         aria-label={`Ajouter un repas à ${stageLabel}`}
         onClick={() => onChange([...meals, emptyMeal()])}
       >
         + Ajouter un repas
       </button>
-    </fieldset>
+    </div>
   );
 }
