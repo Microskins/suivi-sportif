@@ -12,6 +12,7 @@ import { buildApp } from "../app.js";
 import { generateToken } from "../plugins/auth.js";
 import { tripStatus } from "../db/queries/voyages.js";
 import { detectPhotoExtension, looksLikeGpx } from "../lib/voyage-files.js";
+import { tripStageInputSchema } from "../schemas/voyages.js";
 
 const mocks = vi.hoisted(() => ({
   listPublishedTrips: vi.fn(),
@@ -288,6 +289,35 @@ describe("regles metier des voyages", () => {
     expect(tripStatus(new Date("2026-10-27"), now)).toBe("realise");
     expect(tripStatus(new Date("2026-10-29"), now)).toBe("a-venir");
     expect(tripStatus(new Date("2027-05-01"), now)).toBe("a-venir");
+  });
+
+  it("ramene un lien Airbnb a l'annonce seule, et refuse ce qui n'est pas un lien", () => {
+    const stage = {
+      code: "EDI",
+      dayLabel: "J01",
+      dateLabel: "19 oct.",
+      title: "Edimbourg",
+      coordinates: [-3.2, 55.9],
+    };
+    const lodging = (lodgingUrl?: string | null) =>
+      tripStageInputSchema.safeParse({ ...stage, lodgingUrl });
+
+    expect(
+      lodging(
+        "https://www.airbnb.fr/rooms/12345678?check_in=2026-10-19&adults=2&source_impression_id=p3",
+      ).data?.lodgingUrl,
+    ).toBe("https://www.airbnb.fr/rooms/12345678");
+    expect(
+      lodging("http://fr.airbnb.ca/rooms/plus/42#photos").data?.lodgingUrl,
+    ).toBe("https://fr.airbnb.ca/rooms/42");
+    expect(
+      lodging("https://www.booking.com/hotel/gb/x.html").data?.lodgingUrl,
+    ).toBe("https://www.booking.com/hotel/gb/x.html");
+    expect(lodging("").data?.lodgingUrl).toBeNull();
+    expect(lodging(undefined).data?.lodgingUrl).toBeNull();
+    expect(lodging(null).data?.lodgingUrl).toBeNull();
+    expect(lodging("javascript:alert(1)").success).toBe(false);
+    expect(lodging("airbnb chez Moira").success).toBe(false);
   });
 
   it("reconnait les formats au contenu, pas a l'extension", () => {

@@ -95,6 +95,7 @@ function formatDetail(trip: TripDetailRow) {
       highlights: stage.highlights,
       coordinates: [stage.longitude, stage.latitude] as LngLat,
       route: stage.route as LngLat[],
+      lodgingUrl: stage.lodgingUrl,
       tracks: stage.tracks.map((track) => ({
         id: track.id,
         kind: track.kind === "TRAJET" ? "trajet" : "randonnee",
@@ -257,6 +258,7 @@ function stageFields(stage: TripInput["stages"][number], position: number) {
     longitude: stage.coordinates[0],
     latitude: stage.coordinates[1],
     route: stage.route,
+    lodgingUrl: stage.lodgingUrl,
   };
 }
 

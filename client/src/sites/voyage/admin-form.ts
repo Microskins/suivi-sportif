@@ -21,6 +21,8 @@ export type StageDraft = {
   key: string;
   lat: string;
   lng: string;
+  // Lien du logement (Airbnb...), vide si aucun.
+  lodgingUrl: string;
   photos: TripPhoto[];
   // Trace reconstitue renvoye par l'API: conserve tel quel a l'enregistrement.
   route: LngLat[];
@@ -67,6 +69,7 @@ export const emptyStage = (): StageDraft => ({
   key: localKey(),
   lat: "",
   lng: "",
+  lodgingUrl: "",
   photos: [],
   route: [],
   title: "",
@@ -109,6 +112,7 @@ export function tripToDraft(trip: TripDetail): TripDraft {
       key: stage.id,
       lat: String(stage.coordinates[1]),
       lng: String(stage.coordinates[0]),
+      lodgingUrl: stage.lodgingUrl ?? "",
       photos: stage.photos,
       route: stage.route,
       title: stage.title,
@@ -143,6 +147,7 @@ function stageToPayload(stage: StageDraft): StagePayload {
     highlights: splitHighlights(stage.highlights),
     coordinates: [parseNumber(stage.lng), parseNumber(stage.lat)],
     route: stage.route,
+    lodgingUrl: stage.lodgingUrl.trim() || null,
   };
 }
 

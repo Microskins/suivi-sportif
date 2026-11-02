@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { LngLat, TripStage } from "./trip-types";
 import type { TripMapHandle } from "./trip-map-engine";
+import { TripLodgingLink } from "./trip-lodging-link";
 import { TripPhotoFrame } from "./trip-photo-frame";
 import { TripHikesSummary, TripTrackCard } from "./trip-track-card";
 import { prefersReducedMotion, supportsWebGL } from "./webgl-support";
@@ -205,6 +206,13 @@ export function TripRouteMap({
                 </li>
               ))}
             </ul>
+            {stage.lodgingUrl && (
+              <TripLodgingLink
+                className="mt-4 self-start"
+                stageTitle={stage.title}
+                url={stage.lodgingUrl}
+              />
+            )}
             {stageTracks.length > 0 && (
               <div className="mt-5 grid gap-2">
                 <TripHikesSummary tracks={stageTracks} />

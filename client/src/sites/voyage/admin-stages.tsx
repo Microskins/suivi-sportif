@@ -298,6 +298,14 @@ function StageFields({
         required
         {...field("lat")}
       />
+      <TextField
+        className="sm:col-span-6"
+        label="Logement (lien Airbnb)"
+        hint="Où vous avez dormi, ex. https://www.airbnb.fr/rooms/12345678 — les dates et voyageurs du lien sont retirés. Reportez la position du logement en longitude / latitude : c’est elle qui trace le parcours."
+        inputMode="url"
+        maxLength={500}
+        {...field("lodgingUrl")}
+      />
       {stage.route.length > 0 && (
         <p className="site-label text-[0.65rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)] sm:col-span-6">
           Tracé d’arrivée : {stage.route.length} points, conservés tels quels.

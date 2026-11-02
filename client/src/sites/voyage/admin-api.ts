@@ -129,6 +129,7 @@ export type StagePayload = {
   detail: string;
   highlights: string[];
   id?: string;
+  lodgingUrl: string | null;
   route: LngLat[];
   title: string;
 };

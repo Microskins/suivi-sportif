@@ -27,6 +27,53 @@ const isoDateSchema = z
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Date au format AAAA-MM-JJ attendue")
   .refine((value) => !Number.isNaN(Date.parse(value)), "Date invalide");
 
+const AIRBNB_HOST = /(^|\.)airbnb\.[a-z.]{2,8}$/i;
+
+// Lien du logement de l'etape. Un lien Airbnb est ramene a l'annonce seule
+// (https://www.airbnb.fr/rooms/123): les dates, le nombre de voyageurs et
+// les parametres de suivi du lien partage n'ont rien a faire en public.
+export function normalizeLodgingUrl(value: string): string | null {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return null;
+  }
+  if (url.protocol !== "https:" && url.protocol !== "http:") {
+    return null;
+  }
+  if (AIRBNB_HOST.test(url.hostname)) {
+    const room = url.pathname.match(/\/rooms\/(?:plus\/)?(\d+)/);
+    if (room) {
+      return `https://${url.hostname.toLowerCase()}/rooms/${room[1]}`;
+    }
+  }
+  url.protocol = "https:";
+  url.hash = "";
+  return url.toString();
+}
+
+const lodgingUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .transform((value, ctx) => {
+    if (value === "") {
+      return null;
+    }
+    const url = normalizeLodgingUrl(value);
+    if (!url) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Lien attendu (ex. https://www.airbnb.fr/rooms/12345678)",
+      });
+      return z.NEVER;
+    }
+    return url;
+  })
+  .nullable()
+  .default(null);
+
 export const tripStageInputSchema = z.object({
   // Present pour une etape existante: elle garde ses traces et ses photos.
   id: z.string().uuid().optional(),
@@ -43,6 +90,7 @@ export const tripStageInputSchema = z.object({
   highlights: z.array(z.string().trim().min(1).max(60)).max(12).default([]),
   coordinates: lngLatSchema,
   route: z.array(lngLatSchema).max(5000).default([]),
+  lodgingUrl: lodgingUrlSchema,
 });
 
 export const tripInputSchema = z
