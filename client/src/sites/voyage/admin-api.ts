@@ -6,6 +6,7 @@ import type {
   LngLat,
   TrackKind,
   TripDetail,
+  TripMeal,
   TripPhoto,
   TripSummary,
   TripTrackFile,
@@ -130,6 +131,7 @@ export type StagePayload = {
   highlights: string[];
   id?: string;
   lodgingUrl: string | null;
+  meals: TripMeal[];
   route: LngLat[];
   title: string;
 };

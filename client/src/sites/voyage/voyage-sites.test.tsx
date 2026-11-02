@@ -46,6 +46,13 @@ const ecosseDetail: TripDetail = {
       highlights: ["Royal Mile"],
       id: "s1",
       lodgingUrl: "https://www.airbnb.fr/rooms/12345678",
+      meals: [
+        {
+          coordinates: [-3.1955, 55.9489],
+          name: "The Witchery",
+          url: "https://www.thewitchery.com/",
+        },
+      ],
       photos: [],
       route: [],
       title: "Édimbourg, la vieille ville",
@@ -60,6 +67,7 @@ const ecosseDetail: TripDetail = {
       highlights: [],
       id: "s2",
       lodgingUrl: null,
+      meals: [],
       photos: [],
       route: [
         [-3.19, 55.95],
@@ -158,6 +166,12 @@ describe("carnet de voyage", () => {
       );
       expect(link.getAttribute("rel")).toContain("noopener");
     }
+    // Les repas de l'etape, avec le lien du lieu.
+    const meals = screen.getAllByRole("link", {
+      name: "The Witchery (nouvel onglet)",
+    });
+    expect(meals.length).toBeGreaterThan(0);
+    expect(meals[0].getAttribute("href")).toBe("https://www.thewitchery.com/");
   });
 
   it("montre le pays meme quand les etapes restent a ecrire", async () => {

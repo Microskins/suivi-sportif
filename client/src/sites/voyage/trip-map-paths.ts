@@ -1,7 +1,7 @@
 // Geometrie du trace de voyage, sans dependance a MapLibre: decoupage entre
 // traces GPS et reconstituees, chemin du rejeu et orientation de la camera.
 import { distanceKm, routeLengthKm } from "./trip-geometry";
-import type { LngLat } from "./trip-types";
+import type { LngLat, TripMeal } from "./trip-types";
 import type { GpxTrack } from "./gpx-track";
 import { elevationSegments } from "./gpx-track";
 
@@ -10,6 +10,8 @@ const DRIVE_COLOR = "#1c4ed8";
 export type MapStage = {
   code: string;
   coordinates: LngLat;
+  // Repas de l'etape: des points sur la carte, sans effet sur le trace.
+  meals?: TripMeal[];
   route: LngLat[];
   title: string;
 };

@@ -576,6 +576,9 @@ model TripStage {
   // Logement de la nuit (lien Airbnb le plus souvent): une etape = un lieu
   // ou l'on a dormi.
   lodgingUrl String?  @map("lodging_url")
+  // Repas (restaurants, pubs...) de l'etape, facultatifs: tableau de
+  // { name, coordinates: [longitude, latitude], url }.
+  meals      Json     @default("[]")
 
   trip   Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
   tracks TripTrack[]

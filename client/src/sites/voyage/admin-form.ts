@@ -5,9 +5,19 @@ import type {
   LngLat,
   TravelMode,
   TripDetail,
+  TripMeal,
   TripPhoto,
   TripTrackFile,
 } from "./trip-types";
+
+// Un repas en cours de saisie: position placee par recherche d'adresse.
+export type MealDraft = {
+  key: string;
+  lat: string;
+  lng: string;
+  name: string;
+  url: string;
+};
 
 export type StageDraft = {
   code: string;
@@ -23,6 +33,8 @@ export type StageDraft = {
   lng: string;
   // Lien du logement (Airbnb...), vide si aucun.
   lodgingUrl: string;
+  // Repas de l'etape, facultatifs.
+  meals: MealDraft[];
   photos: TripPhoto[];
   // Trace reconstitue renvoye par l'API: conserve tel quel a l'enregistrement.
   route: LngLat[];
@@ -60,6 +72,22 @@ export const emptyFlight = (): FlightDraft => ({
   toCode: "",
 });
 
+export const emptyMeal = (): MealDraft => ({
+  key: localKey(),
+  lat: "",
+  lng: "",
+  name: "",
+  url: "",
+});
+
+const mealToDraft = (meal: TripMeal): MealDraft => ({
+  key: localKey(),
+  lat: String(meal.coordinates[1]),
+  lng: String(meal.coordinates[0]),
+  name: meal.name,
+  url: meal.url ?? "",
+});
+
 export const emptyStage = (): StageDraft => ({
   code: "",
   dateLabel: "",
@@ -70,6 +98,7 @@ export const emptyStage = (): StageDraft => ({
   lat: "",
   lng: "",
   lodgingUrl: "",
+  meals: [],
   photos: [],
   route: [],
   title: "",
@@ -113,6 +142,7 @@ export function tripToDraft(trip: TripDetail): TripDraft {
       lat: String(stage.coordinates[1]),
       lng: String(stage.coordinates[0]),
       lodgingUrl: stage.lodgingUrl ?? "",
+      meals: (stage.meals ?? []).map(mealToDraft),
       photos: stage.photos,
       route: stage.route,
       title: stage.title,
@@ -184,6 +214,11 @@ function stageToPayload(stage: StageDraft): StagePayload {
     coordinates: [parseNumber(stage.lng), parseNumber(stage.lat)],
     route: stage.route,
     lodgingUrl: stage.lodgingUrl.trim() || null,
+    meals: stage.meals.map((meal) => ({
+      name: meal.name.trim(),
+      coordinates: [parseNumber(meal.lng), parseNumber(meal.lat)],
+      url: meal.url.trim() || null,
+    })),
   };
 }
 
@@ -196,6 +231,12 @@ export function localErrors(draft: TripDraft): Record<string, string> {
       errors[`stages.${index}.position`] =
         "Position manquante : cherchez l’adresse du logement.";
     }
+    stage.meals.forEach((meal, mealIndex) => {
+      if (!hasPosition(meal)) {
+        errors[`stages.${index}.meals.${mealIndex}.position`] =
+          "Position manquante : cherchez l’adresse du lieu.";
+      }
+    });
   });
   return errors;
 }

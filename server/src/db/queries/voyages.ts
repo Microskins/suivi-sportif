@@ -4,7 +4,12 @@
 import type { Prisma } from "@prisma/client";
 import prisma from "../index.js";
 import { consistentRoutes } from "../../lib/stage-routes.js";
-import type { AirportInput, LngLat, TripInput } from "../../schemas/voyages.js";
+import type {
+  AirportInput,
+  LngLat,
+  TripInput,
+  TripMealInput,
+} from "../../schemas/voyages.js";
 
 export type TripStatus = "realise" | "a-venir";
 
@@ -100,6 +105,7 @@ function formatDetail(trip: TripDetailRow) {
         coordinates: [stage.longitude, stage.latitude] as LngLat,
         route: stage.route as LngLat[],
         lodgingUrl: stage.lodgingUrl,
+        meals: stage.meals as TripMealInput[],
         tracks: stage.tracks.map((track) => ({
           id: track.id,
           kind: track.kind === "TRAJET" ? "trajet" : "randonnee",
@@ -264,6 +270,7 @@ function stageFields(stage: TripInput["stages"][number], position: number) {
     latitude: stage.coordinates[1],
     route: stage.route,
     lodgingUrl: stage.lodgingUrl,
+    meals: stage.meals,
   };
 }
 

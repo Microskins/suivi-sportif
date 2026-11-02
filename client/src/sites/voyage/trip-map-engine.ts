@@ -172,6 +172,32 @@ export function createTripMap({
     return [{ button, index, marker }];
   });
 
+  // Repas: petits points orange, sous les marqueurs d'etape. Un clic ouvre
+  // l'etape du repas dans le panneau.
+  const mealMarkers = stages.flatMap((stage, index) =>
+    (stage.meals ?? []).map((meal) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "voyage-map-meal";
+      button.title = meal.name;
+      button.setAttribute(
+        "aria-label",
+        `Repas — ${meal.name}, étape ${index + 1} ${stage.title}`,
+      );
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        onSelectStage(index);
+      });
+      return new Marker({ element: button, anchor: "center" })
+        .setLngLat(meal.coordinates)
+        .addTo(map);
+    }),
+  );
+  // Les etapes restent au-dessus des repas (meme lieu, meme pixel).
+  markers.forEach(({ marker }) => {
+    marker.getElement().style.zIndex = "1";
+  });
+
   function setSourceData(
     id: string,
     data: GeoJSON.FeatureCollection<GeoJSON.LineString>,
@@ -218,6 +244,7 @@ export function createTripMap({
     destroy() {
       stopReplay();
       markers.forEach(({ marker }) => marker.remove());
+      mealMarkers.forEach((marker) => marker.remove());
       map.remove();
     },
 
