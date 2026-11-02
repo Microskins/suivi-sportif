@@ -23,10 +23,12 @@ import {
 } from "../lib/voyage-files.js";
 import { RoadRouteError, fetchRoadRoute } from "../lib/road-route.js";
 import { authenticateVoyageAdmin } from "../plugins/auth.js";
+import { GeocodingError, geocodeAddress } from "../services/geocoding.js";
 import { idParamSchema } from "../schemas/index.js";
 import {
   airportInputSchema,
   fileNameParamSchema,
+  geocodeQuerySchema,
   photoUploadQuerySchema,
   roadRouteInputSchema,
   slugParamSchema,
@@ -38,6 +40,9 @@ const TRIP_NOT_FOUND = "Voyage introuvable";
 // Un voyage complet (jusqu'a 60 etapes et leurs traces reconstituees) peut
 // depasser la limite JSON par defaut de Fastify (1 Mo).
 const TRIP_BODY_LIMIT = 8 * 1024 * 1024;
+
+// Nominatim tolere un faible debit: l'admin cherche une adresse a la fois.
+const geocodeRateLimit = { max: 20, timeWindow: "1 minute" };
 
 const writeRateLimit = {
   max: Number(process.env.VOYAGE_WRITE_RATE_LIMIT_MAX ?? 60),
@@ -58,6 +63,14 @@ function handleError(
   if (error instanceof voyages.TripConflictError) {
     const status = error.code === "TRIP_SLUG_TAKEN" ? 409 : 400;
     return reply.code(status).send({ error: error.message, code: error.code });
+  }
+  if (error instanceof GeocodingError) {
+    fastify.log.warn(error.message);
+    return reply.code(502).send({
+      error:
+        "Recherche d'adresse indisponible pour le moment. Saisissez la longitude et la latitude.",
+      code: "GEOCODING_UNAVAILABLE",
+    });
   }
   if (error instanceof VoyageFileError) {
     return reply.code(400).send({ error: error.message, code: error.code });
@@ -295,6 +308,23 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
             .code(status)
             .send({ error: error.message, code: error.code });
         }
+        return handleError(fastify, reply, error);
+      }
+    },
+  );
+
+  // GET /api/voyages/admin/geocode?q=adresse - adresse vers coordonnees
+  fastify.get(
+    "/geocode",
+    {
+      config: { rateLimit: geocodeRateLimit },
+      schema: { ...admin, summary: "Geocode an address" },
+    },
+    async (request, reply) => {
+      try {
+        const { q } = geocodeQuerySchema.parse(request.query);
+        return sendOk(reply, await geocodeAddress(q));
+      } catch (error) {
         return handleError(fastify, reply, error);
       }
     },

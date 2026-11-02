@@ -129,6 +129,7 @@ export type StagePayload = {
   detail: string;
   highlights: string[];
   id?: string;
+  lodgingUrl: string | null;
   route: LngLat[];
   title: string;
 };
@@ -154,7 +155,13 @@ export type AirportPayload = {
   name: string;
 };
 
+export type GeocodeResult = { coordinates: LngLat; label: string };
+
 export const adminApi = {
+  geocode: (address: string) =>
+    adminRequest<GeocodeResult[]>(
+      `/geocode?${new URLSearchParams({ q: address })}`,
+    ),
   listTrips: () => adminRequest<TripSummary[]>("/trips"),
   getTrip: (id: string) =>
     adminRequest<TripDetail>(`/trips/${encodeURIComponent(id)}`),

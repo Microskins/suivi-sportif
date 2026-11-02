@@ -573,6 +573,9 @@ model TripStage {
   longitude  Float
   // Trace reconstitue pour arriver a l'etape: tableau de [longitude, latitude].
   route      Json     @default("[]")
+  // Logement de la nuit (lien Airbnb le plus souvent): une etape = un lieu
+  // ou l'on a dormi.
+  lodgingUrl String?  @map("lodging_url")
 
   trip   Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
   tracks TripTrack[]

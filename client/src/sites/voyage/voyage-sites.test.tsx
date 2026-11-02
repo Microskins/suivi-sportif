@@ -45,6 +45,7 @@ const ecosseDetail: TripDetail = {
       detail: "Royal Mile et Arthur’s Seat.",
       highlights: ["Royal Mile"],
       id: "s1",
+      lodgingUrl: "https://www.airbnb.fr/rooms/12345678",
       photos: [],
       route: [],
       title: "Édimbourg, la vieille ville",
@@ -58,6 +59,7 @@ const ecosseDetail: TripDetail = {
       detail: "Stirling et Loch Lomond.",
       highlights: [],
       id: "s2",
+      lodgingUrl: null,
       photos: [],
       route: [
         [-3.19, 55.95],
@@ -145,6 +147,17 @@ describe("carnet de voyage", () => {
       }),
     ).toBeTruthy();
     expect(screen.getByText("9 jours")).toBeTruthy();
+    // Le logement de l'etape: la carte et la feuille de route y renvoient.
+    const lodging = screen.getAllByRole("link", {
+      name: /Logement de l’étape Édimbourg, la vieille ville, sur Airbnb/,
+    });
+    expect(lodging.length).toBeGreaterThan(0);
+    for (const link of lodging) {
+      expect(link.getAttribute("href")).toBe(
+        "https://www.airbnb.fr/rooms/12345678",
+      );
+      expect(link.getAttribute("rel")).toContain("noopener");
+    }
   });
 
   it("montre le pays meme quand les etapes restent a ecrire", async () => {

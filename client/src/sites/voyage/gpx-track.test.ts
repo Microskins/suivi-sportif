@@ -34,6 +34,7 @@ const stageFixture = (route: TripStage["route"]): TripStage => ({
   detail: "",
   highlights: [],
   id: "etape",
+  lodgingUrl: null,
   photos: [],
   route,
   title: "Glencoe",

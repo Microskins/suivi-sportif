@@ -12,6 +12,7 @@ import { buildApp } from "../app.js";
 import { generateToken } from "../plugins/auth.js";
 import { tripStatus } from "../db/queries/voyages.js";
 import { detectPhotoExtension, looksLikeGpx } from "../lib/voyage-files.js";
+import { tripStageInputSchema } from "../schemas/voyages.js";
 
 const mocks = vi.hoisted(() => ({
   listPublishedTrips: vi.fn(),
@@ -290,6 +291,41 @@ describe("regles metier des voyages", () => {
     expect(tripStatus(new Date("2027-05-01"), now)).toBe("a-venir");
   });
 
+  it("ramene un lien Airbnb a l'annonce seule, et refuse ce qui n'est pas un lien", () => {
+    const stage = {
+      code: "EDI",
+      dayLabel: "J01",
+      dateLabel: "19 oct.",
+      title: "Edimbourg",
+      coordinates: [-3.2, 55.9],
+    };
+    const lodging = (lodgingUrl?: string | null) =>
+      tripStageInputSchema.safeParse({ ...stage, lodgingUrl });
+
+    expect(
+      lodging(
+        "https://www.airbnb.fr/rooms/12345678?check_in=2026-10-19&adults=2&source_impression_id=p3",
+      ).data?.lodgingUrl,
+    ).toBe("https://www.airbnb.fr/rooms/12345678");
+    // Lien tel que partage depuis l'appli Airbnb (voyage passe).
+    expect(
+      lodging(
+        "https://www.airbnb.fr/rooms/37630836?guests=1&c=.pi129.pkpast_trip_share_virality&s=67&unique_share_id=e715b078-dec6-4106-9e3f-cfe03b07759a",
+      ).data?.lodgingUrl,
+    ).toBe("https://www.airbnb.fr/rooms/37630836");
+    expect(
+      lodging("http://fr.airbnb.ca/rooms/plus/42#photos").data?.lodgingUrl,
+    ).toBe("https://fr.airbnb.ca/rooms/42");
+    expect(
+      lodging("https://www.booking.com/hotel/gb/x.html").data?.lodgingUrl,
+    ).toBe("https://www.booking.com/hotel/gb/x.html");
+    expect(lodging("").data?.lodgingUrl).toBeNull();
+    expect(lodging(undefined).data?.lodgingUrl).toBeNull();
+    expect(lodging(null).data?.lodgingUrl).toBeNull();
+    expect(lodging("javascript:alert(1)").success).toBe(false);
+    expect(lodging("airbnb chez Moira").success).toBe(false);
+  });
+
   it("reconnait les formats au contenu, pas a l'extension", () => {
     expect(detectPhotoExtension(Buffer.from([0xff, 0xd8, 0xff, 0xe0]))).toBe(
       "jpg",
@@ -300,5 +336,76 @@ describe("regles metier des voyages", () => {
       looksLikeGpx(Buffer.from('<?xml version="1.0"?>\n<gpx version="1.1">')),
     ).toBe(true);
     expect(looksLikeGpx(Buffer.from("<svg></svg>"))).toBe(false);
+  });
+});
+
+describe("recherche d'adresse (geocodage)", () => {
+  const url = (q: string) =>
+    `/api/voyages/admin/geocode?${new URLSearchParams({ q })}`;
+
+  it("transforme l'adresse du logement en coordonnees", async () => {
+    const fetchMock = vi.fn(
+      async (_url: URL) =>
+        new Response(
+          JSON.stringify([
+            {
+              display_name: "12 Rue Exemple, Portree, Écosse",
+              lat: "57.4125361",
+              lon: "-6.1965812",
+            },
+            { display_name: "Sans position" },
+          ]),
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: url("12 Rue Exemple, Portree"),
+        headers: { authorization: tokenFor(ADMIN) },
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json().data).toEqual([
+        {
+          label: "12 Rue Exemple, Portree, Écosse",
+          coordinates: [-6.19658, 57.41254],
+        },
+      ]);
+      const called = new URL(String(fetchMock.mock.calls[0][0]));
+      expect(called.hostname).toBe("nominatim.openstreetmap.org");
+      expect(called.searchParams.get("q")).toBe("12 Rue Exemple, Portree");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("previent quand le service ne repond pas", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new Error("ECONNREFUSED");
+      }),
+    );
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: url("Portree"),
+        headers: { authorization: tokenFor(ADMIN) },
+      });
+      expect(response.statusCode).toBe(502);
+      expect(response.json().code).toBe("GEOCODING_UNAVAILABLE");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("reste reserve aux administrateurs", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: url("Portree"),
+      headers: { authorization: tokenFor(OTHER) },
+    });
+    expect(response.statusCode).toBe(403);
   });
 });
