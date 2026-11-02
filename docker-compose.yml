@@ -17,6 +17,8 @@ services:
       # Site Voyage: comptes autorises a l'ecran d'admin, et fichiers envoyes
       # (traces GPX, photos) ecrits dans $UPLOAD_DIR/voyages/.
       VOYAGE_ADMIN_EMAILS: ${VOYAGE_ADMIN_EMAILS:-}
+      # Serveur OSRM des itineraires routiers de l'admin (vide: serveur public).
+      ROUTER_URL: ${ROUTER_URL:-}
       UPLOAD_DIR: /app/uploads
     volumes:
       - voyage-uploads:/app/uploads
