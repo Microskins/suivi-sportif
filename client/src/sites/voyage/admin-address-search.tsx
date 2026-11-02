@@ -1,6 +1,7 @@
-// Recherche de la position d'une etape a partir de l'adresse du logement
-// (celle que donne le loueur). L'adresse sert uniquement a la recherche:
-// elle n'est pas enregistree, seules la longitude et la latitude le sont.
+// Position d'une etape a partir de l'adresse du logement (celle que donne le
+// loueur). L'adresse sert uniquement a la recherche: elle n'est pas
+// enregistree, seule la position l'est. En secours, des coordonnees copiees
+// depuis Google Maps ("55.95325, -3.18827") sont reprises telles quelles.
 import { useId, useState } from "react";
 import type { GeocodeResult } from "./admin-api";
 import { adminApi } from "./admin-api";
@@ -12,28 +13,55 @@ type Status =
   | { kind: "results"; results: GeocodeResult[] }
   | { kind: "error"; message: string };
 
+const COORDINATES = /^(-?\d{1,2}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)$/;
+
+// "latitude, longitude", l'ordre de Google Maps.
+export function parseCoordinates(
+  value: string,
+): GeocodeResult["coordinates"] | null {
+  const match = value.trim().match(COORDINATES);
+  if (!match) return null;
+  const lat = Number(match[1]);
+  const lng = Number(match[2]);
+  return Math.abs(lat) <= 90 && Math.abs(lng) <= 180 ? [lng, lat] : null;
+}
+
 export function AdminAddressSearch({
   className = "",
   disabled,
+  error,
   onPick,
+  positioned,
 }: {
   className?: string;
   disabled: boolean;
+  error?: string;
   onPick: (coordinates: GeocodeResult["coordinates"]) => void;
+  positioned: boolean;
 }) {
   const id = useId();
   const [address, setAddress] = useState("");
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [picked, setPicked] = useState("");
 
+  function pick(result: GeocodeResult) {
+    onPick(result.coordinates);
+    setPicked(result.label);
+    setStatus({ kind: "idle" });
+  }
+
   async function search() {
     const query = address.trim();
+    const coordinates = parseCoordinates(query);
+    if (coordinates) {
+      pick({ coordinates, label: query });
+      return;
+    }
     if (query.length < 3) {
       setStatus({ kind: "error", message: "Saisissez l’adresse complète." });
       return;
     }
     setStatus({ kind: "loading" });
-    setPicked("");
     try {
       const results = await adminApi.geocode(query);
       setStatus(
@@ -45,22 +73,18 @@ export function AdminAddressSearch({
                 "Adresse introuvable. Essayez sans le numéro d’appartement, ou avec la ville et le pays.",
             },
       );
-    } catch (error) {
+    } catch (failure) {
       setStatus({
         kind: "error",
         message:
-          error instanceof Error
-            ? error.message
+          failure instanceof Error
+            ? failure.message
             : "Recherche d’adresse indisponible.",
       });
     }
   }
 
-  function pick(result: GeocodeResult) {
-    onPick(result.coordinates);
-    setPicked(result.label);
-    setStatus({ kind: "idle" });
-  }
+  const message = status.kind === "error" ? status.message : error;
 
   return (
     <div className={className}>
@@ -75,7 +99,8 @@ export function AdminAddressSearch({
           disabled={disabled}
           maxLength={300}
           autoComplete="off"
-          aria-describedby={`${id}-aide`}
+          aria-invalid={Boolean(message)}
+          aria-describedby={`${id}-aide ${id}-etat`}
           onChange={(event) => setAddress(event.target.value)}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
@@ -94,16 +119,22 @@ export function AdminAddressSearch({
         </button>
       </div>
       <p id={`${id}-aide`} className="mt-1 text-xs text-[var(--site-muted)]">
-        L’adresse donnée par le loueur remplit la longitude et la latitude. Elle
-        n’est pas enregistrée ni publiée.
+        L’adresse donnée par le loueur place l’étape sur la carte ; elle n’est
+        ni enregistrée ni publiée. Introuvable ? Collez la position copiée
+        depuis Google Maps (ex. 55.95325, -3.18827).
       </p>
-      <div role="status" className="mt-2 text-sm">
-        {status.kind === "error" && (
-          <p className="text-[#b42318]">{status.message}</p>
-        )}
-        {picked && (
+      <div id={`${id}-etat`} role="status" className="mt-2 text-sm">
+        {message ? (
+          <p className="text-[#b42318]">{message}</p>
+        ) : picked ? (
+          <p className="text-[#0f1b2b]">✓ Position reprise de : {picked}</p>
+        ) : positioned ? (
+          <p className="text-[#0f1b2b]">
+            ✓ Position enregistrée. Cherchez une adresse pour la changer.
+          </p>
+        ) : (
           <p className="text-[var(--site-muted)]">
-            Position reprise de : {picked}
+            Pas encore de position : cherchez l’adresse du logement.
           </p>
         )}
       </div>

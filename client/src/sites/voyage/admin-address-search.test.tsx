@@ -3,7 +3,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AdminAddressSearch } from "./admin-address-search";
+import { AdminAddressSearch, parseCoordinates } from "./admin-address-search";
 
 function mockGeocode(status: number, body: unknown) {
   const fetchMock = vi.fn(
@@ -36,7 +36,14 @@ describe("position d'une etape depuis l'adresse du logement", () => {
       ],
     });
     const onPick = vi.fn();
-    render(<AdminAddressSearch disabled={false} onPick={onPick} />);
+    render(
+      <AdminAddressSearch
+        disabled={false}
+        positioned={false}
+        onPick={onPick}
+      />,
+    );
+    expect(screen.getByText(/Pas encore de position/)).toBeInTheDocument();
 
     searchFor("Portree, Skye");
     fireEvent.click(
@@ -47,7 +54,7 @@ describe("position d'une etape depuis l'adresse du logement", () => {
 
     expect(onPick).toHaveBeenCalledWith([-6.19658, 57.41254]);
     expect(
-      screen.getByText("Position reprise de : Portree, Île de Skye, Écosse"),
+      screen.getByText("✓ Position reprise de : Portree, Île de Skye, Écosse"),
     ).toBeInTheDocument();
     const url = new URL(String(fetchMock.mock.calls[0][0]));
     expect(url.pathname).toBe("/api/voyages/admin/geocode");
@@ -56,7 +63,8 @@ describe("position d'une etape depuis l'adresse du logement", () => {
 
   it("guide quand l'adresse est introuvable ou le service absent", async () => {
     mockGeocode(200, { data: [] });
-    render(<AdminAddressSearch disabled={false} onPick={vi.fn()} />);
+    render(<AdminAddressSearch disabled={false} positioned onPick={vi.fn()} />);
+    expect(screen.getByText(/Position enregistrée/)).toBeInTheDocument();
     searchFor("Nulle part");
     expect(await screen.findByText(/Adresse introuvable/)).toBeInTheDocument();
 
@@ -70,5 +78,29 @@ describe("position d'une etape depuis l'adresse du logement", () => {
         "Recherche d'adresse indisponible pour le moment.",
       ),
     ).toBeInTheDocument();
+  });
+
+  it("reprend une position copiee depuis Google Maps, sans appel", () => {
+    const fetchMock = mockGeocode(500, {});
+    const onPick = vi.fn();
+    render(
+      <AdminAddressSearch
+        disabled={false}
+        positioned={false}
+        error="Position manquante : cherchez l’adresse du logement."
+        onPick={onPick}
+      />,
+    );
+    expect(screen.getByLabelText("Adresse du logement")).toHaveAttribute(
+      "aria-invalid",
+      "true",
+    );
+
+    searchFor("55.95325, -3.18827");
+
+    expect(onPick).toHaveBeenCalledWith([-3.18827, 55.95325]);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(parseCoordinates("Portree, Skye")).toBeNull();
+    expect(parseCoordinates("95.1, 10")).toBeNull();
   });
 });

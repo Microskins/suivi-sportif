@@ -274,8 +274,9 @@ describe("édition d'un voyage", () => {
     typeIn("Titre de l’étape", "Édimbourg", stage);
     typeIn("Récit", "Royal Mile.", stage);
     typeIn("Temps forts", "Royal Mile, , Arthur’s Seat ", stage);
-    typeIn("Longitude", "-3,19", stage);
-    typeIn("Latitude", "55.95", stage);
+    // Position collee depuis Google Maps: pas d'appel au geocodage.
+    typeIn("Adresse du logement", "55.95, -3.19", stage);
+    fireEvent.click(stage.getByRole("button", { name: "Trouver la position" }));
 
     fireEvent.click(
       screen.getByRole("button", { name: "Enregistrer le voyage" }),
@@ -344,8 +345,10 @@ describe("édition d'un voyage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Ajouter une étape" }));
     const added = screen.getAllByRole("listitem").at(-1)!;
     typeIn("Code", "SKY", within(added));
-    typeIn("Longitude", "-6.2", within(added));
-    typeIn("Latitude", "57.4", within(added));
+    typeIn("Adresse du logement", "57.4, -6.2", within(added));
+    fireEvent.click(
+      within(added).getByRole("button", { name: "Trouver la position" }),
+    );
     typeIn(
       "Logement (lien Airbnb)",
       "https://www.airbnb.fr/rooms/87654321?adults=2",

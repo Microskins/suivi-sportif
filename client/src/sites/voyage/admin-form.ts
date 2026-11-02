@@ -137,6 +137,18 @@ export function stageCoordinates(stage: StageDraft): LngLat | null {
   return Math.abs(lng) <= 180 && Math.abs(lat) <= 90 ? [lng, lat] : null;
 }
 
+// Position de l'etape (le logement), placee depuis son adresse.
+export function hasPosition(stage: Pick<StageDraft, "lat" | "lng">) {
+  const lng = parseNumber(stage.lng);
+  const lat = parseNumber(stage.lat);
+  return (
+    Number.isFinite(lng) &&
+    Number.isFinite(lat) &&
+    Math.abs(lng) <= 180 &&
+    Math.abs(lat) <= 90
+  );
+}
+
 export const splitHighlights = (value: string) =>
   value
     .split(",")
@@ -163,15 +175,9 @@ function stageToPayload(stage: StageDraft): StagePayload {
 export function localErrors(draft: TripDraft): Record<string, string> {
   const errors: Record<string, string> = {};
   draft.stages.forEach((stage, index) => {
-    const lng = parseNumber(stage.lng);
-    const lat = parseNumber(stage.lat);
-    if (!Number.isFinite(lng) || lng < -180 || lng > 180) {
-      errors[`stages.${index}.lng`] =
-        "Longitude attendue entre -180 et 180 (ex. -3.19).";
-    }
-    if (!Number.isFinite(lat) || lat < -90 || lat > 90) {
-      errors[`stages.${index}.lat`] =
-        "Latitude attendue entre -90 et 90 (ex. 55.95).";
+    if (!hasPosition(stage)) {
+      errors[`stages.${index}.position`] =
+        "Position manquante : cherchez l’adresse du logement.";
     }
   });
   return errors;
