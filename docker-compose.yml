@@ -17,6 +17,11 @@ services:
       # Site Voyage: comptes autorises a l'ecran d'admin, et fichiers envoyes
       # (traces GPX, photos) ecrits dans $UPLOAD_DIR/voyages/.
       VOYAGE_ADMIN_EMAILS: ${VOYAGE_ADMIN_EMAILS:-}
+      # Serveur OSRM des itineraires routiers de l'admin (vide: serveur public).
+      ROUTER_URL: ${ROUTER_URL:-}
+      # Cle de l'API Geocoding de Google (facultative: sans elle, recherche
+      # d'adresse par Nominatim/OpenStreetMap).
+      GOOGLE_GEOCODING_API_KEY: ${GOOGLE_GEOCODING_API_KEY:-}
       # Import Google Photos dans l'admin Voyage: ID client OAuth (public).
       # Vide: le bouton d'import est masque.
       GOOGLE_PHOTOS_CLIENT_ID: ${GOOGLE_PHOTOS_CLIENT_ID:-}

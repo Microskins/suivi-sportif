@@ -103,7 +103,7 @@ export function AdminTripEditor({ onAuthError, onBack, tripId }: EditorProps) {
     const local = localErrors(draft);
     if (Object.keys(local).length) {
       setErrors(local);
-      setError("Le voyage n’a pas été enregistré : corrigez les coordonnées.");
+      setError("Le voyage n’a pas été enregistré : placez chaque étape depuis l’adresse de son logement.");
       return;
     }
     setBusy("save");

@@ -71,6 +71,7 @@ const ecosseDetail: TripDetail = {
       detail: "Royal Mile.",
       highlights: ["Royal Mile", "Arthur’s Seat"],
       id: STAGE_1,
+      lodgingUrl: "https://www.airbnb.fr/rooms/12345678",
       photos: [],
       route: [],
       title: "Édimbourg",
@@ -84,6 +85,7 @@ const ecosseDetail: TripDetail = {
       detail: "Glencoe.",
       highlights: [],
       id: STAGE_2,
+      lodgingUrl: null,
       photos: [],
       route,
       title: "Glencoe",
@@ -272,8 +274,9 @@ describe("édition d'un voyage", () => {
     typeIn("Titre de l’étape", "Édimbourg", stage);
     typeIn("Récit", "Royal Mile.", stage);
     typeIn("Temps forts", "Royal Mile, , Arthur’s Seat ", stage);
-    typeIn("Longitude", "-3,19", stage);
-    typeIn("Latitude", "55.95", stage);
+    // Position collee depuis Google Maps: pas d'appel au geocodage.
+    typeIn("Adresse du logement", "55.95, -3.19", stage);
+    fireEvent.click(stage.getByRole("button", { name: "Trouver la position" }));
 
     fireEvent.click(
       screen.getByRole("button", { name: "Enregistrer le voyage" }),
@@ -305,6 +308,7 @@ describe("édition d'un voyage", () => {
           highlights: ["Royal Mile", "Arthur’s Seat"],
           coordinates: [-3.19, 55.95],
           route: [],
+          lodgingUrl: null,
         },
       ],
     });
@@ -341,8 +345,15 @@ describe("édition d'un voyage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Ajouter une étape" }));
     const added = screen.getAllByRole("listitem").at(-1)!;
     typeIn("Code", "SKY", within(added));
-    typeIn("Longitude", "-6.2", within(added));
-    typeIn("Latitude", "57.4", within(added));
+    typeIn("Adresse du logement", "57.4, -6.2", within(added));
+    fireEvent.click(
+      within(added).getByRole("button", { name: "Trouver la position" }),
+    );
+    typeIn(
+      "Logement (lien Airbnb)",
+      "https://www.airbnb.fr/rooms/87654321?adults=2",
+      within(added),
+    );
 
     fireEvent.click(
       screen.getByRole("button", { name: "Enregistrer le voyage" }),
@@ -360,7 +371,16 @@ describe("édition d'un voyage", () => {
     expect(body.stages[0].route).toEqual(route);
     expect(body.stages[0].coordinates).toEqual([-5.1, 56.68]);
     expect(body.stages[1].highlights).toEqual(["Royal Mile", "Arthur’s Seat"]);
-    expect(body.stages[2]).toMatchObject({ code: "SKY", route: [] });
+    expect(body.stages[1].lodgingUrl).toBe(
+      "https://www.airbnb.fr/rooms/12345678",
+    );
+    expect(body.stages[0].lodgingUrl).toBeNull();
+    expect(body.stages[2]).toMatchObject({
+      code: "SKY",
+      coordinates: [-6.2, 57.4],
+      route: [],
+      lodgingUrl: "https://www.airbnb.fr/rooms/87654321?adults=2",
+    });
   });
 
   it("relie les erreurs de validation de l'API aux champs", async () => {

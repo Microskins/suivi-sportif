@@ -17,6 +17,9 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { isGoogleContentUrl } from "../lib/google-photos.js";
 import { detectPhotoExtension, looksLikeGpx } from "../lib/voyage-files.js";
+import { consistentRoutes } from "../lib/stage-routes.js";
+import { geocodeAttempts } from "../services/geocoding.js";
+import { tripStageInputSchema } from "../schemas/voyages.js";
 
 const mocks = vi.hoisted(() => ({
   listPublishedTrips: vi.fn(),
@@ -296,6 +299,41 @@ describe("regles metier des voyages", () => {
     expect(tripStatus(new Date("2027-05-01"), now)).toBe("a-venir");
   });
 
+  it("ramene un lien Airbnb a l'annonce seule, et refuse ce qui n'est pas un lien", () => {
+    const stage = {
+      code: "EDI",
+      dayLabel: "J01",
+      dateLabel: "19 oct.",
+      title: "Edimbourg",
+      coordinates: [-3.2, 55.9],
+    };
+    const lodging = (lodgingUrl?: string | null) =>
+      tripStageInputSchema.safeParse({ ...stage, lodgingUrl });
+
+    expect(
+      lodging(
+        "https://www.airbnb.fr/rooms/12345678?check_in=2026-10-19&adults=2&source_impression_id=p3",
+      ).data?.lodgingUrl,
+    ).toBe("https://www.airbnb.fr/rooms/12345678");
+    // Lien tel que partage depuis l'appli Airbnb (voyage passe).
+    expect(
+      lodging(
+        "https://www.airbnb.fr/rooms/37630836?guests=1&c=.pi129.pkpast_trip_share_virality&s=67&unique_share_id=e715b078-dec6-4106-9e3f-cfe03b07759a",
+      ).data?.lodgingUrl,
+    ).toBe("https://www.airbnb.fr/rooms/37630836");
+    expect(
+      lodging("http://fr.airbnb.ca/rooms/plus/42#photos").data?.lodgingUrl,
+    ).toBe("https://fr.airbnb.ca/rooms/42");
+    expect(
+      lodging("https://www.booking.com/hotel/gb/x.html").data?.lodgingUrl,
+    ).toBe("https://www.booking.com/hotel/gb/x.html");
+    expect(lodging("").data?.lodgingUrl).toBeNull();
+    expect(lodging(undefined).data?.lodgingUrl).toBeNull();
+    expect(lodging(null).data?.lodgingUrl).toBeNull();
+    expect(lodging("javascript:alert(1)").success).toBe(false);
+    expect(lodging("airbnb chez Moira").success).toBe(false);
+  });
+
   it("reconnait les formats au contenu, pas a l'extension", () => {
     expect(detectPhotoExtension(Buffer.from([0xff, 0xd8, 0xff, 0xe0]))).toBe(
       "jpg",
@@ -306,6 +344,251 @@ describe("regles metier des voyages", () => {
       looksLikeGpx(Buffer.from('<?xml version="1.0"?>\n<gpx version="1.1">')),
     ).toBe(true);
     expect(looksLikeGpx(Buffer.from("<svg></svg>"))).toBe(false);
+  });
+});
+
+describe("recherche d'adresse (geocodage)", () => {
+  const url = (q: string) =>
+    `/api/voyages/admin/geocode?${new URLSearchParams({ q })}`;
+
+  it("transforme l'adresse du logement en coordonnees", async () => {
+    const fetchMock = vi.fn(
+      async (_url: URL) =>
+        new Response(
+          JSON.stringify([
+            {
+              display_name: "12 Rue Exemple, Portree, Écosse",
+              lat: "57.4125361",
+              lon: "-6.1965812",
+            },
+            { display_name: "Sans position" },
+          ]),
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: url("12 Rue Exemple, Portree"),
+        headers: { authorization: tokenFor(ADMIN) },
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json().data).toEqual([
+        {
+          label: "12 Rue Exemple, Portree, Écosse",
+          coordinates: [-6.19658, 57.41254],
+        },
+      ]);
+      const called = new URL(String(fetchMock.mock.calls[0][0]));
+      expect(called.hostname).toBe("nominatim.openstreetmap.org");
+      expect(called.searchParams.get("q")).toBe("12 Rue Exemple, Portree");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("previent quand le service ne repond pas", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new Error("ECONNREFUSED");
+      }),
+    );
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: url("Portree"),
+        headers: { authorization: tokenFor(ADMIN) },
+      });
+      expect(response.statusCode).toBe(502);
+      expect(response.json().code).toBe("GEOCODING_UNAVAILABLE");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("reste reserve aux administrateurs", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: url("Portree"),
+      headers: { authorization: tokenFor(OTHER) },
+    });
+    expect(response.statusCode).toBe(403);
+  });
+});
+
+describe("coherence des traces d'etapes", () => {
+  const edi: [number, number] = [-3.1883, 55.9533];
+  const sky: [number, number] = [-6.1964, 57.4125];
+  const neist: [number, number] = [-6.788, 57.4233];
+  const inv: [number, number] = [-4.2247, 57.4778];
+
+  it("ecarte un trace qui passe encore par une etape retiree", () => {
+    // Neist Point a ete retire: Inverness garde son trace depuis Neist Point.
+    const stages = consistentRoutes([
+      { coordinates: edi, route: [] },
+      { coordinates: sky, route: [edi, [-5, 56.8], sky] },
+      { coordinates: inv, route: [neist, [-5.6, 57.3], inv] },
+    ]);
+
+    expect(stages[1].route).toHaveLength(3);
+    expect(stages[2].route).toEqual([]);
+  });
+
+  it("garde un itineraire routier dont les extremites sont proches des etapes", () => {
+    const [, stage] = consistentRoutes([
+      { coordinates: edi, route: [] },
+      // ~1 km d'ecart: le depart et l'arrivee se calent sur la route.
+      {
+        coordinates: sky,
+        route: [
+          [-3.2, 55.96],
+          [-5, 56.8],
+          [-6.2, 57.42],
+        ],
+      },
+    ]);
+    expect(stage.route).toHaveLength(3);
+  });
+
+  it("ecarte le trace de la premiere etape et un logement deplace", () => {
+    const stages = consistentRoutes([
+      { coordinates: edi, route: [sky, edi] },
+      { coordinates: neist, route: [edi, sky] },
+    ]);
+    expect(stages.map((stage) => stage.route)).toEqual([[], []]);
+  });
+});
+
+describe("adresse de logement introuvable telle quelle", () => {
+  const cottage =
+    "Foresters Lodge, Farigaig, Inverfarigaig, Inverness IV2 6XR, Royaume-Uni";
+
+  it("elargit la recherche puis tente le code postal britannique seul", () => {
+    expect(
+      geocodeAttempts(cottage).map((params) => Object.fromEntries(params)),
+    ).toEqual([
+      { q: cottage },
+      { q: "Farigaig, Inverfarigaig, Inverness IV2 6XR, Royaume-Uni" },
+      { q: "Inverfarigaig, Inverness IV2 6XR, Royaume-Uni" },
+      { postalcode: "IV2 6XR", countrycodes: "gb" },
+    ]);
+    expect(geocodeAttempts("Portree").map((p) => p.get("q"))).toEqual([
+      "Portree",
+    ]);
+  });
+
+  it("rend le lieu le plus proche, marque approximatif", async () => {
+    process.env.GEOCODE_PAUSE_MS = "0";
+    const fetchMock = vi.fn(async (url: URL) => {
+      const found = url.searchParams.get("postalcode") === "IV2 6XR";
+      return new Response(
+        JSON.stringify(
+          found
+            ? [
+                {
+                  display_name: "IV2 6XR, Highland",
+                  lat: "57.2731",
+                  lon: "-4.4067",
+                },
+              ]
+            : [],
+        ),
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/api/voyages/admin/geocode?${new URLSearchParams({ q: cottage })}`,
+        headers: { authorization: tokenFor(ADMIN) },
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json().data).toEqual([
+        {
+          label: "IV2 6XR, Highland",
+          coordinates: [-4.4067, 57.2731],
+          approximate: true,
+        },
+      ]);
+      expect(fetchMock).toHaveBeenCalledTimes(4);
+    } finally {
+      vi.unstubAllGlobals();
+      delete process.env.GEOCODE_PAUSE_MS;
+    }
+  });
+});
+
+describe("recherche d'adresse par Google (cle configuree)", () => {
+  const geocode = (q: string) =>
+    app.inject({
+      method: "GET",
+      url: `/api/voyages/admin/geocode?${new URLSearchParams({ q })}`,
+      headers: { authorization: tokenFor(ADMIN) },
+    });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    delete process.env.GOOGLE_GEOCODING_API_KEY;
+  });
+
+  it("utilise Google en priorite", async () => {
+    process.env.GOOGLE_GEOCODING_API_KEY = "cle-test";
+    const fetchMock = vi.fn(
+      async (_url: URL) =>
+        new Response(
+          JSON.stringify({
+            status: "OK",
+            results: [
+              {
+                formatted_address: "Foresters Lodge, Inverness IV2 6XR, UK",
+                geometry: {
+                  location: { lat: 57.2696, lng: -4.4072 },
+                  location_type: "ROOFTOP",
+                },
+              },
+            ],
+          }),
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await geocode("Foresters Lodge, Inverness IV2 6XR");
+
+    expect(response.json().data).toEqual([
+      {
+        label: "Foresters Lodge, Inverness IV2 6XR, UK",
+        coordinates: [-4.4072, 57.2696],
+      },
+    ]);
+    const called = fetchMock.mock.calls[0][0];
+    expect(called.hostname).toBe("maps.googleapis.com");
+    expect(called.searchParams.get("key")).toBe("cle-test");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("repasse par Nominatim si Google refuse la cle", async () => {
+    process.env.GOOGLE_GEOCODING_API_KEY = "cle-refusee";
+    const fetchMock = vi.fn(async (url: URL) =>
+      url.hostname === "maps.googleapis.com"
+        ? new Response(JSON.stringify({ status: "REQUEST_DENIED" }))
+        : new Response(
+            JSON.stringify([
+              { display_name: "Portree", lat: "57.41", lon: "-6.19" },
+            ]),
+          ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const response = await geocode("Portree");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json().data[0].label).toBe("Portree");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
 

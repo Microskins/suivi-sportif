@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
+import { AdminAddressSearch } from "./admin-address-search";
 import type { AuthErrorHandler } from "./admin-api";
 import { adminApi, adminErrorMessage, fieldErrors } from "./admin-api";
 import type { FlightDraft } from "./admin-form";
@@ -158,20 +159,16 @@ function AirportForm({
 
   async function submit(event: FormEvent) {
     event.preventDefault();
-    const number = (value: string) => Number(value.trim().replace(",", "."));
-    const latitude = number(values.latitude);
-    const longitude = number(values.longitude);
+    const latitude = Number(values.latitude);
+    const longitude = Number(values.longitude);
     const local: Record<string, string> = {};
-    if (values.latitude.trim() === "" || !Number.isFinite(latitude)) {
-      local.latitude = "Latitude attendue (ex. 55.95).";
-    }
-    if (values.longitude.trim() === "" || !Number.isFinite(longitude)) {
-      local.longitude = "Longitude attendue (ex. -3.3725).";
+    if (values.latitude === "" || values.longitude === "") {
+      local.position = "Position manquante : cherchez le lieu.";
     }
     setErrors(local);
     setSaved(null);
     if (Object.keys(local).length) {
-      setError("Le lieu n’a pas été enregistré : vérifiez les coordonnées.");
+      setError("Le lieu n’a pas été enregistré : cherchez sa position.");
       return;
     }
     setPending(true);
@@ -220,17 +217,22 @@ function AirportForm({
           required
           {...field("name")}
         />
-        <TextField
-          label="Latitude"
-          inputMode="decimal"
-          required
-          {...field("latitude")}
-        />
-        <TextField
-          label="Longitude"
-          inputMode="decimal"
-          required
-          {...field("longitude")}
+        <AdminAddressSearch
+          // Recree a chaque lieu enregistre: le champ repart vide.
+          key={saved ?? "nouveau"}
+          className="sm:col-span-2"
+          label="Position du lieu"
+          hint="Cherchez l’aéroport ou la ville (ex. Aéroport d’Édimbourg)."
+          disabled={pending}
+          error={errors.position ?? errors.latitude ?? errors.longitude}
+          positioned={values.latitude !== "" && values.longitude !== ""}
+          onPick={([lng, lat]) =>
+            setValues((current) => ({
+              ...current,
+              latitude: String(lat),
+              longitude: String(lng),
+            }))
+          }
         />
         <div className="grid gap-3 sm:col-span-2">
           <ErrorAlert>{error}</ErrorAlert>

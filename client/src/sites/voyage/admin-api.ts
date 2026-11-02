@@ -129,6 +129,7 @@ export type StagePayload = {
   detail: string;
   highlights: string[];
   id?: string;
+  lodgingUrl: string | null;
   route: LngLat[];
   title: string;
 };
@@ -154,7 +155,18 @@ export type AirportPayload = {
   name: string;
 };
 
+export type GeocodeResult = {
+  // Adresse exacte inconnue: lieu le plus proche (village, code postal).
+  approximate?: boolean;
+  coordinates: LngLat;
+  label: string;
+};
+
 export const adminApi = {
+  geocode: (address: string) =>
+    adminRequest<GeocodeResult[]>(
+      `/geocode?${new URLSearchParams({ q: address })}`,
+    ),
   listTrips: () => adminRequest<TripSummary[]>("/trips"),
   getTrip: (id: string) =>
     adminRequest<TripDetail>(`/trips/${encodeURIComponent(id)}`),
@@ -211,6 +223,12 @@ export const adminApi = {
     adminRequest<void>(`/photos/${encodeURIComponent(id)}`, {
       method: "DELETE",
     }),
+  // Itineraire routier entre deux etapes (service OSRM cote serveur).
+  roadRoute: (from: LngLat, to: LngLat) =>
+    adminRequest<{ distanceKm: number; route: LngLat[] }>(
+      "/road-route",
+      json("POST", { from, to }),
+    ),
 };
 
 // Messages en francais pour les codes connus; le serveur repond parfois en
@@ -238,6 +256,10 @@ export function adminErrorMessage(error: unknown): string {
       return "Ce voyage n’existe plus.";
     case "STAGE_NOT_FOUND":
       return "Cette étape n’existe plus : rechargez le voyage.";
+    case "ROUTE_NOT_FOUND":
+      return "Aucune route trouvée entre ces deux étapes.";
+    case "ROUTER_UNAVAILABLE":
+      return "Le service d’itinéraire ne répond pas : réessayez dans un instant.";
   }
   if (error.status === 401) return "Session expirée : reconnectez-vous.";
   if (error.status === 413) return "Fichier trop volumineux.";

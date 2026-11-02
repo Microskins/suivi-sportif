@@ -41,6 +41,8 @@ export type TripStage = {
   detail: string;
   highlights: string[];
   id: string;
+  // Logement de la nuit (souvent un lien Airbnb), ou null.
+  lodgingUrl: string | null;
   photos: TripPhoto[];
   // Trace reconstitue pour ARRIVER a cette etape depuis la precedente.
   route: LngLat[];

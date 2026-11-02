@@ -21,6 +21,8 @@ export type StageDraft = {
   key: string;
   lat: string;
   lng: string;
+  // Lien du logement (Airbnb...), vide si aucun.
+  lodgingUrl: string;
   photos: TripPhoto[];
   // Trace reconstitue renvoye par l'API: conserve tel quel a l'enregistrement.
   route: LngLat[];
@@ -67,6 +69,7 @@ export const emptyStage = (): StageDraft => ({
   key: localKey(),
   lat: "",
   lng: "",
+  lodgingUrl: "",
   photos: [],
   route: [],
   title: "",
@@ -109,6 +112,7 @@ export function tripToDraft(trip: TripDetail): TripDraft {
       key: stage.id,
       lat: String(stage.coordinates[1]),
       lng: String(stage.coordinates[0]),
+      lodgingUrl: stage.lodgingUrl ?? "",
       photos: stage.photos,
       route: stage.route,
       title: stage.title,
@@ -125,6 +129,42 @@ const parseNumber = (value: string) => {
   const trimmed = value.trim().replace(",", ".");
   return trimmed === "" ? Number.NaN : Number(trimmed);
 };
+
+// Coordonnees saisies d'une etape, ou null tant qu'elles sont invalides.
+export function stageCoordinates(stage: StageDraft): LngLat | null {
+  const lng = parseNumber(stage.lng);
+  const lat = parseNumber(stage.lat);
+  return Math.abs(lng) <= 180 && Math.abs(lat) <= 90 ? [lng, lat] : null;
+}
+
+// Position de l'etape (le logement), placee depuis son adresse.
+export function hasPosition(stage: Pick<StageDraft, "lat" | "lng">) {
+  const lng = parseNumber(stage.lng);
+  const lat = parseNumber(stage.lat);
+  return (
+    Number.isFinite(lng) &&
+    Number.isFinite(lat) &&
+    Math.abs(lng) <= 180 &&
+    Math.abs(lat) <= 90
+  );
+}
+
+// Nouvelle position d'une etape: son trace (depuis la precedente) et celui de
+// l'etape suivante (qui partait d'ici) ne relient plus les bonnes etapes. Ils
+// sont effaces; « Tracer par la route » les recalcule.
+export function placeStage(
+  stages: StageDraft[],
+  key: string,
+  [lng, lat]: LngLat,
+): StageDraft[] {
+  const index = stages.findIndex((stage) => stage.key === key);
+  return stages.map((stage, i) => {
+    if (i === index) {
+      return { ...stage, lng: String(lng), lat: String(lat), route: [] };
+    }
+    return i === index + 1 && index >= 0 ? { ...stage, route: [] } : stage;
+  });
+}
 
 export const splitHighlights = (value: string) =>
   value
@@ -143,6 +183,7 @@ function stageToPayload(stage: StageDraft): StagePayload {
     highlights: splitHighlights(stage.highlights),
     coordinates: [parseNumber(stage.lng), parseNumber(stage.lat)],
     route: stage.route,
+    lodgingUrl: stage.lodgingUrl.trim() || null,
   };
 }
 
@@ -151,15 +192,9 @@ function stageToPayload(stage: StageDraft): StagePayload {
 export function localErrors(draft: TripDraft): Record<string, string> {
   const errors: Record<string, string> = {};
   draft.stages.forEach((stage, index) => {
-    const lng = parseNumber(stage.lng);
-    const lat = parseNumber(stage.lat);
-    if (!Number.isFinite(lng) || lng < -180 || lng > 180) {
-      errors[`stages.${index}.lng`] =
-        "Longitude attendue entre -180 et 180 (ex. -3.19).";
-    }
-    if (!Number.isFinite(lat) || lat < -90 || lat > 90) {
-      errors[`stages.${index}.lat`] =
-        "Latitude attendue entre -90 et 90 (ex. 55.95).";
+    if (!hasPosition(stage)) {
+      errors[`stages.${index}.position`] =
+        "Position manquante : cherchez l’adresse du logement.";
     }
   });
   return errors;
