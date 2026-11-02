@@ -255,6 +255,7 @@ export function AdminStages({
                     disabled={disabled}
                     errors={errors}
                     name={name}
+                    onAuthError={onAuthError}
                     prefix={prefix}
                     stage={stage}
                     onChange={(patch) => update(stage.key, patch)}
@@ -301,6 +302,7 @@ function StageFields({
   disabled,
   errors,
   name,
+  onAuthError,
   onChange,
   onPlace,
   prefix,
@@ -309,6 +311,7 @@ function StageFields({
   disabled: boolean;
   errors: Record<string, string>;
   name: string;
+  onAuthError: AuthErrorHandler;
   onChange: (patch: Partial<StageDraft>) => void;
   onPlace: (coordinates: LngLat) => void;
   prefix: string;
@@ -394,6 +397,7 @@ function StageFields({
         disabled={disabled}
         errors={errors}
         meals={stage.meals}
+        onAuthError={onAuthError}
         prefix={prefix}
         stageLabel={name}
         onChange={(meals) => onChange({ meals })}

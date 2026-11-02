@@ -75,8 +75,25 @@
   transition: background-color 160ms ease;
 }
 
+/* Repas avec photo: vignette ronde cerclee d'orange. */
+.voyage-map-meal[data-photo="true"] {
+  width: 2rem;
+  height: 2rem;
+}
+
+.voyage-map-meal[data-photo="true"]::before {
+  width: 2rem;
+  height: 2rem;
+  border-color: #e08a1e;
+  background: #e08a1e var(--meal-photo) center / cover no-repeat;
+}
+
 .voyage-map-meal:hover::before {
-  background: #0f1b2b;
+  background-color: #0f1b2b;
+}
+
+.voyage-map-meal[data-photo="true"]:hover::before {
+  border-color: #0f1b2b;
 }
 
 .voyage-map-meal:focus-visible {

@@ -37,6 +37,9 @@ export type TripPhoto = {
 export type TripMeal = {
   coordinates: LngLat;
   name: string;
+  // Nom du fichier photo (rendu par l'envoi), et son adresse publique.
+  photo: string | null;
+  photoUrl: string | null;
   url: string | null;
 };
 

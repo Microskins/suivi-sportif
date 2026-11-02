@@ -248,7 +248,7 @@ export function TripRouteMap({
           ? "Trait plein bleu : trajets GPS — dégradé : randonnées colorées par altitude — tirets : itinéraire entre les étapes."
           : "Tirets : itinéraire entre les étapes, calculé — pas une trace GPX enregistrée."}
         {stages.some((item) => item.meals?.length)
-          ? " Points orange : repas."
+          ? " Points orange ou vignettes : repas."
           : ""}
       </p>
     </div>

@@ -3,6 +3,8 @@
 // ne sert qu'a placer le point; seuls le nom, la position et le lien sont
 // enregistres.
 import { AdminAddressSearch } from "./admin-address-search";
+import { AdminMealPhoto } from "./admin-meal-photo";
+import type { AuthErrorHandler } from "./admin-api";
 import type { MealDraft } from "./admin-form";
 import { emptyMeal, hasPosition } from "./admin-form";
 import { TextField, buttonClass, labelClass } from "./admin-ui";
@@ -13,6 +15,7 @@ export function AdminStageMeals({
   disabled,
   errors,
   meals,
+  onAuthError,
   onChange,
   prefix,
   stageLabel,
@@ -20,6 +23,7 @@ export function AdminStageMeals({
   disabled: boolean;
   errors: Record<string, string>;
   meals: MealDraft[];
+  onAuthError: AuthErrorHandler;
   onChange: (meals: MealDraft[]) => void;
   // Chemin des erreurs de l'etape, ex. "stages.0.".
   prefix: string;
@@ -34,8 +38,8 @@ export function AdminStageMeals({
     <fieldset className="sm:col-span-6">
       <legend className={labelClass}>Repas (facultatif)</legend>
       <p className="mt-1 text-xs leading-5 text-[var(--site-muted)]">
-        Restaurants, pubs ou cafés où vous avez mangé : chacun apparaît comme un
-        point sur la carte de l’étape.
+        Restaurants, pubs ou cafés où vous avez mangé, avec une photo si vous en
+        avez : chacun apparaît comme un point sur la carte de l’étape.
       </p>
       {meals.length > 0 && (
         <ol className="mt-3 grid gap-3">
@@ -71,11 +75,18 @@ export function AdminStageMeals({
                     update(meal.key, { url: event.target.value })
                   }
                 />
+                <AdminMealPhoto
+                  disabled={disabled}
+                  meal={meal}
+                  mealLabel={name}
+                  onAuthError={onAuthError}
+                  onChange={(patch) => update(meal.key, patch)}
+                />
                 <AdminAddressSearch
                   className="sm:col-span-2"
                   disabled={disabled}
                   label="Adresse du lieu"
-                  hint="L’adresse ou le nom du lieu place le point sur la carte ; elle n’est pas enregistrée."
+                  hint="Sans GPS sur la photo, l’adresse ou le nom du lieu place le point sur la carte ; elle n’est pas enregistrée."
                   error={
                     errors[`${mealPrefix}position`] ??
                     errors[`${mealPrefix}coordinates`]

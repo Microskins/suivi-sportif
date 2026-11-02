@@ -1,6 +1,34 @@
-// Repas d'une etape (restaurants, pubs...): liste courte, avec le lien du
-// lieu quand on l'a. Sur la carte, chaque repas est aussi un point.
+// Repas d'une etape (restaurants, pubs...): une vignette quand il y a une
+// photo, le lien du lieu quand on l'a. Sur la carte, chaque repas est aussi
+// un point.
 import type { TripMeal } from "./trip-types";
+import { apiFileUrl } from "./voyage-api";
+
+const chip =
+  "site-label inline-flex items-center gap-2 rounded-full border border-[#f2d3a7] bg-[#fff6ea] py-1 pr-2.5 text-[0.6rem] font-semibold uppercase tracking-[0.08em] text-[#0f1b2b]";
+
+function MealLabel({ meal }: { meal: TripMeal }) {
+  return (
+    <>
+      {meal.photoUrl ? (
+        <img
+          src={apiFileUrl(meal.photoUrl)}
+          alt={`Repas à ${meal.name}`}
+          loading="lazy"
+          className="h-9 w-9 shrink-0 rounded-full object-cover"
+        />
+      ) : (
+        <span aria-hidden="true" className="pl-1">
+          🍴
+        </span>
+      )}
+      <span>
+        {meal.name}
+        {meal.url ? " ↗" : ""}
+      </span>
+    </>
+  );
+}
 
 export function TripMeals({
   className = "",
@@ -17,7 +45,7 @@ export function TripMeals({
   return (
     <div className={className}>
       <p className="site-label text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-[var(--site-muted)]">
-        <span aria-hidden="true">🍴 </span>Où on a mangé
+        Où on a mangé
       </p>
       <ul
         className="mt-2 flex flex-wrap gap-1.5"
@@ -32,13 +60,13 @@ export function TripMeals({
                 target="_blank"
                 rel="noopener noreferrer nofollow"
                 aria-label={`${meal.name} (nouvel onglet)`}
-                className="site-label inline-flex rounded-full border border-[#f2d3a7] bg-[#fff6ea] px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.08em] text-[#0f1b2b] hover:border-[#0f1b2b]"
+                className={`${chip} ${meal.photoUrl ? "pl-1" : "pl-1.5"} hover:border-[#0f1b2b]`}
               >
-                {meal.name} ↗
+                <MealLabel meal={meal} />
               </a>
             ) : (
-              <span className="site-label inline-flex rounded-full border border-[#f2d3a7] bg-[#fff6ea] px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.08em] text-[#0f1b2b]">
-                {meal.name}
+              <span className={`${chip} ${meal.photoUrl ? "pl-1" : "pl-1.5"}`}>
+                <MealLabel meal={meal} />
               </span>
             )}
           </li>

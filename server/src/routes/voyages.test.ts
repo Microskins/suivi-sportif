@@ -354,14 +354,20 @@ describe("regles metier des voyages", () => {
         name: "The Witchery",
         coordinates: [-3.1955, 55.9489],
         url: "https://www.thewitchery.com/",
+        photo: null,
       },
-      { name: "Pub", coordinates: [-3.19, 55.95], url: null },
-      { name: "Chippy", coordinates: [-3.18, 55.94], url: null },
+      { name: "Pub", coordinates: [-3.19, 55.95], url: null, photo: null },
+      { name: "Chippy", coordinates: [-3.18, 55.94], url: null, photo: null },
     ]);
     expect(parse([{ name: "", coordinates: [0, 0] }]).success).toBe(false);
     expect(parse([{ name: "Sans position" }]).success).toBe(false);
     expect(
       parse([{ name: "X", coordinates: [0, 0], url: "javascript:alert(1)" }])
+        .success,
+    ).toBe(false);
+    // La photo est un nom rendu par le serveur, jamais un chemin.
+    expect(
+      parse([{ name: "X", coordinates: [0, 0], photo: "../../etc/passwd" }])
         .success,
     ).toBe(false);
   });

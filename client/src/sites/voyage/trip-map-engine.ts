@@ -17,6 +17,7 @@ import "./voyage-map-markers.css";
 // `worker-src 'self'` au lieu d'autoriser les workers `blob:`.
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import type { LngLat } from "./trip-types";
+import { apiFileUrl } from "./voyage-api";
 import type { GpxTrack } from "./gpx-track";
 import type { MapStage } from "./trip-map-paths";
 import { buildPaths, collection, lineFeature } from "./trip-map-paths";
@@ -172,7 +173,7 @@ export function createTripMap({
     return [{ button, index, marker }];
   });
 
-  // Repas: petits points orange, sous les marqueurs d'etape. Un clic ouvre
+  // Repas: petits points orange (ou vignettes), sous les marqueurs d'etape. Un clic ouvre
   // l'etape du repas dans le panneau.
   const mealMarkers = stages.flatMap((stage, index) =>
     (stage.meals ?? []).map((meal) => {
@@ -180,6 +181,14 @@ export function createTripMap({
       button.type = "button";
       button.className = "voyage-map-meal";
       button.title = meal.name;
+      // Avec photo: une vignette ronde a la place du point.
+      if (meal.photoUrl) {
+        button.dataset.photo = "true";
+        button.style.setProperty(
+          "--meal-photo",
+          `url("${encodeURI(apiFileUrl(meal.photoUrl))}")`,
+        );
+      }
       button.setAttribute(
         "aria-label",
         `Repas — ${meal.name}, étape ${index + 1} ${stage.title}`,

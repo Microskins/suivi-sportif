@@ -50,6 +50,9 @@ const ecosseDetail: TripDetail = {
         {
           coordinates: [-3.1955, 55.9489],
           name: "The Witchery",
+          photo: "8c6c3f1e-6b8a-4a51-9d55-3c2d0b7c1a11.jpg",
+          photoUrl:
+            "/api/voyages/files/8c6c3f1e-6b8a-4a51-9d55-3c2d0b7c1a11.jpg",
           url: "https://www.thewitchery.com/",
         },
       ],
@@ -172,6 +175,12 @@ describe("carnet de voyage", () => {
     });
     expect(meals.length).toBeGreaterThan(0);
     expect(meals[0].getAttribute("href")).toBe("https://www.thewitchery.com/");
+    expect(
+      screen.getAllByRole("img", { name: "Repas à The Witchery" })[0],
+    ).toHaveProperty(
+      "src",
+      expect.stringContaining("/api/voyages/files/8c6c3f1e"),
+    );
   });
 
   it("montre le pays meme quand les etapes restent a ecrire", async () => {

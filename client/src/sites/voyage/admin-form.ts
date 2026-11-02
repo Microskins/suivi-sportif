@@ -16,6 +16,9 @@ export type MealDraft = {
   lat: string;
   lng: string;
   name: string;
+  // Nom du fichier photo envoye, et l'adresse pour l'apercu.
+  photo: string | null;
+  photoUrl: string | null;
   url: string;
 };
 
@@ -77,6 +80,8 @@ export const emptyMeal = (): MealDraft => ({
   lat: "",
   lng: "",
   name: "",
+  photo: null,
+  photoUrl: null,
   url: "",
 });
 
@@ -85,6 +90,8 @@ const mealToDraft = (meal: TripMeal): MealDraft => ({
   lat: String(meal.coordinates[1]),
   lng: String(meal.coordinates[0]),
   name: meal.name,
+  photo: meal.photo ?? null,
+  photoUrl: meal.photoUrl ?? null,
   url: meal.url ?? "",
 });
 
@@ -218,6 +225,7 @@ function stageToPayload(stage: StageDraft): StagePayload {
       name: meal.name.trim(),
       coordinates: [parseNumber(meal.lng), parseNumber(meal.lat)],
       url: meal.url.trim() || null,
+      photo: meal.photo,
     })),
   };
 }

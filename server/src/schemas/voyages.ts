@@ -86,6 +86,15 @@ export const tripMealInputSchema = z.object({
   name: z.string().trim().min(1, "Nom du lieu obligatoire").max(120),
   coordinates: lngLatSchema,
   url: optionalLinkSchema("https://www.google.com/maps/place/..."),
+  // Photo du repas: nom rendu par l'envoi (POST /admin/meal-photos).
+  photo: z
+    .string()
+    .regex(
+      /^[0-9a-f-]{36}\.(jpg|png|webp)$/,
+      "Photo invalide : renvoyez-la depuis l'admin",
+    )
+    .nullable()
+    .default(null),
 });
 
 export const tripStageInputSchema = z.object({

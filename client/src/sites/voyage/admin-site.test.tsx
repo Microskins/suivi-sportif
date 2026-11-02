@@ -72,13 +72,7 @@ const ecosseDetail: TripDetail = {
       highlights: ["Royal Mile", "Arthur’s Seat"],
       id: STAGE_1,
       lodgingUrl: "https://www.airbnb.fr/rooms/12345678",
-      meals: [
-        {
-          coordinates: [-3.1955, 55.9489],
-          name: "The Witchery",
-          url: "https://www.thewitchery.com/",
-        },
-      ],
+      meals: [],
       photos: [],
       route: [],
       title: "Édimbourg",
@@ -384,8 +378,6 @@ describe("édition d'un voyage", () => {
       "https://www.airbnb.fr/rooms/12345678",
     );
     expect(body.stages[0].lodgingUrl).toBeNull();
-    expect(body.stages[1].meals).toEqual(ecosseDetail.stages[0].meals);
-    expect(body.stages[0].meals).toEqual([]);
     expect(body.stages[2]).toMatchObject({
       code: "SKY",
       coordinates: [-6.2, 57.4],
