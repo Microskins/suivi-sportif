@@ -4,7 +4,6 @@ import { PriceComparisonSite } from "../sites/prix-aliments/price-comparison-sit
 import { SuiviSportifSite } from "../sites/suivi-sportif/suivi-sportif-site";
 import { TrekkingHomeSite } from "../sites/trekking/trekking-home-site";
 import { VosgesWildSite } from "../sites/trekking/vosges-wild-site";
-import { PrivacySite } from "../sites/voyage/privacy-site";
 import { TripSite } from "../sites/voyage/trip-site";
 import { VoyageHomeSite } from "../sites/voyage/voyage-home-site";
 import { normalizePathname, siteIdFromPath } from "./site-identities";
@@ -18,7 +17,6 @@ const TREKKING_PATH = "/trekking";
 const VOSGES_WILD_PATH = `${TREKKING_PATH}/vosges-wild`;
 const VOYAGE_PATH = "/voyage";
 const VOYAGE_ADMIN_PATH = `${VOYAGE_PATH}/admin`;
-const VOYAGE_PRIVACY_PATH = `${VOYAGE_PATH}/confidentialite`;
 
 function siteForPath(currentPath: string) {
   const siteId = siteIdFromPath(currentPath);
@@ -53,10 +51,6 @@ function siteForPath(currentPath: string) {
           <VoyageAdminSite />
         </Suspense>
       );
-    }
-    // Regles de confidentialite (ecran de consentement Google), pas un carnet.
-    if (currentPath === VOYAGE_PRIVACY_PATH) {
-      return <PrivacySite />;
     }
     // /voyage/<slug>: un carnet charge depuis l'API.
     const slug = currentPath.slice(VOYAGE_PATH.length + 1);

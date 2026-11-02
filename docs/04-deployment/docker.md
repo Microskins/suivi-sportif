@@ -174,6 +174,12 @@ telecharge ensuite les photos choisies (sortie HTTPS vers
 `deploy/nginx/suivi-sportif.fr.conf` autorise `accounts.google.com` et
 `photospicker.googleapis.com` pour cela.
 
+Les regles de confidentialite donnees a Google (`/voyage/confidentialite`)
+sont une page HTML statique, `client/public/voyage/confidentialite.html`,
+servie par une `location` dediee de `client/nginx/default.conf`: le robot de
+validation de Google lit le HTML brut sans executer le JavaScript, une page
+React lui paraitrait vide.
+
 ## 4. Bascule Nginx
 
 Utiliser `deploy/nginx/suivi-sportif.fr.conf` comme configuration de site.

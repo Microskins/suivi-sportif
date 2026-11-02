@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Règles de confidentialité — Suivi Sportif / Voyage</title>
+    <meta
+      name="description"
+      content="Règles de confidentialité de suivi-sportif.fr : données collectées, utilisation des données Google Photos, conservation, suppression et droits."
+    />
+    <link rel="icon" href="/sites/voyage/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        --ink: #0f1b2b;
+        --muted: #4d5866;
+        --line: #dfe4ea;
+        --blue: #1c4ed8;
+        --bg: #f4f6f8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          16px/1.7 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+      header {
+        background: var(--ink);
+        color: #fff;
+        padding: 18px 20px;
+      }
+      header a {
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+      }
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 36px 20px 56px;
+      }
+      h1 {
+        font-size: clamp(2rem, 5vw, 2.8rem);
+        line-height: 1.05;
+        margin: 6px 0 16px;
+        letter-spacing: -0.03em;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin: 34px 0 8px;
+        padding-top: 22px;
+        border-top: 1px solid var(--line);
+      }
+      h3 {
+        font-size: 1.02rem;
+        margin: 20px 0 4px;
+      }
+      p,
+      li {
+        margin: 6px 0;
+      }
+      ul {
+        padding-left: 22px;
+      }
+      a {
+        color: var(--blue);
+      }
+      code {
+        font-family: ui-monospace, "JetBrains Mono", monospace;
+        font-size: 0.9em;
+        word-break: break-all;
+      }
+      .meta {
+        color: var(--blue);
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .lead {
+        color: var(--muted);
+      }
+      .lang {
+        margin-top: 56px;
+        padding-top: 8px;
+        border-top: 3px solid var(--ink);
+      }
+      footer {
+        border-top: 1px solid var(--line);
+        background: #fff;
+        color: var(--muted);
+        font-size: 0.85rem;
+        padding: 18px 20px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="/voyage">Voyage — suivi-sportif.fr</a>
+    </header>
+
+    <main id="contenu-principal">
+      <p class="meta">En vigueur au 2 novembre 2026</p>
+      <h1>Règles de confidentialité</h1>
+      <p class="lead">
+        Ces règles décrivent les données traitées par le site
+        <strong>suivi-sportif.fr</strong> et ses applications « Suivi Sportif »
+        et « Voyage » (carnets de voyage), en particulier les données
+        utilisateur Google obtenues via l’API Google Photos Picker. English
+        version below: <a href="#english">Privacy Policy (English)</a>.
+      </p>
+
+      <h2>1. Responsable du traitement</h2>
+      <p>
+        Le site est un projet personnel édité par Thomas Cochart (France).
+        Contact pour toute question relative à vos données :
+        <a href="mailto:thomas.cochart@outlook.fr">thomas.cochart@outlook.fr</a
+        >.
+      </p>
+
+      <h2>2. Données collectées</h2>
+      <h3>Visiteurs</h3>
+      <p>
+        La consultation des pages publiques (portfolio, carnets de voyage) ne
+        demande aucun compte. Le serveur enregistre des journaux techniques
+        (adresse IP, page demandée, date, navigateur) à des fins de sécurité et
+        de diagnostic, conservés pour une durée limitée.
+      </p>
+      <h3>Comptes</h3>
+      <p>
+        La création d’un compte enregistre une adresse e-mail, un nom et un mot
+        de passe stocké sous forme chiffrée (bcrypt). Les données saisies dans
+        l’application Suivi Sportif (séances, mesures, repas) sont rattachées à
+        ce compte et ne servent qu’à l’afficher à son titulaire.
+      </p>
+      <h3>Données utilisateur Google</h3>
+      <p>
+        L’espace d’administration du site Voyage, réservé à son propriétaire,
+        propose un bouton « Importer depuis Google Photos ». Lorsqu’il est
+        utilisé, l’application demande l’autorisation OAuth
+        <code
+          >https://www.googleapis.com/auth/photospicker.mediaitems.readonly</code
+        >
+        et accède uniquement :
+      </p>
+      <ul>
+        <li>
+          aux photos que l’utilisateur sélectionne lui-même dans la fenêtre de
+          sélection de Google Photos (fichier image et nom de fichier) ;
+        </li>
+        <li>
+          au jeton d’accès temporaire délivré par Google pour cette sélection.
+        </li>
+      </ul>
+      <p>
+        L’application n’a <strong>aucun accès</strong> au reste de la
+        bibliothèque Google Photos, aux albums, aux contacts, au profil Google
+        ni à l’adresse e-mail Google. Elle ne lit, ne modifie et ne supprime
+        rien dans le compte Google Photos.
+      </p>
+
+      <h2>3. Utilisation des données Google</h2>
+      <ul>
+        <li>
+          Chaque photo sélectionnée est téléchargée une seule fois par le
+          serveur du site, redimensionnée (2560 px maximum) et enregistrée pour
+          illustrer une étape d’un carnet de voyage. Elle est affichée
+          publiquement uniquement si le carnet est publié par son propriétaire.
+        </li>
+        <li>
+          Le jeton d’accès Google sert exclusivement à lire la sélection et à
+          télécharger les photos choisies. Il est conservé en mémoire du
+          navigateur pendant sa durée de validité (une heure au plus), transmis
+          au serveur le temps de l’import, puis oublié : il n’est jamais
+          enregistré en base de données ni dans les journaux.
+        </li>
+        <li>
+          Les données Google ne sont utilisées pour aucune autre finalité : pas
+          de publicité, pas de profilage, pas d’analyse, pas d’entraînement de
+          modèles d’intelligence artificielle ou d’apprentissage automatique.
+        </li>
+      </ul>
+
+      <h2>4. Partage des données</h2>
+      <p>
+        Aucune donnée, et en particulier aucune donnée utilisateur Google, n’est
+        vendue, louée, ni transmise à des tiers. Les photos importées ne sont
+        visibles que sur les carnets que leur propriétaire choisit de publier
+        sur suivi-sportif.fr.
+      </p>
+
+      <h2>5. Conservation et suppression</h2>
+      <ul>
+        <li>
+          Une photo importée est conservée tant qu’elle figure dans un carnet.
+          Sa suppression depuis l’espace d’administration (ou la suppression de
+          l’étape ou du voyage) efface immédiatement le fichier du serveur.
+        </li>
+        <li>
+          La session de sélection Google Photos est supprimée auprès de Google
+          dès la fin de l’import.
+        </li>
+        <li>
+          L’autorisation accordée peut être retirée à tout moment depuis
+          <a href="https://myaccount.google.com/permissions"
+            >myaccount.google.com/permissions</a
+          >.
+        </li>
+        <li>
+          Toute demande de suppression peut être adressée à
+          <a href="mailto:thomas.cochart@outlook.fr"
+            >thomas.cochart@outlook.fr</a
+          >
+          ; elle est traitée sous 30 jours.
+        </li>
+      </ul>
+
+      <h2>6. Sécurité</h2>
+      <p>
+        Tous les échanges sont chiffrés (HTTPS). L’espace d’administration est
+        protégé par authentification et réservé aux comptes autorisés. Les
+        photos sont stockées sur le serveur du site sous des noms générés
+        aléatoirement.
+      </p>
+
+      <h2>7. Politique d’utilisation limitée (Limited Use)</h2>
+      <p>
+        L’utilisation et le transfert vers toute autre application des
+        informations reçues des API Google respectent les
+        <a
+          href="https://developers.google.com/terms/api-services-user-data-policy"
+          >règles relatives aux données utilisateur des services API Google</a
+        >, y compris les exigences d’utilisation limitée (Limited Use
+        requirements).
+      </p>
+
+      <h2>8. Vos droits</h2>
+      <p>
+        Conformément au RGPD, vous disposez d’un droit d’accès, de
+        rectification, d’effacement, de limitation et d’opposition. Écrivez à
+        <a href="mailto:thomas.cochart@outlook.fr">thomas.cochart@outlook.fr</a
+        >. Vous pouvez aussi introduire une réclamation auprès de la CNIL (<a
+          href="https://www.cnil.fr"
+          >cnil.fr</a
+        >).
+      </p>
+
+      <h2>9. Modifications</h2>
+      <p>
+        Toute modification de ces règles est publiée sur cette page avec sa date
+        d’entrée en vigueur.
+      </p>
+
+      <section class="lang" id="english" lang="en">
+        <p class="meta">Effective November 2, 2026</p>
+        <h1>Privacy Policy</h1>
+        <p class="lead">
+          This policy explains how <strong>suivi-sportif.fr</strong> and its
+          “Suivi Sportif” and “Voyage” (travel journal) applications collect,
+          use, store and delete data, including Google user data obtained
+          through the Google Photos Picker API.
+        </p>
+
+        <h2>1. Who we are</h2>
+        <p>
+          This website is a personal project operated by Thomas Cochart
+          (France). Contact:
+          <a href="mailto:thomas.cochart@outlook.fr"
+            >thomas.cochart@outlook.fr</a
+          >.
+        </p>
+
+        <h2>2. Data we collect</h2>
+        <ul>
+          <li>
+            <strong>Visitors:</strong> no account is required to read public
+            pages. The server keeps technical logs (IP address, requested page,
+            date, browser) for security and troubleshooting, for a limited time.
+          </li>
+          <li>
+            <strong>Accounts:</strong> email address, name and a hashed (bcrypt)
+            password, used only for authentication. Data entered in the app is
+            only shown to its owner.
+          </li>
+          <li>
+            <strong>Google user data:</strong> the Voyage admin area (restricted
+            to the site owner) offers an “Import from Google Photos” button. It
+            requests the OAuth scope
+            <code
+              >https://www.googleapis.com/auth/photospicker.mediaitems.readonly</code
+            >
+            and accesses only the photos the user explicitly selects in the
+            Google Photos picker (image file and file name), plus the temporary
+            access token issued by Google. The app cannot access the rest of the
+            library, albums, contacts, Google profile or Google email address,
+            and never modifies or deletes anything in Google Photos.
+          </li>
+        </ul>
+
+        <h2>3. How we use Google user data</h2>
+        <ul>
+          <li>
+            Each selected photo is downloaded once by our server, resized (max.
+            2560 px) and stored to illustrate a stage of a travel journal. It is
+            shown publicly only if the owner publishes that journal.
+          </li>
+          <li>
+            The Google access token is used solely to read the selection and
+            download the selected photos. It stays in the browser’s memory for
+            its lifetime (at most one hour), is sent to our server only for the
+            duration of the import, and is never stored in a database or in
+            logs.
+          </li>
+          <li>
+            Google user data is not used for any other purpose: no advertising,
+            no profiling, no analytics, and it is never used to develop, improve
+            or train generalized AI or machine-learning models.
+          </li>
+        </ul>
+
+        <h2>4. Sharing</h2>
+        <p>
+          We do not sell, rent or transfer any data, including Google user data,
+          to third parties. Imported photos are only displayed on travel
+          journals that their owner chooses to publish on suivi-sportif.fr.
+        </p>
+
+        <h2>5. Retention and deletion</h2>
+        <ul>
+          <li>
+            An imported photo is kept as long as it is part of a journal.
+            Deleting it from the admin area (or deleting its stage or trip)
+            immediately removes the file from our server.
+          </li>
+          <li>
+            The Google Photos picker session is deleted at Google as soon as the
+            import is finished.
+          </li>
+          <li>
+            You can revoke access at any time at
+            <a href="https://myaccount.google.com/permissions"
+              >myaccount.google.com/permissions</a
+            >.
+          </li>
+          <li>
+            Deletion requests can be sent to
+            <a href="mailto:thomas.cochart@outlook.fr"
+              >thomas.cochart@outlook.fr</a
+            >
+            and are handled within 30 days.
+          </li>
+        </ul>
+
+        <h2>6. Security</h2>
+        <p>
+          All traffic is encrypted (HTTPS). The admin area requires
+          authentication and is restricted to authorized accounts. Photos are
+          stored on our server under randomly generated file names.
+        </p>
+
+        <h2>7. Limited Use disclosure</h2>
+        <p>
+          The use and transfer to any other app of information received from
+          Google APIs will adhere to the
+          <a
+            href="https://developers.google.com/terms/api-services-user-data-policy"
+            >Google API Services User Data Policy</a
+          >, including the Limited Use requirements.
+        </p>
+
+        <h2>8. Your rights</h2>
+        <p>
+          Under the GDPR you may request access to, correction, deletion or
+          restriction of your data, or object to its processing, by writing to
+          <a href="mailto:thomas.cochart@outlook.fr"
+            >thomas.cochart@outlook.fr</a
+          >. You may also lodge a complaint with the CNIL (France).
+        </p>
+
+        <h2>9. Changes</h2>
+        <p>
+          Any change to this policy will be published on this page with its
+          effective date.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      suivi-sportif.fr · <a href="/voyage">Voyage</a> ·
+      <a href="mailto:thomas.cochart@outlook.fr">Contact</a>
+    </footer>
+  </body>
+</html>
