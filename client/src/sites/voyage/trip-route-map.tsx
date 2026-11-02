@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { LngLat, TripStage } from "./trip-types";
 import type { TripMapHandle } from "./trip-map-engine";
 import { TripLodgingLink } from "./trip-lodging-link";
+import { TripMeals } from "./trip-meals";
 import { TripPhotoFrame } from "./trip-photo-frame";
 import { TripHikesSummary, TripTrackCard } from "./trip-track-card";
 import { prefersReducedMotion, supportsWebGL } from "./webgl-support";
@@ -213,6 +214,11 @@ export function TripRouteMap({
                 url={stage.lodgingUrl}
               />
             )}
+            <TripMeals
+              className="mt-4"
+              meals={stage.meals ?? []}
+              stageTitle={stage.title}
+            />
             {stageTracks.length > 0 && (
               <div className="mt-5 grid gap-2">
                 <TripHikesSummary tracks={stageTracks} />
@@ -241,6 +247,9 @@ export function TripRouteMap({
         {tracks.length > 0
           ? "Trait plein bleu : trajets GPS — dégradé : randonnées colorées par altitude — tirets : itinéraire entre les étapes."
           : "Tirets : itinéraire entre les étapes, calculé — pas une trace GPX enregistrée."}
+        {stages.some((item) => item.meals?.length)
+          ? " Points orange ou vignettes : repas."
+          : ""}
       </p>
     </div>
   );

@@ -33,6 +33,16 @@ export type TripPhoto = {
   url: string;
 };
 
+// Un repas de l'etape (restaurant, pub...): un point de la carte.
+export type TripMeal = {
+  coordinates: LngLat;
+  name: string;
+  // Nom du fichier photo (rendu par l'envoi), et son adresse publique.
+  photo: string | null;
+  photoUrl: string | null;
+  url: string | null;
+};
+
 export type TripStage = {
   code: string;
   coordinates: LngLat;
@@ -43,6 +53,8 @@ export type TripStage = {
   id: string;
   // Logement de la nuit (souvent un lien Airbnb), ou null.
   lodgingUrl: string | null;
+  // Repas de l'etape, facultatifs (tableau vide si aucun).
+  meals: TripMeal[];
   photos: TripPhoto[];
   // Trace reconstitue pour ARRIVER a cette etape depuis la precedente.
   route: LngLat[];

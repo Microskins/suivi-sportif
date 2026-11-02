@@ -6,6 +6,7 @@ import type {
   LngLat,
   TrackKind,
   TripDetail,
+  TripMeal,
   TripPhoto,
   TripSummary,
   TripTrackFile,
@@ -130,6 +131,7 @@ export type StagePayload = {
   highlights: string[];
   id?: string;
   lodgingUrl: string | null;
+  meals: MealPayload[];
   route: LngLat[];
   title: string;
 };
@@ -153,6 +155,16 @@ export type AirportPayload = {
   latitude: number;
   longitude: number;
   name: string;
+};
+
+export type MealPayload = Omit<TripMeal, "photoUrl">;
+
+// Photo de repas envoyee: son nom, son adresse et la position GPS de la
+// prise de vue quand le telephone l'a notee.
+export type MealPhotoUpload = {
+  coordinates: LngLat | null;
+  photo: string;
+  photoUrl: string;
 };
 
 export type GeocodeResult = {
@@ -200,6 +212,12 @@ export const adminApi = {
       })}`,
       { method: "POST", contentType: file.type, body: file },
     ),
+  uploadMealPhoto: (file: File) =>
+    adminRequest<MealPhotoUpload>("/meal-photos", {
+      method: "POST",
+      contentType: file.type,
+      body: file,
+    }),
   googlePhotosConfig: () =>
     adminRequest<{ clientId: string | null }>("/google-photos/config"),
   importGooglePhotos: (
@@ -252,6 +270,8 @@ export function adminErrorMessage(error: unknown): string {
       return "Fichier trop volumineux.";
     case "UPLOAD_TYPE_NOT_ALLOWED":
       return "Type de fichier non accepté.";
+    case "MEAL_PHOTO_NOT_FOUND":
+      return "Une photo de repas est introuvable : renvoyez-la.";
     case "TRIP_NOT_FOUND":
       return "Ce voyage n’existe plus.";
     case "STAGE_NOT_FOUND":

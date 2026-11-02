@@ -4,6 +4,7 @@ import { formatDistance, stageDistance, tripDistance } from "./gpx-track";
 import { fullRoute } from "./trip-geometry";
 import { formatTripDates, tripDays, tripPeriod } from "./trip-format";
 import { TripLodgingLink } from "./trip-lodging-link";
+import { TripMeals } from "./trip-meals";
 import { TripPhotoFrame } from "./trip-photo-frame";
 import { TripRouteMap } from "./trip-route-map";
 import type { TripDetail, TripStage } from "./trip-types";
@@ -24,6 +25,7 @@ function arrivalStage(trip: TripDetail): TripStage {
     highlights: [],
     id: `arrivee-${arrival.code}`,
     lodgingUrl: null,
+    meals: [],
     photos: [],
     route: [],
     title: arrival.city,
@@ -156,6 +158,11 @@ export function TripCarnet({ trip }: { trip: TripDetail }) {
                       url={stage.lodgingUrl}
                     />
                   )}
+                  <TripMeals
+                    className="mt-3"
+                    meals={stage.meals ?? []}
+                    stageTitle={stage.title}
+                  />
                 </div>
                 <p className="site-label text-xs font-semibold uppercase tracking-[0.1em] text-[#0f1b2b]">
                   {formatDistance(stageDistance(stage, index, tracks))}

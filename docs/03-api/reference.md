@@ -584,6 +584,10 @@ l'ordre de l'itineraire:
   "highlights": ["Royal Mile"],
   "coordinates": [-3.19, 55.95],
   "route": [[-3.19, 55.95], [-3.5, 56.1]],
+  "lodgingUrl": "https://www.airbnb.fr/rooms/12345678",
+  "meals": [
+    { "name": "The Witchery", "coordinates": [-3.1955, 55.9489], "url": "https://www.thewitchery.com/", "photo": "<uuid>.jpg", "photoUrl": "/api/voyages/files/<uuid>.jpg" }
+  ],
   "tracks": [
     { "id": "uuid", "kind": "trajet", "name": "Edimbourg - Glencoe", "url": "/api/voyages/files/<uuid>.gpx" }
   ],
@@ -594,7 +598,8 @@ l'ordre de l'itineraire:
 ```
 
 `route` est le trace reconstitue de l'etape (`[lng, lat][]`, eventuellement
-vide). `kind` vaut `trajet` (route de A a B) ou `randonnee`. Les `url` sont
+vide). `lodgingUrl` et `meals` (repas de l'etape, points de la carte) sont
+facultatifs: `null` et `[]` par defaut. `kind` vaut `trajet` (route de A a B) ou `randonnee`. Les `url` sont
 relatives a l'API.
 
 ### Administration
@@ -646,7 +651,9 @@ Sur les routes avec `:id`, un voyage inconnu repond `404 TRIP_NOT_FOUND`.
       "detail": "",
       "highlights": [],
       "coordinates": [-3.19, 55.95],
-      "route": []
+      "route": [],
+      "lodgingUrl": null,
+      "meals": [{ "name": "The Witchery", "coordinates": [-3.1955, 55.9489], "url": null, "photo": null }]
     }
   ]
 }
@@ -669,8 +676,21 @@ Regles de validation:
   trajet. Les reponses portent aussi `mode` sur chaque element de `flights`.
 - `stages`: 60 max, ordre du tableau = ordre de l'itineraire. `code` 2 a 4
   caracteres (mis en majuscules), `dayLabel` (20), `dateLabel` (40), `title`
-  (120) obligatoires; `detail` (2000), `highlights` (12 x 60 caracteres) et
-  `route` (5000 points) facultatifs.
+  (120) obligatoires; `detail` (2000), `highlights` (12 x 60 caracteres),
+  `route` (5000 points), `lodgingUrl` et `meals` facultatifs.
+- `meals`: 20 repas max par etape (`[]` par defaut). Chacun porte `name`
+  (120, obligatoire), `coordinates` `[lng, lat]` (obligatoire) et `url`
+  (lien http(s), facultatif: `""` ou absent devient `null`).
+  `photo` (facultatif) est le nom rendu par `POST /api/voyages/admin/meal-photos`;
+  une photo jamais envoyee donne `400 MEAL_PHOTO_NOT_FOUND`. Au `PUT`, les
+  photos de repas qui ne sont plus citees sont effacees du disque.
+
+Photo d'un repas:
+
+- `POST /api/voyages/admin/meal-photos`: image brute (JPEG, PNG ou WebP,
+  15 Mo max), `201` avec `{ "photo": "<uuid>.jpg", "photoUrl": "...",
+  "coordinates": [lng, lat] | null }`. `coordinates` vient du bloc EXIF GPS
+  de la photo (JPEG pris avec la localisation du telephone), `null` sinon.
 
 Au `PUT`, les vols sont remplaces en bloc. Une etape envoyee avec son `id`
 est mise a jour et garde ses traces et ses photos; une etape sans `id` est

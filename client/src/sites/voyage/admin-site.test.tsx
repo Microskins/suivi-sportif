@@ -72,6 +72,7 @@ const ecosseDetail: TripDetail = {
       highlights: ["Royal Mile", "Arthur’s Seat"],
       id: STAGE_1,
       lodgingUrl: "https://www.airbnb.fr/rooms/12345678",
+      meals: [],
       photos: [],
       route: [],
       title: "Édimbourg",
@@ -86,6 +87,7 @@ const ecosseDetail: TripDetail = {
       highlights: [],
       id: STAGE_2,
       lodgingUrl: null,
+      meals: [],
       photos: [],
       route,
       title: "Glencoe",
@@ -309,6 +311,7 @@ describe("édition d'un voyage", () => {
           coordinates: [-3.19, 55.95],
           route: [],
           lodgingUrl: null,
+          meals: [],
         },
       ],
     });

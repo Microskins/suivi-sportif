@@ -15,12 +15,14 @@ import {
   GPX_MAX_BYTES,
   PHOTO_MAX_BYTES,
   VoyageFileError,
+  assertMealPhotosStored,
   contentTypeOf,
   deleteStoredFiles,
   openStoredFile,
   storeGpx,
   storePhoto,
 } from "../lib/voyage-files.js";
+import { readPhotoGps } from "../lib/photo-gps.js";
 import { RoadRouteError, fetchRoadRoute } from "../lib/road-route.js";
 import {
   GooglePhotosError,
@@ -42,6 +44,7 @@ import {
   slugParamSchema,
   trackUploadQuerySchema,
   tripInputSchema,
+  type TripInput,
 } from "../schemas/voyages.js";
 
 const TRIP_NOT_FOUND = "Voyage introuvable";
@@ -56,6 +59,11 @@ const writeRateLimit = {
   max: Number(process.env.VOYAGE_WRITE_RATE_LIMIT_MAX ?? 60),
   timeWindow: "1 minute",
 };
+
+const mealPhotoNames = (input: TripInput) =>
+  input.stages.flatMap((stage) =>
+    stage.meals.flatMap((meal) => (meal.photo ? [meal.photo] : [])),
+  );
 
 function handleError(
   fastify: FastifyInstance,
@@ -215,6 +223,7 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
     async (request, reply) => {
       try {
         const input = tripInputSchema.parse(request.body);
+        await assertMealPhotosStored(mealPhotoNames(input));
         return sendCreated(
           reply,
           await voyages.createTrip(request.user.id, input),
@@ -236,6 +245,7 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
       try {
         const { id } = idParamSchema.parse(request.params);
         const input = tripInputSchema.parse(request.body);
+        await assertMealPhotosStored(mealPhotoNames(input));
         const result = await voyages.updateTrip(id, input);
         if (!result) {
           return sendNotFound(reply, TRIP_NOT_FOUND, "TRIP_NOT_FOUND");
@@ -406,6 +416,36 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
           reply,
           await voyages.addPhoto(id, { ...stored, ...query }),
         );
+      } catch (error) {
+        return handleError(fastify, reply, error);
+      }
+    },
+  );
+
+  // POST /api/voyages/admin/meal-photos - photo d'un repas, avant
+  // l'enregistrement du voyage. Rend son nom (a citer dans `meals[].photo`)
+  // et, si le telephone l'a notee, la position GPS de la prise de vue.
+  fastify.post(
+    "/meal-photos",
+    {
+      config: { rateLimit: writeRateLimit },
+      schema: { ...admin, summary: "Upload a meal photo" },
+    },
+    async (request, reply) => {
+      try {
+        const body = request.body;
+        if (!Buffer.isBuffer(body)) {
+          return reply.code(415).send({
+            error: "Envoyez l'image brute (JPEG, PNG ou WebP)",
+            code: "UPLOAD_TYPE_NOT_ALLOWED",
+          });
+        }
+        const stored = await storePhoto(body);
+        return sendCreated(reply, {
+          photo: stored.fileName,
+          photoUrl: `/api/voyages/files/${stored.fileName}`,
+          coordinates: readPhotoGps(body),
+        });
       } catch (error) {
         return handleError(fastify, reply, error);
       }

@@ -49,6 +49,58 @@
   outline-offset: 2px;
 }
 
+/* Repas d'une etape: petit point orange, plus discret que les etapes. Le
+   bouton garde une zone de clic de 24 px autour du point. Memes regles que
+   ci-dessus: couleurs et contour seulement. */
+.voyage-map-meal {
+  display: grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.voyage-map-meal::before {
+  width: 0.95rem;
+  height: 0.95rem;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  background: #e08a1e;
+  box-shadow: 0 3px 8px rgba(15, 27, 43, 0.3);
+  content: "";
+  transition: background-color 160ms ease;
+}
+
+/* Repas avec photo: vignette ronde cerclee d'orange. */
+.voyage-map-meal[data-photo="true"] {
+  width: 2rem;
+  height: 2rem;
+}
+
+.voyage-map-meal[data-photo="true"]::before {
+  width: 2rem;
+  height: 2rem;
+  border-color: #e08a1e;
+  background: #e08a1e var(--meal-photo) center / cover no-repeat;
+}
+
+.voyage-map-meal:hover::before {
+  background-color: #0f1b2b;
+}
+
+.voyage-map-meal[data-photo="true"]:hover::before {
+  border-color: #0f1b2b;
+}
+
+.voyage-map-meal:focus-visible {
+  outline: 3px solid #0f1b2b;
+  outline-offset: 0;
+}
+
 /* Globe d'accueil: destinations cliquables, aeroports de depart, avions. */
 .voyage-globe-destination {
   padding: 0.35rem 0.6rem;
