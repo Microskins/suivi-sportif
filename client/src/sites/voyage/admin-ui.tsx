@@ -182,3 +182,69 @@ export function Panel({
     </section>
   );
 }
+
+// Section d'une etape dans l'admin: un titre numerote, une ligne d'aide et
+// ses champs sur un fond teinte, une couleur par section pour reperer d'un
+// coup d'oeil ou l'on est. Pastilles en blanc sur fond fonce (>= 4,5:1).
+const SECTION_TONES = {
+  blue: {
+    box: "border-[#c9d8fb] border-l-[#1c4ed8] bg-[#f6f8ff]",
+    badge: "bg-[#1c4ed8]",
+  },
+  violet: {
+    box: "border-[#ddd2fb] border-l-[#6d28d9] bg-[#faf8ff]",
+    badge: "bg-[#6d28d9]",
+  },
+  rose: {
+    box: "border-[#f5c6da] border-l-[#be185d] bg-[#fff7fa]",
+    badge: "bg-[#be185d]",
+  },
+  orange: {
+    box: "border-[#f2d3a7] border-l-[#b45309] bg-[#fffaf3]",
+    badge: "bg-[#b45309]",
+  },
+  green: {
+    box: "border-[#c4e8cc] border-l-[#15803d] bg-[#f4fbf5]",
+    badge: "bg-[#15803d]",
+  },
+} as const;
+
+export type StageSectionTone = keyof typeof SECTION_TONES;
+
+export function StageSection({
+  children,
+  hint,
+  number,
+  title,
+  tone,
+}: {
+  children: ReactNode;
+  hint?: ReactNode;
+  number: number;
+  title: ReactNode;
+  tone: StageSectionTone;
+}) {
+  const titleId = useId();
+  const colors = SECTION_TONES[tone];
+  return (
+    <section
+      aria-labelledby={titleId}
+      className={`rounded-[10px] border border-l-4 p-4 ${colors.box}`}
+    >
+      <h4
+        id={titleId}
+        className="site-label flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-[#0f1b2b]"
+      >
+        <span
+          aria-hidden="true"
+          className={`grid h-5 w-5 place-items-center rounded-full text-[0.6rem] text-white ${colors.badge}`}
+        >
+          {number}
+        </span>
+        {title}
+      </h4>
+      {hint && <p className="mt-1 text-xs leading-5 text-[#3d4b5c]">{hint}</p>}
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}

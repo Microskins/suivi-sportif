@@ -14,7 +14,13 @@ import type { StageFiles } from "./admin-stage-files";
 import { AdminStageFiles } from "./admin-stage-files";
 import { AdminStageMeals } from "./admin-stage-meals";
 import type { LngLat } from "./trip-types";
-import { Panel, TextAreaField, TextField, buttonClass } from "./admin-ui";
+import {
+  Panel,
+  StageSection,
+  TextAreaField,
+  TextField,
+  buttonClass,
+} from "./admin-ui";
 
 type StagesProps = {
   disabled: boolean;
@@ -263,31 +269,42 @@ export function AdminStages({
                       onChange(placeStage(stages, stage.key, coordinates))
                     }
                   />
-                  {stage.id ? (
-                    <AdminStageFiles
-                      stageId={stage.id}
-                      stageLabel={name}
-                      tracks={stage.tracks}
-                      photos={stage.photos}
-                      onAuthError={onAuthError}
-                      onChange={(files: StageFiles) => update(stage.key, files)}
-                    />
-                  ) : (
-                    <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-[#dfe4ea] pt-5 text-sm">
-                      <p className="text-[var(--site-muted)]">
-                        Les traces GPX et les photos s’ajoutent une fois l’étape
-                        enregistrée.
-                      </p>
-                      <button
-                        type="button"
-                        className={buttonClass.small}
-                        disabled={disabled}
-                        onClick={onSave}
-                      >
-                        Enregistrer le voyage maintenant
-                      </button>
-                    </div>
-                  )}
+                  <div className="mt-4">
+                    <StageSection
+                      number={5}
+                      tone="green"
+                      title="Traces GPX et photos"
+                      hint="Les fichiers sont envoyés tout de suite, sans attendre l’enregistrement du voyage."
+                    >
+                      {stage.id ? (
+                        <AdminStageFiles
+                          stageId={stage.id}
+                          stageLabel={name}
+                          tracks={stage.tracks}
+                          photos={stage.photos}
+                          onAuthError={onAuthError}
+                          onChange={(files: StageFiles) =>
+                            update(stage.key, files)
+                          }
+                        />
+                      ) : (
+                        <div className="flex flex-wrap items-center gap-3 text-sm">
+                          <p className="text-[var(--site-muted)]">
+                            Les traces GPX et les photos s’ajoutent une fois
+                            l’étape enregistrée.
+                          </p>
+                          <button
+                            type="button"
+                            className={buttonClass.small}
+                            disabled={disabled}
+                            onClick={onSave}
+                          >
+                            Enregistrer le voyage maintenant
+                          </button>
+                        </div>
+                      )}
+                    </StageSection>
+                  </div>
                 </div>
               </li>
             );
@@ -326,88 +343,121 @@ function StageFields({
   });
 
   return (
-    <div className="mt-4 grid gap-4 sm:grid-cols-6">
-      <TextField
-        className="sm:col-span-2"
-        label="Code"
-        hint="2 à 4 lettres (ex. EDI)."
-        required
-        maxLength={4}
-        {...field("code")}
-      />
-      <TextField
-        className="sm:col-span-2"
-        label="Jours"
-        hint="Ex. J01—02"
-        required
-        maxLength={20}
-        {...field("dayLabel")}
-      />
-      <TextField
-        className="sm:col-span-2"
-        label="Dates"
-        hint="Ex. 19—20 oct."
-        required
-        maxLength={40}
-        {...field("dateLabel")}
-      />
-      <TextField
-        className="sm:col-span-6"
-        label="Titre de l’étape"
-        required
-        maxLength={120}
-        {...field("title")}
-      />
-      <TextAreaField
-        className="sm:col-span-6"
-        label="Récit"
-        rows={4}
-        maxLength={2000}
-        {...field("detail")}
-      />
-      <TextField
-        className="sm:col-span-6"
-        label="Temps forts"
-        hint="Séparés par des virgules (ex. Royal Mile, Arthur’s Seat)."
-        {...field("highlights")}
-        error={
-          errors[`${prefix}highlights`] ??
-          firstNested(errors, `${prefix}highlights.`)
-        }
-      />
-      <TextField
-        className="sm:col-span-6"
-        label="Logement (lien Airbnb)"
-        hint="Où vous avez dormi, ex. https://www.airbnb.fr/rooms/12345678 — les dates et voyageurs du lien sont retirés. La position de l’étape vient de l’adresse du logement, juste en dessous."
-        inputMode="url"
-        maxLength={500}
-        {...field("lodgingUrl")}
-      />
-      <AdminAddressSearch
-        className="sm:col-span-6"
-        disabled={disabled}
-        error={
-          errors[`${prefix}position`] ??
-          firstNested(errors, `${prefix}coordinates`)
-        }
-        positioned={hasPosition(stage)}
-        onPick={onPlace}
-      />
-      <AdminStageMeals
-        disabled={disabled}
-        errors={errors}
-        meals={stage.meals}
-        onAuthError={onAuthError}
-        prefix={prefix}
-        stageLabel={name}
-        onChange={(meals) => onChange({ meals })}
-      />
-      {stage.route.length > 0 && (
-        <p className="site-label text-[0.65rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)] sm:col-span-6">
-          Tracé depuis l’étape précédente : {stage.route.length} points. «
-          Tracer par la route » le remplace par l’itinéraire routier.
-        </p>
-      )}
+    <div className="mt-4 grid gap-4">
+      <StageSection
+        number={1}
+        tone="blue"
+        title="Repères"
+        hint="Ce qui identifie l’étape sur la carte et dans la feuille de route."
+      >
+        <div className="grid gap-4 sm:grid-cols-6">
+          <TextField
+            className="sm:col-span-2"
+            label="Code"
+            hint="2 à 4 lettres (ex. EDI)."
+            required
+            maxLength={4}
+            {...field("code")}
+          />
+          <TextField
+            className="sm:col-span-2"
+            label="Jours"
+            hint="Ex. J01—02"
+            required
+            maxLength={20}
+            {...field("dayLabel")}
+          />
+          <TextField
+            className="sm:col-span-2"
+            label="Dates"
+            hint="Ex. 19—20 oct."
+            required
+            maxLength={40}
+            {...field("dateLabel")}
+          />
+          <TextField
+            className="sm:col-span-6"
+            label="Titre de l’étape"
+            required
+            maxLength={120}
+            {...field("title")}
+          />
+        </div>
+      </StageSection>
+
+      <StageSection
+        number={2}
+        tone="violet"
+        title="Récit"
+        hint="Le texte du carnet et les temps forts affichés en étiquettes."
+      >
+        <div className="grid gap-4">
+          <TextAreaField
+            label="Récit"
+            rows={4}
+            maxLength={2000}
+            {...field("detail")}
+          />
+          <TextField
+            label="Temps forts"
+            hint="Séparés par des virgules (ex. Royal Mile, Arthur’s Seat)."
+            {...field("highlights")}
+            error={
+              errors[`${prefix}highlights`] ??
+              firstNested(errors, `${prefix}highlights.`)
+            }
+          />
+        </div>
+      </StageSection>
+
+      <StageSection
+        number={3}
+        tone="rose"
+        title="Nuit et position"
+        hint="Où vous avez dormi : son adresse place l’étape sur la carte."
+      >
+        <div className="grid gap-4">
+          <TextField
+            label="Logement (lien Airbnb)"
+            hint="Ex. https://www.airbnb.fr/rooms/12345678 — les dates et voyageurs du lien sont retirés."
+            inputMode="url"
+            maxLength={500}
+            {...field("lodgingUrl")}
+          />
+          <AdminAddressSearch
+            disabled={disabled}
+            error={
+              errors[`${prefix}position`] ??
+              firstNested(errors, `${prefix}coordinates`)
+            }
+            positioned={hasPosition(stage)}
+            onPick={onPlace}
+          />
+          {stage.route.length > 0 && (
+            <p className="site-label text-[0.65rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)]">
+              Tracé depuis l’étape précédente : {stage.route.length} points. «
+              Tracer par la route » le remplace par l’itinéraire routier.
+            </p>
+          )}
+        </div>
+      </StageSection>
+
+      <StageSection
+        number={4}
+        tone="orange"
+        title={`Repas${stage.meals.length ? ` (${stage.meals.length})` : ""}`}
+        hint="Facultatif. Restaurants, pubs ou cafés où vous avez mangé, avec une photo si vous en avez : chacun devient un point sur la carte."
+      >
+        <AdminStageMeals
+          disabled={disabled}
+          errors={errors}
+          meals={stage.meals}
+          onAuthError={onAuthError}
+          prefix={prefix}
+          stageLabel={name}
+          onChange={(meals) => onChange({ meals })}
+        />
+      </StageSection>
     </div>
   );
 }
