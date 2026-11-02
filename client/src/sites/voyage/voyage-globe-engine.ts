@@ -14,7 +14,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "./voyage-map-markers.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import type { LngLat, TripSummary } from "./trip-types";
-import { tripHref } from "./trip-types";
+import { outboundJourney, tripHref } from "./trip-types";
 import { greatCircle, headingBetween } from "./great-circle";
 
 setWorkerUrl(workerUrl);
@@ -307,7 +307,7 @@ export function createVoyageGlobe({
 
   // Plongee vers le pays, puis ouverture du carnet et de sa carte detaillee.
   function openTrip(trip: TripSummary) {
-    const destination = trip.flights[0].to.coordinates;
+    const destination = outboundJourney(trip.flights).to.coordinates;
     const href = tripHref(trip.slug);
     if (reducedMotion) {
       window.location.assign(href);
