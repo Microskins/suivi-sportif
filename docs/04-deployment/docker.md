@@ -19,6 +19,11 @@ le meme point d'entree Nginx.
     possible sur le site Voyage, la lecture publique reste disponible.
   - `VOYAGE_WRITE_RATE_LIMIT_MAX` (optionnel, defaut `60`): nombre maximal
     d'ecritures et d'envois admin Voyage par minute.
+  - `GOOGLE_PHOTOS_CLIENT_ID` (optionnel): ID client OAuth Google qui active
+    le bouton "Importer depuis Google Photos" de l'admin Voyage (voir
+    "Import Google Photos" plus bas). En production, fourni par le workflow
+    depuis la variable GitHub `GOOGLE_PHOTOS_CLIENT_ID` de l'environnement
+    `production`.
 - `UPLOAD_DIR` n'est pas a mettre dans `.env`: `docker-compose.yml` le fixe a
   `/app/uploads`, monte sur le volume nomme `voyage-uploads` (voir section 7).
 - Nginx installe sur la machine hote.
@@ -143,6 +148,31 @@ docker compose exec -T api npm run db:seed:voyages -w server
 Verifier ensuite `https://suivi-sportif.fr/voyage` (4 arcs sur le globe) et
 `https://suivi-sportif.fr/voyage/ecosse-2026`, puis se connecter sur
 `/voyage/admin` pour envoyer les traces GPX et les photos.
+
+### Import Google Photos (admin Voyage)
+
+L'admin Voyage peut importer des photos d'etape depuis Google Photos, via
+l'API Google Photos Picker (l'ancienne API Library ne donne plus acces a la
+bibliotheque depuis 2025). Mise en place, une fois:
+
+1. Console Google Cloud: creer (ou choisir) un projet, activer l'API
+   **Google Photos Picker API**.
+2. Ecran de consentement OAuth: type "Externe", ajouter la portee
+   `https://www.googleapis.com/auth/photospicker.mediaitems.readonly` et,
+   tant que l'application est en mode "Test", le compte Google de l'admin
+   comme utilisateur test.
+3. Identifiants > Creer un ID client OAuth > "Application Web", origines
+   JavaScript autorisees: `https://suivi-sportif.fr` (et
+   `http://localhost:5173` pour le developpement). Aucune URI de redirection.
+4. Copier l'ID client (`...apps.googleusercontent.com`, il n'est pas secret)
+   dans la variable GitHub `GOOGLE_PHOTOS_CLIENT_ID` de l'environnement
+   `production`, puis relancer le deploiement.
+
+Le navigateur obtient le jeton Google et ouvre Google Photos; l'API du site
+telecharge ensuite les photos choisies (sortie HTTPS vers
+`photospicker.googleapis.com` et `*.googleusercontent.com`). La CSP de
+`deploy/nginx/suivi-sportif.fr.conf` autorise `accounts.google.com` et
+`photospicker.googleapis.com` pour cela.
 
 ## 4. Bascule Nginx
 

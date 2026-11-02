@@ -732,6 +732,24 @@ utilise.
   `application/octet-stream`), 15 Mo max. JPEG, PNG ou WebP reconnus a leur
   signature. `alt` (200) est obligatoire, `caption` (200) facultatif. `201`
   avec la photo (`{ id, url, alt, caption }`), ajoutee en fin de pellicule.
+- `GET /api/voyages/admin/google-photos/config`: `{ clientId }`, l'ID
+  client OAuth Google de `GOOGLE_PHOTOS_CLIENT_ID` (public), ou `null` si
+  l'import Google Photos n'est pas configure.
+- `POST /api/voyages/admin/stages/:id/photos/google`: import depuis Google
+  Photos (API Google Photos Picker). Corps JSON
+  `{ accessToken, sessionId, alt, caption? }`: le jeton OAuth de l'admin
+  (portee `photospicker.mediaitems.readonly`) et l'id d'une session Picker
+  dont la selection est terminee. Le serveur liste lui-meme les elements
+  choisis aupres de Google (aucune URL fournie par le client n'est
+  telechargee), ignore les videos, telecharge chaque photo en 2560 px
+  (JPEG) et la stocke comme un envoi classique. Avec plusieurs photos, `alt`
+  est numerote (`Skye (1/3)`). 30 photos maximum. `201` avec
+  `{ photos: [{ id, url, alt, caption }], skipped }` (`skipped`: photos
+  indisponibles, trop lourdes ou de format non pris en charge). Erreurs:
+  `400 GOOGLE_PHOTOS_NOT_READY` (selection non terminee ou session expiree),
+  `400 GOOGLE_PHOTOS_EMPTY`, `400 GOOGLE_PHOTOS_TOO_MANY`,
+  `401 GOOGLE_PHOTOS_UNAUTHORIZED` (jeton Google refuse ou expire),
+  `502 GOOGLE_PHOTOS_UNAVAILABLE`, `404 STAGE_NOT_FOUND`.
 - `DELETE /api/voyages/admin/tracks/:id` et
   `DELETE /api/voyages/admin/photos/:id`: `204`, fichier efface du disque;
   `404 TRIP_FILE_NOT_FOUND` si l'id est inconnu.
