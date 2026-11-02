@@ -15,7 +15,10 @@ export const PHOTO_MAX_BYTES = 15 * 1024 * 1024;
 export class VoyageFileError extends Error {
   constructor(
     message: string,
-    readonly code: "UPLOAD_EMPTY" | "UPLOAD_TYPE_NOT_ALLOWED",
+    readonly code:
+      | "UPLOAD_EMPTY"
+      | "UPLOAD_TYPE_NOT_ALLOWED"
+      | "MEAL_PHOTO_NOT_FOUND",
   ) {
     super(message);
     this.name = "VoyageFileError";
@@ -113,6 +116,24 @@ export async function openStoredFile(fileName: string) {
       : null;
   } catch {
     return null;
+  }
+}
+
+// Photos de repas citees par un voyage: chacune doit avoir ete envoyee.
+export async function assertMealPhotosStored(fileNames: string[]) {
+  for (const fileName of fileNames) {
+    try {
+      const info = await stat(
+        path.join(uploadDirectory(), path.basename(fileName)),
+      );
+      if (info.isFile()) continue;
+    } catch {
+      // absente: erreur ci-dessous
+    }
+    throw new VoyageFileError(
+      "Photo de repas introuvable : renvoyez-la",
+      "MEAL_PHOTO_NOT_FOUND",
+    );
   }
 }
 

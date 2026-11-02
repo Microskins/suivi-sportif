@@ -12,6 +12,7 @@ import {
 } from "./admin-form";
 import type { StageFiles } from "./admin-stage-files";
 import { AdminStageFiles } from "./admin-stage-files";
+import { AdminStageMeals } from "./admin-stage-meals";
 import type { LngLat } from "./trip-types";
 import { Panel, TextAreaField, TextField, buttonClass } from "./admin-ui";
 
@@ -253,6 +254,8 @@ export function AdminStages({
                   <StageFields
                     disabled={disabled}
                     errors={errors}
+                    name={name}
+                    onAuthError={onAuthError}
                     prefix={prefix}
                     stage={stage}
                     onChange={(patch) => update(stage.key, patch)}
@@ -298,6 +301,8 @@ export function AdminStages({
 function StageFields({
   disabled,
   errors,
+  name,
+  onAuthError,
   onChange,
   onPlace,
   prefix,
@@ -305,6 +310,8 @@ function StageFields({
 }: {
   disabled: boolean;
   errors: Record<string, string>;
+  name: string;
+  onAuthError: AuthErrorHandler;
   onChange: (patch: Partial<StageDraft>) => void;
   onPlace: (coordinates: LngLat) => void;
   prefix: string;
@@ -385,6 +392,15 @@ function StageFields({
         }
         positioned={hasPosition(stage)}
         onPick={onPlace}
+      />
+      <AdminStageMeals
+        disabled={disabled}
+        errors={errors}
+        meals={stage.meals}
+        onAuthError={onAuthError}
+        prefix={prefix}
+        stageLabel={name}
+        onChange={(meals) => onChange({ meals })}
       />
       {stage.route.length > 0 && (
         <p className="site-label text-[0.65rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)] sm:col-span-6">

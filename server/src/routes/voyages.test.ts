@@ -334,6 +334,51 @@ describe("regles metier des voyages", () => {
     expect(lodging("airbnb chez Moira").success).toBe(false);
   });
 
+  it("garde les repas facultatifs et valide chaque point", () => {
+    const stage = {
+      code: "EDI",
+      dayLabel: "J01",
+      dateLabel: "19 oct.",
+      title: "Edimbourg",
+      coordinates: [-3.2, 55.9],
+    };
+    const parse = (meals?: unknown) =>
+      tripStageInputSchema.safeParse({ ...stage, meals });
+
+    expect(parse(undefined).data?.meals).toEqual([]);
+    expect(
+      parse([
+        {
+          name: "  The Witchery  ",
+          coordinates: [-3.1955, 55.9489],
+          url: "https://www.thewitchery.com/#menu",
+        },
+        { name: "Pub", coordinates: [-3.19, 55.95], url: "" },
+        { name: "Chippy", coordinates: [-3.18, 55.94] },
+      ]).data?.meals,
+    ).toEqual([
+      {
+        name: "The Witchery",
+        coordinates: [-3.1955, 55.9489],
+        url: "https://www.thewitchery.com/",
+        photo: null,
+      },
+      { name: "Pub", coordinates: [-3.19, 55.95], url: null, photo: null },
+      { name: "Chippy", coordinates: [-3.18, 55.94], url: null, photo: null },
+    ]);
+    expect(parse([{ name: "", coordinates: [0, 0] }]).success).toBe(false);
+    expect(parse([{ name: "Sans position" }]).success).toBe(false);
+    expect(
+      parse([{ name: "X", coordinates: [0, 0], url: "javascript:alert(1)" }])
+        .success,
+    ).toBe(false);
+    // La photo est un nom rendu par le serveur, jamais un chemin.
+    expect(
+      parse([{ name: "X", coordinates: [0, 0], photo: "../../etc/passwd" }])
+        .success,
+    ).toBe(false);
+  });
+
   it("reconnait les formats au contenu, pas a l'extension", () => {
     expect(detectPhotoExtension(Buffer.from([0xff, 0xd8, 0xff, 0xe0]))).toBe(
       "jpg",

@@ -53,26 +53,49 @@ export function normalizeLodgingUrl(value: string): string | null {
   return url.toString();
 }
 
-const lodgingUrlSchema = z
-  .string()
-  .trim()
-  .max(500)
-  .transform((value, ctx) => {
-    if (value === "") {
-      return null;
-    }
-    const url = normalizeLodgingUrl(value);
-    if (!url) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Lien attendu (ex. https://www.airbnb.fr/rooms/12345678)",
-      });
-      return z.NEVER;
-    }
-    return url;
-  })
-  .nullable()
-  .default(null);
+// Lien facultatif (logement, restaurant): vide => null, sinon une adresse
+// http(s) normalisee.
+const optionalLinkSchema = (example: string) =>
+  z
+    .string()
+    .trim()
+    .max(500)
+    .transform((value, ctx) => {
+      if (value === "") {
+        return null;
+      }
+      const url = normalizeLodgingUrl(value);
+      if (!url) {
+        ctx.addIssue({
+          code: "custom",
+          message: `Lien attendu (ex. ${example})`,
+        });
+        return z.NEVER;
+      }
+      return url;
+    })
+    .nullable()
+    .default(null);
+
+const lodgingUrlSchema = optionalLinkSchema(
+  "https://www.airbnb.fr/rooms/12345678",
+);
+
+// Un repas de l'etape: un point sur la carte, avec le lien du lieu si on l'a.
+export const tripMealInputSchema = z.object({
+  name: z.string().trim().min(1, "Nom du lieu obligatoire").max(120),
+  coordinates: lngLatSchema,
+  url: optionalLinkSchema("https://www.google.com/maps/place/..."),
+  // Photo du repas: nom rendu par l'envoi (POST /admin/meal-photos).
+  photo: z
+    .string()
+    .regex(
+      /^[0-9a-f-]{36}\.(jpg|png|webp)$/,
+      "Photo invalide : renvoyez-la depuis l'admin",
+    )
+    .nullable()
+    .default(null),
+});
 
 export const tripStageInputSchema = z.object({
   // Present pour une etape existante: elle garde ses traces et ses photos.
@@ -91,6 +114,7 @@ export const tripStageInputSchema = z.object({
   coordinates: lngLatSchema,
   route: z.array(lngLatSchema).max(5000).default([]),
   lodgingUrl: lodgingUrlSchema,
+  meals: z.array(tripMealInputSchema).max(20).default([]),
 });
 
 export const tripInputSchema = z
@@ -176,4 +200,5 @@ export const fileNameParamSchema = z.object({
 export type AirportInput = z.infer<typeof airportInputSchema>;
 export type TripInput = z.infer<typeof tripInputSchema>;
 export type TripStageInput = z.infer<typeof tripStageInputSchema>;
+export type TripMealInput = z.infer<typeof tripMealInputSchema>;
 export type LngLat = z.infer<typeof lngLatSchema>;

@@ -37,6 +37,7 @@ const stage = (id: string, code: string, coordinates: [number, number]) => ({
   highlights: [],
   id,
   lodgingUrl: null,
+  meals: [],
   photos: [],
   route: [],
   title: code,

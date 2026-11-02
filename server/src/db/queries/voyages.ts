@@ -4,7 +4,12 @@
 import type { Prisma } from "@prisma/client";
 import prisma from "../index.js";
 import { consistentRoutes } from "../../lib/stage-routes.js";
-import type { AirportInput, LngLat, TripInput } from "../../schemas/voyages.js";
+import type {
+  AirportInput,
+  LngLat,
+  TripInput,
+  TripMealInput,
+} from "../../schemas/voyages.js";
 
 export type TripStatus = "realise" | "a-venir";
 
@@ -83,6 +88,27 @@ function formatSummary(trip: TripSummaryRow) {
   };
 }
 
+// Les anciens repas (avant les photos) n'ont pas de champ `photo`.
+function formatMeal(meal: TripMealInput) {
+  const photo = meal.photo ?? null;
+  return {
+    name: meal.name,
+    coordinates: meal.coordinates,
+    url: meal.url ?? null,
+    photo,
+    photoUrl: photo ? `${FILE_ROUTE}/${photo}` : null,
+  };
+}
+
+// Photos des repas d'une etape (colonne JSON `meals`).
+function mealPhotos(meals: Prisma.JsonValue): string[] {
+  return Array.isArray(meals)
+    ? (meals as TripMealInput[]).flatMap((meal) =>
+        meal?.photo ? [meal.photo] : [],
+      )
+    : [];
+}
+
 function formatDetail(trip: TripDetailRow) {
   return {
     ...formatSummary(trip),
@@ -100,6 +126,7 @@ function formatDetail(trip: TripDetailRow) {
         coordinates: [stage.longitude, stage.latitude] as LngLat,
         route: stage.route as LngLat[],
         lodgingUrl: stage.lodgingUrl,
+        meals: (stage.meals as TripMealInput[]).map(formatMeal),
         tracks: stage.tracks.map((track) => ({
           id: track.id,
           kind: track.kind === "TRAJET" ? "trajet" : "randonnee",
@@ -151,7 +178,7 @@ export async function getPublishedTrip(slug: string) {
 
 export async function isPublishedFile(fileName: string) {
   const published = { stage: { trip: { published: true } } };
-  const [track, photo] = await Promise.all([
+  const [track, photo, meal] = await Promise.all([
     prisma.tripTrack.findFirst({
       where: { fileName, ...published },
       select: { id: true },
@@ -160,8 +187,15 @@ export async function isPublishedFile(fileName: string) {
       where: { fileName, ...published },
       select: { id: true },
     }),
+    prisma.tripStage.findFirst({
+      where: {
+        trip: { published: true },
+        meals: { array_contains: [{ photo: fileName }] },
+      },
+      select: { id: true },
+    }),
   ]);
-  return Boolean(track ?? photo);
+  return Boolean(track ?? photo ?? meal);
 }
 
 // ============== Administration ==============
@@ -264,6 +298,7 @@ function stageFields(stage: TripInput["stages"][number], position: number) {
     latitude: stage.coordinates[1],
     route: stage.route,
     lodgingUrl: stage.lodgingUrl,
+    meals: stage.meals,
   };
 }
 
@@ -305,6 +340,7 @@ export async function updateTrip(id: string, input: TripInput) {
         stages: {
           select: {
             id: true,
+            meals: true,
             tracks: { select: { fileName: true } },
             photos: { select: { fileName: true } },
           },
@@ -367,10 +403,23 @@ export async function updateTrip(id: string, input: TripInput) {
       }
     }
 
-    return {
-      removedFiles: removed.flatMap((stage) =>
-        [...stage.tracks, ...stage.photos].map((file) => file.fileName),
+    // Photos de repas qui ne sont plus citees nulle part dans le voyage.
+    const keptMealPhotos = new Set(
+      input.stages.flatMap((stage) =>
+        stage.meals.flatMap((meal) => (meal.photo ? [meal.photo] : [])),
       ),
+    );
+    const droppedMealPhotos = trip.stages
+      .flatMap((stage) => mealPhotos(stage.meals))
+      .filter((fileName) => !keptMealPhotos.has(fileName));
+
+    return {
+      removedFiles: [
+        ...removed.flatMap((stage) =>
+          [...stage.tracks, ...stage.photos].map((file) => file.fileName),
+        ),
+        ...droppedMealPhotos,
+      ],
     };
   });
 
@@ -386,6 +435,7 @@ export async function deleteTrip(id: string) {
     include: {
       stages: {
         select: {
+          meals: true,
           tracks: { select: { fileName: true } },
           photos: { select: { fileName: true } },
         },
@@ -396,9 +446,10 @@ export async function deleteTrip(id: string) {
     return null;
   }
   await prisma.trip.delete({ where: { id } });
-  return trip.stages.flatMap((stage) =>
-    [...stage.tracks, ...stage.photos].map((file) => file.fileName),
-  );
+  return trip.stages.flatMap((stage) => [
+    ...[...stage.tracks, ...stage.photos].map((file) => file.fileName),
+    ...mealPhotos(stage.meals),
+  ]);
 }
 
 export async function stageExists(stageId: string) {
