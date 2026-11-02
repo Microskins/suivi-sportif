@@ -142,6 +142,12 @@ export const photoUploadQuerySchema = z.object({
   caption: z.string().trim().max(200).default(""),
 });
 
+// Itineraire routier demande par l'admin entre deux etapes consecutives.
+export const roadRouteInputSchema = z.object({
+  from: lngLatSchema,
+  to: lngLatSchema,
+});
+
 export const geocodeQuerySchema = z.object({
   q: z.string().trim().min(3, "Adresse trop courte").max(300),
 });

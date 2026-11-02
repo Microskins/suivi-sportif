@@ -21,6 +21,7 @@ import {
   storeGpx,
   storePhoto,
 } from "../lib/voyage-files.js";
+import { RoadRouteError, fetchRoadRoute } from "../lib/road-route.js";
 import { authenticateVoyageAdmin } from "../plugins/auth.js";
 import { GeocodingError, geocodeAddress } from "../services/geocoding.js";
 import { idParamSchema } from "../schemas/index.js";
@@ -29,6 +30,7 @@ import {
   fileNameParamSchema,
   geocodeQuerySchema,
   photoUploadQuerySchema,
+  roadRouteInputSchema,
   slugParamSchema,
   trackUploadQuerySchema,
   tripInputSchema,
@@ -279,6 +281,33 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
           await voyages.upsertAirport(airportInputSchema.parse(request.body)),
         );
       } catch (error) {
+        return handleError(fastify, reply, error);
+      }
+    },
+  );
+
+  // Calcul ponctuel depuis l'admin; le trace renvoye est enregistre avec
+  // l'etape par l'enregistrement du voyage.
+  fastify.post(
+    "/road-route",
+    {
+      config: { rateLimit: writeRateLimit },
+      schema: {
+        ...admin,
+        summary: "Compute the road route between two stages",
+      },
+    },
+    async (request, reply) => {
+      try {
+        const { from, to } = roadRouteInputSchema.parse(request.body);
+        return sendOk(reply, await fetchRoadRoute(from, to));
+      } catch (error) {
+        if (error instanceof RoadRouteError) {
+          const status = error.code === "ROUTE_NOT_FOUND" ? 422 : 502;
+          return reply
+            .code(status)
+            .send({ error: error.message, code: error.code });
+        }
         return handleError(fastify, reply, error);
       }
     },
