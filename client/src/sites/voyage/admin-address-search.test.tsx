@@ -103,4 +103,31 @@ describe("position d'une etape depuis l'adresse du logement", () => {
     expect(parseCoordinates("Portree, Skye")).toBeNull();
     expect(parseCoordinates("95.1, 10")).toBeNull();
   });
+
+  it("previent quand seul un lieu proche est trouve", async () => {
+    mockGeocode(200, {
+      data: [
+        {
+          label: "IV2 6XR, Highland",
+          coordinates: [-4.4067, 57.2731],
+          approximate: true,
+        },
+      ],
+    });
+    render(
+      <AdminAddressSearch
+        disabled={false}
+        positioned={false}
+        onPick={vi.fn()}
+      />,
+    );
+    searchFor("Foresters Lodge, Farigaig, Inverness IV2 6XR, Royaume-Uni");
+
+    expect(
+      await screen.findByText(/Adresse exacte introuvable/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Utiliser IV2 6XR, Highland" }),
+    ).toBeInTheDocument();
+  });
 });
