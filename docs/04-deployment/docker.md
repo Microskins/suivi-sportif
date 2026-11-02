@@ -175,10 +175,17 @@ telecharge ensuite les photos choisies (sortie HTTPS vers
 `photospicker.googleapis.com` pour cela.
 
 Les regles de confidentialite donnees a Google (`/voyage/confidentialite`)
-sont une page HTML statique, `client/public/voyage/confidentialite.html`,
+sont une page HTML statique, `client/public/legal/voyage-confidentialite.html`,
 servie par une `location` dediee de `client/nginx/default.conf`: le robot de
 validation de Google lit le HTML brut sans executer le JavaScript, une page
-React lui paraitrait vide.
+React lui paraitrait vide. Jamais de dossier `client/public/voyage/` (ni
+d'autre dossier nomme comme une route de l'application): Nginx le servirait
+a la place de `index.html` et `/voyage` repondrait `403`.
+
+Cache: `client/nginx/default.conf` garde un an les fichiers hashes de
+`/assets/` (`immutable`) et fait revalider tout le reste (`no-cache`), dont
+`index.html`: apres un deploiement, un navigateur ne recharge jamais une
+ancienne page qui cite des scripts supprimes.
 
 ## 4. Bascule Nginx
 
