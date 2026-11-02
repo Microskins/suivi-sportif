@@ -374,6 +374,7 @@ describe("édition d'un voyage", () => {
     expect(body.stages[0].lodgingUrl).toBeNull();
     expect(body.stages[2]).toMatchObject({
       code: "SKY",
+      coordinates: [-6.2, 57.4],
       route: [],
       lodgingUrl: "https://www.airbnb.fr/rooms/87654321?adults=2",
     });

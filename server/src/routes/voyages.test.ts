@@ -338,3 +338,74 @@ describe("regles metier des voyages", () => {
     expect(looksLikeGpx(Buffer.from("<svg></svg>"))).toBe(false);
   });
 });
+
+describe("recherche d'adresse (geocodage)", () => {
+  const url = (q: string) =>
+    `/api/voyages/admin/geocode?${new URLSearchParams({ q })}`;
+
+  it("transforme l'adresse du logement en coordonnees", async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify([
+            {
+              display_name: "12 Rue Exemple, Portree, Écosse",
+              lat: "57.4125361",
+              lon: "-6.1965812",
+            },
+            { display_name: "Sans position" },
+          ]),
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: url("12 Rue Exemple, Portree"),
+        headers: { authorization: tokenFor(ADMIN) },
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json().data).toEqual([
+        {
+          label: "12 Rue Exemple, Portree, Écosse",
+          coordinates: [-6.19658, 57.41254],
+        },
+      ]);
+      const called = new URL(String(fetchMock.mock.calls[0][0]));
+      expect(called.hostname).toBe("nominatim.openstreetmap.org");
+      expect(called.searchParams.get("q")).toBe("12 Rue Exemple, Portree");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("previent quand le service ne repond pas", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new Error("ECONNREFUSED");
+      }),
+    );
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: url("Portree"),
+        headers: { authorization: tokenFor(ADMIN) },
+      });
+      expect(response.statusCode).toBe(502);
+      expect(response.json().code).toBe("GEOCODING_UNAVAILABLE");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("reste reserve aux administrateurs", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: url("Portree"),
+      headers: { authorization: tokenFor(OTHER) },
+    });
+    expect(response.statusCode).toBe(403);
+  });
+});

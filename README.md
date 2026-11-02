@@ -24,7 +24,8 @@ Disponible:
 - Nutrition: aliments, repas, objectifs nutritionnels
 - Voyages: lecture publique `GET /api/voyages` et administration
   `/api/voyages/admin/*` (voyages, vols, aeroports, etapes, traces GPX,
-  photos, lien Airbnb du logement de chaque etape) reservee aux e-mails de `VOYAGE_ADMIN_EMAILS`
+  photos, lien Airbnb du logement de chaque etape, position trouvee
+  depuis l'adresse via Nominatim/OpenStreetMap) reservee aux e-mails de `VOYAGE_ADMIN_EMAILS`
 - Frontend React multi-sites avec portfolio, Prix Frais, Voyage, Trekking et
   Suivi Sportif; le site Voyage (globe `/voyage`, carnets `/voyage/:slug`,
   admin `/voyage/admin`) lit ses donnees depuis l'API

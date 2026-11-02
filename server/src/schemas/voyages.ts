@@ -142,6 +142,10 @@ export const photoUploadQuerySchema = z.object({
   caption: z.string().trim().max(200).default(""),
 });
 
+export const geocodeQuerySchema = z.object({
+  q: z.string().trim().min(3, "Adresse trop courte").max(300),
+});
+
 export const slugParamSchema = z.object({
   slug: z.string().trim().min(1).max(60),
 });
