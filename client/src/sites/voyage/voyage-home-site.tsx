@@ -127,7 +127,12 @@ export function VoyageHomeSite() {
       <footer className="border-t border-[#dfe4ea] bg-white">
         <div className="site-label mx-auto flex max-w-[78rem] flex-col gap-2 px-5 py-5 text-[0.65rem] font-medium uppercase tracking-[0.14em] text-[var(--site-muted)] sm:flex-row sm:justify-between sm:px-9 lg:px-14">
           <p>Voyage — Thomas Cochart</p>
-          <p>Documents publics · Aucune référence privée</p>
+          <p>
+            Documents publics · Aucune référence privée ·{" "}
+            <a href="/voyage/confidentialite" className="hover:underline">
+              Confidentialité
+            </a>
+          </p>
         </div>
       </footer>
     </main>

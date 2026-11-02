@@ -57,6 +57,17 @@ describe("routes du site Voyage", () => {
     expect(await screen.findByText("Administration Voyage")).toBeTruthy();
     expect(screen.queryByText("Carnet admin")).toBeNull();
   });
+
+  it("affiche les regles de confidentialite plutot qu'un carnet", () => {
+    window.history.replaceState({}, "", "/voyage/confidentialite");
+    render(<SiteRouter />);
+
+    expect(
+      screen.getByRole("heading", { name: "Règles de confidentialité" }),
+    ).toBeTruthy();
+    expect(screen.getByText(/Limited Use/)).toBeTruthy();
+    expect(screen.queryByText("Carnet confidentialite")).toBeNull();
+  });
 });
 
 describe("route du comparateur de prix", () => {
