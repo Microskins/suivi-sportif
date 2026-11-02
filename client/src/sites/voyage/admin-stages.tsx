@@ -3,7 +3,12 @@ import { AdminAddressSearch } from "./admin-address-search";
 import type { AuthErrorHandler } from "./admin-api";
 import { adminApi, adminErrorMessage } from "./admin-api";
 import type { StageDraft } from "./admin-form";
-import { emptyStage, moveItem, stageCoordinates } from "./admin-form";
+import {
+  emptyStage,
+  hasPosition,
+  moveItem,
+  stageCoordinates,
+} from "./admin-form";
 import type { StageFiles } from "./admin-stage-files";
 import { AdminStageFiles } from "./admin-stage-files";
 import { Panel, TextAreaField, TextField, buttonClass } from "./admin-ui";
@@ -356,36 +361,25 @@ function StageFields({
           firstNested(errors, `${prefix}highlights.`)
         }
       />
-      <AdminAddressSearch
-        className="sm:col-span-6"
-        disabled={disabled}
-        onPick={([lng, lat]) =>
-          onChange({ lng: String(lng), lat: String(lat) })
-        }
-      />
-      <TextField
-        className="sm:col-span-3"
-        label="Longitude"
-        hint="Entre -180 et 180, ouest négatif (ex. -3.19)."
-        inputMode="decimal"
-        required
-        {...field("lng")}
-      />
-      <TextField
-        className="sm:col-span-3"
-        label="Latitude"
-        hint="Entre -90 et 90 (ex. 55.95)."
-        inputMode="decimal"
-        required
-        {...field("lat")}
-      />
       <TextField
         className="sm:col-span-6"
         label="Logement (lien Airbnb)"
-        hint="Où vous avez dormi, ex. https://www.airbnb.fr/rooms/12345678 — les dates et voyageurs du lien sont retirés. La position du logement (adresse ci-dessous) trace le parcours."
+        hint="Où vous avez dormi, ex. https://www.airbnb.fr/rooms/12345678 — les dates et voyageurs du lien sont retirés. La position de l’étape vient de l’adresse du logement, juste en dessous."
         inputMode="url"
         maxLength={500}
         {...field("lodgingUrl")}
+      />
+      <AdminAddressSearch
+        className="sm:col-span-6"
+        disabled={disabled}
+        error={
+          errors[`${prefix}position`] ??
+          firstNested(errors, `${prefix}coordinates`)
+        }
+        positioned={hasPosition(stage)}
+        onPick={([lng, lat]) =>
+          onChange({ lng: String(lng), lat: String(lat) })
+        }
       />
       {stage.route.length > 0 && (
         <p className="site-label text-[0.65rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)] sm:col-span-6">
