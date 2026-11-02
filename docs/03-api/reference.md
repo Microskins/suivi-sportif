@@ -728,6 +728,13 @@ l'admin):
   `422 ROUTE_NOT_FOUND` sans route entre les deux points, `502
   ROUTER_UNAVAILABLE` si le service ne repond pas ou refuse (limite de
   debit du serveur public: environ une requete par seconde).
+- `GET /api/voyages/admin/geocode?q=<adresse>`: adresse (d'un logement, d'un
+  lieu) vers `[{ label, coordinates: [lng, lat], approximate? }]`. Google
+  Geocoding si `GOOGLE_GEOCODING_API_KEY` est defini (secret GitHub de
+  l'environnement `production`), sinon ou en cas d'echec Nominatim
+  (OpenStreetMap), en elargissant l'adresse puis par code postal britannique;
+  `approximate: true` quand seul un lieu proche est trouve. L'adresse n'est
+  pas enregistree. `502 GEOCODING_UNAVAILABLE` si aucun service ne repond.
 
 Traces GPX et photos d'une etape: le fichier est envoye tel quel en corps
 brut (pas de `multipart/form-data`), ses metadonnees en query. Le format est

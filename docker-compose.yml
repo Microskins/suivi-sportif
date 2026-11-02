@@ -19,6 +19,9 @@ services:
       VOYAGE_ADMIN_EMAILS: ${VOYAGE_ADMIN_EMAILS:-}
       # Serveur OSRM des itineraires routiers de l'admin (vide: serveur public).
       ROUTER_URL: ${ROUTER_URL:-}
+      # Cle de l'API Geocoding de Google (facultative: sans elle, recherche
+      # d'adresse par Nominatim/OpenStreetMap).
+      GOOGLE_GEOCODING_API_KEY: ${GOOGLE_GEOCODING_API_KEY:-}
       UPLOAD_DIR: /app/uploads
     volumes:
       - voyage-uploads:/app/uploads

@@ -82,6 +82,10 @@ jobs:
           # serveur pour docker compose: plus rien a saisir a la main.
           # Variable d'environnement GitHub `production` pour la changer.
           VOYAGE_ADMIN_EMAILS: ${{ vars.VOYAGE_ADMIN_EMAILS || 'thomas.cochart@outlook.fr' }}
+          # Recherche d'adresse de l'admin Voyage par Google (facultative).
+          # Secret GitHub `GOOGLE_GEOCODING_API_KEY` de l'environnement
+          # `production`; vide: Nominatim/OpenStreetMap.
+          GOOGLE_GEOCODING_API_KEY: ${{ secrets.GOOGLE_GEOCODING_API_KEY }}
         run: |
           set -euo pipefail
           PROJECT_DIR="${{ vars.PROD_PROJECT_DIR || '/var/www/suivi-sportif' }}" BRANCH_NAME=main bash scripts/deploy-production.sh

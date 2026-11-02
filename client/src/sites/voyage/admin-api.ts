@@ -167,7 +167,12 @@ export type MealPhotoUpload = {
   photoUrl: string;
 };
 
-export type GeocodeResult = { coordinates: LngLat; label: string };
+export type GeocodeResult = {
+  // Adresse exacte inconnue: lieu le plus proche (village, code postal).
+  approximate?: boolean;
+  coordinates: LngLat;
+  label: string;
+};
 
 export const adminApi = {
   geocode: (address: string) =>

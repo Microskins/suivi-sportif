@@ -141,6 +141,14 @@ export function AdminAddressSearch({
           </p>
         )}
       </div>
+      {status.kind === "results" &&
+        status.results.some((result) => result.approximate) && (
+          <p className="mt-2 text-sm text-[#0f1b2b]">
+            Adresse exacte introuvable : voici le lieu connu le plus proche.
+            Pour placer le logement au mètre près, collez sa position copiée
+            depuis Google Maps.
+          </p>
+        )}
       {status.kind === "results" && (
         <ul className="mt-2 grid gap-2" aria-label="Adresses trouvées">
           {status.results.map((result) => (
