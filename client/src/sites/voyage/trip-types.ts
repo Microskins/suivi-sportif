@@ -79,3 +79,19 @@ export type TripSummary = {
 export type TripDetail = TripSummary & { stages: TripStage[] };
 
 export const tripHref = (slug: string) => `/voyage/${slug}`;
+
+// Aller du voyage, pour le billet: depart du premier trajet, et arrivee au
+// bout des trajets qui s'enchainent (chacun part la ou le precedent est
+// arrive). Maison -> Charleroi -> Edimbourg donne Maison -> Edimbourg; un
+// retour ajoute en trajet suivant (Inverness -> Charleroi) ne compte pas.
+export function outboundJourney(flights: Flight[]): {
+  from: Airport;
+  to: Airport;
+} {
+  let to = flights[0].to;
+  for (const flight of flights.slice(1)) {
+    if (flight.from.code !== to.code) break;
+    to = flight.to;
+  }
+  return { from: flights[0].from, to };
+}
