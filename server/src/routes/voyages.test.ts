@@ -1,5 +1,6 @@
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -13,6 +14,7 @@ import { generateToken } from "../plugins/auth.js";
 import { tripStatus } from "../db/queries/voyages.js";
 import { detectPhotoExtension, looksLikeGpx } from "../lib/voyage-files.js";
 import { consistentRoutes } from "../lib/stage-routes.js";
+import { geocodeAttempts } from "../services/geocoding.js";
 import { tripStageInputSchema } from "../schemas/voyages.js";
 
 const mocks = vi.hoisted(() => ({
@@ -451,5 +453,136 @@ describe("coherence des traces d'etapes", () => {
       { coordinates: neist, route: [edi, sky] },
     ]);
     expect(stages.map((stage) => stage.route)).toEqual([[], []]);
+  });
+});
+
+describe("adresse de logement introuvable telle quelle", () => {
+  const cottage =
+    "Foresters Lodge, Farigaig, Inverfarigaig, Inverness IV2 6XR, Royaume-Uni";
+
+  it("elargit la recherche puis tente le code postal britannique seul", () => {
+    expect(
+      geocodeAttempts(cottage).map((params) => Object.fromEntries(params)),
+    ).toEqual([
+      { q: cottage },
+      { q: "Farigaig, Inverfarigaig, Inverness IV2 6XR, Royaume-Uni" },
+      { q: "Inverfarigaig, Inverness IV2 6XR, Royaume-Uni" },
+      { postalcode: "IV2 6XR", countrycodes: "gb" },
+    ]);
+    expect(geocodeAttempts("Portree").map((p) => p.get("q"))).toEqual([
+      "Portree",
+    ]);
+  });
+
+  it("rend le lieu le plus proche, marque approximatif", async () => {
+    process.env.GEOCODE_PAUSE_MS = "0";
+    const fetchMock = vi.fn(async (url: URL) => {
+      const found = url.searchParams.get("postalcode") === "IV2 6XR";
+      return new Response(
+        JSON.stringify(
+          found
+            ? [
+                {
+                  display_name: "IV2 6XR, Highland",
+                  lat: "57.2731",
+                  lon: "-4.4067",
+                },
+              ]
+            : [],
+        ),
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/api/voyages/admin/geocode?${new URLSearchParams({ q: cottage })}`,
+        headers: { authorization: tokenFor(ADMIN) },
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json().data).toEqual([
+        {
+          label: "IV2 6XR, Highland",
+          coordinates: [-4.4067, 57.2731],
+          approximate: true,
+        },
+      ]);
+      expect(fetchMock).toHaveBeenCalledTimes(4);
+    } finally {
+      vi.unstubAllGlobals();
+      delete process.env.GEOCODE_PAUSE_MS;
+    }
+  });
+});
+
+describe("recherche d'adresse par Google (cle configuree)", () => {
+  const geocode = (q: string) =>
+    app.inject({
+      method: "GET",
+      url: `/api/voyages/admin/geocode?${new URLSearchParams({ q })}`,
+      headers: { authorization: tokenFor(ADMIN) },
+    });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    delete process.env.GOOGLE_GEOCODING_API_KEY;
+  });
+
+  it("utilise Google en priorite", async () => {
+    process.env.GOOGLE_GEOCODING_API_KEY = "cle-test";
+    const fetchMock = vi.fn(
+      async (_url: URL) =>
+        new Response(
+          JSON.stringify({
+            status: "OK",
+            results: [
+              {
+                formatted_address: "Foresters Lodge, Inverness IV2 6XR, UK",
+                geometry: {
+                  location: { lat: 57.2696, lng: -4.4072 },
+                  location_type: "ROOFTOP",
+                },
+              },
+            ],
+          }),
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await geocode("Foresters Lodge, Inverness IV2 6XR");
+
+    expect(response.json().data).toEqual([
+      {
+        label: "Foresters Lodge, Inverness IV2 6XR, UK",
+        coordinates: [-4.4072, 57.2696],
+      },
+    ]);
+    const called = fetchMock.mock.calls[0][0];
+    expect(called.hostname).toBe("maps.googleapis.com");
+    expect(called.searchParams.get("key")).toBe("cle-test");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("repasse par Nominatim si Google refuse la cle", async () => {
+    process.env.GOOGLE_GEOCODING_API_KEY = "cle-refusee";
+    const fetchMock = vi.fn(async (url: URL) =>
+      url.hostname === "maps.googleapis.com"
+        ? new Response(JSON.stringify({ status: "REQUEST_DENIED" }))
+        : new Response(
+            JSON.stringify([
+              { display_name: "Portree", lat: "57.41", lon: "-6.19" },
+            ]),
+          ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const response = await geocode("Portree");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json().data[0].label).toBe("Portree");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
