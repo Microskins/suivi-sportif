@@ -696,6 +696,19 @@ Aeroports (referentiel partage par tous les voyages):
 
 Il n'y a pas de route de suppression d'aeroport.
 
+Itineraire routier entre deux etapes (bouton « Tracer par la route » de
+l'admin):
+
+- `POST /api/voyages/admin/road-route`: corps `{ "from": [lng, lat], "to":
+  [lng, lat] }`, reponse `{ "distanceKm": 196.4, "route": [[lng, lat], ...] }`.
+  Calcul par un serveur OSRM (profil voiture, `ROUTER_URL`, par defaut le
+  serveur public `https://router.project-osrm.org`), trace simplifie a ~20 m
+  et plafonne a 5000 points. Rien n'est enregistre: l'admin place le trace
+  dans `route` de l'etape d'arrivee et l'enregistre avec le voyage.
+  `422 ROUTE_NOT_FOUND` sans route entre les deux points, `502
+  ROUTER_UNAVAILABLE` si le service ne repond pas ou refuse (limite de
+  debit du serveur public: environ une requete par seconde).
+
 Traces GPX et photos d'une etape: le fichier est envoye tel quel en corps
 brut (pas de `multipart/form-data`), ses metadonnees en query. Le format est
 verifie au contenu, pas au nom ni au `Content-Type`; le fichier est stocke

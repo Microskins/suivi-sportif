@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { AuthErrorHandler } from "./admin-api";
+import { adminApi, adminErrorMessage } from "./admin-api";
 import type { StageDraft } from "./admin-form";
-import { emptyStage, moveItem } from "./admin-form";
+import { emptyStage, moveItem, stageCoordinates } from "./admin-form";
 import type { StageFiles } from "./admin-stage-files";
 import { AdminStageFiles } from "./admin-stage-files";
 import { Panel, TextAreaField, TextField, buttonClass } from "./admin-ui";
@@ -29,6 +30,8 @@ export function AdminStages({
   // Etapes depliees: les nouvelles d'office, les autres a la demande.
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [announce, setAnnounce] = useState("");
+  const [routing, setRouting] = useState<string | null>(null);
+  const [routeReport, setRouteReport] = useState("");
 
   const update = (key: string, patch: Partial<StageDraft>) =>
     onChange(
@@ -50,6 +53,58 @@ export function AdminStages({
     setExpanded((current) => new Set(current).add(stage.key));
     onChange([...stages, stage]);
     setAnnounce(`Étape ${stages.length + 1} ajoutée en fin de liste.`);
+  }
+
+  // Trace de chaque etape depuis la precedente, par la route. Les appels se
+  // suivent a une seconde d'intervalle: le serveur OSRM public limite le
+  // debit. Le resultat ne part en base qu'avec l'enregistrement du voyage.
+  async function traceRoads() {
+    const routes = new Map<string, StageDraft["route"]>();
+    const failures: string[] = [];
+    let distanceKm = 0;
+    for (let index = 1; index < stages.length; index += 1) {
+      const from = stageCoordinates(stages[index - 1]);
+      const to = stageCoordinates(stages[index]);
+      const name = stageName(stages[index], index);
+      if (!from || !to) {
+        failures.push(`${name} : coordonnées à compléter`);
+        continue;
+      }
+      setRouting(`Calcul de l’itinéraire ${index} / ${stages.length - 1}…`);
+      if (routes.size + failures.length > 0) {
+        await new Promise((resolve) => setTimeout(resolve, 1100));
+      }
+      try {
+        const result = await adminApi.roadRoute(from, to);
+        routes.set(stages[index].key, result.route);
+        distanceKm += result.distanceKm;
+      } catch (error) {
+        if (onAuthError(error)) {
+          setRouting(null);
+          return;
+        }
+        failures.push(`${name} : ${adminErrorMessage(error)}`);
+      }
+    }
+    setRouting(null);
+    if (routes.size > 0) {
+      onChange(
+        stages.map((stage) =>
+          routes.has(stage.key)
+            ? { ...stage, route: routes.get(stage.key)! }
+            : stage,
+        ),
+      );
+    }
+    const summary =
+      routes.size > 0
+        ? `${routes.size} itinéraire(s) routier(s) tracé(s), ${Math.round(distanceKm)} km au total. Enregistrez le voyage pour les garder.`
+        : "Aucun itinéraire tracé.";
+    setRouteReport(
+      failures.length
+        ? `${summary} À revoir — ${failures.join(" ; ")}.`
+        : summary,
+    );
   }
 
   function move(index: number, to: number) {
@@ -80,19 +135,37 @@ export function AdminStages({
     <Panel
       title={`Étapes (${stages.length})`}
       actions={
-        <button
-          type="button"
-          className={buttonClass.secondary}
-          disabled={disabled}
-          onClick={add}
-        >
-          Ajouter une étape
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className={buttonClass.secondary}
+            disabled={disabled || routing !== null || stages.length < 2}
+            onClick={traceRoads}
+          >
+            {routing ?? "Tracer par la route"}
+          </button>
+          <button
+            type="button"
+            className={buttonClass.secondary}
+            disabled={disabled || routing !== null}
+            onClick={add}
+          >
+            Ajouter une étape
+          </button>
+        </div>
       }
     >
       <p role="status" className="sr-only">
         {announce}
       </p>
+      {routeReport && (
+        <p
+          role="status"
+          className="mb-4 rounded-[10px] bg-[#eef2f6] p-3 text-sm leading-6"
+        >
+          {routeReport}
+        </p>
+      )}
       {stages.length === 0 ? (
         <p className="rounded-[10px] border border-dashed border-[#c9d1db] p-5 text-sm text-[var(--site-muted)]">
           Aucune étape : le carnet affichera « étapes à écrire ». Ajoutez-en une
@@ -300,7 +373,8 @@ function StageFields({
       />
       {stage.route.length > 0 && (
         <p className="site-label text-[0.65rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)] sm:col-span-6">
-          Tracé d’arrivée : {stage.route.length} points, conservés tels quels.
+          Tracé depuis l’étape précédente : {stage.route.length} points. «
+          Tracer par la route » le remplace par l’itinéraire routier.
         </p>
       )}
     </div>

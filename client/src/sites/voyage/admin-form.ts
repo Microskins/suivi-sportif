@@ -126,6 +126,13 @@ const parseNumber = (value: string) => {
   return trimmed === "" ? Number.NaN : Number(trimmed);
 };
 
+// Coordonnees saisies d'une etape, ou null tant qu'elles sont invalides.
+export function stageCoordinates(stage: StageDraft): LngLat | null {
+  const lng = parseNumber(stage.lng);
+  const lat = parseNumber(stage.lat);
+  return Math.abs(lng) <= 180 && Math.abs(lat) <= 90 ? [lng, lat] : null;
+}
+
 export const splitHighlights = (value: string) =>
   value
     .split(",")

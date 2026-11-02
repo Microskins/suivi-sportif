@@ -231,8 +231,8 @@ export function TripRouteMap({
 
       <p className="site-label border-t border-[#dfe4ea] px-5 py-4 text-[0.62rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)]">
         {tracks.length > 0
-          ? "Trait plein bleu : trajets GPS — dégradé : randonnées colorées par altitude — tirets : tracé reconstitué."
-          : "Tracé reconstitué à partir des étapes — pas une trace GPX enregistrée."}
+          ? "Trait plein bleu : trajets GPS — dégradé : randonnées colorées par altitude — tirets : itinéraire entre les étapes."
+          : "Tirets : itinéraire entre les étapes, calculé — pas une trace GPX enregistrée."}
       </p>
     </div>
   );
