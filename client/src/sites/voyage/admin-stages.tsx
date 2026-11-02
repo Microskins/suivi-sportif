@@ -7,10 +7,12 @@ import {
   emptyStage,
   hasPosition,
   moveItem,
+  placeStage,
   stageCoordinates,
 } from "./admin-form";
 import type { StageFiles } from "./admin-stage-files";
 import { AdminStageFiles } from "./admin-stage-files";
+import type { LngLat } from "./trip-types";
 import { Panel, TextAreaField, TextField, buttonClass } from "./admin-ui";
 
 type StagesProps = {
@@ -254,6 +256,9 @@ export function AdminStages({
                     prefix={prefix}
                     stage={stage}
                     onChange={(patch) => update(stage.key, patch)}
+                    onPlace={(coordinates) =>
+                      onChange(placeStage(stages, stage.key, coordinates))
+                    }
                   />
                   {stage.id ? (
                     <AdminStageFiles
@@ -294,12 +299,14 @@ function StageFields({
   disabled,
   errors,
   onChange,
+  onPlace,
   prefix,
   stage,
 }: {
   disabled: boolean;
   errors: Record<string, string>;
   onChange: (patch: Partial<StageDraft>) => void;
+  onPlace: (coordinates: LngLat) => void;
   prefix: string;
   stage: StageDraft;
 }) {
@@ -377,9 +384,7 @@ function StageFields({
           firstNested(errors, `${prefix}coordinates`)
         }
         positioned={hasPosition(stage)}
-        onPick={([lng, lat]) =>
-          onChange({ lng: String(lng), lat: String(lat) })
-        }
+        onPick={onPlace}
       />
       {stage.route.length > 0 && (
         <p className="site-label text-[0.65rem] font-medium uppercase tracking-[0.1em] text-[var(--site-muted)] sm:col-span-6">
