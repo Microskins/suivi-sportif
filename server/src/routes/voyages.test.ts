@@ -307,6 +307,12 @@ describe("regles metier des voyages", () => {
         "https://www.airbnb.fr/rooms/12345678?check_in=2026-10-19&adults=2&source_impression_id=p3",
       ).data?.lodgingUrl,
     ).toBe("https://www.airbnb.fr/rooms/12345678");
+    // Lien tel que partage depuis l'appli Airbnb (voyage passe).
+    expect(
+      lodging(
+        "https://www.airbnb.fr/rooms/37630836?guests=1&c=.pi129.pkpast_trip_share_virality&s=67&unique_share_id=e715b078-dec6-4106-9e3f-cfe03b07759a",
+      ).data?.lodgingUrl,
+    ).toBe("https://www.airbnb.fr/rooms/37630836");
     expect(
       lodging("http://fr.airbnb.ca/rooms/plus/42#photos").data?.lodgingUrl,
     ).toBe("https://fr.airbnb.ca/rooms/42");
