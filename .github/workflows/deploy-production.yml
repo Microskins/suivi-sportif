@@ -86,6 +86,9 @@ jobs:
           # Secret GitHub `GOOGLE_GEOCODING_API_KEY` de l'environnement
           # `production`; vide: Nominatim/OpenStreetMap.
           GOOGLE_GEOCODING_API_KEY: ${{ secrets.GOOGLE_GEOCODING_API_KEY }}
+          # ID client OAuth Google (public) de l'import Google Photos de
+          # l'admin Voyage. Variable GitHub `production`; vide: import masque.
+          GOOGLE_PHOTOS_CLIENT_ID: ${{ vars.GOOGLE_PHOTOS_CLIENT_ID || '' }}
         run: |
           set -euo pipefail
           PROJECT_DIR="${{ vars.PROD_PROJECT_DIR || '/var/www/suivi-sportif' }}" BRANCH_NAME=main bash scripts/deploy-production.sh

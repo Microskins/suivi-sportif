@@ -218,6 +218,21 @@ export const adminApi = {
       contentType: file.type,
       body: file,
     }),
+  googlePhotosConfig: () =>
+    adminRequest<{ clientId: string | null }>("/google-photos/config"),
+  importGooglePhotos: (
+    stageId: string,
+    payload: {
+      accessToken: string;
+      alt: string;
+      caption: string;
+      sessionId: string;
+    },
+  ) =>
+    adminRequest<{ photos: TripPhoto[]; skipped: number }>(
+      `/stages/${encodeURIComponent(stageId)}/photos/google`,
+      json("POST", payload),
+    ),
   deleteTrack: (id: string) =>
     adminRequest<void>(`/tracks/${encodeURIComponent(id)}`, {
       method: "DELETE",

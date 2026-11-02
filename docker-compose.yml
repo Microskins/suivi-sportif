@@ -22,6 +22,9 @@ services:
       # Cle de l'API Geocoding de Google (facultative: sans elle, recherche
       # d'adresse par Nominatim/OpenStreetMap).
       GOOGLE_GEOCODING_API_KEY: ${GOOGLE_GEOCODING_API_KEY:-}
+      # Import Google Photos dans l'admin Voyage: ID client OAuth (public).
+      # Vide: le bouton d'import est masque.
+      GOOGLE_PHOTOS_CLIENT_ID: ${GOOGLE_PHOTOS_CLIENT_ID:-}
       UPLOAD_DIR: /app/uploads
     volumes:
       - voyage-uploads:/app/uploads

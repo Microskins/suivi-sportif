@@ -3,6 +3,7 @@
 import type { FormEvent, RefObject } from "react";
 import { useRef, useState } from "react";
 import type { AuthErrorHandler } from "./admin-api";
+import { GooglePhotosImport } from "./admin-google-photos";
 import { adminApi, adminErrorMessage } from "./admin-api";
 import {
   ErrorAlert,
@@ -211,15 +212,22 @@ function PhotosBlock({
   const [alt, setAlt] = useState("");
   const [caption, setCaption] = useState("");
   const [altError, setAltError] = useState<string | undefined>();
+  const latestFiles = useRef<StageFiles>({ photos, tracks });
+  latestFiles.current = { photos, tracks };
+
+  function checkAlt() {
+    setAltError(
+      alt.trim() ? undefined : "Décrivez la photo pour les lecteurs d’écran.",
+    );
+    if (!alt.trim()) upload.setError("Le texte alternatif est obligatoire.");
+    else upload.setError(null);
+    return Boolean(alt.trim());
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
     const file = fileRef.current?.files?.[0];
-    setAltError(
-      alt.trim() ? undefined : "Décrivez la photo pour les lecteurs d’écran.",
-    );
-    if (!alt.trim())
-      return upload.setError("Le texte alternatif est obligatoire.");
+    if (!checkAlt()) return;
     if (!file) return upload.setError("Choisissez une photo.");
     if (!PHOTO_TYPES.includes(file.type))
       return upload.setError("Format accepté : JPEG, PNG ou WebP.");
@@ -322,6 +330,24 @@ function PhotosBlock({
         >
           {upload.pending ? "Envoi…" : "Envoyer la photo"}
         </button>
+        <GooglePhotosImport
+          stageId={stageId}
+          disabled={upload.pending}
+          onAuthError={onAuthError}
+          readMetadata={() =>
+            checkAlt() ? { alt: alt.trim(), caption: caption.trim() } : null
+          }
+          onImported={(imported) => {
+            // L'import a pu durer: on repart des fichiers les plus recents.
+            const current = latestFiles.current;
+            onChange({
+              tracks: current.tracks,
+              photos: [...current.photos, ...imported],
+            });
+            setAlt("");
+            setCaption("");
+          }}
+        />
       </form>
     </section>
   );

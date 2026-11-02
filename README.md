@@ -73,6 +73,9 @@ VOYAGE_ADMIN_EMAILS="moi@example.com"
 # Dossier des GPX et photos envoyes (defaut: uploads, relatif au dossier de
 # lancement de l'API, soit server/uploads avec npm run dev).
 UPLOAD_DIR="uploads"
+# Import Google Photos dans l'admin (ID client OAuth "Application Web").
+# Vide: le bouton d'import est masque. Voir docs/04-deployment/docker.md.
+GOOGLE_PHOTOS_CLIENT_ID=""
 ```
 
 Puis, apres inscription du compte admin, reprendre les voyages existants:

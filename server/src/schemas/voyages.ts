@@ -176,6 +176,16 @@ export const geocodeQuerySchema = z.object({
   q: z.string().trim().min(3, "Adresse trop courte").max(300),
 });
 
+// Import Google Photos: jeton OAuth de l'admin et session Picker terminee.
+// Le serveur liste lui-meme les photos choisies aupres de Google.
+export const googlePhotosImportSchema = photoUploadQuerySchema.extend({
+  accessToken: z.string().trim().min(1).max(4096),
+  sessionId: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z0-9_-]{1,200}$/, "Session Google Photos invalide"),
+});
+
 export const slugParamSchema = z.object({
   slug: z.string().trim().min(1).max(60),
 });
