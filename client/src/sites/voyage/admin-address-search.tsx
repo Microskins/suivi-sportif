@@ -30,12 +30,16 @@ export function AdminAddressSearch({
   className = "",
   disabled,
   error,
+  hint = "L’adresse donnée par le loueur place l’étape sur la carte ; elle n’est ni enregistrée ni publiée.",
+  label = "Adresse du logement",
   onPick,
   positioned,
 }: {
   className?: string;
   disabled: boolean;
   error?: string;
+  hint?: string;
+  label?: string;
   onPick: (coordinates: GeocodeResult["coordinates"]) => void;
   positioned: boolean;
 }) {
@@ -89,7 +93,7 @@ export function AdminAddressSearch({
   return (
     <div className={className}>
       <label htmlFor={`${id}-adresse`} className={labelClass}>
-        Adresse du logement
+        {label}
       </label>
       <div className="mt-1.5 flex flex-wrap gap-2">
         <input
@@ -119,9 +123,8 @@ export function AdminAddressSearch({
         </button>
       </div>
       <p id={`${id}-aide`} className="mt-1 text-xs text-[var(--site-muted)]">
-        L’adresse donnée par le loueur place l’étape sur la carte ; elle n’est
-        ni enregistrée ni publiée. Introuvable ? Collez la position copiée
-        depuis Google Maps (ex. 55.95325, -3.18827).
+        {hint} Introuvable ? Collez la position copiée depuis Google Maps (ex.
+        55.95325, -3.18827).
       </p>
       <div id={`${id}-etat`} role="status" className="mt-2 text-sm">
         {message ? (
@@ -134,7 +137,7 @@ export function AdminAddressSearch({
           </p>
         ) : (
           <p className="text-[var(--site-muted)]">
-            Pas encore de position : cherchez l’adresse du logement.
+            Pas encore de position : lancez une recherche.
           </p>
         )}
       </div>
