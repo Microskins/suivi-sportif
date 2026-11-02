@@ -345,7 +345,7 @@ describe("recherche d'adresse (geocodage)", () => {
 
   it("transforme l'adresse du logement en coordonnees", async () => {
     const fetchMock = vi.fn(
-      async () =>
+      async (_url: URL) =>
         new Response(
           JSON.stringify([
             {
