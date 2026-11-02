@@ -1,5 +1,6 @@
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -11,6 +12,10 @@ import type { FastifyInstance } from "fastify";
 import { buildApp } from "../app.js";
 import { generateToken } from "../plugins/auth.js";
 import { tripStatus } from "../db/queries/voyages.js";
+import { mkdtemp, readdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { isGoogleContentUrl } from "../lib/google-photos.js";
 import { detectPhotoExtension, looksLikeGpx } from "../lib/voyage-files.js";
 
 const mocks = vi.hoisted(() => ({
@@ -19,6 +24,7 @@ const mocks = vi.hoisted(() => ({
   listAllTrips: vi.fn(),
   createTrip: vi.fn(),
   stageExists: vi.fn(),
+  addPhoto: vi.fn(),
 }));
 
 vi.mock("../db/queries/voyages.js", async (importOriginal) => ({
@@ -300,5 +306,160 @@ describe("regles metier des voyages", () => {
       looksLikeGpx(Buffer.from('<?xml version="1.0"?>\n<gpx version="1.1">')),
     ).toBe(true);
     expect(looksLikeGpx(Buffer.from("<svg></svg>"))).toBe(false);
+  });
+});
+
+describe("import Google Photos", () => {
+  const stageId = "8c6c3f1e-6b8a-4a51-9d55-3c2d0b7c1a11";
+  const url = `/api/voyages/admin/stages/${stageId}/photos/google`;
+  const jpeg = Buffer.concat([
+    Buffer.from([0xff, 0xd8, 0xff, 0xe0]),
+    Buffer.alloc(64),
+  ]);
+  let uploadDir: string;
+
+  beforeEach(async () => {
+    uploadDir = await mkdtemp(path.join(tmpdir(), "voyage-google-"));
+    process.env.UPLOAD_DIR = uploadDir;
+  });
+
+  afterEach(async () => {
+    vi.unstubAllGlobals();
+    delete process.env.UPLOAD_DIR;
+    delete process.env.GOOGLE_PHOTOS_CLIENT_ID;
+    await rm(uploadDir, { recursive: true, force: true });
+  });
+
+  function stubGoogle(
+    mediaItems: unknown[],
+    { mediaItemsSet = true, imageStatus = 200 } = {},
+  ) {
+    const fetchMock = vi.fn(
+      async (
+        input: string | URL,
+        init?: { method?: string; headers?: unknown },
+      ) => {
+        const target = String(input);
+        if (target.includes("/v1/sessions/")) {
+          return init?.method === "DELETE"
+            ? new Response("{}")
+            : Response.json({ id: "sess-1", mediaItemsSet });
+        }
+        if (target.includes("/v1/mediaItems?")) {
+          return Response.json({ mediaItems });
+        }
+        return new Response(imageStatus === 200 ? jpeg : null, {
+          status: imageStatus,
+        });
+      },
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    return fetchMock;
+  }
+
+  const photo = (n: number, host = "lh3.googleusercontent.com") => ({
+    type: "PHOTO",
+    mediaFile: { baseUrl: `https://${host}/p/${n}`, filename: `${n}.jpg` },
+  });
+
+  const send = (body: Record<string, unknown>) =>
+    app.inject({
+      method: "POST",
+      url,
+      headers: { authorization: tokenFor(ADMIN) },
+      payload: { accessToken: "ya29.x", sessionId: "sess-1", ...body },
+    });
+
+  it("expose la cle client OAuth, ou null", async () => {
+    const get = () =>
+      app.inject({
+        method: "GET",
+        url: "/api/voyages/admin/google-photos/config",
+        headers: { authorization: tokenFor(ADMIN) },
+      });
+    expect((await get()).json().data).toEqual({ clientId: null });
+    process.env.GOOGLE_PHOTOS_CLIENT_ID = "abc.apps.googleusercontent.com";
+    expect((await get()).json().data).toEqual({
+      clientId: "abc.apps.googleusercontent.com",
+    });
+  });
+
+  it("importe les photos choisies, ignore videos et URL hors Google", async () => {
+    mocks.stageExists.mockResolvedValue(true);
+    mocks.addPhoto.mockImplementation(async (_id, data) => ({
+      id: data.fileName,
+      alt: data.alt,
+    }));
+    const fetchMock = stubGoogle([
+      photo(1),
+      {
+        type: "VIDEO",
+        mediaFile: { baseUrl: "https://v.googleusercontent.com/v" },
+      },
+      photo(2, "evil.example.com"),
+      photo(3),
+    ]);
+
+    const response = await send({ alt: "Skye", caption: "Juin" });
+
+    expect(response.statusCode).toBe(201);
+    const { photos, skipped } = response.json().data;
+    expect(skipped).toBe(0);
+    expect(photos.map((p: { alt: string }) => p.alt)).toEqual([
+      "Skye (1/2)",
+      "Skye (2/2)",
+    ]);
+    expect(await readdir(path.join(uploadDir, "voyages"))).toHaveLength(2);
+    const fetched = fetchMock.mock.calls.map(([input]) => String(input));
+    expect(fetched.some((target) => target.includes("evil.example.com"))).toBe(
+      false,
+    );
+    expect(fetched).toContain(
+      "https://lh3.googleusercontent.com/p/1=w2560-h2560",
+    );
+    const [, init] = fetchMock.mock.calls[0];
+    expect(init?.headers).toMatchObject({ Authorization: "Bearer ya29.x" });
+  });
+
+  it("compte les photos indisponibles sans echouer", async () => {
+    mocks.stageExists.mockResolvedValue(true);
+    stubGoogle([photo(1)], { imageStatus: 500 });
+
+    const response = await send({ alt: "Skye" });
+
+    expect(response.statusCode).toBe(201);
+    expect(response.json().data).toEqual({ photos: [], skipped: 1 });
+    expect(mocks.addPhoto).not.toHaveBeenCalled();
+  });
+
+  it("refuse une selection non terminee", async () => {
+    mocks.stageExists.mockResolvedValue(true);
+    stubGoogle([], { mediaItemsSet: false });
+
+    const response = await send({ alt: "Skye" });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json().code).toBe("GOOGLE_PHOTOS_NOT_READY");
+  });
+
+  it("exige le texte alternatif et un id de session sain", async () => {
+    const fetchMock = stubGoogle([]);
+    expect((await send({ alt: "" })).statusCode).toBe(400);
+    expect(
+      (await send({ alt: "Skye", sessionId: "../../users" })).statusCode,
+    ).toBe(400);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("reconnait les URL d'images Google", () => {
+    expect(isGoogleContentUrl("https://lh3.googleusercontent.com/a")).toBe(
+      true,
+    );
+    expect(isGoogleContentUrl("http://lh3.googleusercontent.com/a")).toBe(
+      false,
+    );
+    expect(isGoogleContentUrl("https://googleusercontent.com.evil.fr/a")).toBe(
+      false,
+    );
   });
 });

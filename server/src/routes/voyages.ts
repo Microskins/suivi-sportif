@@ -21,11 +21,19 @@ import {
   storeGpx,
   storePhoto,
 } from "../lib/voyage-files.js";
+import {
+  GooglePhotosError,
+  deletePickerSession,
+  downloadPickedPhoto,
+  googlePhotosClientId,
+  listPickedPhotos,
+} from "../lib/google-photos.js";
 import { authenticateVoyageAdmin } from "../plugins/auth.js";
 import { idParamSchema } from "../schemas/index.js";
 import {
   airportInputSchema,
   fileNameParamSchema,
+  googlePhotosImportSchema,
   photoUploadQuerySchema,
   slugParamSchema,
   trackUploadQuerySchema,
@@ -56,6 +64,11 @@ function handleError(
   if (error instanceof voyages.TripConflictError) {
     const status = error.code === "TRIP_SLUG_TAKEN" ? 409 : 400;
     return reply.code(status).send({ error: error.message, code: error.code });
+  }
+  if (error instanceof GooglePhotosError) {
+    return reply
+      .code(error.status)
+      .send({ error: error.message, code: error.code });
   }
   if (error instanceof VoyageFileError) {
     return reply.code(400).send({ error: error.message, code: error.code });
@@ -334,6 +347,67 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
           reply,
           await voyages.addPhoto(id, { ...stored, ...query }),
         );
+      } catch (error) {
+        return handleError(fastify, reply, error);
+      }
+    },
+  );
+
+  // Import Google Photos: la cle client OAuth (publique) est lue au
+  // demarrage de l'ecran; null masque le bouton d'import.
+  fastify.get(
+    "/google-photos/config",
+    { schema: { ...admin, summary: "Google Photos import settings" } },
+    async (_request, reply) =>
+      sendOk(reply, { clientId: googlePhotosClientId() }),
+  );
+
+  fastify.post(
+    "/stages/:id/photos/google",
+    {
+      config: { rateLimit: writeRateLimit },
+      schema: { ...admin, summary: "Import photos from Google Photos" },
+    },
+    async (request, reply) => {
+      try {
+        const { id } = idParamSchema.parse(request.params);
+        const input = googlePhotosImportSchema.parse(request.body);
+        if (!(await voyages.stageExists(id))) {
+          return sendNotFound(reply, "Etape introuvable", "STAGE_NOT_FOUND");
+        }
+        const picked = await listPickedPhotos(
+          input.accessToken,
+          input.sessionId,
+        );
+        const photos = [];
+        let skipped = 0;
+        // Une a une: la position en pellicule suit l'ordre de selection.
+        for (const [index, item] of picked.entries()) {
+          const buffer = await downloadPickedPhoto(input.accessToken, item);
+          const stored = buffer
+            ? await storePhoto(buffer).catch((error: unknown) => {
+                if (error instanceof VoyageFileError) return null;
+                throw error;
+              })
+            : null;
+          if (!stored) {
+            skipped += 1;
+            continue;
+          }
+          const alt =
+            picked.length > 1
+              ? `${input.alt} (${index + 1}/${picked.length})`
+              : input.alt;
+          photos.push(
+            await voyages.addPhoto(id, {
+              ...stored,
+              alt: alt.slice(0, 200),
+              caption: input.caption,
+            }),
+          );
+        }
+        await deletePickerSession(input.accessToken, input.sessionId);
+        return sendCreated(reply, { photos, skipped });
       } catch (error) {
         return handleError(fastify, reply, error);
       }

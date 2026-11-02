@@ -17,6 +17,9 @@ services:
       # Site Voyage: comptes autorises a l'ecran d'admin, et fichiers envoyes
       # (traces GPX, photos) ecrits dans $UPLOAD_DIR/voyages/.
       VOYAGE_ADMIN_EMAILS: ${VOYAGE_ADMIN_EMAILS:-}
+      # Import Google Photos dans l'admin Voyage: ID client OAuth (public).
+      # Vide: le bouton d'import est masque.
+      GOOGLE_PHOTOS_CLIENT_ID: ${GOOGLE_PHOTOS_CLIENT_ID:-}
       UPLOAD_DIR: /app/uploads
     volumes:
       - voyage-uploads:/app/uploads
