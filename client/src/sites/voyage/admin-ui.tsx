@@ -195,9 +195,9 @@ const SECTION_TONES = {
     box: "border-[#ddd2fb] border-l-[#6d28d9] bg-[#faf8ff]",
     badge: "bg-[#6d28d9]",
   },
-  teal: {
-    box: "border-[#bfe5de] border-l-[#0f766e] bg-[#f3faf8]",
-    badge: "bg-[#0f766e]",
+  rose: {
+    box: "border-[#f5c6da] border-l-[#be185d] bg-[#fff7fa]",
+    badge: "bg-[#be185d]",
   },
   orange: {
     box: "border-[#f2d3a7] border-l-[#b45309] bg-[#fffaf3]",

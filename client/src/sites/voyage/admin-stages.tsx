@@ -412,7 +412,7 @@ function StageFields({
 
       <StageSection
         number={3}
-        tone="teal"
+        tone="rose"
         title="Nuit et position"
         hint="Où vous avez dormi : son adresse place l’étape sur la carte."
       >
