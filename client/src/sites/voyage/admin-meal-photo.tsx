@@ -2,8 +2,9 @@
 // rend la position GPS de la prise de vue (si le telephone l'a notee), qui
 // place directement le repas sur la carte.
 import { useId, useState } from "react";
-import type { AuthErrorHandler } from "./admin-api";
+import type { AuthErrorHandler, MealPhotoUpload } from "./admin-api";
 import { adminApi, adminErrorMessage } from "./admin-api";
+import { GooglePhotosImport } from "./admin-google-photos";
 import type { MealDraft } from "./admin-form";
 import { buttonClass, inputClass, labelClass } from "./admin-ui";
 import { apiFileUrl } from "./voyage-api";
@@ -36,6 +37,20 @@ export function AdminMealPhoto({
   const id = useId();
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
+  function apply(result: MealPhotoUpload, preview: string) {
+    onChange({
+      photo: result.photo,
+      photoUrl: preview,
+      ...(result.coordinates
+        ? {
+            lng: String(result.coordinates[0]),
+            lat: String(result.coordinates[1]),
+          }
+        : {}),
+    });
+    setStatus({ kind: "done", gps: Boolean(result.coordinates) });
+  }
+
   async function send(file: File) {
     if (!PHOTO_TYPES.includes(file.type)) {
       setStatus({
@@ -55,21 +70,12 @@ export function AdminMealPhoto({
     try {
       const result = await adminApi.uploadMealPhoto(file);
       // Apercu local: la photo d'un voyage non publie n'est pas servie.
-      const preview =
+      apply(
+        result,
         typeof URL.createObjectURL === "function"
           ? URL.createObjectURL(file)
-          : result.photoUrl;
-      onChange({
-        photo: result.photo,
-        photoUrl: preview,
-        ...(result.coordinates
-          ? {
-              lng: String(result.coordinates[0]),
-              lat: String(result.coordinates[1]),
-            }
-          : {}),
-      });
-      setStatus({ kind: "done", gps: Boolean(result.coordinates) });
+          : result.photoUrl,
+      );
     } catch (failure) {
       if (onAuthError(failure)) {
         setStatus({ kind: "idle" });
@@ -104,6 +110,16 @@ export function AdminMealPhoto({
               const file = event.target.files?.[0];
               event.target.value = "";
               if (file) void send(file);
+            }}
+          />
+          <GooglePhotosImport
+            disabled={disabled || status.kind === "loading"}
+            onAuthError={onAuthError}
+            maxItems={1}
+            importSelection={async (selection) => {
+              const result = await adminApi.importMealGooglePhoto(selection);
+              apply(result, result.photoUrl);
+              return "Photo importée depuis Google Photos.";
             }}
           />
           {meal.photo && (

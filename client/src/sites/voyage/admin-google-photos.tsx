@@ -1,8 +1,10 @@
-// Bouton "Importer depuis Google Photos" d'une etape. Masque tant que l'API
-// n'a pas de cle client OAuth (GOOGLE_PHOTOS_CLIENT_ID).
+// Bouton "Importer depuis Google Photos", partout ou l'admin accepte une
+// photo (etapes, repas). Masque tant que l'API n'a pas de cle client OAuth
+// (GOOGLE_PHOTOS_CLIENT_ID). Le composant gere la connexion Google et la
+// selection; `importSelection` fait importer la selection par l'API.
 import { useEffect, useRef, useState } from "react";
 import type { AuthErrorHandler } from "./admin-api";
-import { adminApi, adminErrorMessage } from "./admin-api";
+import { adminErrorMessage } from "./admin-api";
 import { ErrorAlert, buttonClass } from "./admin-ui";
 import {
   GooglePhotosCancelled,
@@ -12,7 +14,6 @@ import {
   prepareTokenRequester,
   waitForSelection,
 } from "./google-photos";
-import type { TripPhoto } from "./trip-types";
 
 type Step =
   | { kind: "idle" }
@@ -20,14 +21,20 @@ type Step =
   | { kind: "picking"; url: string }
   | { kind: "importing" };
 
+export type GoogleSelection = { accessToken: string; sessionId: string };
+
 type Props = {
-  // Rend le texte alternatif et la legende saisis, ou null s'ils ne sont pas
-  // valides (le formulaire affiche alors lui-meme l'erreur).
-  readMetadata: () => { alt: string; caption: string } | null;
   disabled: boolean;
+  // Aide affichee sous le bouton.
+  hint?: string;
+  // Fait importer la selection par l'API; rend le message de reussite.
+  importSelection: (selection: GoogleSelection) => Promise<string>;
+  // Nombre maximal de photos selectionnables dans Google Photos.
+  maxItems?: number;
   onAuthError: AuthErrorHandler;
-  onImported: (photos: TripPhoto[]) => void;
-  stageId: string;
+  // Verifie le formulaire avant d'ouvrir Google (false: le formulaire
+  // affiche lui-meme l'erreur).
+  prepare?: () => boolean;
 };
 
 const isCancel = (error: unknown) =>
@@ -36,10 +43,11 @@ const isCancel = (error: unknown) =>
 
 export function GooglePhotosImport({
   disabled,
+  hint,
+  importSelection,
+  maxItems,
   onAuthError,
-  onImported,
-  readMetadata,
-  stageId,
+  prepare,
 }: Props) {
   const [requester, setRequester] = useState<Awaited<
     ReturnType<typeof prepareTokenRequester>
@@ -71,8 +79,7 @@ export function GooglePhotosImport({
     if (!requester) return;
     setError(null);
     setNotice(null);
-    const metadata = readMetadata();
-    if (!metadata) return;
+    if (prepare && !prepare()) return;
     // Un seul onglet peut s'ouvrir par clic. Deja connecte: on ouvre tout de
     // suite l'onglet Google Photos (plus tard, il serait bloque). Sinon le
     // clic sert a la fenetre de connexion Google, et le lien "Ouvrir Google
@@ -80,13 +87,15 @@ export function GooglePhotosImport({
     let tab = requester.hasToken()
       ? window.open("about:blank", "_blank")
       : null;
+    let navigated = false;
     const controller = new AbortController();
     abortRef.current = controller;
     try {
       setStep({ kind: "connecting" });
       const token = await requester.request();
-      const session = await createPickerSession(token);
+      const session = await createPickerSession(token, maxItems);
       const url = pickerUrl(session);
+      navigated = true;
       if (tab && !tab.closed) {
         tab.opener = null;
         tab.location.href = url;
@@ -96,22 +105,15 @@ export function GooglePhotosImport({
       setStep({ kind: "picking", url });
       await waitForSelection(token, session, controller.signal);
       setStep({ kind: "importing" });
-      const result = await adminApi.importGooglePhotos(stageId, {
-        accessToken: token,
-        sessionId: session.id,
-        ...metadata,
-      });
-      onImported(result.photos);
-      const count = result.photos.length;
       setNotice(
-        `${count} photo${count > 1 ? "s" : ""} importée${count > 1 ? "s" : ""}` +
-          (result.skipped > 0
-            ? ` (${result.skipped} ignorée${result.skipped > 1 ? "s" : ""} : format ou taille non pris en charge).`
-            : "."),
+        await importSelection({
+          accessToken: token,
+          sessionId: session.id,
+        }),
       );
     } catch (failure) {
       // Onglet ouvert d'avance mais jamais dirige vers Google Photos.
-      if (tab && !tab.closed && step.kind !== "picking") tab.close();
+      if (tab && !tab.closed && !navigated) tab.close();
       if (isCancel(failure)) return;
       if (onAuthError(failure)) return;
       setError(adminErrorMessage(failure));
@@ -126,7 +128,7 @@ export function GooglePhotosImport({
     idle: "Importer depuis Google Photos",
     connecting: "Connexion à Google…",
     picking: "Sélection en cours dans Google Photos…",
-    importing: "Import des photos…",
+    importing: maxItems === 1 ? "Import de la photo…" : "Import des photos…",
   }[step.kind];
 
   return (
@@ -160,10 +162,9 @@ export function GooglePhotosImport({
           </>
         )}
       </div>
-      <p className="text-xs leading-5 text-[var(--site-muted)]">
-        Le texte alternatif et la légende ci-dessus s’appliquent à chaque photo
-        choisie (numérotée si plusieurs), 30 photos maximum.
-      </p>
+      {hint && (
+        <p className="text-xs leading-5 text-[var(--site-muted)]">{hint}</p>
+      )}
       {notice && (
         <p role="status" className="text-sm text-[#0f1b2b]">
           {notice}

@@ -193,11 +193,14 @@ async function pickerRequest<T>(
   return (await response.json()) as T;
 }
 
-export function createPickerSession(token: string) {
+// maxItems limite la selection dans Google Photos (ex. 1 pour un repas).
+export function createPickerSession(token: string, maxItems?: number) {
   return pickerRequest<PickerSession>("/sessions", token, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: "{}",
+    body: JSON.stringify(
+      maxItems ? { pickingConfig: { maxItemCount: String(maxItems) } } : {},
+    ),
   });
 }
 

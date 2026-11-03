@@ -779,6 +779,45 @@ describe("import Google Photos", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("importe la premiere photo choisie comme photo de repas", async () => {
+    const fetchMock = stubGoogle([photo(1), photo(2)]);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/voyages/admin/meal-photos/google",
+      headers: { authorization: tokenFor(ADMIN) },
+      payload: { accessToken: "ya29.x", sessionId: "sess-1" },
+    });
+
+    expect(response.statusCode).toBe(201);
+    const data = response.json().data;
+    expect(data.photo).toMatch(/^[0-9a-f-]{36}\.jpg$/);
+    expect(data.photoUrl).toBe(`/api/voyages/files/${data.photo}`);
+    expect(data.coordinates).toBeNull();
+    expect(await readdir(path.join(uploadDir, "voyages"))).toEqual([
+      data.photo,
+    ]);
+    const fetched = fetchMock.mock.calls.map(([input]) => String(input));
+    expect(fetched).toContain(
+      "https://lh3.googleusercontent.com/p/1=w2560-h2560",
+    );
+    expect(fetched.some((target) => target.includes("/p/2"))).toBe(false);
+  });
+
+  it("refuse une photo de repas Google indisponible", async () => {
+    stubGoogle([photo(1)], { imageStatus: 500 });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/voyages/admin/meal-photos/google",
+      headers: { authorization: tokenFor(ADMIN) },
+      payload: { accessToken: "ya29.x", sessionId: "sess-1" },
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json().code).toBe("GOOGLE_PHOTOS_EMPTY");
+  });
+
   it("reconnait les URL d'images Google", () => {
     expect(isGoogleContentUrl("https://lh3.googleusercontent.com/a")).toBe(
       true,

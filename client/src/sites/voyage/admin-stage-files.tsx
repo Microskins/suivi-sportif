@@ -331,21 +331,31 @@ function PhotosBlock({
           {upload.pending ? "Envoi…" : "Envoyer la photo"}
         </button>
         <GooglePhotosImport
-          stageId={stageId}
           disabled={upload.pending}
           onAuthError={onAuthError}
-          readMetadata={() =>
-            checkAlt() ? { alt: alt.trim(), caption: caption.trim() } : null
-          }
-          onImported={(imported) => {
+          hint="Le texte alternatif et la légende ci-dessus s’appliquent à chaque photo choisie (numérotée si plusieurs), 30 photos maximum."
+          prepare={checkAlt}
+          importSelection={async (selection) => {
+            const result = await adminApi.importGooglePhotos(stageId, {
+              ...selection,
+              alt: alt.trim(),
+              caption: caption.trim(),
+            });
             // L'import a pu durer: on repart des fichiers les plus recents.
             const current = latestFiles.current;
             onChange({
               tracks: current.tracks,
-              photos: [...current.photos, ...imported],
+              photos: [...current.photos, ...result.photos],
             });
             setAlt("");
             setCaption("");
+            const count = result.photos.length;
+            const plural = count > 1 ? "s" : "";
+            const skipped =
+              result.skipped > 0
+                ? ` (${result.skipped} ignorée${result.skipped > 1 ? "s" : ""} : format ou taille non pris en charge).`
+                : ".";
+            return `${count} photo${plural} importée${plural}${skipped}`;
           }}
         />
       </form>

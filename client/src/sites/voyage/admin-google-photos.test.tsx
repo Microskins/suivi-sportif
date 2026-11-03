@@ -9,6 +9,7 @@ import {
 } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { adminApi } from "./admin-api";
 import { GooglePhotosImport } from "./admin-google-photos";
 import { forgetGoogleToken, parseDuration } from "./google-photos";
 
@@ -91,11 +92,9 @@ describe("import Google Photos", () => {
     stubGoogleIdentity();
     render(
       <GooglePhotosImport
-        stageId={STAGE}
         disabled={false}
         onAuthError={() => false}
-        onImported={vi.fn()}
-        readMetadata={() => ({ alt: "Skye", caption: "" })}
+        importSelection={async () => "ok"}
       />,
     );
     await waitFor(() => expect(calls).toHaveLength(1));
@@ -111,11 +110,17 @@ describe("import Google Photos", () => {
     const onImported = vi.fn();
     render(
       <GooglePhotosImport
-        stageId={STAGE}
         disabled={false}
         onAuthError={() => false}
-        onImported={onImported}
-        readMetadata={() => ({ alt: "Skye", caption: "Juin" })}
+        importSelection={async (selection) => {
+          const result = await adminApi.importGooglePhotos(STAGE, {
+            ...selection,
+            alt: "Skye",
+            caption: "Juin",
+          });
+          onImported(result.photos);
+          return `${result.photos.length} photo importée (${result.skipped} ignorée)`;
+        }}
       />,
     );
 
@@ -158,11 +163,10 @@ describe("import Google Photos", () => {
     const requestAccessToken = stubGoogleIdentity();
     render(
       <GooglePhotosImport
-        stageId={STAGE}
         disabled={false}
         onAuthError={() => false}
-        onImported={vi.fn()}
-        readMetadata={() => null}
+        prepare={() => false}
+        importSelection={async () => "ok"}
       />,
     );
     fireEvent.click(
@@ -171,6 +175,40 @@ describe("import Google Photos", () => {
       }),
     );
     expect(requestAccessToken).not.toHaveBeenCalled();
+  });
+
+  it("limite la sélection Google Photos quand maxItems est donné", async () => {
+    const calls = mockFetch("abc.apps.googleusercontent.com");
+    stubGoogleIdentity();
+    vi.spyOn(window, "open").mockReturnValue(null);
+    const importSelection = vi.fn(async () => "Photo importée.");
+    render(
+      <GooglePhotosImport
+        disabled={false}
+        onAuthError={() => false}
+        maxItems={1}
+        importSelection={importSelection}
+      />,
+    );
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "Importer depuis Google Photos",
+      }),
+    );
+
+    expect(
+      await screen.findByText("Photo importée.", undefined, { timeout: 4000 }),
+    ).toBeInTheDocument();
+    const sessionCall = calls.find((call) =>
+      call.url.endsWith("/v1/sessions"),
+    )!;
+    expect(JSON.parse(sessionCall.body as string)).toEqual({
+      pickingConfig: { maxItemCount: "1" },
+    });
+    expect(importSelection).toHaveBeenCalledWith({
+      accessToken: "ya29.jeton",
+      sessionId: "sess-1",
+    });
   });
 
   it("lit les durées de l'API Picker", () => {

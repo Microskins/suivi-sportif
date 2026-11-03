@@ -39,6 +39,7 @@ import {
   fileNameParamSchema,
   geocodeQuerySchema,
   googlePhotosImportSchema,
+  googlePhotosSessionSchema,
   photoUploadQuerySchema,
   roadRouteInputSchema,
   slugParamSchema,
@@ -445,6 +446,43 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
           photo: stored.fileName,
           photoUrl: `/api/voyages/files/${stored.fileName}`,
           coordinates: readPhotoGps(body),
+        });
+      } catch (error) {
+        return handleError(fastify, reply, error);
+      }
+    },
+  );
+
+  // POST /api/voyages/admin/meal-photos/google - photo d'un repas choisie
+  // dans Google Photos (la premiere de la selection). Meme reponse que
+  // l'envoi d'un fichier; Google retire la position GPS des images servies.
+  fastify.post(
+    "/meal-photos/google",
+    {
+      config: { rateLimit: writeRateLimit },
+      schema: { ...admin, summary: "Import a meal photo from Google Photos" },
+    },
+    async (request, reply) => {
+      try {
+        const input = googlePhotosSessionSchema.parse(request.body);
+        const [picked] = await listPickedPhotos(
+          input.accessToken,
+          input.sessionId,
+        );
+        const buffer = await downloadPickedPhoto(input.accessToken, picked);
+        await deletePickerSession(input.accessToken, input.sessionId);
+        if (!buffer) {
+          throw new GooglePhotosError(
+            "Photo Google indisponible ou trop volumineuse (15 Mo maximum)",
+            "GOOGLE_PHOTOS_EMPTY",
+            400,
+          );
+        }
+        const stored = await storePhoto(buffer);
+        return sendCreated(reply, {
+          photo: stored.fileName,
+          photoUrl: `/api/voyages/files/${stored.fileName}`,
+          coordinates: readPhotoGps(buffer),
         });
       } catch (error) {
         return handleError(fastify, reply, error);
