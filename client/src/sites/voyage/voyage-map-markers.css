@@ -102,20 +102,20 @@
 }
 
 /* Randonnee avec album: bulle photo dont la pointe marque le depart. */
+/* Pas de `position` ici: MapLibre met chaque marqueur en `absolute` et le
+   place par `transform`. Un `position: relative` les remettait dans le flux
+   de la page: les bulles s'alignaient en haut de la carte, loin de leur
+   randonnee. L'element reste positionne, donc ::after s'y accroche. */
 .voyage-map-hike {
-  position: relative;
   width: 3.25rem;
   height: 3.25rem;
-  margin-bottom: 0.45rem;
   padding: 0;
   border: 3px solid #0e9f9a;
   border-radius: 999px;
   background: #0e9f9a var(--hike-photo) center / cover no-repeat;
   box-shadow: 0 6px 16px rgba(15, 27, 43, 0.3);
   cursor: pointer;
-  transition:
-    border-color 160ms ease,
-    transform 160ms ease;
+  transition: border-color 160ms ease;
 }
 
 .voyage-map-hike::after {
