@@ -16,7 +16,11 @@ export type TripStatus = "realise" | "a-venir";
 export class TripConflictError extends Error {
   constructor(
     message: string,
-    readonly code: "TRIP_SLUG_TAKEN" | "AIRPORT_NOT_FOUND" | "STAGE_NOT_FOUND",
+    readonly code:
+      | "TRIP_SLUG_TAKEN"
+      | "AIRPORT_NOT_FOUND"
+      | "STAGE_NOT_FOUND"
+      | "TRACK_NOT_IN_STAGE",
   ) {
     super(message);
     this.name = "TripConflictError";
@@ -133,12 +137,7 @@ function formatDetail(trip: TripDetailRow) {
           name: track.name,
           url: `${FILE_ROUTE}/${track.fileName}`,
         })),
-        photos: stage.photos.map((photo) => ({
-          id: photo.id,
-          url: `${FILE_ROUTE}/${photo.fileName}`,
-          alt: photo.alt,
-          caption: photo.caption,
-        })),
+        photos: stage.photos.map(formatPhoto),
       })),
     ),
   };
@@ -486,6 +485,42 @@ export async function addTrack(
   };
 }
 
+type StoredPhoto = {
+  alt: string;
+  caption: string;
+  fileName: string;
+  id: string;
+  isTrackCover: boolean;
+  trackId: string | null;
+};
+
+// `trackId`: album de randonnee de la photo; `trackCover`: photo de
+// reference de cet album (bulle sur la carte).
+function formatPhoto(photo: StoredPhoto) {
+  return {
+    id: photo.id,
+    url: `${FILE_ROUTE}/${photo.fileName}`,
+    alt: photo.alt,
+    caption: photo.caption,
+    trackId: photo.trackId,
+    trackCover: photo.trackId !== null && photo.isTrackCover,
+  };
+}
+
+// Un album ne reunit que des photos de l'etape de la randonnee.
+export async function assertTrackInStage(trackId: string, stageId: string) {
+  const track = await prisma.tripTrack.findFirst({
+    where: { id: trackId, stageId },
+    select: { id: true },
+  });
+  if (!track) {
+    throw new TripConflictError(
+      "La randonnee n'appartient pas a l'etape de la photo",
+      "TRACK_NOT_IN_STAGE",
+    );
+  }
+}
+
 export async function addPhoto(
   stageId: string,
   data: {
@@ -494,18 +529,60 @@ export async function addPhoto(
     caption: string;
     fileName: string;
     mimeType: string;
+    trackId?: string | null;
   },
 ) {
+  if (data.trackId) await assertTrackInStage(data.trackId, stageId);
   const position = await prisma.tripPhoto.count({ where: { stageId } });
   const photo = await prisma.tripPhoto.create({
-    data: { stageId, position, ...data },
+    data: { stageId, position, ...data, trackId: data.trackId ?? null },
   });
-  return {
-    id: photo.id,
-    url: `${FILE_ROUTE}/${photo.fileName}`,
-    alt: photo.alt,
-    caption: photo.caption,
-  };
+  return formatPhoto(photo);
+}
+
+// Classe une photo dans l'album d'une randonnee (ou l'en sort avec null) et
+// en fait, ou non, la photo de reference. Une seule reference par album.
+// Rend null si la photo est inconnue.
+export async function updatePhoto(
+  id: string,
+  changes: {
+    alt?: string;
+    caption?: string;
+    trackCover?: boolean;
+    trackId?: string | null;
+  },
+) {
+  const current = await prisma.tripPhoto.findUnique({ where: { id } });
+  if (!current) return null;
+  const trackId =
+    changes.trackId === undefined ? current.trackId : changes.trackId;
+  if (trackId && trackId !== current.trackId) {
+    await assertTrackInStage(trackId, current.stageId);
+  }
+  // Changer d'album retire le statut de reference, sauf demande explicite.
+  const isTrackCover =
+    trackId === null
+      ? false
+      : (changes.trackCover ??
+        (trackId === current.trackId ? current.isTrackCover : false));
+  const photo = await prisma.$transaction(async (tx) => {
+    if (isTrackCover && trackId) {
+      await tx.tripPhoto.updateMany({
+        where: { trackId, isTrackCover: true, NOT: { id } },
+        data: { isTrackCover: false },
+      });
+    }
+    return tx.tripPhoto.update({
+      where: { id },
+      data: {
+        trackId,
+        isTrackCover,
+        ...(changes.alt === undefined ? {} : { alt: changes.alt }),
+        ...(changes.caption === undefined ? {} : { caption: changes.caption }),
+      },
+    });
+  });
+  return formatPhoto(photo);
 }
 
 // Rendent le nom du fichier supprime (a effacer du disque), ou null.

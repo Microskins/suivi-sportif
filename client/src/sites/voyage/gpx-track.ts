@@ -11,6 +11,10 @@ export type TrackPoint = {
 };
 
 export type GpxTrack = {
+  // Photo de reference de l'album (bulle sur la carte), s'il y en a un.
+  cover?: { alt: string; url: string } | null;
+  // Id de la trace (TripTrackFile.id), pour retrouver son album.
+  id?: string;
   kind: TrackKind;
   name: string;
   points: TrackPoint[];

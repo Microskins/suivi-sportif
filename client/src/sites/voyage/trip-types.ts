@@ -30,8 +30,20 @@ export type TripPhoto = {
   alt: string;
   caption: string;
   id: string;
+  // Album de randonnee: id de la trace de la meme etape, ou null.
+  trackId?: string | null;
+  // Photo de reference de l'album (bulle de la randonnee sur la carte).
+  trackCover?: boolean;
   url: string;
 };
+
+// Album d'une randonnee: ses photos, la reference en premier (a defaut, la
+// premiere photo rattachee).
+export function trackAlbum(photos: TripPhoto[], trackId: string) {
+  const album = photos.filter((photo) => photo.trackId === trackId);
+  const cover = album.find((photo) => photo.trackCover) ?? album[0];
+  return cover ? [cover, ...album.filter((photo) => photo !== cover)] : [];
+}
 
 // Un repas de l'etape (restaurant, pub...): un point de la carte.
 export type TripMeal = {

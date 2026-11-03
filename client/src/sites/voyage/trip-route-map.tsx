@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { LngLat, TripStage } from "./trip-types";
+import { trackAlbum } from "./trip-types";
 import type { TripMapHandle } from "./trip-map-engine";
 import { TripLodgingLink } from "./trip-lodging-link";
 import { TripMeals } from "./trip-meals";
@@ -29,6 +30,17 @@ export function TripRouteMap({
   const [status, setStatus] = useState<MapStatus>("loading");
   const [activeIndex, setActiveIndex] = useState(0);
   const [isReplaying, setIsReplaying] = useState(false);
+  // Randonnee ouverte depuis sa bulle: sa fiche (et son album) est amenee
+  // a l'ecran, utile sur mobile ou le panneau est sous la carte.
+  const [focusedHike, setFocusedHike] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!focusedHike) return;
+    document
+      .getElementById(`randonnee-${focusedHike}`)
+      ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    setFocusedHike(null);
+  }, [focusedHike]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -51,6 +63,11 @@ export function TripRouteMap({
             setActiveIndex(index);
             mapRef.current?.focusStage(index);
             setIsReplaying(false);
+          },
+          onSelectHike: (index, trackId) => {
+            setActiveIndex(index);
+            setIsReplaying(false);
+            setFocusedHike(trackId);
           },
           onStageReached: setActiveIndex,
           stages,
@@ -104,6 +121,11 @@ export function TripRouteMap({
     (track) => track.stageIndex === activeIndex,
   );
   const mapReady = status === "ready";
+  // Les photos d'un album affiche dans sa fiche ne se repetent pas dessous.
+  const shownAlbums = new Set(stageTracks.map((track) => track.id));
+  const loosePhotos = stage.photos.filter(
+    (photo) => !photo.trackId || !shownAlbums.has(photo.trackId),
+  );
 
   return (
     <div className="overflow-hidden rounded-xl border border-[#dfe4ea] bg-white">
@@ -224,20 +246,24 @@ export function TripRouteMap({
                 <TripHikesSummary tracks={stageTracks} />
                 {/* Cle par position: deux traces peuvent porter le meme nom. */}
                 {stageTracks.map((track, index) => (
-                  <TripTrackCard key={`${index}-${track.name}`} track={track} />
+                  <TripTrackCard
+                    key={`${index}-${track.name}`}
+                    album={track.id ? trackAlbum(stage.photos, track.id) : []}
+                    track={track}
+                  />
                 ))}
               </div>
             )}
             <div className="mt-5 grid grid-cols-2 gap-2">
-              {stage.photos.length > 0 ? (
-                stage.photos
+              {loosePhotos.length > 0 ? (
+                loosePhotos
                   .slice(0, 4)
                   .map((photo) => (
                     <TripPhotoFrame key={photo.id} photo={photo} />
                   ))
-              ) : (
+              ) : stage.photos.length === 0 ? (
                 <TripPhotoFrame code={stage.code} />
-              )}
+              ) : null}
             </div>
           </div>
         </aside>
@@ -249,6 +275,9 @@ export function TripRouteMap({
           : "Tirets : itinéraire entre les étapes, calculé — pas une trace GPX enregistrée."}
         {stages.some((item) => item.meals?.length)
           ? " Points orange ou vignettes : repas."
+          : ""}
+        {tracks.some((track) => track.cover)
+          ? " Bulles photo : départ d’une randonnée et son album."
           : ""}
       </p>
     </div>

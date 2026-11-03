@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { GpxTrack } from "./gpx-track";
 import { parseGpx } from "./gpx-track";
 import type { TripStage } from "./trip-types";
+import { trackAlbum } from "./trip-types";
 import { apiFileUrl } from "./voyage-api";
 
 // Charge les GPX des etapes. Un fichier absent ou illisible est ignore:
@@ -11,7 +12,11 @@ export function useGpxTracks(stages: TripStage[]) {
 
   useEffect(() => {
     const files = stages.flatMap((stage, stageIndex) =>
-      stage.tracks.map((file) => ({ ...file, stageIndex })),
+      stage.tracks.map((file) => ({
+        ...file,
+        cover: trackAlbum(stage.photos, file.id)[0] ?? null,
+        stageIndex,
+      })),
     );
     if (files.length === 0) {
       setTracks([]);
@@ -20,7 +25,7 @@ export function useGpxTracks(stages: TripStage[]) {
     let cancelled = false;
 
     Promise.all(
-      files.map(async (file) => {
+      files.map(async (file): Promise<GpxTrack | null> => {
         try {
           const response = await fetch(apiFileUrl(file.url));
           if (!response.ok) {
@@ -30,6 +35,10 @@ export function useGpxTracks(stages: TripStage[]) {
           // Le nom saisi dans l'admin prime sur celui contenu dans le GPX.
           return points.length > 1
             ? {
+                cover: file.cover
+                  ? { alt: file.cover.alt, url: file.cover.url }
+                  : null,
+                id: file.id,
                 kind: file.kind,
                 name: file.name,
                 points,

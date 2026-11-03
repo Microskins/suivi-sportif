@@ -8,16 +8,20 @@ import {
   YAxis,
 } from "recharts";
 import type { GpxTrack } from "./gpx-track";
+import { TripTrackAlbum } from "./trip-track-album";
+import type { TripPhoto } from "./trip-types";
 import { elevationProfile, formatDuration, trackStats } from "./gpx-track";
 
 type TripTrackCardProps = {
+  // Album photo de la randonnee (reference en premier), facultatif.
+  album?: TripPhoto[];
   track: GpxTrack;
 };
 
 // Resume d'une trace GPS. Un trajet (route de A a B) ne montre que sa
 // distance; une randonnee montre aussi denivele, duree et profil, facon
 // Strava. Le graphique est decoratif; les chiffres portent l'info.
-export function TripTrackCard({ track }: TripTrackCardProps) {
+export function TripTrackCard({ album = [], track }: TripTrackCardProps) {
   // useId produit des ":" invalides dans une reference url(#...).
   const gradientId = `profil-${useId().replace(/:/g, "")}`;
   const stats = trackStats(track.points);
@@ -39,7 +43,10 @@ export function TripTrackCard({ track }: TripTrackCardProps) {
     : [distance];
 
   return (
-    <article className="rounded-lg border border-[#dfe4ea] p-3">
+    <article
+      id={track.id ? `randonnee-${track.id}` : undefined}
+      className="scroll-mt-4 rounded-lg border border-[#dfe4ea] p-3"
+    >
       <p className="site-label text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--site-muted)]">
         GPS · {isHike ? "Randonnée" : "Trajet"}
       </p>
@@ -58,6 +65,9 @@ export function TripTrackCard({ track }: TripTrackCardProps) {
           </div>
         ))}
       </dl>
+      {album.length > 0 && (
+        <TripTrackAlbum photos={album} trackName={track.name} />
+      )}
       {profile.length > 1 && (
         <div className="mt-3 h-20" aria-hidden="true">
           <ResponsiveContainer width="100%" height="100%">

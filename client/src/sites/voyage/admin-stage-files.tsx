@@ -4,6 +4,7 @@ import type { FormEvent, RefObject } from "react";
 import { useRef, useState } from "react";
 import type { AuthErrorHandler } from "./admin-api";
 import { GooglePhotosImport } from "./admin-google-photos";
+import { AdminPhotoCard, AlbumSelect, hikesOf } from "./admin-photo-card";
 import { adminApi, adminErrorMessage } from "./admin-api";
 import {
   ErrorAlert,
@@ -14,6 +15,7 @@ import {
   labelClass,
 } from "./admin-ui";
 import type { TrackKind, TripPhoto, TripTrackFile } from "./trip-types";
+import { trackAlbum } from "./trip-types";
 import { apiFileUrl } from "./voyage-api";
 
 const MB = 1024 * 1024;
@@ -117,8 +119,13 @@ function TracksBlock({
     if (!window.confirm(`Supprimer la trace « ${track.name} » ?`)) return;
     await upload.run(async () => {
       await adminApi.deleteTrack(track.id);
+      // Le serveur garde les photos de l'album, sorties de l'album.
       onChange({
-        photos,
+        photos: photos.map((photo) =>
+          photo.trackId === track.id
+            ? { ...photo, trackId: null, trackCover: false }
+            : photo,
+        ),
         tracks: tracks.filter((item) => item.id !== track.id),
       });
     });
@@ -214,6 +221,35 @@ function PhotosBlock({
   const [altError, setAltError] = useState<string | undefined>();
   const latestFiles = useRef<StageFiles>({ photos, tracks });
   latestFiles.current = { photos, tracks };
+  const hikes = hikesOf(tracks);
+  const [albumChoice, setAlbumChoice] = useState<string | null>(null);
+  // Album choisi pour les prochains envois (oublie si la trace disparait).
+  const uploadTrackId = hikes.some((hike) => hike.id === albumChoice)
+    ? albumChoice
+    : null;
+  const coverIds = new Set(
+    hikes.flatMap((hike) => trackAlbum(photos, hike.id).slice(0, 1)),
+  );
+
+  async function update(
+    photo: TripPhoto,
+    changes: { trackCover?: boolean; trackId?: string | null },
+  ) {
+    await upload.run(async () => {
+      const saved = await adminApi.updatePhoto(photo.id, changes);
+      // Une seule reference par album: les autres photos la perdent.
+      onChange({
+        tracks,
+        photos: photos.map((item) =>
+          item.id === saved.id
+            ? saved
+            : saved.trackCover && item.trackId === saved.trackId
+              ? { ...item, trackCover: false }
+              : item,
+        ),
+      });
+    });
+  }
 
   function checkAlt() {
     setAltError(
@@ -239,6 +275,7 @@ function PhotosBlock({
         alt.trim(),
         caption.trim(),
         file,
+        uploadTrackId,
       );
       onChange({ tracks, photos: [...photos, photo] });
       setAlt("");
@@ -264,33 +301,16 @@ function PhotosBlock({
       {photos.length > 0 && (
         <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
           {photos.map((photo) => (
-            <li
+            <AdminPhotoCard
               key={photo.id}
-              className="overflow-hidden rounded-[8px] border border-[#dfe4ea] bg-white"
-            >
-              <img
-                src={apiFileUrl(photo.url)}
-                alt={photo.alt}
-                loading="lazy"
-                className="aspect-[4/3] w-full object-cover"
-              />
-              <div className="grid gap-2 p-2">
-                {photo.caption && (
-                  <p className="text-xs leading-5 text-[var(--site-muted)]">
-                    {photo.caption}
-                  </p>
-                )}
-                <button
-                  type="button"
-                  className={buttonClass.smallDanger}
-                  disabled={upload.pending}
-                  aria-label={`Supprimer la photo ${photo.alt}`}
-                  onClick={() => remove(photo)}
-                >
-                  Supprimer
-                </button>
-              </div>
-            </li>
+              photo={photo}
+              hikes={hikes}
+              isCover={coverIds.has(photo)}
+              disabled={upload.pending}
+              onAlbumChange={(trackId) => update(photo, { trackId })}
+              onCover={() => update(photo, { trackCover: true })}
+              onRemove={() => remove(photo)}
+            />
           ))}
         </ul>
       )}
@@ -322,6 +342,15 @@ function PhotosBlock({
           disabled={upload.pending}
           onChange={(event) => setCaption(event.target.value)}
         />
+        {hikes.length > 0 && (
+          <AlbumSelect
+            label="Album de randonnée"
+            hikes={hikes}
+            value={uploadTrackId}
+            disabled={upload.pending}
+            onChange={setAlbumChoice}
+          />
+        )}
         <ErrorAlert>{upload.error}</ErrorAlert>
         <button
           type="submit"
@@ -340,6 +369,7 @@ function PhotosBlock({
               ...selection,
               alt: alt.trim(),
               caption: caption.trim(),
+              ...(uploadTrackId ? { trackId: uploadTrackId } : {}),
             });
             // L'import a pu durer: on repart des fichiers les plus recents.
             const current = latestFiles.current;

@@ -40,6 +40,7 @@ import {
   geocodeQuerySchema,
   googlePhotosImportSchema,
   googlePhotosSessionSchema,
+  photoUpdateSchema,
   photoUploadQuerySchema,
   roadRouteInputSchema,
   slugParamSchema,
@@ -412,11 +413,35 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
         if (!(await voyages.stageExists(id))) {
           return sendNotFound(reply, "Etape introuvable", "STAGE_NOT_FOUND");
         }
+        // Verifie l'album avant d'ecrire le fichier sur le disque.
+        if (query.trackId) await voyages.assertTrackInStage(query.trackId, id);
         const stored = await storePhoto(body);
         return sendCreated(
           reply,
           await voyages.addPhoto(id, { ...stored, ...query }),
         );
+      } catch (error) {
+        return handleError(fastify, reply, error);
+      }
+    },
+  );
+
+  // PATCH /api/voyages/admin/photos/:id - album de randonnee et photo de
+  // reference (bulle de la carte), ou textes de la photo.
+  fastify.patch(
+    "/photos/:id",
+    {
+      config: { rateLimit: writeRateLimit },
+      schema: { ...admin, summary: "Update a photo (hike album, cover)" },
+    },
+    async (request, reply) => {
+      try {
+        const { id } = idParamSchema.parse(request.params);
+        const changes = photoUpdateSchema.parse(request.body);
+        const photo = await voyages.updatePhoto(id, changes);
+        return photo
+          ? sendOk(reply, photo)
+          : sendNotFound(reply, "Photo introuvable", "TRIP_FILE_NOT_FOUND");
       } catch (error) {
         return handleError(fastify, reply, error);
       }
@@ -512,6 +537,7 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
         if (!(await voyages.stageExists(id))) {
           return sendNotFound(reply, "Etape introuvable", "STAGE_NOT_FOUND");
         }
+        if (input.trackId) await voyages.assertTrackInStage(input.trackId, id);
         const picked = await listPickedPhotos(
           input.accessToken,
           input.sessionId,
@@ -540,6 +566,7 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
               ...stored,
               alt: alt.slice(0, 200),
               caption: input.caption,
+              trackId: input.trackId,
             }),
           );
         }

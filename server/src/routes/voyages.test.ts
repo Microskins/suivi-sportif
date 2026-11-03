@@ -28,6 +28,8 @@ const mocks = vi.hoisted(() => ({
   createTrip: vi.fn(),
   stageExists: vi.fn(),
   addPhoto: vi.fn(),
+  updatePhoto: vi.fn(),
+  assertTrackInStage: vi.fn(),
 }));
 
 vi.mock("../db/queries/voyages.js", async (importOriginal) => ({
@@ -828,5 +830,89 @@ describe("import Google Photos", () => {
     expect(isGoogleContentUrl("https://googleusercontent.com.evil.fr/a")).toBe(
       false,
     );
+  });
+});
+
+describe("albums photo des randonnees", () => {
+  const photoId = "3d1c2b4a-5e6f-4a7b-8c9d-0e1f2a3b4c5d";
+  const trackId = "9a8b7c6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d";
+  const patch = (payload: unknown) =>
+    app.inject({
+      method: "PATCH",
+      url: `/api/voyages/admin/photos/${photoId}`,
+      headers: { authorization: tokenFor(ADMIN) },
+      payload: payload as Record<string, unknown>,
+    });
+
+  it("classe une photo dans un album et en fait la reference", async () => {
+    mocks.updatePhoto.mockResolvedValue({
+      id: photoId,
+      trackId,
+      trackCover: true,
+    });
+
+    const response = await patch({ trackId, trackCover: true });
+
+    expect(response.statusCode).toBe(200);
+    expect(mocks.updatePhoto).toHaveBeenCalledWith(photoId, {
+      trackId,
+      trackCover: true,
+    });
+    expect(response.json().data.trackCover).toBe(true);
+  });
+
+  it("sort une photo de son album avec trackId null", async () => {
+    mocks.updatePhoto.mockResolvedValue({ id: photoId, trackId: null });
+
+    expect((await patch({ trackId: null })).statusCode).toBe(200);
+    expect(mocks.updatePhoto).toHaveBeenCalledWith(photoId, { trackId: null });
+  });
+
+  it("refuse une modification vide ou mal typee", async () => {
+    expect((await patch({})).statusCode).toBe(400);
+    expect((await patch({ trackCover: "oui" })).statusCode).toBe(400);
+    expect((await patch({ trackId: "pas-un-uuid" })).statusCode).toBe(400);
+    expect(mocks.updatePhoto).not.toHaveBeenCalled();
+  });
+
+  it("repond 404 pour une photo inconnue", async () => {
+    mocks.updatePhoto.mockResolvedValue(null);
+
+    const response = await patch({ trackCover: true });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.json().code).toBe("TRIP_FILE_NOT_FOUND");
+  });
+
+  it("refuse une randonnee d'une autre etape", async () => {
+    const { TripConflictError } = await import("../db/queries/voyages.js");
+    mocks.updatePhoto.mockRejectedValue(
+      new TripConflictError("Autre etape", "TRACK_NOT_IN_STAGE"),
+    );
+
+    const response = await patch({ trackId });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json().code).toBe("TRACK_NOT_IN_STAGE");
+  });
+
+  it("verifie l'album avant d'ecrire une photo envoyee", async () => {
+    const { TripConflictError } = await import("../db/queries/voyages.js");
+    mocks.stageExists.mockResolvedValue(true);
+    mocks.assertTrackInStage.mockRejectedValue(
+      new TripConflictError("Autre etape", "TRACK_NOT_IN_STAGE"),
+    );
+
+    const response = await app.inject({
+      method: "POST",
+      url: `/api/voyages/admin/stages/${ADMIN.id}/photos?alt=Skye&trackId=${trackId}`,
+      headers: { authorization: tokenFor(ADMIN), "content-type": "image/jpeg" },
+      payload: Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0, 0]),
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json().code).toBe("TRACK_NOT_IN_STAGE");
+    expect(mocks.assertTrackInStage).toHaveBeenCalledWith(trackId, ADMIN.id);
+    expect(mocks.addPhoto).not.toHaveBeenCalled();
   });
 });

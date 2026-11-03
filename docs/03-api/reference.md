@@ -592,10 +592,15 @@ l'ordre de l'itineraire:
     { "id": "uuid", "kind": "trajet", "name": "Edimbourg - Glencoe", "url": "/api/voyages/files/<uuid>.gpx" }
   ],
   "photos": [
-    { "id": "uuid", "url": "/api/voyages/files/<uuid>.jpg", "alt": "Texte alternatif", "caption": "" }
+    { "id": "uuid", "url": "/api/voyages/files/<uuid>.jpg", "alt": "Texte alternatif", "caption": "", "trackId": "uuid", "trackCover": true }
   ]
 }
 ```
+
+Album photo d'une randonnee: `photos[].trackId` est l'id d'une trace de la
+meme etape (`null` hors album) et `trackCover` marque la photo de reference
+de l'album, affichee en bulle au depart de la randonnee sur la carte. Sans
+reference explicite, le carnet prend la premiere photo de l'album.
 
 `route` est le trace reconstitue de l'etape (`[lng, lat][]`, eventuellement
 vide). `lodgingUrl` et `meals` (repas de l'etape, points de la carte) sont
@@ -750,8 +755,20 @@ utilise.
 - `POST /api/voyages/admin/stages/:id/photos?alt=...&caption=...`:
   `Content-Type: image/jpeg`, `image/png` ou `image/webp` (ou
   `application/octet-stream`), 15 Mo max. JPEG, PNG ou WebP reconnus a leur
-  signature. `alt` (200) est obligatoire, `caption` (200) facultatif. `201`
-  avec la photo (`{ id, url, alt, caption }`), ajoutee en fin de pellicule.
+  signature. `alt` (200) est obligatoire, `caption` (200) facultatif,
+  `trackId` (facultatif) range la photo dans l'album d'une randonnee de
+  l'etape (`400 TRACK_NOT_IN_STAGE` sinon, verifie avant d'ecrire le
+  fichier). `201` avec la photo (`{ id, url, alt, caption, trackId,
+  trackCover }`), ajoutee en fin de pellicule. L'import Google Photos d'une
+  etape accepte le meme `trackId` dans son corps JSON.
+- `PATCH /api/voyages/admin/photos/:id`: corps JSON partiel
+  `{ trackId?, trackCover?, alt?, caption? }`. `trackId` (uuid, ou `null`
+  pour sortir la photo de son album) doit designer une trace de l'etape de
+  la photo (`400 TRACK_NOT_IN_STAGE`). `trackCover: true` en fait la photo de
+  reference de son album et retire ce statut aux autres photos de l'album;
+  changer d'album retire le statut. Supprimer une trace garde ses photos dans
+  l'etape, hors album. `200` avec la photo, `404 TRIP_FILE_NOT_FOUND` si
+  l'id est inconnu, `400` pour un corps vide ou invalide.
 - `POST /api/voyages/admin/meal-photos/google`: photo d'un repas choisie
   dans Google Photos. Corps JSON `{ accessToken, sessionId }` (voir l'import
   d'etape ci-dessous); seule la premiere photo de la selection est gardee
