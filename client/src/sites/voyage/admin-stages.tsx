@@ -11,6 +11,7 @@ import {
   stageCoordinates,
 } from "./admin-form";
 import type { StageFiles } from "./admin-stage-files";
+import { AdminStageAlbums } from "./admin-stage-albums";
 import { AdminStageFiles } from "./admin-stage-files";
 import { AdminStageMeals } from "./admin-stage-meals";
 import type { LngLat } from "./trip-types";
@@ -282,6 +283,7 @@ export function AdminStages({
                           stageLabel={name}
                           tracks={stage.tracks}
                           photos={stage.photos}
+                          albums={stage.albums}
                           onAuthError={onAuthError}
                           onChange={(files: StageFiles) =>
                             update(stage.key, files)
@@ -305,6 +307,28 @@ export function AdminStages({
                       )}
                     </StageSection>
                   </div>
+                  {stage.id && (
+                    <div className="mt-4">
+                      <StageSection
+                        number={6}
+                        tone="teal"
+                        title="Albums photo"
+                        hint="Plusieurs albums par étape. Liez un album à une randonnée : sa photo de référence devient la bulle au départ de la randonnée sur la carte."
+                      >
+                        <AdminStageAlbums
+                          stageId={stage.id}
+                          stageLabel={name}
+                          tracks={stage.tracks}
+                          photos={stage.photos}
+                          albums={stage.albums}
+                          onAuthError={onAuthError}
+                          onChange={(files: StageFiles) =>
+                            update(stage.key, files)
+                          }
+                        />
+                      </StageSection>
+                    </div>
+                  )}
                 </div>
               </li>
             );

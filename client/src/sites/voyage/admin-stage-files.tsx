@@ -4,7 +4,12 @@ import type { FormEvent, RefObject } from "react";
 import { useRef, useState } from "react";
 import type { AuthErrorHandler } from "./admin-api";
 import { GooglePhotosImport } from "./admin-google-photos";
-import { AdminPhotoCard, AlbumSelect, hikesOf } from "./admin-photo-card";
+import {
+  AdminPhotoCard,
+  AlbumSelect,
+  coverIdsOf,
+  withSavedPhoto,
+} from "./admin-photo-card";
 import { adminApi, adminErrorMessage } from "./admin-api";
 import {
   ErrorAlert,
@@ -14,8 +19,12 @@ import {
   inputClass,
   labelClass,
 } from "./admin-ui";
-import type { TrackKind, TripPhoto, TripTrackFile } from "./trip-types";
-import { trackAlbum } from "./trip-types";
+import type {
+  TrackKind,
+  TripAlbum,
+  TripPhoto,
+  TripTrackFile,
+} from "./trip-types";
 import { apiFileUrl } from "./voyage-api";
 
 const MB = 1024 * 1024;
@@ -23,7 +32,11 @@ const GPX_MAX = 10 * MB;
 const PHOTO_MAX = 15 * MB;
 const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-export type StageFiles = { photos: TripPhoto[]; tracks: TripTrackFile[] };
+export type StageFiles = {
+  albums: TripAlbum[];
+  photos: TripPhoto[];
+  tracks: TripTrackFile[];
+};
 
 type StageFilesProps = StageFiles & {
   onAuthError: AuthErrorHandler;
@@ -88,6 +101,7 @@ function FileInput({
 }
 
 function TracksBlock({
+  albums,
   onAuthError,
   onChange,
   photos,
@@ -109,7 +123,7 @@ function TracksBlock({
     const trackName = name.trim() || file.name.replace(/\.gpx$/i, "");
     await upload.run(async () => {
       const track = await adminApi.uploadTrack(stageId, kind, trackName, file);
-      onChange({ photos, tracks: [...tracks, track] });
+      onChange({ albums, photos, tracks: [...tracks, track] });
       setName("");
       if (fileRef.current) fileRef.current.value = "";
     });
@@ -119,13 +133,12 @@ function TracksBlock({
     if (!window.confirm(`Supprimer la trace « ${track.name} » ?`)) return;
     await upload.run(async () => {
       await adminApi.deleteTrack(track.id);
-      // Le serveur garde les photos de l'album, sorties de l'album.
+      // Le serveur garde les albums lies a la trace, sans lien.
       onChange({
-        photos: photos.map((photo) =>
-          photo.trackId === track.id
-            ? { ...photo, trackId: null, trackCover: false }
-            : photo,
+        albums: albums.map((album) =>
+          album.trackId === track.id ? { ...album, trackId: null } : album,
         ),
+        photos,
         tracks: tracks.filter((item) => item.id !== track.id),
       });
     });
@@ -207,6 +220,7 @@ function TracksBlock({
 }
 
 function PhotosBlock({
+  albums,
   onAuthError,
   onChange,
   photos,
@@ -219,37 +233,14 @@ function PhotosBlock({
   const [alt, setAlt] = useState("");
   const [caption, setCaption] = useState("");
   const [altError, setAltError] = useState<string | undefined>();
-  const latestFiles = useRef<StageFiles>({ photos, tracks });
-  latestFiles.current = { photos, tracks };
-  const hikes = hikesOf(tracks);
+  const latestFiles = useRef<StageFiles>({ albums, photos, tracks });
+  latestFiles.current = { albums, photos, tracks };
   const [albumChoice, setAlbumChoice] = useState<string | null>(null);
-  // Album choisi pour les prochains envois (oublie si la trace disparait).
-  const uploadTrackId = hikes.some((hike) => hike.id === albumChoice)
+  // Album choisi pour les prochains envois (oublie s'il disparait).
+  const uploadAlbumId = albums.some((album) => album.id === albumChoice)
     ? albumChoice
     : null;
-  const coverIds = new Set(
-    hikes.flatMap((hike) => trackAlbum(photos, hike.id).slice(0, 1)),
-  );
-
-  async function update(
-    photo: TripPhoto,
-    changes: { trackCover?: boolean; trackId?: string | null },
-  ) {
-    await upload.run(async () => {
-      const saved = await adminApi.updatePhoto(photo.id, changes);
-      // Une seule reference par album: les autres photos la perdent.
-      onChange({
-        tracks,
-        photos: photos.map((item) =>
-          item.id === saved.id
-            ? saved
-            : saved.trackCover && item.trackId === saved.trackId
-              ? { ...item, trackCover: false }
-              : item,
-        ),
-      });
-    });
-  }
+  const coverIds = coverIdsOf(albums, photos);
 
   function checkAlt() {
     setAltError(
@@ -258,6 +249,16 @@ function PhotosBlock({
     if (!alt.trim()) upload.setError("Le texte alternatif est obligatoire.");
     else upload.setError(null);
     return Boolean(alt.trim());
+  }
+
+  async function update(
+    photo: TripPhoto,
+    changes: { albumCover?: boolean; albumId?: string | null },
+  ) {
+    await upload.run(async () => {
+      const saved = await adminApi.updatePhoto(photo.id, changes);
+      onChange({ albums, tracks, photos: withSavedPhoto(photos, saved) });
+    });
   }
 
   async function submit(event: FormEvent) {
@@ -275,9 +276,9 @@ function PhotosBlock({
         alt.trim(),
         caption.trim(),
         file,
-        uploadTrackId,
+        uploadAlbumId,
       );
-      onChange({ tracks, photos: [...photos, photo] });
+      onChange({ albums, tracks, photos: [...photos, photo] });
       setAlt("");
       setCaption("");
       if (fileRef.current) fileRef.current.value = "";
@@ -289,6 +290,7 @@ function PhotosBlock({
     await upload.run(async () => {
       await adminApi.deletePhoto(photo.id);
       onChange({
+        albums,
         tracks,
         photos: photos.filter((item) => item.id !== photo.id),
       });
@@ -304,11 +306,12 @@ function PhotosBlock({
             <AdminPhotoCard
               key={photo.id}
               photo={photo}
-              hikes={hikes}
-              isCover={coverIds.has(photo)}
+              albums={albums}
+              tracks={tracks}
+              isCover={coverIds.has(photo.id)}
               disabled={upload.pending}
-              onAlbumChange={(trackId) => update(photo, { trackId })}
-              onCover={() => update(photo, { trackCover: true })}
+              onAlbumChange={(albumId) => update(photo, { albumId })}
+              onCover={() => update(photo, { albumCover: true })}
               onRemove={() => remove(photo)}
             />
           ))}
@@ -342,11 +345,12 @@ function PhotosBlock({
           disabled={upload.pending}
           onChange={(event) => setCaption(event.target.value)}
         />
-        {hikes.length > 0 && (
+        {albums.length > 0 && (
           <AlbumSelect
-            label="Album de randonnée"
-            hikes={hikes}
-            value={uploadTrackId}
+            label="Ranger dans l’album"
+            albums={albums}
+            tracks={tracks}
+            value={uploadAlbumId}
             disabled={upload.pending}
             onChange={setAlbumChoice}
           />
@@ -369,12 +373,12 @@ function PhotosBlock({
               ...selection,
               alt: alt.trim(),
               caption: caption.trim(),
-              ...(uploadTrackId ? { trackId: uploadTrackId } : {}),
+              ...(uploadAlbumId ? { albumId: uploadAlbumId } : {}),
             });
             // L'import a pu durer: on repart des fichiers les plus recents.
             const current = latestFiles.current;
             onChange({
-              tracks: current.tracks,
+              ...current,
               photos: [...current.photos, ...result.photos],
             });
             setAlt("");

@@ -6,6 +6,7 @@ import type {
   TravelMode,
   TripDetail,
   TripMeal,
+  TripAlbum,
   TripPhoto,
   TripTrackFile,
 } from "./trip-types";
@@ -39,6 +40,8 @@ export type StageDraft = {
   // Repas de l'etape, facultatifs.
   meals: MealDraft[];
   photos: TripPhoto[];
+  // Albums photo de l'etape (geres hors de l'enregistrement du voyage).
+  albums: TripAlbum[];
   // Trace reconstitue renvoye par l'API: conserve tel quel a l'enregistrement.
   route: LngLat[];
   title: string;
@@ -107,6 +110,7 @@ export const emptyStage = (): StageDraft => ({
   lodgingUrl: "",
   meals: [],
   photos: [],
+  albums: [],
   route: [],
   title: "",
   tracks: [],
@@ -151,6 +155,7 @@ export function tripToDraft(trip: TripDetail): TripDraft {
       lodgingUrl: stage.lodgingUrl ?? "",
       meals: (stage.meals ?? []).map(mealToDraft),
       photos: stage.photos,
+      albums: stage.albums ?? [],
       route: stage.route,
       title: stage.title,
       tracks: stage.tracks,

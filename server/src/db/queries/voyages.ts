@@ -20,7 +20,8 @@ export class TripConflictError extends Error {
       | "TRIP_SLUG_TAKEN"
       | "AIRPORT_NOT_FOUND"
       | "STAGE_NOT_FOUND"
-      | "TRACK_NOT_IN_STAGE",
+      | "TRACK_NOT_IN_STAGE"
+      | "ALBUM_NOT_IN_STAGE",
   ) {
     super(message);
     this.name = "TripConflictError";
@@ -55,6 +56,7 @@ const detailInclude = {
     include: {
       tracks: { orderBy: { createdAt: "asc" } },
       photos: { orderBy: [{ position: "asc" }, { createdAt: "asc" }] },
+      albums: { orderBy: [{ position: "asc" }, { createdAt: "asc" }] },
     },
   },
 } satisfies Prisma.TripInclude;
@@ -138,6 +140,7 @@ function formatDetail(trip: TripDetailRow) {
           url: `${FILE_ROUTE}/${track.fileName}`,
         })),
         photos: stage.photos.map(formatPhoto),
+        albums: stage.albums.map(formatAlbum),
       })),
     ),
   };
@@ -486,37 +489,59 @@ export async function addTrack(
 }
 
 type StoredPhoto = {
+  albumId: string | null;
   alt: string;
   caption: string;
   fileName: string;
   id: string;
-  isTrackCover: boolean;
-  trackId: string | null;
+  isAlbumCover: boolean;
 };
 
-// `trackId`: album de randonnee de la photo; `trackCover`: photo de
-// reference de cet album (bulle sur la carte).
+// `albumId`: album de l'etape qui range la photo; `albumCover`: photo de
+// reference de cet album (sa couverture, et la bulle de la randonnee liee).
 function formatPhoto(photo: StoredPhoto) {
   return {
     id: photo.id,
     url: `${FILE_ROUTE}/${photo.fileName}`,
     alt: photo.alt,
     caption: photo.caption,
-    trackId: photo.trackId,
-    trackCover: photo.trackId !== null && photo.isTrackCover,
+    albumId: photo.albumId,
+    albumCover: photo.albumId !== null && photo.isAlbumCover,
   };
 }
 
-// Un album ne reunit que des photos de l'etape de la randonnee.
+function formatAlbum(album: {
+  id: string;
+  name: string;
+  trackId: string | null;
+}) {
+  return { id: album.id, name: album.name, trackId: album.trackId };
+}
+
+// Une randonnee liee a un album est une trace de la meme etape.
 export async function assertTrackInStage(trackId: string, stageId: string) {
   const track = await prisma.tripTrack.findFirst({
-    where: { id: trackId, stageId },
+    where: { id: trackId, stageId, kind: "RANDONNEE" },
     select: { id: true },
   });
   if (!track) {
     throw new TripConflictError(
-      "La randonnee n'appartient pas a l'etape de la photo",
+      "La randonnee n'appartient pas a l'etape",
       "TRACK_NOT_IN_STAGE",
+    );
+  }
+}
+
+// Une photo ne rejoint qu'un album de sa propre etape.
+export async function assertAlbumInStage(albumId: string, stageId: string) {
+  const album = await prisma.tripAlbum.findFirst({
+    where: { id: albumId, stageId },
+    select: { id: true },
+  });
+  if (!album) {
+    throw new TripConflictError(
+      "L'album n'appartient pas a l'etape de la photo",
+      "ALBUM_NOT_IN_STAGE",
     );
   }
 }
@@ -524,65 +549,111 @@ export async function assertTrackInStage(trackId: string, stageId: string) {
 export async function addPhoto(
   stageId: string,
   data: {
+    albumId?: string | null;
     alt: string;
     byteSize: number;
     caption: string;
     fileName: string;
     mimeType: string;
-    trackId?: string | null;
   },
 ) {
-  if (data.trackId) await assertTrackInStage(data.trackId, stageId);
+  if (data.albumId) await assertAlbumInStage(data.albumId, stageId);
   const position = await prisma.tripPhoto.count({ where: { stageId } });
   const photo = await prisma.tripPhoto.create({
-    data: { stageId, position, ...data, trackId: data.trackId ?? null },
+    data: { stageId, position, ...data, albumId: data.albumId ?? null },
   });
   return formatPhoto(photo);
 }
 
-// Classe une photo dans l'album d'une randonnee (ou l'en sort avec null) et
-// en fait, ou non, la photo de reference. Une seule reference par album.
+// Range une photo dans un album de son etape (ou l'en sort avec null) et en
+// fait, ou non, la photo de reference. Une seule reference par album.
 // Rend null si la photo est inconnue.
 export async function updatePhoto(
   id: string,
   changes: {
+    albumCover?: boolean;
+    albumId?: string | null;
     alt?: string;
     caption?: string;
-    trackCover?: boolean;
-    trackId?: string | null;
   },
 ) {
   const current = await prisma.tripPhoto.findUnique({ where: { id } });
   if (!current) return null;
-  const trackId =
-    changes.trackId === undefined ? current.trackId : changes.trackId;
-  if (trackId && trackId !== current.trackId) {
-    await assertTrackInStage(trackId, current.stageId);
+  const albumId =
+    changes.albumId === undefined ? current.albumId : changes.albumId;
+  if (albumId && albumId !== current.albumId) {
+    await assertAlbumInStage(albumId, current.stageId);
   }
   // Changer d'album retire le statut de reference, sauf demande explicite.
-  const isTrackCover =
-    trackId === null
+  const isAlbumCover =
+    albumId === null
       ? false
-      : (changes.trackCover ??
-        (trackId === current.trackId ? current.isTrackCover : false));
+      : (changes.albumCover ??
+        (albumId === current.albumId ? current.isAlbumCover : false));
   const photo = await prisma.$transaction(async (tx) => {
-    if (isTrackCover && trackId) {
+    if (isAlbumCover && albumId) {
       await tx.tripPhoto.updateMany({
-        where: { trackId, isTrackCover: true, NOT: { id } },
-        data: { isTrackCover: false },
+        where: { albumId, isAlbumCover: true, NOT: { id } },
+        data: { isAlbumCover: false },
       });
     }
     return tx.tripPhoto.update({
       where: { id },
       data: {
-        trackId,
-        isTrackCover,
+        albumId,
+        isAlbumCover,
         ...(changes.alt === undefined ? {} : { alt: changes.alt }),
         ...(changes.caption === undefined ? {} : { caption: changes.caption }),
       },
     });
   });
   return formatPhoto(photo);
+}
+
+// Albums d'une etape: nom et randonnee liee (facultative).
+export async function createAlbum(
+  stageId: string,
+  data: { name: string; trackId?: string | null },
+) {
+  if (data.trackId) await assertTrackInStage(data.trackId, stageId);
+  const position = await prisma.tripAlbum.count({ where: { stageId } });
+  return formatAlbum(
+    await prisma.tripAlbum.create({
+      data: {
+        stageId,
+        position,
+        name: data.name,
+        trackId: data.trackId ?? null,
+      },
+    }),
+  );
+}
+
+// Rend null si l'album est inconnu.
+export async function updateAlbum(
+  id: string,
+  changes: { name?: string; trackId?: string | null },
+) {
+  const current = await prisma.tripAlbum.findUnique({ where: { id } });
+  if (!current) return null;
+  if (changes.trackId)
+    await assertTrackInStage(changes.trackId, current.stageId);
+  return formatAlbum(
+    await prisma.tripAlbum.update({ where: { id }, data: changes }),
+  );
+}
+
+// Supprime l'album; ses photos restent dans l'etape, hors album. Rend false
+// si l'album est inconnu.
+export async function deleteAlbum(id: string) {
+  const [, deleted] = await prisma.$transaction([
+    prisma.tripPhoto.updateMany({
+      where: { albumId: id },
+      data: { isAlbumCover: false },
+    }),
+    prisma.tripAlbum.deleteMany({ where: { id } }),
+  ]);
+  return deleted.count > 0;
 }
 
 // Rendent le nom du fichier supprime (a effacer du disque), ou null.

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { GpxTrack } from "./gpx-track";
 import { parseGpx } from "./gpx-track";
 import type { TripStage } from "./trip-types";
-import { trackAlbum } from "./trip-types";
+import { hikeCover } from "./trip-types";
 import { apiFileUrl } from "./voyage-api";
 
 // Charge les GPX des etapes. Un fichier absent ou illisible est ignore:
@@ -14,7 +14,7 @@ export function useGpxTracks(stages: TripStage[]) {
     const files = stages.flatMap((stage, stageIndex) =>
       stage.tracks.map((file) => ({
         ...file,
-        cover: trackAlbum(stage.photos, file.id)[0] ?? null,
+        cover: hikeCover(stage, file.id),
         stageIndex,
       })),
     );

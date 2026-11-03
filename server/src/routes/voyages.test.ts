@@ -29,7 +29,10 @@ const mocks = vi.hoisted(() => ({
   stageExists: vi.fn(),
   addPhoto: vi.fn(),
   updatePhoto: vi.fn(),
-  assertTrackInStage: vi.fn(),
+  assertAlbumInStage: vi.fn(),
+  createAlbum: vi.fn(),
+  updateAlbum: vi.fn(),
+  deleteAlbum: vi.fn(),
 }));
 
 vi.mock("../db/queries/voyages.js", async (importOriginal) => ({
@@ -833,86 +836,155 @@ describe("import Google Photos", () => {
   });
 });
 
-describe("albums photo des randonnees", () => {
+describe("albums photo des etapes", () => {
   const photoId = "3d1c2b4a-5e6f-4a7b-8c9d-0e1f2a3b4c5d";
+  const albumId = "7b6a5c4d-3e2f-4a1b-9c8d-7e6f5a4b3c2d";
   const trackId = "9a8b7c6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d";
-  const patch = (payload: unknown) =>
+  const send = (
+    method: "POST" | "PATCH" | "DELETE",
+    url: string,
+    payload?: unknown,
+  ) =>
     app.inject({
-      method: "PATCH",
-      url: `/api/voyages/admin/photos/${photoId}`,
+      method,
+      url: `/api/voyages/admin${url}`,
       headers: { authorization: tokenFor(ADMIN) },
-      payload: payload as Record<string, unknown>,
+      ...(payload === undefined
+        ? {}
+        : { payload: payload as Record<string, unknown> }),
     });
 
-  it("classe une photo dans un album et en fait la reference", async () => {
+  it("cree un album lie a une randonnee", async () => {
+    mocks.stageExists.mockResolvedValue(true);
+    mocks.createAlbum.mockResolvedValue({
+      id: albumId,
+      name: "Quiraing",
+      trackId,
+    });
+
+    const response = await send("POST", `/stages/${ADMIN.id}/albums`, {
+      name: " Quiraing ",
+      trackId,
+    });
+
+    expect(response.statusCode).toBe(201);
+    expect(mocks.createAlbum).toHaveBeenCalledWith(ADMIN.id, {
+      name: "Quiraing",
+      trackId,
+    });
+  });
+
+  it("refuse un album sans nom ou pour une etape inconnue", async () => {
+    mocks.stageExists.mockResolvedValue(false);
+    expect(
+      (await send("POST", `/stages/${ADMIN.id}/albums`, { name: "" }))
+        .statusCode,
+    ).toBe(400);
+    const missing = await send("POST", `/stages/${ADMIN.id}/albums`, {
+      name: "Plage",
+    });
+    expect(missing.statusCode).toBe(404);
+    expect(mocks.createAlbum).not.toHaveBeenCalled();
+  });
+
+  it("renomme, delie et supprime un album", async () => {
+    mocks.updateAlbum.mockResolvedValue({
+      id: albumId,
+      name: "Plage",
+      trackId: null,
+    });
+    const renamed = await send("PATCH", `/albums/${albumId}`, {
+      name: "Plage",
+      trackId: null,
+    });
+    expect(renamed.statusCode).toBe(200);
+    expect(mocks.updateAlbum).toHaveBeenCalledWith(albumId, {
+      name: "Plage",
+      trackId: null,
+    });
+
+    expect((await send("PATCH", `/albums/${albumId}`, {})).statusCode).toBe(
+      400,
+    );
+
+    mocks.deleteAlbum.mockResolvedValue(true);
+    expect((await send("DELETE", `/albums/${albumId}`)).statusCode).toBe(204);
+    mocks.deleteAlbum.mockResolvedValue(false);
+    const gone = await send("DELETE", `/albums/${albumId}`);
+    expect(gone.statusCode).toBe(404);
+    expect(gone.json().code).toBe("ALBUM_NOT_FOUND");
+  });
+
+  it("refuse une randonnee d'une autre etape pour un album", async () => {
+    const { TripConflictError } = await import("../db/queries/voyages.js");
+    mocks.updateAlbum.mockRejectedValue(
+      new TripConflictError("Autre etape", "TRACK_NOT_IN_STAGE"),
+    );
+    const response = await send("PATCH", `/albums/${albumId}`, { trackId });
+    expect(response.statusCode).toBe(400);
+    expect(response.json().code).toBe("TRACK_NOT_IN_STAGE");
+  });
+
+  it("range une photo dans un album et en fait la reference", async () => {
     mocks.updatePhoto.mockResolvedValue({
       id: photoId,
-      trackId,
-      trackCover: true,
+      albumId,
+      albumCover: true,
     });
 
-    const response = await patch({ trackId, trackCover: true });
+    const response = await send("PATCH", `/photos/${photoId}`, {
+      albumId,
+      albumCover: true,
+    });
 
     expect(response.statusCode).toBe(200);
     expect(mocks.updatePhoto).toHaveBeenCalledWith(photoId, {
-      trackId,
-      trackCover: true,
+      albumId,
+      albumCover: true,
     });
-    expect(response.json().data.trackCover).toBe(true);
+    expect(response.json().data.albumCover).toBe(true);
   });
 
-  it("sort une photo de son album avec trackId null", async () => {
-    mocks.updatePhoto.mockResolvedValue({ id: photoId, trackId: null });
-
-    expect((await patch({ trackId: null })).statusCode).toBe(200);
-    expect(mocks.updatePhoto).toHaveBeenCalledWith(photoId, { trackId: null });
-  });
-
-  it("refuse une modification vide ou mal typee", async () => {
-    expect((await patch({})).statusCode).toBe(400);
-    expect((await patch({ trackCover: "oui" })).statusCode).toBe(400);
-    expect((await patch({ trackId: "pas-un-uuid" })).statusCode).toBe(400);
+  it("refuse une modification de photo vide ou mal typee", async () => {
+    expect((await send("PATCH", `/photos/${photoId}`, {})).statusCode).toBe(
+      400,
+    );
+    expect(
+      (await send("PATCH", `/photos/${photoId}`, { albumCover: "oui" }))
+        .statusCode,
+    ).toBe(400);
+    expect(
+      (await send("PATCH", `/photos/${photoId}`, { albumId: "x" })).statusCode,
+    ).toBe(400);
     expect(mocks.updatePhoto).not.toHaveBeenCalled();
   });
 
   it("repond 404 pour une photo inconnue", async () => {
     mocks.updatePhoto.mockResolvedValue(null);
-
-    const response = await patch({ trackCover: true });
-
+    const response = await send("PATCH", `/photos/${photoId}`, {
+      albumCover: true,
+    });
     expect(response.statusCode).toBe(404);
     expect(response.json().code).toBe("TRIP_FILE_NOT_FOUND");
-  });
-
-  it("refuse une randonnee d'une autre etape", async () => {
-    const { TripConflictError } = await import("../db/queries/voyages.js");
-    mocks.updatePhoto.mockRejectedValue(
-      new TripConflictError("Autre etape", "TRACK_NOT_IN_STAGE"),
-    );
-
-    const response = await patch({ trackId });
-
-    expect(response.statusCode).toBe(400);
-    expect(response.json().code).toBe("TRACK_NOT_IN_STAGE");
   });
 
   it("verifie l'album avant d'ecrire une photo envoyee", async () => {
     const { TripConflictError } = await import("../db/queries/voyages.js");
     mocks.stageExists.mockResolvedValue(true);
-    mocks.assertTrackInStage.mockRejectedValue(
-      new TripConflictError("Autre etape", "TRACK_NOT_IN_STAGE"),
+    mocks.assertAlbumInStage.mockRejectedValue(
+      new TripConflictError("Autre etape", "ALBUM_NOT_IN_STAGE"),
     );
 
     const response = await app.inject({
       method: "POST",
-      url: `/api/voyages/admin/stages/${ADMIN.id}/photos?alt=Skye&trackId=${trackId}`,
+      url: `/api/voyages/admin/stages/${ADMIN.id}/photos?alt=Skye&albumId=${albumId}`,
       headers: { authorization: tokenFor(ADMIN), "content-type": "image/jpeg" },
       payload: Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0, 0]),
     });
 
     expect(response.statusCode).toBe(400);
-    expect(response.json().code).toBe("TRACK_NOT_IN_STAGE");
-    expect(mocks.assertTrackInStage).toHaveBeenCalledWith(trackId, ADMIN.id);
+    expect(response.json().code).toBe("ALBUM_NOT_IN_STAGE");
+    expect(mocks.assertAlbumInStage).toHaveBeenCalledWith(albumId, ADMIN.id);
     expect(mocks.addPhoto).not.toHaveBeenCalled();
   });
 });

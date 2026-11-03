@@ -40,6 +40,8 @@ import {
   geocodeQuerySchema,
   googlePhotosImportSchema,
   googlePhotosSessionSchema,
+  albumInputSchema,
+  albumUpdateSchema,
   photoUpdateSchema,
   photoUploadQuerySchema,
   roadRouteInputSchema,
@@ -414,7 +416,7 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
           return sendNotFound(reply, "Etape introuvable", "STAGE_NOT_FOUND");
         }
         // Verifie l'album avant d'ecrire le fichier sur le disque.
-        if (query.trackId) await voyages.assertTrackInStage(query.trackId, id);
+        if (query.albumId) await voyages.assertAlbumInStage(query.albumId, id);
         const stored = await storePhoto(body);
         return sendCreated(
           reply,
@@ -426,13 +428,13 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
     },
   );
 
-  // PATCH /api/voyages/admin/photos/:id - album de randonnee et photo de
-  // reference (bulle de la carte), ou textes de la photo.
+  // PATCH /api/voyages/admin/photos/:id - album et photo de reference de
+  // l'album, ou textes de la photo.
   fastify.patch(
     "/photos/:id",
     {
       config: { rateLimit: writeRateLimit },
-      schema: { ...admin, summary: "Update a photo (hike album, cover)" },
+      schema: { ...admin, summary: "Update a photo (album, cover)" },
     },
     async (request, reply) => {
       try {
@@ -442,6 +444,68 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
         return photo
           ? sendOk(reply, photo)
           : sendNotFound(reply, "Photo introuvable", "TRIP_FILE_NOT_FOUND");
+      } catch (error) {
+        return handleError(fastify, reply, error);
+      }
+    },
+  );
+
+  // Albums photo d'une etape. Un album lie a une randonnee s'affiche dans sa
+  // fiche, et sa photo de reference en bulle au depart sur la carte.
+  fastify.post(
+    "/stages/:id/albums",
+    {
+      config: { rateLimit: writeRateLimit },
+      schema: { ...admin, summary: "Create a photo album" },
+    },
+    async (request, reply) => {
+      try {
+        const { id } = idParamSchema.parse(request.params);
+        const input = albumInputSchema.parse(request.body);
+        if (!(await voyages.stageExists(id))) {
+          return sendNotFound(reply, "Etape introuvable", "STAGE_NOT_FOUND");
+        }
+        return sendCreated(reply, await voyages.createAlbum(id, input));
+      } catch (error) {
+        return handleError(fastify, reply, error);
+      }
+    },
+  );
+
+  fastify.patch(
+    "/albums/:id",
+    {
+      config: { rateLimit: writeRateLimit },
+      schema: { ...admin, summary: "Rename or link a photo album" },
+    },
+    async (request, reply) => {
+      try {
+        const { id } = idParamSchema.parse(request.params);
+        const album = await voyages.updateAlbum(
+          id,
+          albumUpdateSchema.parse(request.body),
+        );
+        return album
+          ? sendOk(reply, album)
+          : sendNotFound(reply, "Album introuvable", "ALBUM_NOT_FOUND");
+      } catch (error) {
+        return handleError(fastify, reply, error);
+      }
+    },
+  );
+
+  fastify.delete(
+    "/albums/:id",
+    {
+      config: { rateLimit: writeRateLimit },
+      schema: { ...admin, summary: "Delete a photo album (keeps its photos)" },
+    },
+    async (request, reply) => {
+      try {
+        const { id } = idParamSchema.parse(request.params);
+        return (await voyages.deleteAlbum(id))
+          ? sendNoContent(reply)
+          : sendNotFound(reply, "Album introuvable", "ALBUM_NOT_FOUND");
       } catch (error) {
         return handleError(fastify, reply, error);
       }
@@ -537,7 +601,7 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
         if (!(await voyages.stageExists(id))) {
           return sendNotFound(reply, "Etape introuvable", "STAGE_NOT_FOUND");
         }
-        if (input.trackId) await voyages.assertTrackInStage(input.trackId, id);
+        if (input.albumId) await voyages.assertAlbumInStage(input.albumId, id);
         const picked = await listPickedPhotos(
           input.accessToken,
           input.sessionId,
@@ -566,7 +630,7 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
               ...stored,
               alt: alt.slice(0, 200),
               caption: input.caption,
-              trackId: input.trackId,
+              albumId: input.albumId,
             }),
           );
         }

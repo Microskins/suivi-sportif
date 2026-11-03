@@ -1,4 +1,4 @@
-// Album photo d'une randonnee: un diaporama qui defile tout seul (toutes les
+// Album photo (d'une randonnee ou d'une etape): un diaporama qui defile tout seul (toutes les
 // 4 s), avec pause, precedent/suivant et pastilles. Il s'arrete au survol, au
 // clavier et quand l'utilisateur prefere limiter les animations.
 import { useEffect, useState } from "react";
@@ -13,10 +13,10 @@ const navButton =
 
 export function TripTrackAlbum({
   photos,
-  trackName,
+  title,
 }: {
   photos: TripPhoto[];
-  trackName: string;
+  title: string;
 }) {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(() => !prefersReducedMotion());
@@ -42,7 +42,7 @@ export function TripTrackAlbum({
   return (
     <section
       aria-roledescription="carrousel"
-      aria-label={`Album photo — ${trackName}`}
+      aria-label={`Album photo — ${title}`}
       className="mt-3 overflow-hidden rounded-lg bg-[#0f1b2b]"
       onMouseEnter={() => setHeld(true)}
       onMouseLeave={() => setHeld(false)}
@@ -51,7 +51,10 @@ export function TripTrackAlbum({
         if (!event.currentTarget.contains(event.relatedTarget)) setHeld(false);
       }}
     >
-      <div className="relative">
+      <p className="site-label px-3 pt-2 text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-white/80">
+        Album · {title}
+      </p>
+      <div className="relative mt-2">
         <img
           key={current.id}
           src={apiFileUrl(current.url)}

@@ -7,6 +7,7 @@ import type {
   TrackKind,
   TripDetail,
   TripMeal,
+  TripAlbum,
   TripPhoto,
   TripSummary,
   TripTrackFile,
@@ -209,25 +210,46 @@ export const adminApi = {
     alt: string,
     caption: string,
     file: File,
-    trackId?: string | null,
+    albumId?: string | null,
   ) =>
     adminRequest<TripPhoto>(
       `/stages/${encodeURIComponent(stageId)}/photos?${new URLSearchParams({
         alt,
         caption,
-        ...(trackId ? { trackId } : {}),
+        ...(albumId ? { albumId } : {}),
       })}`,
       { method: "POST", contentType: file.type, body: file },
     ),
-  // Album de randonnee (trackId, null pour l'en sortir) et photo de reference.
+  // Album de la photo (null pour l'en sortir) et photo de reference.
   updatePhoto: (
     id: string,
-    changes: { trackCover?: boolean; trackId?: string | null },
+    changes: { albumCover?: boolean; albumId?: string | null },
   ) =>
     adminRequest<TripPhoto>(
       `/photos/${encodeURIComponent(id)}`,
       json("PATCH", changes),
     ),
+  // Albums d'une etape: nom et randonnee liee (facultative).
+  createAlbum: (
+    stageId: string,
+    album: { name: string; trackId: string | null },
+  ) =>
+    adminRequest<TripAlbum>(
+      `/stages/${encodeURIComponent(stageId)}/albums`,
+      json("POST", album),
+    ),
+  updateAlbum: (
+    id: string,
+    changes: { name?: string; trackId?: string | null },
+  ) =>
+    adminRequest<TripAlbum>(
+      `/albums/${encodeURIComponent(id)}`,
+      json("PATCH", changes),
+    ),
+  deleteAlbum: (id: string) =>
+    adminRequest<void>(`/albums/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    }),
   uploadMealPhoto: (file: File) =>
     adminRequest<MealPhotoUpload>("/meal-photos", {
       method: "POST",
@@ -251,7 +273,7 @@ export const adminApi = {
       alt: string;
       caption: string;
       sessionId: string;
-      trackId?: string;
+      albumId?: string;
     },
   ) =>
     adminRequest<{ photos: TripPhoto[]; skipped: number }>(

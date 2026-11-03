@@ -207,6 +207,11 @@ const SECTION_TONES = {
     box: "border-[#c4e8cc] border-l-[#15803d] bg-[#f4fbf5]",
     badge: "bg-[#15803d]",
   },
+  // Albums photo: la sarcelle des randonnees et de leurs bulles.
+  teal: {
+    box: "border-[#b9e3e1] border-l-[#0f766e] bg-[#f3fbfa]",
+    badge: "bg-[#0f766e]",
+  },
 } as const;
 
 export type StageSectionTone = keyof typeof SECTION_TONES;
