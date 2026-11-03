@@ -218,6 +218,14 @@ export const adminApi = {
       contentType: file.type,
       body: file,
     }),
+  importMealGooglePhoto: (selection: {
+    accessToken: string;
+    sessionId: string;
+  }) =>
+    adminRequest<MealPhotoUpload>(
+      "/meal-photos/google",
+      json("POST", selection),
+    ),
   googlePhotosConfig: () =>
     adminRequest<{ clientId: string | null }>("/google-photos/config"),
   importGooglePhotos: (

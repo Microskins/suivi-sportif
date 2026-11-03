@@ -752,6 +752,13 @@ utilise.
   `application/octet-stream`), 15 Mo max. JPEG, PNG ou WebP reconnus a leur
   signature. `alt` (200) est obligatoire, `caption` (200) facultatif. `201`
   avec la photo (`{ id, url, alt, caption }`), ajoutee en fin de pellicule.
+- `POST /api/voyages/admin/meal-photos/google`: photo d'un repas choisie
+  dans Google Photos. Corps JSON `{ accessToken, sessionId }` (voir l'import
+  d'etape ci-dessous); seule la premiere photo de la selection est gardee
+  (l'admin limite la selection a une photo). Meme reponse `201` que
+  `POST /meal-photos` (`{ photo, photoUrl, coordinates }`); `coordinates` est
+  en pratique `null`, Google retirant la position GPS des images servies.
+  `400 GOOGLE_PHOTOS_EMPTY` si la photo est indisponible ou trop lourde.
 - `GET /api/voyages/admin/google-photos/config`: `{ clientId }`, l'ID
   client OAuth Google de `GOOGLE_PHOTOS_CLIENT_ID` (public), ou `null` si
   l'import Google Photos n'est pas configure.
