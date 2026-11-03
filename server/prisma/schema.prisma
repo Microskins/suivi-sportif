@@ -597,25 +597,34 @@ model TripTrack {
   byteSize  Int           @map("byte_size")
   createdAt DateTime      @default(now()) @map("created_at")
 
-  stage TripStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  stage  TripStage   @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  // Album photo de la randonnee: photos de l'etape rattachees a la trace.
+  photos TripPhoto[]
 
   @@index([stageId])
   @@map("trip_tracks")
 }
 
 model TripPhoto {
-  id        String   @id @default(uuid())
-  stageId   String   @map("stage_id")
-  position  Int      @default(0)
-  fileName  String   @unique @map("file_name")
-  mimeType  String   @map("mime_type")
-  byteSize  Int      @map("byte_size")
-  alt       String
-  caption   String   @default("")
-  createdAt DateTime @default(now()) @map("created_at")
+  id           String   @id @default(uuid())
+  stageId      String   @map("stage_id")
+  position     Int      @default(0)
+  fileName     String   @unique @map("file_name")
+  mimeType     String   @map("mime_type")
+  byteSize     Int      @map("byte_size")
+  alt          String
+  caption      String   @default("")
+  createdAt    DateTime @default(now()) @map("created_at")
+  // Album d'une randonnee de la meme etape (facultatif). Supprimer la trace
+  // garde la photo dans l'etape.
+  trackId      String?  @map("track_id")
+  // Photo de reference de l'album: bulle de la randonnee sur la carte.
+  isTrackCover Boolean  @default(false) @map("is_track_cover")
 
-  stage TripStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  stage TripStage  @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  track TripTrack? @relation(fields: [trackId], references: [id], onDelete: SetNull)
 
   @@index([stageId])
+  @@index([trackId])
   @@map("trip_photos")
 }

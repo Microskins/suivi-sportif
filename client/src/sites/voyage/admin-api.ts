@@ -204,13 +204,29 @@ export const adminApi = {
       })}`,
       { method: "POST", contentType: "application/gpx+xml", body: file },
     ),
-  uploadPhoto: (stageId: string, alt: string, caption: string, file: File) =>
+  uploadPhoto: (
+    stageId: string,
+    alt: string,
+    caption: string,
+    file: File,
+    trackId?: string | null,
+  ) =>
     adminRequest<TripPhoto>(
       `/stages/${encodeURIComponent(stageId)}/photos?${new URLSearchParams({
         alt,
         caption,
+        ...(trackId ? { trackId } : {}),
       })}`,
       { method: "POST", contentType: file.type, body: file },
+    ),
+  // Album de randonnee (trackId, null pour l'en sortir) et photo de reference.
+  updatePhoto: (
+    id: string,
+    changes: { trackCover?: boolean; trackId?: string | null },
+  ) =>
+    adminRequest<TripPhoto>(
+      `/photos/${encodeURIComponent(id)}`,
+      json("PATCH", changes),
     ),
   uploadMealPhoto: (file: File) =>
     adminRequest<MealPhotoUpload>("/meal-photos", {
@@ -235,6 +251,7 @@ export const adminApi = {
       alt: string;
       caption: string;
       sessionId: string;
+      trackId?: string;
     },
   ) =>
     adminRequest<{ photos: TripPhoto[]; skipped: number }>(

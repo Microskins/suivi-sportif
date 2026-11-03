@@ -40,6 +40,8 @@ type TripMapOptions = {
   container: HTMLElement;
   fullRoute: LngLat[];
   onError: () => void;
+  // Bulle photo d'une randonnee: ouvre son etape et sa fiche.
+  onSelectHike?: (stageIndex: number, trackId: string) => void;
   onSelectStage: (index: number) => void;
   // Appele pendant le rejeu, sans recentrer la camera.
   onStageReached: (index: number) => void;
@@ -50,6 +52,7 @@ export function createTripMap({
   container,
   fullRoute,
   onError,
+  onSelectHike,
   onSelectStage,
   onStageReached,
   stages,
@@ -207,6 +210,46 @@ export function createTripMap({
     marker.getElement().style.zIndex = "1";
   });
 
+  // Bulles photo des randonnees, posees au depart de chaque trace qui a un
+  // album (photo de reference). Creees quand les GPX arrivent.
+  let hikeMarkers: Marker[] = [];
+  function placeHikeBubbles(tracks: GpxTrack[]) {
+    hikeMarkers.forEach((marker) => marker.remove());
+    hikeMarkers = tracks.flatMap((track) => {
+      const start = track.points[0]?.position;
+      if (track.kind !== "randonnee" || !track.cover || !track.id || !start) {
+        return [];
+      }
+      const trackId = track.id;
+      const stage = stages[track.stageIndex];
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "voyage-map-hike";
+      button.title = track.name;
+      button.style.setProperty(
+        "--hike-photo",
+        `url("${encodeURI(apiFileUrl(track.cover.url))}")`,
+      );
+      button.setAttribute(
+        "aria-label",
+        `Randonnée — ${track.name}, étape ${track.stageIndex + 1}${
+          stage ? ` ${stage.title}` : ""
+        } : voir l’album photo`,
+      );
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        onSelectStage(track.stageIndex);
+        onSelectHike?.(track.stageIndex, trackId);
+      });
+      // Pointe de la bulle sur le depart de la randonnee.
+      return [
+        new Marker({ element: button, anchor: "bottom" })
+          .setLngLat(start)
+          .addTo(map),
+      ];
+    });
+  }
+
   function setSourceData(
     id: string,
     data: GeoJSON.FeatureCollection<GeoJSON.LineString>,
@@ -254,6 +297,7 @@ export function createTripMap({
       stopReplay();
       markers.forEach(({ marker }) => marker.remove());
       mealMarkers.forEach((marker) => marker.remove());
+      hikeMarkers.forEach((marker) => marker.remove());
       map.remove();
     },
 
@@ -357,6 +401,7 @@ export function createTripMap({
         ...tracks.flatMap((track) => track.points.map((p) => p.position)),
       ]);
       showFinalRoute(true);
+      placeHikeBubbles(tracks);
     },
 
     stopReplay,

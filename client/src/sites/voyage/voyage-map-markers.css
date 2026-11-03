@@ -101,6 +101,66 @@
   outline-offset: 0;
 }
 
+/* Randonnee avec album: bulle photo dont la pointe marque le depart. */
+.voyage-map-hike {
+  position: relative;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-bottom: 0.45rem;
+  padding: 0;
+  border: 3px solid #0e9f9a;
+  border-radius: 999px;
+  background: #0e9f9a var(--hike-photo) center / cover no-repeat;
+  box-shadow: 0 6px 16px rgba(15, 27, 43, 0.3);
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.voyage-map-hike::after {
+  position: absolute;
+  bottom: -0.55rem;
+  left: 50%;
+  border-width: 0.5rem 0.4rem 0;
+  border-style: solid;
+  border-color: #0e9f9a transparent transparent;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.voyage-map-hike:hover {
+  border-color: #0f1b2b;
+}
+
+.voyage-map-hike:hover::after {
+  border-top-color: #0f1b2b;
+}
+
+.voyage-map-hike:focus-visible {
+  outline: 3px solid #0f1b2b;
+  outline-offset: 2px;
+}
+
+/* Diaporama d'un album: fondu a chaque photo. */
+.voyage-album-photo {
+  animation: voyage-album-fade 420ms ease;
+}
+
+@keyframes voyage-album-fade {
+  from {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voyage-map-hike,
+  .voyage-album-photo {
+    animation: none;
+    transition: none;
+  }
+}
+
 /* Globe d'accueil: destinations cliquables, aeroports de depart, avions. */
 .voyage-globe-destination {
   padding: 0.35rem 0.6rem;
