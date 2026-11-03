@@ -241,9 +241,10 @@ export function createTripMap({
         onSelectStage(track.stageIndex);
         onSelectHike?.(track.stageIndex, trackId);
       });
-      // Pointe de la bulle sur le depart de la randonnee.
+      // Pointe de la bulle (6 px sous son bord, voir le CSS) sur le depart
+      // de la randonnee.
       return [
-        new Marker({ element: button, anchor: "bottom" })
+        new Marker({ element: button, anchor: "bottom", offset: [0, -6] })
           .setLngLat(start)
           .addTo(map),
       ];
