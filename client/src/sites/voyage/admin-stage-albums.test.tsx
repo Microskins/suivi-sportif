@@ -199,9 +199,47 @@ describe("section Albums photo de l'admin", () => {
       }),
     );
     await vi.waitFor(() => expect(onChange).toHaveBeenCalled());
-    expect(calls[0].method).toBe("PATCH");
-    expect(calls[0].url).toMatch(/\/photos\/b$/);
-    expect(JSON.parse(calls[0].body as string)).toEqual({ albumCover: true });
+    const patch = calls.find((call) => call.method === "PATCH")!;
+    expect(patch.url).toMatch(/\/photos\/b$/);
+    expect(JSON.parse(patch.body as string)).toEqual({ albumCover: true });
+  });
+
+  it("ajoute des photos directement dans un album", async () => {
+    let uploaded = 0;
+    const calls = mockApi((call) => {
+      if (call.method !== "POST") return { clientId: null };
+      uploaded += 1;
+      return photo(`n${uploaded}`, {
+        alt: new URL(call.url).searchParams.get("alt")!,
+      });
+    });
+    const onChange = renderAlbums({
+      albums: [{ id: ALBUM, name: "Vieille ville", trackId: null }],
+      photos: [photo("x", { albumId: null })],
+      tracks,
+    });
+    expect(screen.getByText(/Album vide/)).toBeInTheDocument();
+
+    const input = screen.getByLabelText(
+      "Photos à ajouter à l’album Vieille ville",
+    );
+    const files = ["a.jpg", "b.jpg"].map(
+      (name) => new File(["x"], name, { type: "image/jpeg" }),
+    );
+    fireEvent.change(input, { target: { files } });
+
+    await vi.waitFor(() => expect(onChange).toHaveBeenCalled());
+    const posts = calls.filter((call) => call.method === "POST");
+    expect(posts).toHaveLength(2);
+    const query = new URL(posts[0].url).searchParams;
+    expect(query.get("albumId")).toBe(ALBUM);
+    // Le nom de l'album sert de texte alternatif, numerote.
+    expect(query.get("alt")).toBe("Vieille ville (1/2)");
+    const { photos } = onChange.mock.calls[0][0] as StageFiles;
+    expect(photos.map((p) => p.id)).toEqual(["x", "n1", "n2"]);
+    expect(
+      await screen.findByText("2 photos ajoutées à l’album."),
+    ).toBeInTheDocument();
   });
 
   it("supprime un album en gardant ses photos dans l'etape", async () => {

@@ -3,8 +3,9 @@
 // randonnee liee affiche l'album dans sa fiche du carnet, et la photo de
 // reference en bulle a son depart sur la carte. Les modifications partent
 // tout de suite, sans attendre l'enregistrement du voyage.
-import type { FormEvent } from "react";
-import { useState } from "react";
+import type { FormEvent, ReactNode } from "react";
+import { useRef, useState } from "react";
+import { AdminAlbumUpload } from "./admin-album-upload";
 import type { AuthErrorHandler } from "./admin-api";
 import { adminApi, adminErrorMessage } from "./admin-api";
 import { coverIdsOf, hikesOf, withSavedPhoto } from "./admin-photo-card";
@@ -16,7 +17,7 @@ import {
   inputClass,
   labelClass,
 } from "./admin-ui";
-import type { TripAlbum, TripTrackFile } from "./trip-types";
+import type { TripAlbum, TripPhoto, TripTrackFile } from "./trip-types";
 import { albumPhotos } from "./trip-types";
 import { apiFileUrl } from "./voyage-api";
 
@@ -75,6 +76,9 @@ export function AdminStageAlbums({
   const [trackId, setTrackId] = useState<string | null>(null);
   const hikes = hikesOf(tracks);
   const coverIds = coverIdsOf(albums, photos);
+  // Un envoi peut durer: on ajoute aux fichiers les plus recents.
+  const latest = useRef<StageFiles>({ albums, photos, tracks });
+  latest.current = { albums, photos, tracks };
 
   async function run(task: () => Promise<void>) {
     setPending(true);
@@ -176,6 +180,20 @@ export function AdminStageAlbums({
                 })
               }
               onRemove={() => remove(album)}
+              upload={
+                <AdminAlbumUpload
+                  album={album}
+                  stageId={stageId}
+                  disabled={pending}
+                  onAuthError={onAuthError}
+                  onAdded={(added: TripPhoto[]) =>
+                    onChange({
+                      ...latest.current,
+                      photos: [...latest.current.photos, ...added],
+                    })
+                  }
+                />
+              }
             />
           ))}
         </ul>
@@ -221,6 +239,7 @@ export function AdminStageAlbums({
 
 function AlbumCard({
   album,
+  upload,
   coverIds,
   disabled,
   hikes,
@@ -239,6 +258,8 @@ function AlbumCard({
   onRemove: () => void;
   onRename: (name: string) => void;
   photos: ReturnType<typeof albumPhotos>;
+  // Bloc « Ajouter des photos a l'album ».
+  upload: ReactNode;
 }) {
   const [draftName, setDraftName] = useState(album.name);
   const hike = hikes.find((item) => item.id === album.trackId);
@@ -342,11 +363,12 @@ function AlbumCard({
           </div>
         ) : (
           <p className="text-xs text-[var(--site-muted)]">
-            Album vide : rangez-y des photos avec le menu « Album » de chaque
-            photo, ou choisissez-le avant un envoi.
+            Album vide : ajoutez des photos ci-dessous, ou rangez-y celles de
+            l’étape avec le menu « Album » de chaque photo.
           </p>
         )}
 
+        {upload}
         <button
           type="button"
           className={`${buttonClass.smallDanger} justify-self-start`}
