@@ -35,7 +35,7 @@ const sectionTitle =
 
 export function AdminStageFiles(props: StageFilesProps) {
   return (
-    <div className="mt-5 grid gap-5 border-t border-[#dfe4ea] pt-5 lg:grid-cols-2">
+    <div className="grid gap-5 lg:grid-cols-2">
       <TracksBlock {...props} />
       <PhotosBlock {...props} />
     </div>

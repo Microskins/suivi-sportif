@@ -8,6 +8,7 @@ import { TripMeals } from "./trip-meals";
 import { TripPhotoFrame } from "./trip-photo-frame";
 import { TripRouteMap } from "./trip-route-map";
 import type { TripDetail, TripStage } from "./trip-types";
+import { outboundJourney } from "./trip-types";
 import { useGpxTracks } from "./use-gpx-tracks";
 
 const NO_STAGES: TripStage[] = [];
@@ -15,7 +16,7 @@ const NO_STAGES: TripStage[] = [];
 // Voyage sans etape: la carte se pose sur l'aeroport d'arrivee pour montrer
 // au moins le pays.
 function arrivalStage(trip: TripDetail): TripStage {
-  const arrival = trip.flights[0].to;
+  const arrival = outboundJourney(trip.flights).to;
   return {
     code: arrival.code,
     coordinates: arrival.coordinates,
@@ -45,7 +46,7 @@ export function TripCarnet({ trip }: { trip: TripDetail }) {
   const mapRoute = useMemo(() => fullRoute(mapStages), [mapStages]);
   const days = tripDays(trip.startDate, trip.endDate);
   const dates = formatTripDates(trip.startDate, trip.endDate);
-  const flight = trip.flights[0];
+  const journey = outboundJourney(trip.flights);
   const photos = stages.flatMap((stage) => stage.photos);
 
   const tripStats = [
@@ -60,8 +61,8 @@ export function TripCarnet({ trip }: { trip: TripDetail }) {
       <BoardingTicket
         actionHref="#carte"
         actionLabel="Carte 3D"
-        arrivalCode={flight.to.code}
-        departureCode={flight.from.code}
+        arrivalCode={journey.to.code}
+        departureCode={journey.from.code}
         description={trip.description}
         eyebrow={[dates, trip.country].filter(Boolean).join(" · ")}
         headingLevel="h1"
