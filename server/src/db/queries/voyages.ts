@@ -656,6 +656,15 @@ export async function deleteAlbum(id: string) {
   return deleted.count > 0;
 }
 
+// Fichier GPX d'une trace (depart et arrivee lus sur le disque), ou null.
+export async function trackFileName(id: string) {
+  const track = await prisma.tripTrack.findUnique({
+    where: { id },
+    select: { fileName: true },
+  });
+  return track?.fileName ?? null;
+}
+
 // Rendent le nom du fichier supprime (a effacer du disque), ou null.
 export async function deleteTrack(id: string) {
   const track = await prisma.tripTrack.findUnique({

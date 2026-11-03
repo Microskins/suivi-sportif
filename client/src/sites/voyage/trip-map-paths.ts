@@ -4,6 +4,7 @@ import { distanceKm, routeLengthKm } from "./trip-geometry";
 import type { LngLat, TripMeal } from "./trip-types";
 import type { GpxTrack } from "./gpx-track";
 import { elevationSegments } from "./gpx-track";
+import { splitAtHikes } from "./hike-legs";
 
 const DRIVE_COLOR = "#1c4ed8";
 
@@ -74,10 +75,19 @@ export function buildPaths(stages: MapStage[], tracks: GpxTrack[]) {
         track.points.map((point) => point.position),
       );
     }
-    if (stage.route.length > 1) {
-      reconstructed.push(lineFeature(stage.route));
+    if (stage.route.length < 2) {
+      return stage.route;
     }
-    return stage.route;
+    // Route qui passe par les randonnees de l'etape: tirets coupes a
+    // chacune (son GPX la dessine), et rejeu qui la parcourt.
+    const hikes = tracks
+      .filter(
+        (track) => track.kind === "randonnee" && track.stageIndex === index,
+      )
+      .map((track) => track.points.map((point) => point.position));
+    const { replay, segments } = splitAtHikes(stage.route, hikes);
+    segments.forEach((segment) => reconstructed.push(lineFeature(segment)));
+    return replay;
   });
 
   const replay = resample(stagePaths.flat());

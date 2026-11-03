@@ -6,7 +6,7 @@
 // qui ferme la porte aux traversees de repertoire et aux ecrasements.
 import { randomUUID } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { mkdir, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 export const GPX_MAX_BYTES = 10 * 1024 * 1024;
@@ -105,6 +105,18 @@ export async function storePhoto(buffer: Buffer) {
     ...(await store(buffer, extension)),
     mimeType: CONTENT_TYPES[extension],
   };
+}
+
+// Contenu texte d'un fichier stocke (GPX), ou null s'il manque.
+export async function readStoredText(fileName: string) {
+  try {
+    return await readFile(
+      path.join(uploadDirectory(), path.basename(fileName)),
+      "utf8",
+    );
+  } catch {
+    return null;
+  }
 }
 
 export async function openStoredFile(fileName: string) {
