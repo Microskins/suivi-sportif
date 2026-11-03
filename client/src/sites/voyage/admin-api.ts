@@ -288,6 +288,11 @@ export const adminApi = {
     adminRequest<void>(`/photos/${encodeURIComponent(id)}`, {
       method: "DELETE",
     }),
+  // Depart et arrivee d'une trace GPX, lus par le serveur.
+  trackEndpoints: (id: string) =>
+    adminRequest<{ end: LngLat; start: LngLat }>(
+      `/tracks/${encodeURIComponent(id)}/endpoints`,
+    ),
   // Itineraire routier entre deux etapes (service OSRM cote serveur).
   roadRoute: (from: LngLat, to: LngLat) =>
     adminRequest<{ distanceKm: number; route: LngLat[] }>(

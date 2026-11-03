@@ -1,18 +1,12 @@
 import { useState } from "react";
 import { AdminAddressSearch } from "./admin-address-search";
 import type { AuthErrorHandler } from "./admin-api";
-import { adminApi, adminErrorMessage } from "./admin-api";
 import type { StageDraft } from "./admin-form";
-import {
-  emptyStage,
-  hasPosition,
-  moveItem,
-  placeStage,
-  stageCoordinates,
-} from "./admin-form";
+import { emptyStage, hasPosition, moveItem, placeStage } from "./admin-form";
 import type { StageFiles } from "./admin-stage-files";
 import { AdminStageAlbums } from "./admin-stage-albums";
 import { AdminStageFiles } from "./admin-stage-files";
+import { traceStageRoads } from "./admin-trace-roads";
 import { AdminStageMeals } from "./admin-stage-meals";
 import type { LngLat } from "./trip-types";
 import {
@@ -71,56 +65,27 @@ export function AdminStages({
     setAnnounce(`Étape ${stages.length + 1} ajoutée en fin de liste.`);
   }
 
-  // Trace de chaque etape depuis la precedente, par la route. Les appels se
-  // suivent a une seconde d'intervalle: le serveur OSRM public limite le
-  // debit. Le resultat ne part en base qu'avec l'enregistrement du voyage.
+  // Itineraires par la route (passant par les randonnees), voir
+  // admin-trace-roads.ts. Le resultat ne part en base qu'avec
+  // l'enregistrement du voyage.
   async function traceRoads() {
-    const routes = new Map<string, StageDraft["route"]>();
-    const failures: string[] = [];
-    let distanceKm = 0;
-    for (let index = 1; index < stages.length; index += 1) {
-      const from = stageCoordinates(stages[index - 1]);
-      const to = stageCoordinates(stages[index]);
-      const name = stageName(stages[index], index);
-      if (!from || !to) {
-        failures.push(`${name} : coordonnées à compléter`);
-        continue;
-      }
-      setRouting(`Calcul de l’itinéraire ${index} / ${stages.length - 1}…`);
-      if (routes.size + failures.length > 0) {
-        await new Promise((resolve) => setTimeout(resolve, 1100));
-      }
-      try {
-        const result = await adminApi.roadRoute(from, to);
-        routes.set(stages[index].key, result.route);
-        distanceKm += result.distanceKm;
-      } catch (error) {
-        if (onAuthError(error)) {
-          setRouting(null);
-          return;
-        }
-        failures.push(`${name} : ${adminErrorMessage(error)}`);
-      }
-    }
+    const result = await traceStageRoads(stages, {
+      onAuthError,
+      onProgress: (index, total) =>
+        setRouting(`Calcul de l’itinéraire ${index} / ${total}…`),
+    });
     setRouting(null);
-    if (routes.size > 0) {
+    if (!result) return;
+    if (result.routes.size > 0) {
       onChange(
         stages.map((stage) =>
-          routes.has(stage.key)
-            ? { ...stage, route: routes.get(stage.key)! }
+          result.routes.has(stage.key)
+            ? { ...stage, route: result.routes.get(stage.key)! }
             : stage,
         ),
       );
     }
-    const summary =
-      routes.size > 0
-        ? `${routes.size} itinéraire(s) routier(s) tracé(s), ${Math.round(distanceKm)} km au total. Enregistrez le voyage pour les garder.`
-        : "Aucun itinéraire tracé.";
-    setRouteReport(
-      failures.length
-        ? `${summary} À revoir — ${failures.join(" ; ")}.`
-        : summary,
-    );
+    setRouteReport(result.report);
   }
 
   function move(index: number, to: number) {

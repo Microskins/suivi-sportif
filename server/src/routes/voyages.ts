@@ -19,9 +19,11 @@ import {
   contentTypeOf,
   deleteStoredFiles,
   openStoredFile,
+  readStoredText,
   storeGpx,
   storePhoto,
 } from "../lib/voyage-files.js";
+import { gpxEndpoints } from "../lib/gpx-endpoints.js";
 import { readPhotoGps } from "../lib/photo-gps.js";
 import { RoadRouteError, fetchRoadRoute } from "../lib/road-route.js";
 import {
@@ -307,6 +309,31 @@ async function voyagesAdminRoutes(fastify: FastifyInstance) {
           reply,
           await voyages.upsertAirport(airportInputSchema.parse(request.body)),
         );
+      } catch (error) {
+        return handleError(fastify, reply, error);
+      }
+    },
+  );
+
+  // GET /api/voyages/admin/tracks/:id/endpoints - depart et arrivee d'une
+  // trace, pour tracer la route jusqu'au depart d'une randonnee. Lu sur le
+  // disque: marche aussi pour un voyage pas encore publie.
+  fastify.get(
+    "/tracks/:id/endpoints",
+    { schema: { ...admin, summary: "Get the start and end of a track" } },
+    async (request, reply) => {
+      try {
+        const { id } = idParamSchema.parse(request.params);
+        const fileName = await voyages.trackFileName(id);
+        const gpx = fileName ? await readStoredText(fileName) : null;
+        const endpoints = gpx ? gpxEndpoints(gpx) : null;
+        return endpoints
+          ? sendOk(reply, endpoints)
+          : sendNotFound(
+              reply,
+              "Trace introuvable ou sans point",
+              "TRIP_FILE_NOT_FOUND",
+            );
       } catch (error) {
         return handleError(fastify, reply, error);
       }

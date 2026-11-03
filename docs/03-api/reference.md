@@ -739,6 +739,13 @@ l'admin):
   `422 ROUTE_NOT_FOUND` sans route entre les deux points, `502
   ROUTER_UNAVAILABLE` si le service ne repond pas ou refuse (limite de
   debit du serveur public: environ une requete par seconde).
+- `GET /api/voyages/admin/tracks/:id/endpoints`: depart et arrivee d'une
+  trace GPX, `{ "start": [lng, lat], "end": [lng, lat] }`, lus dans le fichier
+  sur le disque (voyage publie ou non). `404 TRIP_FILE_NOT_FOUND` pour une
+  trace inconnue ou sans point. L'admin s'en sert pour que « Tracer par la
+  route » passe par le depart de chaque randonnee d'une etape et reparte de
+  son arrivee: le `route` de l'etape met les troncons bout a bout, et le
+  carnet coupe les tirets aux randonnees.
 - `GET /api/voyages/admin/geocode?q=<adresse>`: adresse (d'un logement, d'un
   lieu) vers `[{ label, coordinates: [lng, lat], approximate? }]`. Google
   Geocoding si `GOOGLE_GEOCODING_API_KEY` est defini (secret GitHub de
