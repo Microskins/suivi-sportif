@@ -6,7 +6,7 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
-import { useId } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 // Rouge d'erreur: 6,5:1 sur blanc, 5,9:1 sur le fond rose de l'alerte.
 const DANGER = "text-[#b42318]";
@@ -216,40 +216,70 @@ const SECTION_TONES = {
 
 export type StageSectionTone = keyof typeof SECTION_TONES;
 
+// Repliable d'un clic sur son titre: le contenu reste monte (une saisie en
+// cours n'est pas perdue) et une section repliee se rouvre d'elle-meme si
+// l'un de ses champs est signale invalide.
 export function StageSection({
   children,
+  defaultOpen = true,
   hint,
   number,
   title,
   tone,
 }: {
   children: ReactNode;
+  defaultOpen?: boolean;
   hint?: ReactNode;
   number: number;
   title: ReactNode;
   tone: StageSectionTone;
 }) {
   const titleId = useId();
+  const bodyId = useId();
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(defaultOpen);
   const colors = SECTION_TONES[tone];
+
+  useEffect(() => {
+    if (!open && bodyRef.current?.querySelector('[aria-invalid="true"]')) {
+      setOpen(true);
+    }
+  });
+
   return (
     <section
       aria-labelledby={titleId}
-      className={`rounded-[10px] border border-l-4 p-4 ${colors.box}`}
+      className={`rounded-[10px] border border-l-4 ${open ? "p-4" : "px-4 py-2"} ${colors.box}`}
     >
-      <h4
-        id={titleId}
-        className="site-label flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-[#0f1b2b]"
-      >
-        <span
-          aria-hidden="true"
-          className={`grid h-5 w-5 place-items-center rounded-full text-[0.6rem] text-white ${colors.badge}`}
+      <h4 id={titleId} className="m-0">
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={bodyId}
+          onClick={() => setOpen((value) => !value)}
+          className="site-label flex min-h-8 w-full items-center gap-2 rounded-[6px] text-left text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-[#0f1b2b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f1b2b]"
         >
-          {number}
-        </span>
-        {title}
+          <span
+            aria-hidden="true"
+            className={`grid h-5 w-5 shrink-0 place-items-center rounded-full text-[0.6rem] text-white ${colors.badge}`}
+          >
+            {number}
+          </span>
+          <span className="flex-1">{title}</span>
+          <span
+            aria-hidden="true"
+            className={`text-sm leading-none text-[#3d4b5c] transition-transform ${open ? "rotate-180" : ""}`}
+          >
+            ▾
+          </span>
+        </button>
       </h4>
-      {hint && <p className="mt-1 text-xs leading-5 text-[#3d4b5c]">{hint}</p>}
-      <div className="mt-4">{children}</div>
+      <div id={bodyId} ref={bodyRef} hidden={!open}>
+        {hint && (
+          <p className="mt-1 text-xs leading-5 text-[#3d4b5c]">{hint}</p>
+        )}
+        <div className="mt-4">{children}</div>
+      </div>
     </section>
   );
 }
