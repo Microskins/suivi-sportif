@@ -252,6 +252,10 @@ export function createVoyageGlobe({
       .setLngLat(position)
       .addTo(map);
   });
+  // Les bulles restent au-dessus des points de depart (meme lieu, meme pixel).
+  destinationMarkers.forEach(({ marker }) => {
+    marker.getElement().style.zIndex = "1";
+  });
 
   // Un avion (ou une voiture) par trajet, qui parcourt son arc en boucle;
   // immobile a mi-parcours si l'utilisateur prefere limiter les animations.
@@ -268,6 +272,8 @@ export function createVoyageGlobe({
       // Position initiale obligatoire avant addTo: MapLibre la lit aussitot.
       .setLngLat(arc[0])
       .addTo(map);
+    // Les avions survolent les bulles.
+    marker.getElement().style.zIndex = "2";
     return { arc, marker };
   });
 
