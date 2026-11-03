@@ -3,11 +3,13 @@
 // randonnee liee affiche l'album dans sa fiche du carnet, et la photo de
 // reference en bulle a son depart sur la carte. Les modifications partent
 // tout de suite, sans attendre l'enregistrement du voyage.
-import type { FormEvent } from "react";
-import { useState } from "react";
+import type { FormEvent, ReactNode } from "react";
+import { useRef, useState } from "react";
+import { AdminAlbumUpload } from "./admin-album-upload";
 import type { AuthErrorHandler } from "./admin-api";
 import { adminApi, adminErrorMessage } from "./admin-api";
-import { coverIdsOf, hikesOf, withSavedPhoto } from "./admin-photo-card";
+import { hikesOf } from "./admin-photo-card";
+import { AdminPhotoGrid } from "./admin-photo-grid";
 import type { StageFiles } from "./admin-stage-files";
 import {
   ErrorAlert,
@@ -16,7 +18,7 @@ import {
   inputClass,
   labelClass,
 } from "./admin-ui";
-import type { TripAlbum, TripTrackFile } from "./trip-types";
+import type { TripAlbum, TripPhoto, TripTrackFile } from "./trip-types";
 import { albumPhotos } from "./trip-types";
 import { apiFileUrl } from "./voyage-api";
 
@@ -74,7 +76,13 @@ export function AdminStageAlbums({
   const [name, setName] = useState("");
   const [trackId, setTrackId] = useState<string | null>(null);
   const hikes = hikesOf(tracks);
-  const coverIds = coverIdsOf(albums, photos);
+  // Un envoi peut durer: on ajoute aux fichiers les plus recents.
+  const latest = useRef<StageFiles>({ albums, photos, tracks });
+  latest.current = { albums, photos, tracks };
+  const albumIds = new Set(albums.map((album) => album.id));
+  const loosePhotos = photos.filter(
+    (photo) => !photo.albumId || !albumIds.has(photo.albumId),
+  );
 
   async function run(task: () => Promise<void>) {
     setPending(true);
@@ -134,8 +142,8 @@ export function AdminStageAlbums({
     <div className="grid gap-4">
       {albums.length === 0 ? (
         <p className="text-sm text-[var(--site-muted)]">
-          Aucun album pour l’instant. Créez-en un ci-dessous, puis rangez-y des
-          photos depuis la section « Traces GPX et photos ».
+          Aucun album pour l’instant : créez-en un ci-dessous, puis ajoutez-y
+          vos photos.
         </p>
       ) : (
         <ul className="grid gap-3">
@@ -143,7 +151,6 @@ export function AdminStageAlbums({
             <AlbumCard
               key={album.id}
               album={album}
-              coverIds={coverIds}
               disabled={pending}
               hikes={hikes}
               photos={albumPhotos(photos, album.id)}
@@ -163,22 +170,53 @@ export function AdminStageAlbums({
                   ),
                 )
               }
-              onCover={(photoId) =>
-                run(async () => {
-                  const saved = await adminApi.updatePhoto(photoId, {
-                    albumCover: true,
-                  });
-                  onChange({
-                    albums,
-                    photos: withSavedPhoto(photos, saved),
-                    tracks,
-                  });
-                })
+              grid={
+                <AdminPhotoGrid
+                  shown={albumPhotos(photos, album.id)}
+                  files={() => latest.current}
+                  disabled={pending}
+                  onAuthError={onAuthError}
+                  onChange={onChange}
+                />
               }
               onRemove={() => remove(album)}
+              upload={
+                <AdminAlbumUpload
+                  album={album}
+                  stageId={stageId}
+                  disabled={pending}
+                  onAuthError={onAuthError}
+                  onAdded={(added: TripPhoto[]) =>
+                    onChange({
+                      ...latest.current,
+                      photos: [...latest.current.photos, ...added],
+                    })
+                  }
+                />
+              }
             />
           ))}
         </ul>
+      )}
+
+      {loosePhotos.length > 0 && (
+        <section
+          aria-label={`Photos hors album — ${stageLabel}`}
+          className="grid gap-2 rounded-[8px] border border-[#dfe4ea] bg-white p-3"
+        >
+          <p className={labelClass}>Photos hors album ({loosePhotos.length})</p>
+          <p className="text-xs leading-5 text-[var(--site-muted)]">
+            Photos envoyées avant les albums : rangez-les dans un album avec
+            leur menu « Album », ou supprimez-les.
+          </p>
+          <AdminPhotoGrid
+            shown={loosePhotos}
+            files={() => latest.current}
+            disabled={pending}
+            onAuthError={onAuthError}
+            onChange={onChange}
+          />
+        </section>
       )}
 
       <form
@@ -210,7 +248,7 @@ export function AdminStageAlbums({
         {hikes.length === 0 && (
           <p className="text-xs leading-5 text-[var(--site-muted)] sm:col-span-3">
             Pour lier un album à une randonnée, envoyez d’abord son GPX (type «
-            Randonnée ») dans la section « Traces GPX et photos ».
+            Randonnée ») dans la section « Traces GPX ».
           </p>
         )}
       </form>
@@ -221,24 +259,26 @@ export function AdminStageAlbums({
 
 function AlbumCard({
   album,
-  coverIds,
+  grid,
+  upload,
   disabled,
   hikes,
-  onCover,
   onLink,
   onRemove,
   onRename,
   photos,
 }: {
   album: TripAlbum;
-  coverIds: Set<string>;
   disabled: boolean;
   hikes: TripTrackFile[];
-  onCover: (photoId: string) => void;
+  // Photos de l'album et leurs actions (reference, album, suppression).
+  grid: ReactNode;
   onLink: (trackId: string | null) => void;
   onRemove: () => void;
   onRename: (name: string) => void;
   photos: ReturnType<typeof albumPhotos>;
+  // Bloc « Ajouter des photos a l'album ».
+  upload: ReactNode;
 }) {
   const [draftName, setDraftName] = useState(album.name);
   const hike = hikes.find((item) => item.id === album.trackId);
@@ -305,48 +345,16 @@ function AlbumCard({
 
         {photos.length > 0 ? (
           <div>
-            <p className={labelClass}>
-              Photos ({photos.length}) — cliquez pour choisir la référence
-            </p>
-            <ul className="mt-1.5 flex flex-wrap gap-2">
-              {photos.map((photo) => {
-                const isCover = coverIds.has(photo.id);
-                return (
-                  <li key={photo.id}>
-                    <button
-                      type="button"
-                      disabled={disabled || isCover}
-                      aria-pressed={isCover}
-                      aria-label={
-                        isCover
-                          ? `${photo.alt} : photo de référence`
-                          : `Faire de ${photo.alt} la photo de référence`
-                      }
-                      className={`block overflow-hidden rounded-[6px] border-2 ${
-                        isCover
-                          ? "border-[#0f766e]"
-                          : "border-transparent hover:border-[#9aa4b1]"
-                      }`}
-                      onClick={() => onCover(photo.id)}
-                    >
-                      <img
-                        src={apiFileUrl(photo.url)}
-                        alt=""
-                        className="h-14 w-20 object-cover"
-                      />
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+            <p className={labelClass}>Photos ({photos.length})</p>
+            <div className="mt-1.5">{grid}</div>
           </div>
         ) : (
           <p className="text-xs text-[var(--site-muted)]">
-            Album vide : rangez-y des photos avec le menu « Album » de chaque
-            photo, ou choisissez-le avant un envoi.
+            Album vide : ajoutez des photos ci-dessous.
           </p>
         )}
 
+        {upload}
         <button
           type="button"
           className={`${buttonClass.smallDanger} justify-self-start`}

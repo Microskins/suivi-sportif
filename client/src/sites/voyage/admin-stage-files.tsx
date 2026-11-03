@@ -1,15 +1,9 @@
-// Traces GPX et photos d'une etape deja enregistree. Les envois partent
-// aussitot: ils ne dependent pas du bouton "Enregistrer le voyage".
+// Traces GPX d'une etape deja enregistree. Les envois partent aussitot: ils
+// ne dependent pas du bouton "Enregistrer le voyage". Les photos s'ajoutent
+// dans les albums (section « Albums photo », admin-stage-albums.tsx).
 import type { FormEvent, RefObject } from "react";
 import { useRef, useState } from "react";
 import type { AuthErrorHandler } from "./admin-api";
-import { GooglePhotosImport } from "./admin-google-photos";
-import {
-  AdminPhotoCard,
-  AlbumSelect,
-  coverIdsOf,
-  withSavedPhoto,
-} from "./admin-photo-card";
 import { adminApi, adminErrorMessage } from "./admin-api";
 import {
   ErrorAlert,
@@ -29,8 +23,6 @@ import { apiFileUrl } from "./voyage-api";
 
 const MB = 1024 * 1024;
 const GPX_MAX = 10 * MB;
-const PHOTO_MAX = 15 * MB;
-const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export type StageFiles = {
   albums: TripAlbum[];
@@ -50,9 +42,8 @@ const sectionTitle =
 
 export function AdminStageFiles(props: StageFilesProps) {
   return (
-    <div className="grid gap-5 lg:grid-cols-2">
+    <div className="max-w-2xl">
       <TracksBlock {...props} />
-      <PhotosBlock {...props} />
     </div>
   );
 }
@@ -214,184 +205,6 @@ function TracksBlock({
         >
           {upload.pending ? "Envoi…" : "Envoyer le GPX"}
         </button>
-      </form>
-    </section>
-  );
-}
-
-function PhotosBlock({
-  albums,
-  onAuthError,
-  onChange,
-  photos,
-  stageId,
-  stageLabel,
-  tracks,
-}: StageFilesProps) {
-  const upload = useUpload(onAuthError);
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [alt, setAlt] = useState("");
-  const [caption, setCaption] = useState("");
-  const [altError, setAltError] = useState<string | undefined>();
-  const latestFiles = useRef<StageFiles>({ albums, photos, tracks });
-  latestFiles.current = { albums, photos, tracks };
-  const [albumChoice, setAlbumChoice] = useState<string | null>(null);
-  // Album choisi pour les prochains envois (oublie s'il disparait).
-  const uploadAlbumId = albums.some((album) => album.id === albumChoice)
-    ? albumChoice
-    : null;
-  const coverIds = coverIdsOf(albums, photos);
-
-  function checkAlt() {
-    setAltError(
-      alt.trim() ? undefined : "Décrivez la photo pour les lecteurs d’écran.",
-    );
-    if (!alt.trim()) upload.setError("Le texte alternatif est obligatoire.");
-    else upload.setError(null);
-    return Boolean(alt.trim());
-  }
-
-  async function update(
-    photo: TripPhoto,
-    changes: { albumCover?: boolean; albumId?: string | null },
-  ) {
-    await upload.run(async () => {
-      const saved = await adminApi.updatePhoto(photo.id, changes);
-      onChange({ albums, tracks, photos: withSavedPhoto(photos, saved) });
-    });
-  }
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    const file = fileRef.current?.files?.[0];
-    if (!checkAlt()) return;
-    if (!file) return upload.setError("Choisissez une photo.");
-    if (!PHOTO_TYPES.includes(file.type))
-      return upload.setError("Format accepté : JPEG, PNG ou WebP.");
-    if (file.size > PHOTO_MAX)
-      return upload.setError("Photo trop volumineuse (15 Mo maximum).");
-    await upload.run(async () => {
-      const photo = await adminApi.uploadPhoto(
-        stageId,
-        alt.trim(),
-        caption.trim(),
-        file,
-        uploadAlbumId,
-      );
-      onChange({ albums, tracks, photos: [...photos, photo] });
-      setAlt("");
-      setCaption("");
-      if (fileRef.current) fileRef.current.value = "";
-    });
-  }
-
-  async function remove(photo: TripPhoto) {
-    if (!window.confirm(`Supprimer la photo « ${photo.alt} » ?`)) return;
-    await upload.run(async () => {
-      await adminApi.deletePhoto(photo.id);
-      onChange({
-        albums,
-        tracks,
-        photos: photos.filter((item) => item.id !== photo.id),
-      });
-    });
-  }
-
-  return (
-    <section aria-label={`Photos — ${stageLabel}`}>
-      <h4 className={sectionTitle}>Photos ({photos.length})</h4>
-      {photos.length > 0 && (
-        <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {photos.map((photo) => (
-            <AdminPhotoCard
-              key={photo.id}
-              photo={photo}
-              albums={albums}
-              tracks={tracks}
-              isCover={coverIds.has(photo.id)}
-              disabled={upload.pending}
-              onAlbumChange={(albumId) => update(photo, { albumId })}
-              onCover={() => update(photo, { albumCover: true })}
-              onRemove={() => remove(photo)}
-            />
-          ))}
-        </ul>
-      )}
-      <form
-        className="mt-3 grid gap-3"
-        onSubmit={submit}
-        aria-label={`Envoyer une photo — ${stageLabel}`}
-      >
-        <FileInput
-          label="Photo (JPEG, PNG ou WebP, 15 Mo max)"
-          accept={PHOTO_TYPES.join(",")}
-          inputRef={fileRef}
-          disabled={upload.pending}
-        />
-        <TextField
-          label="Texte alternatif"
-          hint="Obligatoire : ce que montre la photo."
-          required
-          value={alt}
-          maxLength={200}
-          error={altError}
-          disabled={upload.pending}
-          onChange={(event) => setAlt(event.target.value)}
-        />
-        <TextField
-          label="Légende"
-          value={caption}
-          maxLength={200}
-          disabled={upload.pending}
-          onChange={(event) => setCaption(event.target.value)}
-        />
-        {albums.length > 0 && (
-          <AlbumSelect
-            label="Ranger dans l’album"
-            albums={albums}
-            tracks={tracks}
-            value={uploadAlbumId}
-            disabled={upload.pending}
-            onChange={setAlbumChoice}
-          />
-        )}
-        <ErrorAlert>{upload.error}</ErrorAlert>
-        <button
-          type="submit"
-          className={`${buttonClass.secondary} justify-self-start`}
-          disabled={upload.pending}
-        >
-          {upload.pending ? "Envoi…" : "Envoyer la photo"}
-        </button>
-        <GooglePhotosImport
-          disabled={upload.pending}
-          onAuthError={onAuthError}
-          hint="Le texte alternatif et la légende ci-dessus s’appliquent à chaque photo choisie (numérotée si plusieurs), 30 photos maximum."
-          prepare={checkAlt}
-          importSelection={async (selection) => {
-            const result = await adminApi.importGooglePhotos(stageId, {
-              ...selection,
-              alt: alt.trim(),
-              caption: caption.trim(),
-              ...(uploadAlbumId ? { albumId: uploadAlbumId } : {}),
-            });
-            // L'import a pu durer: on repart des fichiers les plus recents.
-            const current = latestFiles.current;
-            onChange({
-              ...current,
-              photos: [...current.photos, ...result.photos],
-            });
-            setAlt("");
-            setCaption("");
-            const count = result.photos.length;
-            const plural = count > 1 ? "s" : "";
-            const skipped =
-              result.skipped > 0
-                ? ` (${result.skipped} ignorée${result.skipped > 1 ? "s" : ""} : format ou taille non pris en charge).`
-                : ".";
-            return `${count} photo${plural} importée${plural}${skipped}`;
-          }}
-        />
       </form>
     </section>
   );

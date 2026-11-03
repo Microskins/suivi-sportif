@@ -274,7 +274,7 @@ export function AdminStages({
                     <StageSection
                       number={5}
                       tone="green"
-                      title="Traces GPX et photos"
+                      title="Traces GPX"
                       hint="Les fichiers sont envoyés tout de suite, sans attendre l’enregistrement du voyage."
                     >
                       {stage.id ? (

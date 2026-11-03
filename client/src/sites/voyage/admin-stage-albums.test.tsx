@@ -188,20 +188,89 @@ describe("section Albums photo de l'admin", () => {
         /bulle avec la photo de référence au départ de la randonnée « Quiraing »/,
       ),
     ).toBeInTheDocument();
-    // a, premiere photo rangee, est la reference implicite.
+    // a, premiere photo rangee, est la reference implicite: seule b
+    // propose de le devenir.
+    expect(screen.getByText("★ Référence")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Photo a : photo de référence" }),
-    ).toHaveAttribute("aria-pressed", "true");
+      screen.queryByRole("button", {
+        name: "Faire de Photo a la photo de référence de l’album Quiraing",
+      }),
+    ).not.toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Faire de Photo b la photo de référence",
+        name: "Faire de Photo b la photo de référence de l’album Quiraing",
       }),
     );
     await vi.waitFor(() => expect(onChange).toHaveBeenCalled());
-    expect(calls[0].method).toBe("PATCH");
-    expect(calls[0].url).toMatch(/\/photos\/b$/);
-    expect(JSON.parse(calls[0].body as string)).toEqual({ albumCover: true });
+    const patch = calls.find((call) => call.method === "PATCH")!;
+    expect(patch.url).toMatch(/\/photos\/b$/);
+    expect(JSON.parse(patch.body as string)).toEqual({ albumCover: true });
+  });
+
+  it("ajoute des photos directement dans un album", async () => {
+    let uploaded = 0;
+    const calls = mockApi((call) => {
+      if (call.method !== "POST") return { clientId: null };
+      uploaded += 1;
+      return photo(`n${uploaded}`, {
+        alt: new URL(call.url).searchParams.get("alt")!,
+      });
+    });
+    const onChange = renderAlbums({
+      albums: [{ id: ALBUM, name: "Vieille ville", trackId: null }],
+      photos: [photo("x", { albumId: null })],
+      tracks,
+    });
+    expect(screen.getByText(/Album vide/)).toBeInTheDocument();
+
+    const input = screen.getByLabelText(
+      "Photos à ajouter à l’album Vieille ville",
+    );
+    const files = ["a.jpg", "b.jpg"].map(
+      (name) => new File(["x"], name, { type: "image/jpeg" }),
+    );
+    fireEvent.change(input, { target: { files } });
+
+    await vi.waitFor(() => expect(onChange).toHaveBeenCalled());
+    const posts = calls.filter((call) => call.method === "POST");
+    expect(posts).toHaveLength(2);
+    const query = new URL(posts[0].url).searchParams;
+    expect(query.get("albumId")).toBe(ALBUM);
+    // Le nom de l'album sert de texte alternatif, numerote.
+    expect(query.get("alt")).toBe("Vieille ville (1/2)");
+    const { photos } = onChange.mock.calls[0][0] as StageFiles;
+    expect(photos.map((p) => p.id)).toEqual(["x", "n1", "n2"]);
+    expect(
+      await screen.findByText("2 photos ajoutées à l’album."),
+    ).toBeInTheDocument();
+  });
+
+  it("liste les photos hors album pour les ranger", async () => {
+    const calls = mockApi((call) =>
+      call.method === "PATCH"
+        ? photo("x", { albumId: ALBUM })
+        : { clientId: null },
+    );
+    const onChange = renderAlbums({
+      albums: [{ id: ALBUM, name: "Plage", trackId: null }],
+      photos: [photo("x", { albumId: null })],
+      tracks,
+    });
+
+    const loose = screen.getByRole("region", {
+      name: "Photos hors album — Skye",
+    });
+    fireEvent.change(within(loose).getByLabelText("Album"), {
+      target: { value: ALBUM },
+    });
+
+    await vi.waitFor(() => expect(onChange).toHaveBeenCalled());
+    const patch = calls.find((call) => call.method === "PATCH")!;
+    expect(JSON.parse(patch.body as string)).toEqual({ albumId: ALBUM });
+    expect((onChange.mock.calls[0][0] as StageFiles).photos[0].albumId).toBe(
+      ALBUM,
+    );
   });
 
   it("supprime un album en gardant ses photos dans l'etape", async () => {
