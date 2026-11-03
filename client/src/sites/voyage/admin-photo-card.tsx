@@ -1,24 +1,32 @@
-// Photo d'une etape dans l'admin: apercu, album de randonnee et photo de
-// reference de cet album (la bulle de la randonnee sur la carte du carnet).
-import type { TripPhoto, TripTrackFile } from "./trip-types";
+// Photo d'une etape dans l'admin: apercu, album qui la range et photo de
+// reference de cet album (couverture, et bulle de la randonnee liee).
+import type { TripAlbum, TripPhoto, TripTrackFile } from "./trip-types";
 import { buttonClass, inputClass, labelClass } from "./admin-ui";
 import { apiFileUrl } from "./voyage-api";
 
 export const hikesOf = (tracks: TripTrackFile[]) =>
   tracks.filter((track) => track.kind === "randonnee");
 
-// Choix d'album: aucun, ou une randonnee de l'etape.
+// Nom d'album suivi de sa randonnee liee: le lien se voit partout.
+export function albumLabel(album: TripAlbum, tracks: TripTrackFile[]) {
+  const hike = tracks.find((track) => track.id === album.trackId);
+  return hike ? `${album.name} — randonnée ${hike.name}` : album.name;
+}
+
+// Choix d'album: aucun, ou un album de l'etape.
 export function AlbumSelect({
+  albums,
   disabled,
-  hikes,
   label,
   onChange,
+  tracks,
   value,
 }: {
+  albums: TripAlbum[];
   disabled: boolean;
-  hikes: TripTrackFile[];
   label: string;
-  onChange: (trackId: string | null) => void;
+  onChange: (albumId: string | null) => void;
+  tracks: TripTrackFile[];
   value: string | null;
 }) {
   return (
@@ -31,9 +39,9 @@ export function AlbumSelect({
         onChange={(event) => onChange(event.target.value || null)}
       >
         <option value="">Aucun album</option>
-        {hikes.map((hike) => (
-          <option key={hike.id} value={hike.id}>
-            Randonnée — {hike.name}
+        {albums.map((album) => (
+          <option key={album.id} value={album.id}>
+            {albumLabel(album, tracks)}
           </option>
         ))}
       </select>
@@ -42,24 +50,26 @@ export function AlbumSelect({
 }
 
 export function AdminPhotoCard({
+  albums,
   disabled,
-  hikes,
   isCover,
   onAlbumChange,
   onCover,
   onRemove,
   photo,
+  tracks,
 }: {
+  albums: TripAlbum[];
   disabled: boolean;
-  hikes: TripTrackFile[];
   // Reference effective de son album (explicite, ou premiere photo).
   isCover: boolean;
-  onAlbumChange: (trackId: string | null) => void;
+  onAlbumChange: (albumId: string | null) => void;
   onCover: () => void;
   onRemove: () => void;
   photo: TripPhoto;
+  tracks: TripTrackFile[];
 }) {
-  const album = hikes.find((hike) => hike.id === photo.trackId);
+  const album = albums.find((item) => item.id === photo.albumId);
   return (
     <li className="overflow-hidden rounded-[8px] border border-[#dfe4ea] bg-white">
       <div className="relative">
@@ -81,10 +91,11 @@ export function AdminPhotoCard({
             {photo.caption}
           </p>
         )}
-        {hikes.length > 0 && (
+        {albums.length > 0 && (
           <AlbumSelect
             label="Album"
-            hikes={hikes}
+            albums={albums}
+            tracks={tracks}
             value={album ? album.id : null}
             disabled={disabled}
             onChange={onAlbumChange}
@@ -95,7 +106,7 @@ export function AdminPhotoCard({
             type="button"
             className={buttonClass.small}
             disabled={disabled}
-            aria-label={`Faire de ${photo.alt} la photo de référence de ${album.name}`}
+            aria-label={`Faire de ${photo.alt} la photo de référence de l’album ${album.name}`}
             onClick={onCover}
           >
             ★ Photo de référence
@@ -112,5 +123,28 @@ export function AdminPhotoCard({
         </button>
       </div>
     </li>
+  );
+}
+
+// Remplace une photo enregistree; une seule reference par album, les autres
+// photos de l'album la perdent.
+export function withSavedPhoto(photos: TripPhoto[], saved: TripPhoto) {
+  return photos.map((item) =>
+    item.id === saved.id
+      ? saved
+      : saved.albumCover && item.albumId === saved.albumId
+        ? { ...item, albumCover: false }
+        : item,
+  );
+}
+
+// Reference effective de chaque album (explicite, sinon premiere photo).
+export function coverIdsOf(albums: TripAlbum[], photos: TripPhoto[]) {
+  return new Set(
+    albums.flatMap((album) => {
+      const inAlbum = photos.filter((photo) => photo.albumId === album.id);
+      const cover = inAlbum.find((photo) => photo.albumCover) ?? inAlbum[0];
+      return cover ? [cover.id] : [];
+    }),
   );
 }

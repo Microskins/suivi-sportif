@@ -164,21 +164,33 @@ export const trackUploadQuerySchema = z.object({
 export const photoUploadQuerySchema = z.object({
   alt: z.string().trim().min(1, "Texte alternatif obligatoire").max(200),
   caption: z.string().trim().max(200).default(""),
-  // Album de randonnee (trace de la meme etape), facultatif.
-  trackId: z.string().uuid().optional(),
+  // Album de l'etape qui range la photo, facultatif.
+  albumId: z.string().uuid().optional(),
 });
 
-// PATCH d'une photo: album de randonnee (null pour l'en sortir), photo de
-// reference de l'album, textes.
+const notEmpty = (value: object) => Object.keys(value).length > 0;
+
+// PATCH d'une photo: album (null pour l'en sortir), photo de reference de
+// l'album, textes.
 export const photoUpdateSchema = z
   .object({
+    albumCover: z.boolean(),
+    albumId: z.string().uuid().nullable(),
     alt: z.string().trim().min(1, "Texte alternatif obligatoire").max(200),
     caption: z.string().trim().max(200),
-    trackCover: z.boolean(),
-    trackId: z.string().uuid().nullable(),
   })
   .partial()
-  .refine((value) => Object.keys(value).length > 0, "Rien a modifier");
+  .refine(notEmpty, "Rien a modifier");
+
+// Album d'une etape: nom, randonnee liee (trace de l'etape) facultative.
+export const albumInputSchema = z.object({
+  name: z.string().trim().min(1, "Nom de l'album obligatoire").max(80),
+  trackId: z.string().uuid().nullable().optional(),
+});
+
+export const albumUpdateSchema = albumInputSchema
+  .partial()
+  .refine(notEmpty, "Rien a modifier");
 
 // Itineraire routier demande par l'admin entre deux etapes consecutives.
 export const roadRouteInputSchema = z.object({

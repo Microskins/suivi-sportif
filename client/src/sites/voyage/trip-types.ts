@@ -27,21 +27,29 @@ export type TripTrackFile = {
 };
 
 export type TripPhoto = {
+  // Album de l'etape qui range la photo, ou null.
+  albumId?: string | null;
+  // Photo de reference de son album (couverture, bulle de la randonnee).
+  albumCover?: boolean;
   alt: string;
   caption: string;
   id: string;
-  // Album de randonnee: id de la trace de la meme etape, ou null.
-  trackId?: string | null;
-  // Photo de reference de l'album (bulle de la randonnee sur la carte).
-  trackCover?: boolean;
   url: string;
 };
 
-// Album d'une randonnee: ses photos, la reference en premier (a defaut, la
-// premiere photo rattachee).
-export function trackAlbum(photos: TripPhoto[], trackId: string) {
-  const album = photos.filter((photo) => photo.trackId === trackId);
-  const cover = album.find((photo) => photo.trackCover) ?? album[0];
+// Album photo d'une etape. Lie a une randonnee (trackId), il s'affiche dans
+// sa fiche et sa photo de reference en bulle a son depart sur la carte.
+export type TripAlbum = {
+  id: string;
+  name: string;
+  trackId: string | null;
+};
+
+// Photos d'un album, la reference en premier (a defaut, la premiere photo
+// rangee).
+export function albumPhotos(photos: TripPhoto[], albumId: string) {
+  const album = photos.filter((photo) => photo.albumId === albumId);
+  const cover = album.find((photo) => photo.albumCover) ?? album[0];
   return cover ? [cover, ...album.filter((photo) => photo !== cover)] : [];
 }
 
@@ -65,6 +73,8 @@ export type TripStage = {
   id: string;
   // Logement de la nuit (souvent un lien Airbnb), ou null.
   lodgingUrl: string | null;
+  // Albums photo de l'etape (absent des anciennes reponses).
+  albums?: TripAlbum[];
   // Repas de l'etape, facultatifs (tableau vide si aucun).
   meals: TripMeal[];
   photos: TripPhoto[];
@@ -73,6 +83,19 @@ export type TripStage = {
   title: string;
   tracks: TripTrackFile[];
 };
+
+// Albums lies a une randonnee de l'etape (avec au moins une photo).
+export function hikeAlbums(stage: TripStage, trackId: string) {
+  return (stage.albums ?? [])
+    .filter((album) => album.trackId === trackId)
+    .map((album) => ({ ...album, photos: albumPhotos(stage.photos, album.id) }))
+    .filter((album) => album.photos.length > 0);
+}
+
+// Photo de reference de la randonnee: celle de son premier album.
+export function hikeCover(stage: TripStage, trackId: string) {
+  return hikeAlbums(stage, trackId)[0]?.photos[0] ?? null;
+}
 
 export type TripSummary = {
   country: string;

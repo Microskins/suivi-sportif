@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { LngLat, TripStage } from "./trip-types";
-import { trackAlbum } from "./trip-types";
+import { albumPhotos, hikeAlbums } from "./trip-types";
+import { TripTrackAlbum } from "./trip-track-album";
 import type { TripMapHandle } from "./trip-map-engine";
 import { TripLodgingLink } from "./trip-lodging-link";
 import { TripMeals } from "./trip-meals";
@@ -121,10 +122,17 @@ export function TripRouteMap({
     (track) => track.stageIndex === activeIndex,
   );
   const mapReady = status === "ready";
-  // Les photos d'un album affiche dans sa fiche ne se repetent pas dessous.
-  const shownAlbums = new Set(stageTracks.map((track) => track.id));
+  // Albums affiches dans la fiche de leur randonnee; les autres (sans
+  // randonnee, ou dont le GPX n'a pas charge) s'affichent dans le panneau.
+  const shownTracks = new Set(stageTracks.map((track) => track.id));
+  const stageAlbums = (stage.albums ?? [])
+    .filter((album) => !album.trackId || !shownTracks.has(album.trackId))
+    .map((album) => ({ ...album, photos: albumPhotos(stage.photos, album.id) }))
+    .filter((album) => album.photos.length > 0);
+  const albumIds = new Set((stage.albums ?? []).map((album) => album.id));
+  // Les photos rangees dans un album ne se repetent pas dessous.
   const loosePhotos = stage.photos.filter(
-    (photo) => !photo.trackId || !shownAlbums.has(photo.trackId),
+    (photo) => !photo.albumId || !albumIds.has(photo.albumId),
   );
 
   return (
@@ -248,12 +256,19 @@ export function TripRouteMap({
                 {stageTracks.map((track, index) => (
                   <TripTrackCard
                     key={`${index}-${track.name}`}
-                    album={track.id ? trackAlbum(stage.photos, track.id) : []}
+                    albums={track.id ? hikeAlbums(stage, track.id) : []}
                     track={track}
                   />
                 ))}
               </div>
             )}
+            {stageAlbums.map((album) => (
+              <TripTrackAlbum
+                key={album.id}
+                photos={album.photos}
+                title={album.name}
+              />
+            ))}
             <div className="mt-5 grid grid-cols-2 gap-2">
               {loosePhotos.length > 0 ? (
                 loosePhotos

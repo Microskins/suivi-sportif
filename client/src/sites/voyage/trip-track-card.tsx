@@ -9,19 +9,19 @@ import {
 } from "recharts";
 import type { GpxTrack } from "./gpx-track";
 import { TripTrackAlbum } from "./trip-track-album";
-import type { TripPhoto } from "./trip-types";
+import type { TripAlbum, TripPhoto } from "./trip-types";
 import { elevationProfile, formatDuration, trackStats } from "./gpx-track";
 
 type TripTrackCardProps = {
-  // Album photo de la randonnee (reference en premier), facultatif.
-  album?: TripPhoto[];
+  // Albums lies a la randonnee, photos deja ordonnees (reference d'abord).
+  albums?: (TripAlbum & { photos: TripPhoto[] })[];
   track: GpxTrack;
 };
 
 // Resume d'une trace GPS. Un trajet (route de A a B) ne montre que sa
 // distance; une randonnee montre aussi denivele, duree et profil, facon
 // Strava. Le graphique est decoratif; les chiffres portent l'info.
-export function TripTrackCard({ album = [], track }: TripTrackCardProps) {
+export function TripTrackCard({ albums = [], track }: TripTrackCardProps) {
   // useId produit des ":" invalides dans une reference url(#...).
   const gradientId = `profil-${useId().replace(/:/g, "")}`;
   const stats = trackStats(track.points);
@@ -65,9 +65,13 @@ export function TripTrackCard({ album = [], track }: TripTrackCardProps) {
           </div>
         ))}
       </dl>
-      {album.length > 0 && (
-        <TripTrackAlbum photos={album} trackName={track.name} />
-      )}
+      {albums.map((album) => (
+        <TripTrackAlbum
+          key={album.id}
+          photos={album.photos}
+          title={album.name}
+        />
+      ))}
       {profile.length > 1 && (
         <div className="mt-3 h-20" aria-hidden="true">
           <ResponsiveContainer width="100%" height="100%">

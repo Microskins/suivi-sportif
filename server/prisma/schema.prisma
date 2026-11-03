@@ -583,6 +583,7 @@ model TripStage {
   trip   Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
   tracks TripTrack[]
   photos TripPhoto[]
+  albums TripAlbum[]
 
   @@unique([tripId, position])
   @@map("trip_stages")
@@ -598,8 +599,8 @@ model TripTrack {
   createdAt DateTime      @default(now()) @map("created_at")
 
   stage  TripStage   @relation(fields: [stageId], references: [id], onDelete: Cascade)
-  // Album photo de la randonnee: photos de l'etape rattachees a la trace.
-  photos TripPhoto[]
+  // Albums photo lies a cette randonnee (bulle au depart sur la carte).
+  albums TripAlbum[]
 
   @@index([stageId])
   @@map("trip_tracks")
@@ -615,16 +616,39 @@ model TripPhoto {
   alt          String
   caption      String   @default("")
   createdAt    DateTime @default(now()) @map("created_at")
-  // Album d'une randonnee de la meme etape (facultatif). Supprimer la trace
-  // garde la photo dans l'etape.
-  trackId      String?  @map("track_id")
-  // Photo de reference de l'album: bulle de la randonnee sur la carte.
-  isTrackCover Boolean  @default(false) @map("is_track_cover")
+  // Album de l'etape (facultatif). Supprimer l'album garde la photo dans
+  // l'etape.
+  albumId      String?  @map("album_id")
+  // Photo de reference de l'album: sa couverture, et la bulle de la
+  // randonnee liee sur la carte.
+  isAlbumCover Boolean  @default(false) @map("is_album_cover")
 
   stage TripStage  @relation(fields: [stageId], references: [id], onDelete: Cascade)
-  track TripTrack? @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  album TripAlbum? @relation(fields: [albumId], references: [id], onDelete: SetNull)
+
+  @@index([stageId])
+  @@index([albumId])
+  @@map("trip_photos")
+}
+
+// Album photo d'une etape (plusieurs par etape). Il peut etre lie a une
+// randonnee de l'etape: son diaporama s'affiche dans la fiche de la
+// randonnee et sa photo de reference en bulle a son depart sur la carte.
+model TripAlbum {
+  id        String   @id @default(uuid())
+  stageId   String   @map("stage_id")
+  position  Int      @default(0)
+  name      String
+  // Randonnee liee (trace de la meme etape), facultative. Supprimer la
+  // trace garde l'album, sans lien.
+  trackId   String?  @map("track_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  stage  TripStage   @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  track  TripTrack?  @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  photos TripPhoto[]
 
   @@index([stageId])
   @@index([trackId])
-  @@map("trip_photos")
+  @@map("trip_albums")
 }
